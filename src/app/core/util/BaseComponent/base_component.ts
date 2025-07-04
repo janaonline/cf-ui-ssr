@@ -4,7 +4,7 @@ import { UserUtility } from '../user/user';
 export class BaseComponent {
   public userUtil = new UserUtility();
 
-  public loggedInUserType: USER_TYPE;
+  public loggedInUserType: USER_TYPE | null = null;
 
   public USER_TYPE = USER_TYPE;
 

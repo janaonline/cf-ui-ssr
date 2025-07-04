@@ -17,7 +17,7 @@ import { USER_TYPE } from '../models/user/userType';
 import { HttpUtility } from '../util/httpUtil';
 import { JSONUtility } from '../util/jsonUtil';
 import { environment } from './../../../environments/environment';
-import { UtilityService } from './utility.service';
+// import { UtilityService } from './utility.service';
 import { IState } from '../models/state/state';
 // import * as fileSaver from "file-saver";
 
@@ -52,7 +52,7 @@ export class CommonService {
     private http: HttpClient,
     private sanitizer: DomSanitizer,
     private snackbar: MatSnackBar,
-    private _uitlity: UtilityService,
+    // private _uitlity: UtilityService,
   ) {}
 
   updateSearchItem(searchItem: any) {
@@ -797,7 +797,7 @@ export class CommonService {
 
   // Based on Ulb id return population, area, pop density, wards, yrs of data, UA
   public getCityData(ulbId: string = ''): Observable<ExploreSectionResponse> {
-    if (!ulbId) this._uitlity.swalPopup('Error', 'ULB Id is mandatory!', 'error');
+    // if (!ulbId) this._uitlity.swalPopup('Error', 'ULB Id is mandatory!', 'error');
     const params = { ulbId };
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/city/city-details`,

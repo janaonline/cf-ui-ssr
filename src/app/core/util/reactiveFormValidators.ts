@@ -3,7 +3,7 @@
  * that need to be implemented for any form, must be implemented here.
  */
 import { AbstractControl } from '@angular/forms';
-import { control } from 'leaflet';
+// import { control } from 'leaflet';
 import { combineLatest } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -68,7 +68,7 @@ export const CommissionercustomEmailValidator = (control: AbstractControl) => {
 export const customPasswordValidator = (control: AbstractControl) => {
   try {
     validator.validate(control.value);
-  } catch (error) {
+  } catch (error: any) {
     return { password: error.message };
   }
   return null;
@@ -129,7 +129,7 @@ export const PartnerFormEmailValidations = (
 
       if (!email || !departmentEmail) {
         console.log(emailControl);
-        return false;
+        return;
       }
 
       if (email.toLocaleLowerCase() !== departmentEmail.toLocaleLowerCase()) {

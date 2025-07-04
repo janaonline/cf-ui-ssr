@@ -24,7 +24,7 @@ export class UlbService {
   readonly filteredUlbs = computed(() => {
     const selectedId = this.selectedStateId();
     return selectedId
-      ? this.ulbsSignal().filter(ulb => ulb.state._id === selectedId)
+      ? this.ulbsSignal().filter(ulb => ulb.stateInfo?._id === selectedId)
       : [];
   });
 

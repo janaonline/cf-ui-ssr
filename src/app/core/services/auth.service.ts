@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LocalStorageService } from './local-storage.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   public badCredentials: Subject<boolean> = new Subject<boolean>();
 

@@ -213,7 +213,7 @@ export class DownloadService {
                 zip.file(fileModel.fileName, fileModel.fileData);
             });
 
-            zip.generateAsync({ type: "blob", streamFiles: true }, (metadata) => {
+            zip.generateAsync({ type: "blob", streamFiles: true }, (metadata: any) => {
                 subscriber.next({
                     state: 'ZIPPING',
                     body: [],
@@ -222,7 +222,7 @@ export class DownloadService {
                     zipFile: null
                 });
 
-            }).then(function (content) {
+            }).then((content: any) =>{
                 subscriber.next({
                     state: 'DONE',
                     body: [],
