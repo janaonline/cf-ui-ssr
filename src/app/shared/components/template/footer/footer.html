@@ -1,1 +1,53 @@
-<p>footer works!</p>
+<footer class="bg-cfSecondary p-3 text-white-50">
+  <div class="container footer">
+    <div class="p-1">
+      <a
+        tabindex="0"
+        style="text-decoration: none"
+        href="/home"
+        routerLink="/home"
+        routerLinkActive="active"
+      >
+        <span class="fw-bold fs-4 text-info">city</span>
+        <span class="fw-bold fs-4 text-white">finance.in</span>
+      </a>
+      <p class="m-0 mt-2">
+        Cityfinance.in serves as a national framework of standardized, timely and credible financial
+        information on India’s cities, beginning with urban local bodies. It facilitates
+        benchmarking, comparison and peer learning between cities on a range of financial
+        indicators.
+      </p>
+    </div>
+    <div class="p-1 d-flex flex-column gap-2">
+      @for (link of footerLinks; track $index) {
+        <a class="text-cfPrimary" [href]="link.href">{{ link.title }}</a>
+      }
+    </div>
+    <div class="p-1">
+      <p class="info-dir foot-links" [innerHtml]="address"></p>
+    </div>
+    <div class="p-1 d-flex flex-column justify-content-between">
+      <div>
+        <p class="mb-0">Email:</p>
+        <a class="text-cfPrimary" [href]="mailId">
+          {{ mailLabel }}
+        </a>
+      </div>
+
+      <div>
+        <p class="mb-0">Connect With Us:</p>
+        @for (media of socialMediaInfo; track $index) {
+          <a [href]="media['link']" target="blank" class="me-2">
+            <img [src]="media['imgSrc']" [alt]="media['key']" width="30" height="30" />
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="container px-0">
+    <span class="rounded-5 text-cfSecondary bg-light-subtle p-2">
+      <i class="bi bi-people-fill me-2 fs-5"></i>
+      <span>Visitors: {{ totalUsersVisit }} </span>
+    </span>
+  </div>
+</footer>

@@ -1,0 +1,20 @@
+* {
+    font-family: var(--ff-base);
+    font-weight: var(--fw-medium);
+    font-size: 0.8125rem;
+}
+
+.footer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 1.5rem 0rem;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}

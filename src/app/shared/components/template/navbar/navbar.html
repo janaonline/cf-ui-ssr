@@ -12,8 +12,10 @@
       [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav"
     >
-      <i class="fs-4 bi bi-list"></i>
+      <!-- <i class="fs-4 bi bi-list"></i> -->
+       <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon>
     </button>
+    <!-- <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon> -->
 
     <!-- CF logo -->
     <a href="/home" class="">
@@ -36,7 +38,8 @@
             [attr.aria-expanded]="showMobileNav"
             (click)="showMobileNav = !showMobileNav"
           >
-            <i class="fs-4 bi bi-x-lg"></i>
+            <!-- <i class="fs-4 bi bi-x-lg">X</i> -->
+             <mat-icon class="fs-4" aria-hidden="false" aria-label="close icon">close</mat-icon>
           </button>
         }
 
@@ -44,7 +47,9 @@
           @if (menu.child?.length) {
             <li class="active" [matMenuTriggerFor]="DashboardMenu">
               <a class="nav-link" routerLinkActive="active">
-                {{ menu.name }}<i class="bi bi-caret-down-fill"></i>
+                {{ menu.name }}
+                <!-- <i class="bi bi-caret-down-fill"></i> -->
+                <mat-icon class="fs-4" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
               </a>
             </li>
             <mat-menu #DashboardMenu="matMenu">
@@ -84,28 +89,33 @@
       <div class="ms-2">
         @if (!isLoggedIn) {
           <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="loginMenu">
-            Login <i class="bi bi-caret-down-fill"></i>
+            Login 
+            <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
+            <!-- <i class="bi bi-caret-down-fill"></i> -->
           </button>
           <mat-menu #loginMenu="matMenu">
             <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
-              <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
+              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon>
+              XV FC Grant
             </button>
             <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
-              <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection
+              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> XVI FC Data Collection
             </button>
             <button mat-menu-item (click)="loginLogout('ranking')">
-              <i class="bi bi-box-arrow-in-right"></i> Rankings 2022
+              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> Rankings 2022
             </button>
           </mat-menu>
         }
         @if (isLoggedIn) {
           <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
             <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
-            <i class="bi bi-caret-down-fill"></i>
+            <!-- <i class="bi bi-caret-down-fill"></i> -->
+            <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
           </button>
           <mat-menu #logoutMenu="matMenu">
             <div class="text-center my-1 p-1">
-              <i class="bi bi-person-circle fs-4 text-dark"></i>
+              <!-- <i class="bi bi-person-circle fs-4 text-dark"></i> -->
+              <mat-icon class="fs-4" aria-hidden="false" aria-label="account_circle icon">account_circle</mat-icon>
             </div>
             <div class="text-center my-1 p-1 border-bottom">
               {{ user?.name }}

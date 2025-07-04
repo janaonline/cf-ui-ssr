@@ -10,10 +10,11 @@ import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserUtility } from '../../../../core/util/user/user';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule, MatButtonModule, MatMenuModule],
+  imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
