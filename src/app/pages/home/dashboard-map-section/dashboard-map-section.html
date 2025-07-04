@@ -1,0 +1,86 @@
+<h2 class="fw-bold text-center py-4">
+  <span class="fw-bold border-bottom border-5 border-cfPrimary py-3">Explore</span>
+</h2>
+<section class="row py-3">
+  <!-- Map section -->
+  <div class="col-md-12 col-lg-6 d-flex flex-column">
+    <div class="position-relative" style="min-height: 500px">
+      @if (showMap) {
+        <app-map
+          #map
+          [stateCode]="selectedStateCodeSignal()"
+          (stateCodeChange)="selectedStateCodeChange($event)"
+          [ulbId]="selectedCityIdSignal()"
+          (ulbIdChange)="selectedCityIdChange($event)"
+        ></app-map>
+      }
+    </div>
+    <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
+    @if (selectedStateCodeSignal()) {
+      <button
+        class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold"
+        (click)="resetMap()"
+      >
+        Reset Map To India
+      </button>
+    }
+  </div>
+
+  <!-- Data section -->
+  <div class="col-md-12 col-lg-6 d-flex flex-column p-4 p-lg-2">
+    <small class="text-secondary mb">
+      Select a state or city to know more about its key municipal financial and operational
+      information.
+    </small>
+    <!-- Search options -->
+    <div class="d-flex justify-content-between gap-2 my-2">
+      <app-state-search
+        [selectState]="onStateSelected"
+        [stateName]="selectedStateNameSignal()"
+        [stateId]="selectedStateIdSignal()"
+      ></app-state-search>
+      @if (selectedStateCodeSignal()) {
+        <app-city-search
+          [stateId]="selectedStateIdSignal()"
+          [cityName]="selectedCityNameSignal()"
+          [selectCity]="onUlbSelected"
+        ></app-city-search>
+      }
+    </div>
+
+    <!-- Selected state and city name -->
+    <div
+      class="fw-bold fs-5 my-3"
+      [ngClass]="!selectedCityNameSignal() ? 'border-start border-5 border-cfPrimary' : ''"
+    >
+      &nbsp;{{ selectedStateNameSignal() ? selectedStateNameSignal() : 'India' }}
+
+      <!-- City Name -->
+      <span [ngClass]="selectedCityNameSignal() ? 'border-start border-5 border-cfPrimary' : ''">
+        &nbsp;{{ selectedCityNameSignal() ? selectedCityNameSignal() : '' }}
+      </span>
+    </div>
+    @if (isLoading) {
+      <app-pre-loader></app-pre-loader>
+      <app-pre-loader></app-pre-loader>
+    } @else {
+      <!-- Grid with data -->
+      <app-grid-view [gridData]="exploreData"></app-grid-view>
+    }
+    <!-- View Dashboard button -->
+    @if (selectedStateIdSignal()) {
+      <button class="btn btn-cfPrimary mx-auto" style="max-width: 16rem" (click)="viewDashboard()">
+        {{ selectedCityIdSignal() ? 'View City Dashboard' : 'View State Dashboard' }}
+      </button>
+    } @else {
+      <p class="text-secondary rounded bg-body-secondary p-1 me-2" style="font-size: 0.75rem">
+        <i class="bi bi-info-circle"></i>
+        Click on the map or use the drop down to drill down to a state or city.
+      </p>
+    }
+    <!-- Last updated date -->
+    <p class="text-secondary text-end mt-3 mb-0" style="font-size: 0.75rem">
+      Last updated on: {{ lastModifiedDate | date: 'mediumDate' }}
+    </p>
+  </div>
+</section>

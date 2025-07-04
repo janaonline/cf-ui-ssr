@@ -1,0 +1,57 @@
+<div class="col-md-6 col-sm-12 mx-auto">
+    <!-- CF logo -->
+    <div class="mt-4 mt-lg-5">
+        <span class="custom-text-shadow fw-bold text-info logo">city</span>
+        <span class="custom-text-shadow text-white logo">finance.in</span>
+    </div>
+    <!-- Ticker -->
+    <div class="text-white fs-4">
+        <span>Standardised, timely and credible financial information for
+            <span class="text-cfPrimary fw-bold" appCountUp [start]="3800"
+                [end]="coveredUlbCount ? coveredUlbCount : 4000" [duration]="3000" [useEasing]="true"
+                [smartEasingThreshold]="1000" [smartEasingAmount]="300">
+            </span>
+            <!-- <span class="cities-count" [countUp]="coveredUlbCount ? coveredUlbCount : 4000"
+        [options]="{ startVal: 3800, duration: 5 }">
+      </span>  -->
+            cities of India
+        </span>
+    </div>
+    <!-- Search -->
+    <div class="search-box">
+        <form class="filter-form w-100">
+            <input type="text" placeholder="Search for City or State" matInput [formControl]="globalFormControl"
+                [matAutocomplete]="auto" />
+            <mat-autocomplete #auto="matAutocomplete">
+                <!-- [routerLink]="['/dashboard/' + option?.type + '/' + option?._id]" -->
+                @for (option of filteredOptions; track $index) {
+                <mat-option [value]="option?.name" (click)="dashboardNav(option)" (keydown.enter)="dashboardNav(option)"
+                    (keydown.space)="dashboardNav(option)">
+                    <span> {{ option?.name }} </span>
+                    <small class="text-secondary">
+                        | {{ option.type === 'ulb' ? option.ulbType.name : (option.type | titlecase) }}
+                    </small>
+                </mat-option>
+                }
+                @if (noDataFound) {
+                <mat-option class="noData firstCls">
+                    Sorry, we can’t find anything related to your search. Try searching for a city or state
+                </mat-option>
+                }
+            </mat-autocomplete>
+        </form>
+        <button type="button" class="btn btn-cfPrimary" (click)="globalSearchClick()">Search</button>
+    </div>
+</div>
+<!-- Suggestion section. -->
+<div class="mt-4 text-center">
+    <p class="mb-2 text-white">Suggested Searches:</p>
+    <div class="row justify-content-center gap-2 px-1">
+        @for (item of recentSearchArray; track $index) {
+        <a (click)="dashboardNav(item)" (keydown.enter)="dashboardNav(item)" (keydown.space)="dashboardNav(item)"
+            tabindex="0" role="button" class="centerSearchedValues col-auto">
+            <span class="custom-font-size-6">{{ item?.name }}</span>
+        </a>
+        }
+    </div>
+</div>

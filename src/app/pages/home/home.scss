@@ -1,1 +1,216 @@
-// @use 'bootstrap/scss/bootstrap' as *;
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+
+
+* {
+    font-family: var(--ff-base);
+    font-weight: var(--fw-medium);
+    // font-family: Archivo;
+}
+
+.light-bg {
+    background-color: #f8f9ff;
+}
+
+.wrap-bg {
+    background-image: url("/assets/images/homepage/landingBg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: $spacer * 15;
+
+    @include media-breakpoint-up(sm) {
+        padding-bottom: $spacer * 13;
+    }
+}
+
+
+// .container-fluid {
+//     padding-left: 0;
+// }
+
+// .sl-text {
+//     text-align: center;
+//     font: normal normal 500 #{$font-size-base * 0.938}/#{$font-size-base * 1.5} "Montserrat";
+//     letter-spacing: 0px;
+//     color: #ffffff;
+//     opacity: 1;
+//     margin-bottom: 1rem;
+// }
+
+// .sl-name {
+//     text-align: center;
+//     font: normal normal 700 #{$font-size-base * 0.875}/#{$font-size-base * 1.375} "Montserrat";
+//     letter-spacing: 0px;
+//     color: #fcb23c;
+//     opacity: 1;
+//     margin-bottom: 1rem;
+// }
+
+// .sl-des {
+//     text-align: center;
+//     font: normal normal 500 #{$font-size-base * 0.75}/#{$font-size-base * 1.063} "Montserrat";
+//     letter-spacing: 0px;
+//     color: #ffffff;
+//     opacity: 1;
+//     margin-bottom: 1rem;
+// }
+
+// .p-indi .sl-des {
+//     margin-bottom: 44px;
+// }
+
+// .cr-text {
+//     max-width: 350px;
+// }
+
+// .factsheet {
+//     padding: 40px 0;
+//     text-align: center;
+
+//     h3 {
+//         font: normal normal 800 #{$font-size-base*1.875}/#{$font-size-base*2} Archivo;
+//         letter-spacing: 0px;
+//         color: #0F1F40;
+//         display: inline-block;
+//         border-bottom: 5px solid #e67e15;
+//         padding-bottom: 15px;
+//         margin-bottom: 2rem;
+//     }
+// }
+
+// .fact-card {
+//     background-color: #fff;
+//     text-align: center;
+//     box-shadow: 0px 2px 33px #53525229;
+//     border-radius: 12px;
+//     padding: 15px;
+//     min-height: 125px;
+//     border: 1px solid rgba(0, 0, 0, 0.125);
+// }
+
+// .fact-count {
+//     font-weight: bold;
+//     color: #e67e15;
+//     font-size: 30px;
+//     margin-bottom: 20px;
+// }
+
+// .factsheet-bg {
+//     background-color: #1D528F;
+//     padding: 40px 0;
+
+//     h2 {
+//         font: normal normal 800 #{$font-size-base*1.875}/#{$font-size-base*2} Archivo;
+//         letter-spacing: 0px;
+//         color: #fff;
+//         display: inline-block;
+//         border-bottom: 5px solid #e67e15;
+//         padding-bottom: 15px;
+//     }
+
+
+// }
+
+// .autoplay-items {
+//     margin: 0;
+//     padding: 0;
+//     position: relative;
+
+//     &::before {
+//         content: '';
+//         height: 100%;
+//         width: 1px;
+//         border: 1px dashed #c0e2ff;
+//         position: absolute;
+//         left: 15px;
+//         top: 32px;
+//     }
+
+//     & li {
+//         list-style: none;
+//         position: relative;
+//         padding-left: $spacer*3;
+//         padding-bottom: $spacer;
+//         cursor: pointer;
+
+//         & h3 {
+//             font-size: $font-size-base*2;
+//             font-weight: $font-weight-bold;
+//             color: #e67e15;
+//             margin-bottom: 30px;
+
+//             .small-desc {
+//                 font-size: $font-size-base*1.5;
+//                 color: #fff;
+//                 font-weight: normal;
+//             }
+//         }
+
+//         &::before {
+//             content: '';
+//             height: 0;
+//             width: 2px;
+//             background: #0f4782;
+//             position: absolute;
+//             left: 15px;
+//             top: 32px;
+//         }
+
+//         &::after {
+//             content: '';
+//             width: $spacer*2;
+//             height: $spacer*2;
+//             background: #c0e2ff;
+//             border: 6px solid #c0e2ff;
+//             border-radius: 50%;
+//             display: block;
+//             position: absolute;
+//             left: 0;
+//             top: 0;
+//         }
+
+//         & div {
+//             height: 0;
+//             transition: all .2s ease-in;
+//             overflow: hidden;
+//         }
+
+//         &.active {
+//             &::before {
+//                 height: 100%;
+//                 transition: all 5s ease-in;
+//             }
+
+//             &::after {
+//                 background: #0f4782;
+//             }
+
+//             & div {
+//                 height: 30px;
+//                 transition: all .2s ease-in;
+//             }
+//         }
+
+//         &.done {
+//             &::before {
+//                 height: 100%;
+//             }
+
+//             &::after {
+//                 background: #c0e2ff;
+//             }
+//         }
+
+//         &:last-child {
+//             &::before {
+//                 height: 100%;
+//                 background: #1D528F;
+//             }
+//         }
+//     }
+
+//     .sl-sub-text {
+//         color: #fff;
+//     }
+// }
