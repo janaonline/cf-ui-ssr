@@ -1,11 +1,421 @@
-/* You can add global styles to this file, and also import other style files */
-@use 'bootstrap/scss/bootstrap' as *;
+@import './styles/styles-custom';
+@import './styles/material';
+// Import fonts.
+@import url('//fonts.googleapis.com/css2?family=Cabin:wght@400;700&display=swap');
+@import url('//fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap');
+@import url('//fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
-@use 'styles/logo.scss';
+// TODO: use this in xvifc component.
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// ----- Remove default styling.----- //
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-/* Importing Bootstrap SCSS file. */
-// @import 'bootstrap/scss/bootstrap';
+* {
+  margin: 0;
 
+  --clr-primary: #{$cfPrimary};
+  --clr-secondary: #{$cfSecondary};
+  --clr-neutral-300: hsla(30, 83%, 49%, 0.55);
+
+  --ff-base: 'Montserrat', sans-serif;
+
+  // --fw-thin: 100;
+  // --fw-extra-light: 200;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  // --fw-semi-bold: 600;
+  --fw-bold: 700;
+  // --fw-extra-bold: 800;
+  // --fw-black: 900;
+
+  --fs-1: 3rem;
+  --fs-2: 2.5rem;
+  --fs-3: 2rem;
+  --fs-4: 1.5rem;
+  --fs-5: 1.125rem;
+  --fs-6: 0.8125rem;
+  --fs-7: 0.75rem;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+// img,
+// picture,
+// video,
+// canvas,
+// svg {
+//     display: block;
+//     max-width: 100%;
+// }
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1;
+}
+
+a {
+  cursor: pointer;
+}
+
+// ----- Scroll Bar. ----- //
+::-webkit-scrollbar {
+  width: 13px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 3px #57647e;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0, 0%, 53%);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0, 0%, 66%);
+}
+
+// ----- Accessibility Text Controls.----- //
+html {
+  // overflow-y: auto;
+  // min-height: 100vh;
+  font-family: 'Archivo', sans-serif;
+
+  &.sm {
+    font-size: $font-size-base * 0.8;
+  }
+
+  &.lg {
+    font-size: $font-size-base * 1.3;
+  }
+}
+
+// ----- Common buttons. ----- //
+.primary-btn-1 {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-bold);
+  color: $white;
+  background-color: var(--clr-primary);
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 1px 0px 26px -2px var(--clr-neutral-300);
+}
+
+.primary-btn-2 {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-bold);
+  color: var(--clr-primary);
+  background-color: $white;
+  border: 1px solid var(--clr-primary);
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+}
+
+.primary-btn-1:hover,
+.primary-btn-2:hover {
+  scale: 0.97;
+}
+
+button:disabled,
+button[disabled] {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  pointer-events: all !important;
+}
+
+@media (max-width: 767px) {
+
+  .navbar-nav .open .dropdown-menu .dropdown-header,
+  .navbar-nav .open .dropdown-menu>li>a {
+    padding: 10px 15px 10px 35px;
+  }
+}
+
+// .cdk-overlay-connected-position-bounding-box,
+// .cdk-overlay-pane,
+// .cdk-global-overlay-wrapper,
+// .cdk-overlay-container {
+//     z-index: 99999 !important;
+// }
+
+// For angular 2 multi select dropdown
+// ::ng-deep .noCrossSymbol .c-angle-down svg,
+// ::ng-deep .noCrossSymbol .c-angle-up svg {
+//     fill: white !important;
+// }
+
+.form-control {
+  height: 30px;
+  padding: 4px 12px;
+}
+
+/*
+::ng-deep .swal-button--Cancel {
+    background-color: #CFCFCF;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
+::ng-deep .swal-button--Submit {
+    background-color: #114551;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    color: #fff;
+}
+*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Firefox */
+// input[type=number] {
+//     -moz-appearance: textfield;
+// }
+
+.btn-check:focus+.btn-outline-primary,
+.btn-outline-primary:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+mat-form-field {
+  width: 100%;
+  // height: 100px;
+}
+
+// ::ng-deep .mat-expansion-panel-header.mat-expanded:focus,
+// ::ng-deep .mat-expansion-panel-header.mat-expanded:hover {
+//     background: linear-gradient(90deg, #193369 0%, #ffffff 100%) !important;
+// }
+
+// ::ng-deep .mat-expansion-panel-content,
+// ::ng-deep .mat-mdc-dialog-container .mdc-dialog__content {
+//     --clr-secondary-500: hsla(220, 62%, 25%, 1);
+//     --clr-primary-500: hsla(30, 83%, 49%, 1);
+//     --clr-neutral-300: hsla(30, 83%, 49%, 0.55);
+//     --clr-neutral-100: hsla(0, 0%, 100%, 1);
+//     --ff-base: "Montserrat", sans-serif;
+//     --fw-regular: 500;
+//     --fw-bold: 700;
+// }
+
+// ----- Utilities ----- //
+.dotted-border-bottom-primary {
+  border-bottom: 2px dotted var(--clr-primary);
+}
+
+.dotted-border-top-primary {
+  border-top: 2px dotted var(--clr-primary);
+}
+
+.dotted-border-secondary {
+  border: 1px dotted $secondary;
+  border-radius: 0.625rem;
+}
+
+.primary-btn-3 {
+  background: rgba(54, 160, 4, 1);
+}
+
+.bttn-return {
+  color: rgba(255, 0, 0, 1);
+  background: none;
+  border: 1px solid rgba(255, 0, 0, 1);
+}
+
+// .btn-orange {
+//   $orange: #e67e15;
+//   border-radius: 8px;
+//   padding-right: 20px;
+//   padding-left: 20px;
+//   background: $orange;
+//   color: #fff;
+//   font-weight: bold;
+//   transition:
+//     background 0.3s ease,
+//     color 0.3s ease;
+//   box-shadow: 1px 11px 28px 2px #e67e1561;
+
+//   &.btn-outline {
+//     background: #fff;
+//     border: 1px solid $orange;
+//     color: $orange;
+//     transition:
+//       background 0.3s ease,
+//       color 0.3s ease,
+//       border 0.3s ease;
+//     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//   }
+
+//   &.btn-text {
+//     color: $orange;
+//     background-color: inherit;
+//     transition:
+//       background 0.3s ease,
+//       color 0.3s ease,
+//       border 0.3s ease;
+//     box-shadow: none;
+//   }
+
+//   &:hover {
+//     background: #cf7113;
+//     border-color: #cf7113;
+//     color: #fff;
+//   }
+// }
+
+// .color-orange {
+//   color: #e67e15;
+// }
+// .color-blue {
+//   color: #00486f;
+// }
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+.material-icons {
+  font-family: 'Material Icons' !important;
+}
+
+.custom-readonly-input {
+  background-color: rgba(211, 211, 211, 0.503) !important;
+  border: 1px solid gray !important;
+  cursor: not-allowed !important;
+}
+
+// ----- Add button group ----- //
+// Select the first button
+.custom-btn-check:first-of-type+.btn {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+// Select the last button
+.custom-btn-check:last-of-type+.btn {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+// To ensure the buttons in between don't have extra borders
+.custom-btn-check:not(:first-of-type):not(:last-of-type)+.btn {
+  border-radius: 0;
+}
+
+// ---- Backgroud blur effect ---- //
+.blur-effect {
+  filter: blur(20px);
+  pointer-events: none;
+  user-select: none;
+}
+
+// Style swal (popup)
+.swal2-popup {
+  font-size: small;
+  font-family: var(--ff-base);
+}
+
+// Custom spinner overlay.
+.custom-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+// Custom font size.
+.custom-font-size-6 {
+  font-size: var(--fs-6);
+}
+
+.custom-font-size-7 {
+  font-size: var(--fs-7);
+}
+
+// Custom text shadow.
+.custom-text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+// light blue background on portal.
+.light-bg {
+  // background-color: #f8f9ff;
+  background-color: #f1f8ff;
+}
+
+// Common search box.
+.input-box-style {
+  border: none;
+  padding: 0.5rem 1rem;
+  background: #f8f9ff;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+  // box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.075);
+  width: 100%;
+  font-weight: 600;
+  // margin-bottom: 0.5rem;
+}
+
+// Grid view.
+.explore-data-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 767px) {
+  .explore-data-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
