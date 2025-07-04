@@ -1,0 +1,41 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+
+* {
+    font-family: var(--ff-base);
+}
+
+.text-10px {
+    font-size: $font-size-base * 0.625;
+}
+
+.text-12px {
+    font-size: $font-size-base * 0.75;
+}
+
+// text sizes
+$text-sizes: (
+    'sm': $font-size-base * 0.75,
+    'rg': $font-size-base,
+    'lg': $font-size-base * 1.25,
+    ) !default;
+
+@each $size, $value in $text-sizes {
+    body.#{$size} {
+        font-size: $value;
+    }
+
+    .text-#{$size} {
+        font-size: $value;
+        width: 1.25rem;
+        height: 1.25rem;
+        line-height: $value;
+        margin-right: $spacer * 0.25;
+        display: inline-flex;
+        vertical-align: middle;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+}

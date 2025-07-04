@@ -7,7 +7,9 @@ import { SponsersPartners } from './sponsers-partners/sponsers-partners';
 
 @Component({
   selector: 'app-home',
-  imports: [Spotlight, SearchBar, DiscoverSection,
+  imports: [
+    // Spotlight, 
+    SearchBar, DiscoverSection,
     // DashboardMapSection,
     SponsersPartners],
   templateUrl: './home.html',

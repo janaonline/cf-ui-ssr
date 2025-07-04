@@ -1,19 +1,10 @@
-<nav
-  #stickyMenu
-  [class.sticky]="isSticky"
-  [class]="{ 'position-relative': !isSticky }"
-  class="bg-white shadow-bottom"
->
+<nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom">
   <div class="container d-flex justify-content-between align-items-center bg-white">
     <!-- Hamburger Menu -->
-    <button
-      class="mobile-nav-ham"
-      aria-controls="primary-navigation"
-      [attr.aria-expanded]="showMobileNav"
-      (click)="showMobileNav = !showMobileNav"
-    >
+    <button class="mobile-nav-ham" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
+      (click)="showMobileNav = !showMobileNav">
       <!-- <i class="fs-4 bi bi-list"></i> -->
-       <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon>
+      <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon>
     </button>
     <!-- <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon> -->
 
@@ -25,109 +16,91 @@
 
     <!-- Nav items -->
     <div class="d-flex flex-grow-1 align-items-center justify-content-end gap-1">
-      <ul
-        id="primary-navigation"
-        class="primary-navigation d-flex gap-3"
-        [class]="showMobileNav ? 'primary-navigation-data-visible' : ''"
-      >
+      <ul id="primary-navigation" class="primary-navigation d-flex gap-3"
+        [class]="showMobileNav ? 'primary-navigation-data-visible' : ''">
         <!-- Cancel Hamburger Menu -->
         @if (showMobileNav) {
-          <button
-            class="mobile-nav-cancel"
-            aria-controls="primary-navigation"
-            [attr.aria-expanded]="showMobileNav"
-            (click)="showMobileNav = !showMobileNav"
-          >
-            <!-- <i class="fs-4 bi bi-x-lg">X</i> -->
-             <mat-icon class="fs-4" aria-hidden="false" aria-label="close icon">close</mat-icon>
-          </button>
+        <button class="mobile-nav-cancel" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
+          (click)="showMobileNav = !showMobileNav">
+          <!-- <i class="fs-4 bi bi-x-lg">X</i> -->
+          <mat-icon class="fs-4" aria-hidden="false" aria-label="close icon">close</mat-icon>
+        </button>
         }
 
         @for (menu of menus; track $index) {
-          @if (menu.child?.length) {
-            <li class="active" [matMenuTriggerFor]="DashboardMenu">
-              <a class="nav-link" routerLinkActive="active">
-                {{ menu.name }}
-                <!-- <i class="bi bi-caret-down-fill"></i> -->
-                <mat-icon class="fs-4" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
-              </a>
-            </li>
-            <mat-menu #DashboardMenu="matMenu">
-              @for (childMenu of menu.child; track childMenu) {
-                <a mat-menu-item [href]="childMenu.href" class="" routerLinkActive="active">
-                  {{ childMenu.name }}
-                </a>
-              }
-            </mat-menu>
-          } @else {
-            <li class="active">
-              @if (menu.link) {
-                <a
-                  class="nav-link"
-                  [class]="menu.class"
-                  [routerLink]="menu.link"
-                  routerLinkActive="active"
-                  [innerHTML]="menu.name"
-                ></a>
-              }
-              @if (menu.href) {
-                <a
-                  class="nav-link"
-                  [class]="menu.class"
-                  [attr.href]="menu.href"
-                  [innerHTML]="menu.name"
-                  [target]="menu.target"
-                  routerLinkActive="active"
-                ></a>
-              }
-            </li>
+        @if (menu.child?.length) {
+        <li class="active" [matMenuTriggerFor]="DashboardMenu">
+          <a class="nav-link d-flex align-items-center" routerLinkActive="active">
+            {{ menu.name }}
+            <!-- <i class="bi bi-caret-down-fill"></i> -->
+            <mat-icon class="fs-4 " aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
+          </a>
+        </li>
+        <mat-menu #DashboardMenu="matMenu">
+          @for (childMenu of menu.child; track childMenu) {
+          <a mat-menu-item [href]="childMenu.href" class="" routerLinkActive="active">
+            {{ childMenu.name }}
+          </a>
           }
+        </mat-menu>
+        } @else {
+        <li class="active">
+          @if (menu.link) {
+          <a class="nav-link" [class]="menu.class" [routerLink]="menu.link" routerLinkActive="active"
+            [innerHTML]="menu.name"></a>
+          }
+          @if (menu.href) {
+          <a class="nav-link" [class]="menu.class" [attr.href]="menu.href" [innerHTML]="menu.name"
+            [target]="menu.target" routerLinkActive="active"></a>
+          }
+        </li>
+        }
         }
       </ul>
 
       <!-- Login/ Logout -->
       <div class="ms-2">
         @if (!isLoggedIn) {
-          <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="loginMenu">
-            Login 
-            <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
-            <!-- <i class="bi bi-caret-down-fill"></i> -->
+        <button class="btn btn-cfPrimary fw-bold  d-flex align-items-center" [matMenuTriggerFor]="loginMenu">
+          Login
+          <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
+          <!-- <i class="bi bi-caret-down-fill"></i> -->
+        </button>
+        <mat-menu #loginMenu="matMenu">
+          <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
+            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon>
+            XV FC Grant
           </button>
-          <mat-menu #loginMenu="matMenu">
-            <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
-              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon>
-              XV FC Grant
-            </button>
-            <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
-              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> XVI FC Data Collection
-            </button>
-            <button mat-menu-item (click)="loginLogout('ranking')">
-              <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> Rankings 2022
-            </button>
-          </mat-menu>
+          <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
+            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> XVI FC Data Collection
+          </button>
+          <button mat-menu-item (click)="loginLogout('ranking')">
+            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> Rankings 2022
+          </button>
+        </mat-menu>
         }
         @if (isLoggedIn) {
-          <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
-            <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
-            <!-- <i class="bi bi-caret-down-fill"></i> -->
-            <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
-          </button>
-          <mat-menu #logoutMenu="matMenu">
-            <div class="text-center my-1 p-1">
-              <!-- <i class="bi bi-person-circle fs-4 text-dark"></i> -->
-              <mat-icon class="fs-4" aria-hidden="false" aria-label="account_circle icon">account_circle</mat-icon>
+        <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
+          <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
+          <!-- <i class="bi bi-caret-down-fill"></i> -->
+          <mat-icon class="fs-5" aria-hidden="false" aria-label="arrow_drop_down icon">arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #logoutMenu="matMenu">
+          <div class="text-center my-1 p-1">
+            <!-- <i class="bi bi-person-circle fs-4 text-dark"></i> -->
+            <mat-icon class="fs-4" aria-hidden="false" aria-label="account_circle icon">account_circle</mat-icon>
+          </div>
+          <div class="text-center my-1 p-1 border-bottom">
+            {{ user?.name }}
+            <div class="text-secondary my-1 p-1 custom-font-size-6">
+              {{ user?.email }}
             </div>
-            <div class="text-center my-1 p-1 border-bottom">
-              {{ user?.name }}
-              <div class="text-secondary my-1 p-1 custom-font-size-6">
-                {{ user?.email }}
-              </div>
-            </div>
+          </div>
 
-            <button mat-menu-item class="text-center" (click)="loginLogout('logout')">
-              Logout
-            </button>
-          </mat-menu>
+          <button mat-menu-item class="text-center" (click)="loginLogout('logout')">
+            Logout
+          </button>
+        </mat-menu>
         }
       </div>
     </div>

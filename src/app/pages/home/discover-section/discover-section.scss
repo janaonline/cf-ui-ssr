@@ -1,0 +1,46 @@
+.discover-data-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+    .discover-data-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1000px) {
+    .discover-data-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    position: relative;
+    min-height: 14rem;
+    overflow: hidden;
+    transition: all 1s ease-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background-color: #fff7eb;
+
+    .card-data {
+        display: none;
+    }
+
+    .hidden-button {
+        display: inline-block;
+    }
+}
+
+.hidden-button {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
