@@ -5,6 +5,9 @@
     "ng": "ng",
     "start": "ng serve --port 4100 --configuration development",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "build:sm": "ng build --configuration production --source-map",
+    "exp:sm": "npx source-map-explorer dist/cf-ui-ssr/browser/*.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs"
