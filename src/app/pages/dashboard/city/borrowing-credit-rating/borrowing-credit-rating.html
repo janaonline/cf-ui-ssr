@@ -1,0 +1,99 @@
+<section class="my-4 container">
+  <app-tab-buttons
+    [buttons]="buttons"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
+  ></app-tab-buttons>
+
+  @if (currentSelectedButtonKey() === 'borrowing') { @if (isBorrowingDisabled) {
+  <app-no-data-found></app-no-data-found>
+  } @else {
+  <p>Below are the details of Municipal Bond Issuances undertaken by the ULB</p>
+  <nav
+    class="d-flex justify-content-end align-items-center gap-2 mt-4 pagination"
+  >
+    <button (click)="prevPage()" [disabled]="currentPage === 0">Prev</button>
+
+    @for (page of paginationRange; track $index) {
+    <button
+      [disabled]="page === '..'"
+      [class.active]="page === currentPage"
+      (click)="page !== '..' && goToPage(+page)"
+    >
+      {{ page }}
+    </button>
+    }
+
+    <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+      Next
+    </button>
+  </nav>
+
+  @for ( source of [ dataSource_0, dataSource_1, dataSource_2, dataSource_3,
+  dataSource_4, dataSource_5, dataSource_6, ]; track $index ) {
+  <h5 class="fw-bold border mt-4 mb-2 bg-table-header p-3">
+    {{ source?.[0]?.label }}
+  </h5>
+  <div class="table-container">
+    <table mat-table [dataSource]="source" class="border">
+      @for (item of displayedColumns; track $index) {
+      <!-- <p>{{ item | json }}</p> -->
+      <ng-container [matColumnDef]="item" [sticky]="$index === 0">
+        <th mat-header-cell *matHeaderCellDef>{{ item }}</th>
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [class]="item === 'header' ? 'bg-table-header fw-bold' : null"
+          class="border"
+        >
+          {{ element[item] || "-" }}
+        </td>
+      </ng-container>
+      }
+      <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+  } } }
+
+  <!-- Credit ratings -->
+  @if (currentSelectedButtonKey() === 'creditRating') { @if
+  (isCreditRatingDisabled) {
+  <app-no-data-found></app-no-data-found>
+  } @else {
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between">
+    <!-- Filter: Years Dropdown -->
+    <form [formGroup]="myForm" class="col-sm-12 col-md-3">
+      <label for="creditRatingYears" class="d-block fw-bold mb-2"
+        >Financial years</label
+      >
+      <select
+        id="creditRatingYears"
+        formControlName="year"
+        class="form-select w-100"
+      >
+        @for (year of creditRatingYears; track year) {
+        <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </form>
+  </div>
+
+  <h4 class="bg-table-header p-2 rounded">Credit Rating</h4>
+  <div class="overflow-x-auto">
+    <table class="border rounded p-2 w-100">
+      <tbody>
+        @for (row of filteredCreditRating; track $index) {
+        <tr>
+          <td class="border p-2">{{ $index + 1 + "." }}</td>
+          <td class="border p-2">{{ row.agency }}</td>
+          <td class="border p-2">{{ row.creditRating }}</td>
+          <td class="border p-2">
+            <a [href]="row.link" target="_blank">View Full Report</a>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  } }
+</section>

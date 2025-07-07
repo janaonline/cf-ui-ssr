@@ -1,31 +1,32 @@
+import { CommonModule } from '@angular/common';
 import { Component, signal, ViewChild } from '@angular/core';
-import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
-import { IULB } from '../../../core/models/ulb';
-import { IState } from '../../../core/models/state/state';
-import { BondIssuances, ExploreSectionResponse, ExploresectionTable } from '../../../core/models/interfaces';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Observable, of, Subject, takeUntil } from 'rxjs';
-import { CreditRatingMap, ICreditRatingData } from '../../../core/models/creditRating/creditRatingResponse';
+import {
+  CreditRatingMap,
+  ICreditRatingData,
+} from '../../../core/models/creditRating/creditRatingResponse';
+import {
+  BondIssuances,
+  ExploreSectionResponse,
+  ExploresectionTable,
+} from '../../../core/models/interfaces';
+import { IState } from '../../../core/models/state/state';
+import { IULB } from '../../../core/models/ulb';
 import { AssetsService } from '../../../core/services/assets/assets.service';
 import { CommonService } from '../../../core/services/common.service';
-import { Router } from '@angular/router';
 import { Map } from '../../../shared/components/map/map';
+import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
+import { CitySearch } from '../../../shared/components/shared-ui/city-search';
 import { GridView } from '../../../shared/components/shared-ui/grid-view';
 import { StateSearch } from '../../../shared/components/shared-ui/state-search';
-import { CitySearch } from '../../../shared/components/shared-ui/city-search';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-map-section',
-  imports: [
-    CommonModule,
-    PreLoader,
-    GridView,
-    StateSearch,
-    CitySearch,
-    Map],
+  imports: [CommonModule, PreLoader, GridView, StateSearch, CitySearch, Map],
   templateUrl: './dashboard-map-section.html',
-  styleUrl: './dashboard-map-section.scss'
+  styleUrl: './dashboard-map-section.scss',
 })
 export class DashboardMapSection {
   @ViewChild('map') mapComponent!: Map;
@@ -92,8 +93,8 @@ export class DashboardMapSection {
   constructor(
     protected _commonService: CommonService,
     private assetService: AssetsService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.fetchCreditRatingsData();
@@ -114,8 +115,10 @@ export class DashboardMapSection {
       .getBondIssuerItemAmount(this.selectedStateIdSignal())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: BondIssuances) => (this.bondIssuances = { ...res, inProgress: false }),
-        error: (error: any) => console.error('Error in fetching bonds data: ', error),
+        next: (res: BondIssuances) =>
+          (this.bondIssuances = { ...res, inProgress: false }),
+        error: (error: any) =>
+          console.error('Error in fetching bonds data: ', error),
         complete: () => (this.bondIssuances['inProgress'] = false),
       });
   }
@@ -131,13 +134,16 @@ export class DashboardMapSection {
           this.creditRating = computedData;
           this.updateRatingSummary();
         },
-        error: (error: any) => console.error('Error fetching credit rating report:', error),
+        error: (error: any) =>
+          console.error('Error fetching credit rating report:', error),
       });
   }
 
   // Compute total, creditRatingAboveBBB_Minus count.
   private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
-    const computedData: CreditRatingMap = { India: { total: 0, creditRatingAboveBBB_Minus: 0 } };
+    const computedData: CreditRatingMap = {
+      India: { total: 0, creditRatingAboveBBB_Minus: 0 },
+    };
 
     for (const data of res) {
       const stateName = data.state;
@@ -162,7 +168,10 @@ export class DashboardMapSection {
   // Update credit ratings summary.
   private updateRatingSummary(): void {
     const selected = this.selectedStateNameSignal() || 'India';
-    const ratingData = this.creditRating[selected] || { total: 0, creditRatingAboveBBB_Minus: 0 };
+    const ratingData = this.creditRating[selected] || {
+      total: 0,
+      creditRatingAboveBBB_Minus: 0,
+    };
 
     this.totalCreditRating = ratingData['total'];
     this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
@@ -208,7 +217,8 @@ export class DashboardMapSection {
             this.lastModifiedDate = res.lastModifiedAt;
             this.isLoading = false;
           },
-          error: (error: Error) => console.error('Error in fetching ulbData: ', error),
+          error: (error: Error) =>
+            console.error('Error in fetching ulbData: ', error),
         });
     }
   }
@@ -217,14 +227,18 @@ export class DashboardMapSection {
   private fetchExploreSectionData(): void {
     this.isLoading = true;
     this._commonService
-      .getExploreSectionData(this.selectedStateCodeSignal(), this.selectedStateIdSignal())
+      .getExploreSectionData(
+        this.selectedStateCodeSignal(),
+        this.selectedStateIdSignal()
+      )
       .subscribe({
         next: (res: ExploreSectionResponse) => {
           this.exploreData = [];
           this.exploreData = res.gridDetails;
           this.lastModifiedDate = res.lastModifiedAt;
         },
-        error: (error: any) => console.error('Error in loading explore section data: ', error),
+        error: (error: any) =>
+          console.error('Error in loading explore section data: ', error),
         complete: () => {
           this.exploreData = [
             ...this.exploreData,
@@ -252,7 +266,9 @@ export class DashboardMapSection {
           ];
 
           this.exploreData.sort((a, b) => a.sequence - b.sequence);
-          this._commonService.setDataForVisualizationCount(this.exploreData[0].value?.toString());
+          this._commonService.setDataForVisualizationCount(
+            this.exploreData[0].value?.toString()
+          );
           this.isLoading = false;
           this.showMap = true;
         },
@@ -268,7 +284,11 @@ export class DashboardMapSection {
   };
 
   // Helper: Update signal values with latest state data.
-  private setStateData(code: string = '', _id: string = '', name: string = ''): void {
+  private setStateData(
+    code: string = '',
+    _id: string = '',
+    name: string = ''
+  ): void {
     this.selectedStateCodeSignal.set(code);
     this.selectedStateIdSignal.set(_id);
     this.selectedStateNameSignal.set(name);
@@ -297,13 +317,16 @@ export class DashboardMapSection {
     // console.log('state clicked on map:', stateCode);
     const stateData = this.stateList.find((ele) => ele.code === stateCode);
 
-    if (stateData) this.setStateData(stateData.code, stateData._id, stateData.name);
+    if (stateData)
+      this.setStateData(stateData.code, stateData._id, stateData.name);
   }
 
   // Update data when ulb is changed from map.
   public selectedCityIdChange(ulbId: string): void {
     // console.log('Ulb clicked on map: ', ulbId);
-    const ulbData = this.cityData?.find((e: { _id: string }) => e?._id === ulbId);
+    const ulbData = this.cityData?.find(
+      (e: { _id: string }) => e?._id === ulbId
+    );
     if (ulbData) this.setUlbData(ulbData._id, ulbData.name);
   }
 
@@ -317,8 +340,13 @@ export class DashboardMapSection {
   // View state/ city dashboard.
   public viewDashboard(): void {
     if (this.selectedCityIdSignal())
-      this.router.navigateByUrl(`/dashboard/city/${this.selectedCityIdSignal()}`);
-    else this.router.navigateByUrl(`/dashboard/state/${this.selectedStateIdSignal()}`);
+      this.router.navigateByUrl(
+        `/dashboard/city/${this.selectedCityIdSignal()}`
+      );
+    else
+      this.router.navigateByUrl(
+        `/dashboard/state/${this.selectedStateIdSignal()}`
+      );
   }
 
   // Unsubscribe.

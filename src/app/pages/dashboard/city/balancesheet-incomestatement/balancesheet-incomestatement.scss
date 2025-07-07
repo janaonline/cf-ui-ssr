@@ -1,0 +1,32 @@
+tr {
+    font-family: var(--ff-base);
+    font-weight: var(--fw-medium);
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+// input[type="radio"] {
+//     accent-color: var(--clr-secondary);
+// }
+
+.table-container {
+    max-height: 95vh;
+    overflow: auto
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.mat-column-lineItem {
+    min-width: 240px !important;
+}
+
+.min-width {
+    min-width: 220px;
+}
