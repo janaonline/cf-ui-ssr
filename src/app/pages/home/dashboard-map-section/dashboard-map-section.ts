@@ -16,11 +16,11 @@ import { IState } from '../../../core/models/state/state';
 import { IULB } from '../../../core/models/ulb';
 import { AssetsService } from '../../../core/services/assets/assets.service';
 import { CommonService } from '../../../core/services/common.service';
+import { CitySearch } from '../../../shared/components/city-search/city-search';
+import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { Map } from '../../../shared/components/map/map';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
-import { CitySearch } from '../../../shared/components/shared-ui/city-search';
-import { GridView } from '../../../shared/components/shared-ui/grid-view';
-import { StateSearch } from '../../../shared/components/shared-ui/state-search';
+import { StateSearch } from '../../../shared/components/state-search/state-search';
 
 @Component({
   selector: 'app-dashboard-map-section',

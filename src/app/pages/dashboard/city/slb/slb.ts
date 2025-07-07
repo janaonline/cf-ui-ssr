@@ -16,9 +16,9 @@ import {
   Charts,
 } from '../../../../shared/components/charts/charts';
 import { gaugeChartOptions } from '../../../../shared/components/charts/constants';
+import { CitySearch } from '../../../../shared/components/city-search/city-search';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
-import { CitySearch } from '../../../../shared/components/shared-ui/city-search';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 

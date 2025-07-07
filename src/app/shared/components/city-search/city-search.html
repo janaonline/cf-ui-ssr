@@ -1,0 +1,23 @@
+<form [formGroup]="myForm" class="d-flex gap-2">
+  <input
+    type="text"
+    class="input-box-style"
+    placeholder="Search for ULBs"
+    matInput
+    formControlName="ulbName"
+    [matAutocomplete]="auto"
+    id="ulbName"
+  />
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-option
+      *ngFor="let option of filteredUlbs()"
+      [value]="option.name"
+      (onSelectionChange)="onCitySelection(option)"
+    >
+      <small>{{ option.name }}</small>
+    </mat-option>
+    @if (noDataFound()) {
+    <mat-option class="text-muted" disabled>No results found.</mat-option>
+    }
+  </mat-autocomplete>
+</form>
