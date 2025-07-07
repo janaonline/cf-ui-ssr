@@ -82,7 +82,7 @@
   <table
     mat-table
     [dataSource]="filteredDataSource"
-    class="mat-elevation-z8 border border-bg-light rounded"
+    class="mat-elevation-z8 border border-bg-light"
   >
     @for (item of headers; track $index) {
     <ng-container [matColumnDef]="item.key" [sticky]="$index === 0">
@@ -97,7 +97,7 @@
         mat-cell
         *matCellDef="let element"
         [class]="item.class + ' ' + element.class"
-        [ngClass]="element.isHeader ? 'bg-light' : ''"
+        [class.bg-light]="element.isHeader"
       >
         <!-- {{ item.number }} -->
         <!-- {{ element | json }} -->
