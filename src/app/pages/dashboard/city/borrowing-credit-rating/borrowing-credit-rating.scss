@@ -16,6 +16,19 @@ tr:hover {
     min-width: 170px !important;
 }
 
+.mat-mdc-table {
+    background-color: white;
+}
+
+table,
+tr,
+td,
+th {
+    border-top: 1px solid #d3d3d3;
+    border-bottom: 1px solid lightgrey;
+}
+
+
 // ----- Pagination -----
 .pagination button {
     padding: 6px 12px;
