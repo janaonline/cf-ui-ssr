@@ -4,9 +4,9 @@ import { Home } from './pages/home/home';
 export const routes: Routes = [
     {
         path: '',
-        // pathMatch: 'full',
-        // redirectTo: 'home',
-        component: Home,
+        pathMatch: 'full',
+        redirectTo: 'home',
+        // component: Home,
     },
     {
         path: 'home',
@@ -22,8 +22,8 @@ export const routes: Routes = [
             { path: 'state/:stateId', loadComponent: () => import('./pages/dashboard/state/state').then(m => m.State) },
         ]
     },
-    {
-        path: 'city/:cityId',
-        loadComponent: () => import('./pages/dashboard/city/city').then(m => m.City),
-    }
+    // {
+    //     path: 'city/:cityId',
+    //     loadComponent: () => import('./pages/dashboard/city/city').then(m => m.City),
+    // }
 ];

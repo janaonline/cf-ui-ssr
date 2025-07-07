@@ -17,7 +17,7 @@ import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { UserUtility } from '../../../core/util/user/user';
 import { MapConfig, ResettableMap, StateGeoJson, ULBDataPoint } from './interfaces';
 import { MapService } from './map.service';
-import { allUlbsData } from '../../../core/constants/ulbsListLocalStorage';
+// import { allUlbsData } from '../../../core/constants/ulbsListLocalStorage';
 
 @Component({
   selector: 'app-map',
@@ -203,7 +203,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   }
 
   private loadCityCoordinates(): void {
-    this.ulbsList = this.stateCode ? allUlbsData[this.stateCode]?.ulbs || [] : [];
+    // this.ulbsList = this.stateCode ? allUlbsData[this.stateCode]?.ulbs || [] : [];
+    this.ulbsList = [];
   }
 
   public resetMap(): void {

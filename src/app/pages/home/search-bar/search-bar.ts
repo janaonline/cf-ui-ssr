@@ -5,11 +5,17 @@ import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
 import { ResourcesDashboardService } from '../../../core/services/resources-dashboard.service';
 import { Router } from '@angular/router';
-import { MaterialModule } from '../../../material.module';
+// import { MaterialModule } from '../../../material.module';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [MaterialModule, CountUpDirective],
+  imports: [
+    // MaterialModule,
+    CommonModule, FormsModule,
+    ReactiveFormsModule, MatAutocompleteModule,
+    CountUpDirective],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.scss'
 })

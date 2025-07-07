@@ -9,7 +9,8 @@ import { SponsersPartners } from './sponsers-partners/sponsers-partners';
   selector: 'app-home',
   imports: [
     // Spotlight, 
-    SearchBar, DiscoverSection,
+    SearchBar,
+    DiscoverSection,
     DashboardMapSection,
     SponsersPartners],
   templateUrl: './home.html',
