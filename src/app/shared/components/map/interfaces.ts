@@ -41,3 +41,13 @@ export interface GeoJsonFeature {
 export interface ResettableMap {
   resetMap: () => void;
 }
+
+export interface ULBStateData {
+  state: string;
+  ulbs: ULBDataPoint[];
+  _id: string;
+}
+
+export interface LeafletHTMLElement extends HTMLElement {
+  _leaflet_id?: number;
+}
