@@ -1,5 +1,17 @@
-import { CommonModule } from '@angular/common';
-import { Component, signal, ViewChild } from '@angular/core';
+import {
+  CommonModule,
+  isPlatformBrowser,
+  isPlatformServer,
+} from '@angular/common';
+import {
+  Component,
+  Inject,
+  makeStateKey,
+  PLATFORM_ID,
+  signal,
+  TransferState,
+  ViewChild,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, of, Subject, takeUntil } from 'rxjs';
@@ -22,6 +34,12 @@ import { Map } from '../../../shared/components/map/map';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { StateSearch } from '../../../shared/components/state-search/state-search';
 
+const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
+const STATE_LIST_KEY = makeStateKey<any>('stateList');
+const BONDS_KEY = makeStateKey<any>('fetchBondIssuances');
+const ULB_DATA_KEY = makeStateKey<any>('fetchUlbData');
+const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
+
 @Component({
   selector: 'app-dashboard-map-section',
   imports: [CommonModule, PreLoader, GridView, StateSearch, CitySearch, Map],
@@ -33,14 +51,16 @@ export class DashboardMapSection {
 
   myForm!: FormGroup;
   noDataFound: boolean = true;
-  isLoading: boolean = true;
+  // isLoading: boolean = true;
+  isLoading = signal<boolean>(true);
   showMap: boolean = false;
 
   selectedStateCodeSignal = signal<string>('');
   selectedStateIdSignal = signal<string>('');
   selectedStateNameSignal = signal<string>('');
 
-  stateList!: IState[];
+  // stateList!: IState[];
+  stateList = signal<IState[]>([]);
   filteredStates: Observable<IState[]> = of([]);
 
   selectedCityNameSignal = signal<string>('');
@@ -48,17 +68,18 @@ export class DashboardMapSection {
   cityData: any = []; // TODO: Avoid API call to get this data.
   filteredUlbs!: Observable<any[]>;
 
-  creditRating: CreditRatingMap = {};
+  // creditRating: CreditRatingMap = {};
+  creditRating = signal<CreditRatingMap>({});
   totalCreditRating: number = 0;
   cr_above_BBB_minus: number = 0;
 
   lastModifiedDate: string | null = '';
 
-  bondIssuances: BondIssuances = {
+  bondIssuances = signal<BondIssuances>({
     bondIssueAmount: 0,
     totalMunicipalBonds: 0,
     inProgress: true,
-  };
+  });
   private readonly ELIGIBLE_RATINGS = [
     'A',
     'A+',
@@ -77,7 +98,11 @@ export class DashboardMapSection {
     startYear: '2015-16',
     endYear: '2022-23',
   };
-  exploreData!: ExploresectionTable[];
+  // exploreData!: ExploresectionTable[];
+  exploreData = signal<{
+    gridDetails: ExploresectionTable[];
+    lastModifiedAt: string | null;
+  }>({ gridDetails: [], lastModifiedAt: null });
 
   // exploreData = [
   //   { label: 'ULBs with atleast 1 Year of Financial Data', value: '4,309', info: '' },
@@ -93,7 +118,9 @@ export class DashboardMapSection {
   constructor(
     protected _commonService: CommonService,
     private assetService: AssetsService,
-    private router: Router
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private transferState: TransferState,
   ) {}
 
   ngOnInit(): void {
@@ -111,32 +138,71 @@ export class DashboardMapSection {
   // ----- Get data -----
   // Get municipal bonds data.
   private fetchBondIssuances(): void {
-    this._commonService
-      .getBondIssuerItemAmount(this.selectedStateIdSignal())
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: BondIssuances) =>
-          (this.bondIssuances = { ...res, inProgress: false }),
-        error: (error: any) =>
-          console.error('Error in fetching bonds data: ', error),
-        complete: () => (this.bondIssuances['inProgress'] = false),
-      });
+    this.isLoading.set(true);
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(BONDS_KEY)
+    ) {
+      const data = this.transferState.get(BONDS_KEY, []);
+      this.bondIssuances.set(data);
+      this.transferState.remove(BONDS_KEY);
+
+      this.isLoading.set(false);
+    } else {
+      this._commonService
+        .getBondIssuerItemAmount(this.selectedStateIdSignal())
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res: BondIssuances) => {
+            const data = { ...res, inProgress: false };
+            this.bondIssuances.set(data);
+            this.isLoading.set(false);
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(BONDS_KEY, data);
+            }
+          },
+          error: (error: any) =>
+            console.error('Error in fetching bonds data: ', error),
+        });
+    }
   }
 
   // Get credit rating data.
   private fetchCreditRatingsData(): void {
-    this.assetService
-      .fetchCreditRatingReport()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: ICreditRatingData[]) => {
-          const computedData = this.computeRatings(res);
-          this.creditRating = computedData;
-          this.updateRatingSummary();
-        },
-        error: (error: any) =>
-          console.error('Error fetching credit rating report:', error),
-      });
+    this.isLoading.set(true);
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(CREDIT_RATINGS_KEY)
+    ) {
+      const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
+      this.creditRating.set(data);
+      this.transferState.remove(CREDIT_RATINGS_KEY);
+      this.isLoading.set(false);
+    } else {
+      this.assetService
+        .fetchCreditRatingReport()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res: ICreditRatingData[]) => {
+            const computedData = this.computeRatings(res);
+            this.creditRating.set(computedData);
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(CREDIT_RATINGS_KEY, computedData);
+            }
+
+            this.isLoading.set(false);
+          },
+          error: (error: any) => {
+            console.error('Error fetching credit rating report:', error);
+            this.isLoading.set(false);
+          },
+          complete: () => this.updateRatingSummary(),
+        });
+    }
   }
 
   // Compute total, creditRatingAboveBBB_Minus count.
@@ -168,7 +234,7 @@ export class DashboardMapSection {
   // Update credit ratings summary.
   private updateRatingSummary(): void {
     const selected = this.selectedStateNameSignal() || 'India';
-    const ratingData = this.creditRating[selected] || {
+    const ratingData = this.creditRating()[selected] || {
       total: 0,
       creditRatingAboveBBB_Minus: 0,
     };
@@ -179,12 +245,27 @@ export class DashboardMapSection {
 
   // Get states list.
   private fetchStateList() {
-    this._commonService
-      .fetchStateList()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: IState[]) => (this.stateList = res),
-      });
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(STATE_LIST_KEY)
+    ) {
+      const data = this.transferState.get(STATE_LIST_KEY, []);
+      this.stateList.set(data);
+      this.transferState.remove(STATE_LIST_KEY);
+    } else {
+      this._commonService
+        .fetchStateList()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res: IState[]) => {
+            this.stateList.set(res);
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(STATE_LIST_KEY, res);
+            }
+          },
+        });
+    }
   }
 
   // Get all the ulbs for selected state.
@@ -205,74 +286,107 @@ export class DashboardMapSection {
 
   // Explore section data - ULB.
   private fetchUlbData(): void {
-    if (this.selectedCityIdSignal()) {
-      this.isLoading = true;
-      this._commonService
-        .getCityData(this.selectedCityIdSignal())
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: ExploreSectionResponse) => {
-            this.exploreData = [];
-            this.exploreData = res.gridDetails;
-            this.lastModifiedDate = res.lastModifiedAt;
-            this.isLoading = false;
-          },
-          error: (error: Error) =>
-            console.error('Error in fetching ulbData: ', error),
-        });
+    this.isLoading.set(true);
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(ULB_DATA_KEY)
+    ) {
+      this.exploreData.set({ gridDetails: [], lastModifiedAt: null });
+      const data = this.transferState.get(ULB_DATA_KEY, []);
+      this.exploreData.set(data);
+      this.transferState.remove(ULB_DATA_KEY);
+
+      this.isLoading.set(false);
+    } else {
+      if (this.selectedCityIdSignal()) {
+        this.isLoading.set(true);
+        this._commonService
+          .getCityData(this.selectedCityIdSignal())
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (res: ExploreSectionResponse) => {
+              this.exploreData.set(res);
+              this.isLoading.set(false);
+
+              if (isPlatformServer(this.platformId)) {
+                this.transferState.set(ULB_DATA_KEY, res);
+              }
+            },
+            error: (error: Error) =>
+              console.error('Error in fetching ulbData: ', error),
+          });
+      }
     }
   }
 
   // Explore section data - State + National.
   private fetchExploreSectionData(): void {
-    this.isLoading = true;
-    this._commonService
-      .getExploreSectionData(
-        this.selectedStateCodeSignal(),
-        this.selectedStateIdSignal()
-      )
-      .subscribe({
-        next: (res: ExploreSectionResponse) => {
-          this.exploreData = [];
-          this.exploreData = res.gridDetails;
-          this.lastModifiedDate = res.lastModifiedAt;
-        },
-        error: (error: any) =>
-          console.error('Error in loading explore section data: ', error),
-        complete: () => {
-          this.exploreData = [
-            ...this.exploreData,
-            {
-              sequence: 3,
-              label: 'ULBs Credit Rating Reports',
-              value: `${this.totalCreditRating}`,
-              info: '',
-              src: '',
-            },
-            {
-              sequence: 4,
-              label: 'ULBs With Investment Grade Rating',
-              value: `${this.cr_above_BBB_minus}`,
-              info: '',
-              src: '',
-            },
-            {
-              sequence: 6,
-              label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances.bondIssueAmount} Cr With Details`,
-              value: `${this.bondIssuances.totalMunicipalBonds}`,
-              info: '',
-              src: '',
-            },
-          ];
+    this.isLoading.set(true);
 
-          this.exploreData.sort((a, b) => a.sequence - b.sequence);
-          this._commonService.setDataForVisualizationCount(
-            this.exploreData[0].value?.toString()
-          );
-          this.isLoading = false;
-          this.showMap = true;
-        },
-      });
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(GRID_DATA_KEY)
+    ) {
+      this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
+      this.transferState.remove(GRID_DATA_KEY);
+      this.isLoading.set(false);
+      this.showMap = true;
+    } else {
+      this._commonService
+        .getExploreSectionData(
+          this.selectedStateCodeSignal(),
+          this.selectedStateIdSignal(),
+        )
+        .subscribe({
+          next: (res: ExploreSectionResponse) => {
+            this.exploreData.set(res);
+          },
+          error: (error: any) =>
+            console.error('Error in loading explore section data: ', error),
+          complete: () => {
+            this.exploreData().gridDetails = [
+              ...this.exploreData().gridDetails,
+              {
+                sequence: 3,
+                label: 'ULBs Credit Rating Reports',
+                value: `${this.totalCreditRating}`,
+                info: '',
+                src: '',
+              },
+              {
+                sequence: 4,
+                label: 'ULBs With Investment Grade Rating',
+                value: `${this.cr_above_BBB_minus}`,
+                info: '',
+                src: '',
+              },
+              {
+                sequence: 6,
+                label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount} Cr With Details`,
+                value: `${this.bondIssuances().totalMunicipalBonds}`,
+                info: '',
+                src: '',
+              },
+            ];
+
+            this.exploreData().gridDetails.sort(
+              (a, b) => a.sequence - b.sequence,
+            );
+
+            this._commonService.setDataForVisualizationCount(
+              this.exploreData().gridDetails[0].value?.toString(),
+            );
+
+            this.isLoading.set(false);
+            this.showMap = true;
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(GRID_DATA_KEY, this.exploreData());
+            }
+          },
+        });
+    }
   }
 
   // ----- Search section -----
@@ -287,7 +401,7 @@ export class DashboardMapSection {
   private setStateData(
     code: string = '',
     _id: string = '',
-    name: string = ''
+    name: string = '',
   ): void {
     this.selectedStateCodeSignal.set(code);
     this.selectedStateIdSignal.set(_id);
@@ -315,7 +429,7 @@ export class DashboardMapSection {
   // Update data when state is changed from map.
   public selectedStateCodeChange(stateCode: string) {
     // console.log('state clicked on map:', stateCode);
-    const stateData = this.stateList.find((ele) => ele.code === stateCode);
+    const stateData = this.stateList().find((ele) => ele.code === stateCode);
 
     if (stateData)
       this.setStateData(stateData.code, stateData._id, stateData.name);
@@ -325,7 +439,7 @@ export class DashboardMapSection {
   public selectedCityIdChange(ulbId: string): void {
     // console.log('Ulb clicked on map: ', ulbId);
     const ulbData = this.cityData?.find(
-      (e: { _id: string }) => e?._id === ulbId
+      (e: { _id: string }) => e?._id === ulbId,
     );
     if (ulbData) this.setUlbData(ulbData._id, ulbData.name);
   }
@@ -341,12 +455,16 @@ export class DashboardMapSection {
   public viewDashboard(): void {
     if (this.selectedCityIdSignal())
       this.router.navigateByUrl(
-        `/dashboard/city/${this.selectedCityIdSignal()}`
+        `/dashboard/city/${this.selectedCityIdSignal()}`,
       );
     else
       this.router.navigateByUrl(
-        `/dashboard/state/${this.selectedStateIdSignal()}`
+        `/dashboard/state/${this.selectedStateIdSignal()}`,
       );
+  }
+
+  checkIfBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
   }
 
   // Unsubscribe.

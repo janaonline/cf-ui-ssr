@@ -1,23 +1,46 @@
-import { Component } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import {
+  isPlatformBrowser,
+  isPlatformServer,
+  TitleCasePipe,
+} from '@angular/common';
+import {
+  Component,
+  Inject,
+  makeStateKey,
+  PLATFORM_ID,
+  signal,
+  TransferState,
+} from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { Router } from '@angular/router';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
 import { ResourcesDashboardService } from '../../../core/services/resources-dashboard.service';
-import { Router } from '@angular/router';
-// import { MaterialModule } from '../../../material.module';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { CommonModule } from '@angular/common';
+
+const ULB_COUNT_KEY = makeStateKey<number>('ulbCount');
 
 @Component({
+  standalone: true,
   selector: 'app-search-bar',
   imports: [
     // MaterialModule,
-    CommonModule, FormsModule,
-    ReactiveFormsModule, MatAutocompleteModule,
-    CountUpDirective],
+    TitleCasePipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    CountUpDirective,
+  ],
   templateUrl: './search-bar.html',
-  styleUrl: './search-bar.scss'
+  styleUrl: './search-bar.scss',
 })
 export class SearchBar {
   globalFormControl = new FormControl();
@@ -27,7 +50,8 @@ export class SearchBar {
   filteredOptions: any = [];
   postBody: any;
   stopNavigation: any;
-  coveredUlbCount: number = 0;
+  readonly DEFAULT_VALUE = 4000;
+  coveredUlbCount = signal<number>(this.DEFAULT_VALUE);
 
   recentSearchArray = [
     {
@@ -66,6 +90,8 @@ export class SearchBar {
     protected _commonService: CommonService,
     private router: Router,
     public resourceDashboard: ResourcesDashboardService,
+    @Inject(PLATFORM_ID) private platFormId: Object,
+    private transferState: TransferState,
   ) {
     // this.resourceDashboard.getPdfData(this.pdfInput).subscribe((res: any) => {
     //   const response = res?.data.map((elem: any) => {
@@ -83,9 +109,35 @@ export class SearchBar {
   ngOnInit() {
     // this.loadRecentSearchValue();
     this.globaSearch();
-    this._commonService.dataForVisualizationCount.subscribe((res) => {
-      if (!this.coveredUlbCount) this.coveredUlbCount = res;
-    });
+    this.getCoverULBCount();
+  }
+
+  getCoverULBCount(): void {
+    // --- TransferState check for client-side hydration ---
+    if (
+      isPlatformBrowser(this.platFormId) &&
+      this.transferState.hasKey(ULB_COUNT_KEY)
+    ) {
+      // Retrieve and set data from transfer state.
+      this.coveredUlbCount.set(this.transferState.get(ULB_COUNT_KEY, 0));
+
+      // Remove keys to avoid leaks.
+      this.transferState.remove(ULB_COUNT_KEY);
+
+      return;
+    }
+
+    // Get the number.
+    this._commonService.dataForVisualizationCount
+      .pipe(take(1))
+      .subscribe((res) => {
+        if (!this.coveredUlbCount()) this.coveredUlbCount.set(res);
+
+        // Store in transfer state - server
+        if (isPlatformServer(this.platFormId)) {
+          this.transferState.set(ULB_COUNT_KEY, this.coveredUlbCount());
+        }
+      });
   }
 
   searchKey: string = '';
@@ -110,42 +162,47 @@ export class SearchBar {
       .subscribe((res: any) => {
         console.log('global search data', res.data);
         this.filteredOptions = res.data || [];
-        this.noDataFound = this.filteredOptions.length === 0 && this.searchKey.length !== 0;
+        this.noDataFound =
+          this.filteredOptions.length === 0 && this.searchKey.length !== 0;
       });
   }
 
-  loadRecentSearchValue() {
-    this._commonService.getRecentSearchValue().subscribe(
-      (res: any) => {
-        //  console.log('recent search value', res);
+  // loadRecentSearchValue() {
+  //   this._commonService.getRecentSearchValue().subscribe(
+  //     (res: any) => {
+  //  console.log('recent search value', res);
 
-        //  for(let i=0; i<3; i++){
-        //    let obj = {
-        //      _id: res?.data[i]?._id,
-        //      name: res?.data[i]?.name,
-        //      type: 'ulb'
-        //    }
-        //    this.recentSearchArray[i] = obj ;
+  //  for(let i=0; i<3; i++){
+  //    let obj = {
+  //      _id: res?.data[i]?._id,
+  //      name: res?.data[i]?.name,
+  //      type: 'ulb'
+  //    }
+  //    this.recentSearchArray[i] = obj ;
 
-        //  }
-        this.recentSearchArray = res?.data;
-        // console.log('ser array', this.recentSearchArray)
-      },
-      (error: any) => {
-        //   console.log('recent search error', error)
-      },
-    );
-  }
+  //  }
+  // this.recentSearchArray = res?.data;
+  // console.log('ser array', this.recentSearchArray)
+  // },
+  // (error: any) => {
+  //   console.log('recent search error', error)
+  //     },
+  //   );
+  // }
+
   globalSearchClick() {
     //  console.log('filterOptions', this.filteredOptions)
     //  console.log('form control', this.globalFormControl.value)
+
     const searchArray: any = this.filteredOptions;
     const searchValue = searchArray.find(
-      (e: any) => e?.name.toLowerCase() == this.globalFormControl?.value.toLowerCase(),
+      (e: any) =>
+        e?.name.toLowerCase() == this.globalFormControl?.value.toLowerCase(),
     );
     //  console.log(searchValue);
+    if (!searchValue) return;
 
-    if (!searchValue || searchValue?.type == 'keyWord') {
+    if (searchValue?.type == 'keyWord') {
       this._commonService.updateSearchItem(this.globalFormControl.value);
       const option = {
         type: 'searchKeyword',
@@ -200,7 +257,9 @@ export class SearchBar {
     }
 
     if (option.type == 'searchKeyword') {
-      this.router.navigateByUrl(`/resources-dashboard/learning-center/toolkits`);
+      this.router.navigateByUrl(
+        `/resources-dashboard/learning-center/toolkits`,
+      );
     }
   }
 
@@ -236,7 +295,9 @@ export class SearchBar {
       this._commonService.getStateWiseFYs(paramContent).subscribe(
         (res: any) => {
           if (res && res.success) {
-            resolve(res['data'] && res['data']['FYs'] ? res['data']['FYs'] : []);
+            resolve(
+              res['data'] && res['data']['FYs'] ? res['data']['FYs'] : [],
+            );
           }
         },
         (err: { message: string }) => {
@@ -250,7 +311,9 @@ export class SearchBar {
       const yearList = value && value.length ? value[0] : [];
       this.stopNavigation = yearList;
       sessionStorage.setItem('financialYearList', JSON.stringify(yearList));
-      this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`);
+      this.router.navigateByUrl(
+        `/dashboard/state?stateId=${searchStateId._id}`,
+      );
       // if(searchStateId?.type == 'state'){
       //   this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`)
       // }

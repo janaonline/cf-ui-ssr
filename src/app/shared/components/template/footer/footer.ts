@@ -12,7 +12,7 @@ import { filter, Subject, takeUntil } from 'rxjs';
 import { CommonService } from '../../../../core/services/common.service';
 
 // --- TransferState Keys ---
-const VISITOR_KEY = makeStateKey<any>('visitorKey');
+const VISITOR_KEY = makeStateKey<number>('visitorKey');
 
 @Component({
   selector: 'app-footer',
@@ -110,6 +110,12 @@ export class Footer {
         error: (error) => {
           console.error('Failed to fetch visitor count', error);
           this.isLoading.set(false);
+        },
+        complete: () => {
+          // --- Store in TransferState on Server ---
+          if (isPlatformServer(this.platformId)) {
+            this.transferState.set(VISITOR_KEY, this.totalUsersVisit());
+          }
         },
       });
   }
