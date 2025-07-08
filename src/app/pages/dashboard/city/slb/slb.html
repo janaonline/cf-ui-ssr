@@ -1,0 +1,106 @@
+<!-- {{ currentSelectedButtonKey() }} {{ compareUlbName() }} -->
+
+<section class="my-4 container">
+  @if (this.years().length === 0) {
+  <app-no-data-found></app-no-data-found>
+  } @else {
+  <!-- Buttons -->
+  <app-tab-buttons
+    [buttons]="buttons"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
+  ></app-tab-buttons>
+
+  <div
+    class="border rounded bg-light p-4 my-4 row justify-content-between align-items-center"
+  >
+    <p class="col-sm-12 col-md-8">
+      This dashboard aims to measure performance of 28 service level indicators
+      across 4 key themes against service level benchmarks as prescribed by
+      MoHUA. Click on compare ULB's performance with one other comparable ULB.
+    </p>
+
+    <!-- City search -->
+    <div class="col-sm-12 col-md-2">
+      <label for="cityName" class="d-block fw-bold mb-2">
+        Compare by
+        <i
+          class="bi bi-arrow-clockwise"
+          tabindex="0"
+          role="button"
+          aria-label="Reset search"
+          (click)="resetSearch()"
+          (keyup.enter)="resetSearch()"
+        ></i>
+      </label>
+      <app-city-search
+        id="cityName"
+        [selectCity]="onUlbSelected"
+        [cityName]="compareUlbName()"
+      ></app-city-search>
+    </div>
+
+    <!-- Reset search -->
+    <!-- <mat-icon class="text-success">refresh</mat-icon> -->
+
+    <!-- Filter: Years Dropdown -->
+    <form [formGroup]="myForm" class="col-sm-12 col-md-2">
+      <label for="slbYears" class="d-block fw-bold mb-2">Financial years</label>
+      <select
+        id="slbYears"
+        formControlName="year"
+        class="form-select w-100"
+        style="padding-block: 0.6rem"
+      >
+        @for (year of years(); track year) {
+        <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </form>
+  </div>
+
+  @if (isLoading) {
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  } @else {
+  <!-- Chart legend -->
+  <div class="d-flex flex-wrap mt-3 py-1 gap-2">
+    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
+      <mat-icon [ngStyle]="{ color: primaryColor }">brightness_1</mat-icon>
+      {{ this.isCompareUlb ? this.compareUlbObj.name : "Benchmark" }}
+    </div>
+    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
+      <mat-icon [ngStyle]="{ color: secondaryColor }">brightness_1</mat-icon>
+      National avg
+    </div>
+    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
+      <mat-icon [ngStyle]="{ color: accentColor }">brightness_1</mat-icon>
+      {{ ulbName }}
+    </div>
+    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
+      <mat-icon class="text-success">thumb_up_alt</mat-icon>
+      ULB performance is better than National avg
+    </div>
+  </div>
+  <!-- Charts -->
+  <div class="slbs-container">
+    @for (item of chartData; track $index) {
+    <div class="chart-wrapper bg-light rounded border">
+      <div class="chart-container">
+        <app-charts [chartConfig]="item"></app-charts>
+      </div>
+      <div class="chart-title">
+        <p class="m-0 p-0">
+          {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+        </p>
+        <p class="m-0 p-0 custom-font-size-7 text-center">
+          {{ item.additionalInfo?.indicatorName }}
+        </p>
+        <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon>
+      </div>
+    </div>
+    }
+  </div>
+  } }
+</section>

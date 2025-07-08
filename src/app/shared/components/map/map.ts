@@ -15,7 +15,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as L from 'leaflet';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { UserUtility } from '../../../core/util/user/user';
-import { MapConfig, ResettableMap, StateGeoJson, ULBDataPoint } from './interfaces';
+import {
+  MapConfig,
+  ResettableMap,
+  StateGeoJson,
+  ULBDataPoint,
+} from './interfaces';
 import { MapService } from './map.service';
 // import { allUlbsData } from '../../../core/constants/ulbsListLocalStorage';
 
@@ -23,39 +28,8 @@ import { MapService } from './map.service';
   selector: 'app-map',
   imports: [MatProgressSpinnerModule],
   providers: [UserUtility],
-  template: `
-    <!--
-          <div class="d-flex"><div class="flex-grow-1 position-relative" style="min-height: 500px;"><div id="map-container" [class.state-highlight]="stateCode"></div></div></div>
-          -->
-    <div id="map-container" [class.state-highlight]="stateCode"></div>
-    <!-- Loader Overlay -->@if (isMapLoading) {
-    <div class="custom-spinner-overlay position-absolute">
-    	<mat-spinner></mat-spinner>
-    </div>}`,
-  styles: [
-    `
-    * {
-        font-family: var(--ff-base);
-    }`,
-    `
-    #map-container {
-        width: 100%;
-        height: 100%;
-        background-image: url('/assets/images/maps/layer1.png') !important;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-color: transparent !important;
-    }`,
-    `
-    ::ng-deep .state-highlight path.leaflet-interactive {
-        filter: drop-shadow(0px 1px 0px #1e3571) drop-shadow(0px 2px 0px #1e3571) drop-shadow(0px 3px 0px #1e3571) drop-shadow(0px 4px 0px #1e3571) drop-shadow(0px 5px 0px #1e3571) drop-shadow(0px 6px 0px #1e3571) drop-shadow(0px 7px 0px #1e3571);
-        stroke-width: 0 !important;
-    }`,
-    `
-    ::ng-deep .leaflet-interactive:focus {
-        outline: none;
-    }`,
-  ],
+  templateUrl: './map.html',
+  styleUrl: './map.scss',
 })
 export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // Note: Ensure the map component is initialized only after the parent component has fully loaded and rendered.
@@ -80,7 +54,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
     private mapService: MapService
-  ) { }
+  ) {}
 
   // Set map zoom based on screen width.
   private getZoomLevel(): number {
@@ -152,12 +126,14 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
         }
       });
 
-    this.mapService.ulbCodeClicked$.pipe(takeUntil(this.destroy$)).subscribe((code) => {
-      if (code && this.ulbId !== code) {
-        this.ulbId = code;
-        this.ulbIdChange.emit(code);
-      }
-    });
+    this.mapService.ulbCodeClicked$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((code) => {
+        if (code && this.ulbId !== code) {
+          this.ulbId = code;
+          this.ulbIdChange.emit(code);
+        }
+      });
   }
 
   private loadMapData(): void {
@@ -176,7 +152,9 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       .subscribe({
         next: (data: StateGeoJson) => {
           const features = this.stateCode
-            ? data.features.filter((f) => f.properties['ST_CODE'] === this.stateCode)
+            ? data.features.filter(
+                (f) => f.properties['ST_CODE'] === this.stateCode
+              )
             : data.features;
           // console.log('state length = ', features.length);
           const stateGeoJson: StateGeoJson = {
@@ -184,14 +162,24 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
             features,
           };
 
-          this.stateLayer = this.mapService.addGeoJsonLayer(stateGeoJson, this.stateCode);
+          this.stateLayer = this.mapService.addGeoJsonLayer(
+            stateGeoJson,
+            this.stateCode
+          );
 
           if (this.stateCode && features.length && this.stateLayer) {
             this.mapService.flyToStateBounds(this.stateLayer, [0, 0], 1.5, 0.5);
             this.loadCityCoordinates();
-            this.mapService.addCityMarkersToMap(this.stateCode, this.ulbId, this.ulbsList);
+            this.mapService.addCityMarkersToMap(
+              this.stateCode,
+              this.ulbId,
+              this.ulbsList
+            );
           } else {
-            this.mapService.map?.setView(this.mapConfig.initialView, this.mapConfig.initialZoom);
+            this.mapService.map?.setView(
+              this.mapConfig.initialView,
+              this.mapConfig.initialZoom
+            );
             this.mapService.clearCityMarkers();
           }
         },
@@ -214,7 +202,10 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     this.stateLayer?.clearLayers();
     this.stateLayer = null;
     this.mapService.clearCityMarkers();
-    this.mapService.map?.setView(this.mapConfig.initialView, this.mapConfig.initialZoom);
+    this.mapService.map?.setView(
+      this.mapConfig.initialView,
+      this.mapConfig.initialZoom
+    );
     this.loadMapData();
   }
 

@@ -1,23 +1,28 @@
 import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { CommonService } from '../../../../core/services/common.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subject, takeUntil } from 'rxjs';
+import { CommonService } from '../../../../core/services/common.service';
 
 @Component({
   selector: 'app-footer',
   imports: [],
   templateUrl: './footer.html',
-  styleUrl: './footer.scss'
+  styleUrl: './footer.scss',
 })
 export class Footer {
-public totalUsersVisit: number | undefined;
+  public totalUsersVisit: number | undefined;
   public readonly footerLinks = [
     { href: '/home', title: 'Home' },
-    { href: '/dashboard/national/61e150439ed0e8575c881028', title: 'Financial' },
+    {
+      href: '/dashboard/national/61e150439ed0e8575c881028',
+      title: 'Financial',
+    },
     { href: '/own-revenue-dashboard', title: 'Own Revenue Performance' },
     { href: '/dashboard/slb', title: 'Service Level Benchmarks Performance' },
-    { href: '/resources-dashboard/learning-center/toolkits', title: 'Resources' },
+    {
+      href: '/resources-dashboard/learning-center/toolkits',
+      title: 'Resources',
+    },
   ];
   public readonly socialMediaInfo = [
     {
@@ -44,10 +49,7 @@ public totalUsersVisit: number | undefined;
   public mailLabel = 'contact@cityfinance.in';
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private _commonService: CommonService,
-    private router: Router,
-  ) {}
+  constructor(private _commonService: CommonService, private router: Router) {}
 
   ngOnInit() {
     this.getPageDetails();
@@ -62,7 +64,8 @@ public totalUsersVisit: number | undefined;
         next: (res: number) => {
           return (this.totalUsersVisit = res);
         },
-        error: (error) => console.error('Error in fetching visitors count: ', error),
+        error: (error) =>
+          console.error('Error in fetching visitors count: ', error),
       });
   }
 
@@ -70,8 +73,10 @@ public totalUsersVisit: number | undefined;
   private getPageDetails() {
     this.router.events
       .pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-        takeUntil(this.destroy$),
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        ),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (event: NavigationEnd) => {
