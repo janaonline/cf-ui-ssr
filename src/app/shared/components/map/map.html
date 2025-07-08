@@ -1,0 +1,13 @@
+<!-- <div class="d-flex">
+  <div class="flex-grow-1 position-relative" style="min-height: 500px">
+    <div id="map-container" [class.state-highlight]="stateCode"></div>
+  </div>
+</div> -->
+
+<div id="map-container" [class.state-highlight]="stateCode"></div>
+<!-- Loader Overlay -->
+@if (isMapLoading) {
+<div class="custom-spinner-overlay position-absolute">
+  <mat-spinner></mat-spinner>
+</div>
+}

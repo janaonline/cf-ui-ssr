@@ -1,0 +1,26 @@
+<form [formGroup]="myForm" class="d-flex gap-2">
+  <input
+    type="text"
+    placeholder="Search for State"
+    matInput
+    formControlName="stateName"
+    id="stateName"
+    [matAutocomplete]="auto"
+    class="input-box-style"
+    [class.custom-readonly-input]="isStateReadonly()"
+    aria-label="Search for State"
+  />
+  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+    @for (state of filteredStates | async; track $index) {
+    <mat-option
+      [value]="state.name"
+      (onSelectionChange)="onStateSelection(state)"
+      >{{ state.name }}</mat-option
+    >
+    } @if (noDataFound()) {
+    <mat-option class="text-muted" disabled
+      >No results found for your search.</mat-option
+    >
+    }
+  </mat-autocomplete>
+</form>

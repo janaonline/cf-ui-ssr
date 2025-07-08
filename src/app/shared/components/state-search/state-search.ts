@@ -1,6 +1,19 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, effect, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {
   catchError,
@@ -18,32 +31,9 @@ import { CommonService } from '../../../core/services/common.service';
 
 @Component({
   selector: 'app-state-search',
-  standalone: true,
   imports: [MatAutocompleteModule, ReactiveFormsModule, AsyncPipe],
-  template: ` <form [formGroup]="myForm" class="d-flex gap-2">
-    <input
-      type="text"
-      placeholder="Search for State"
-      matInput
-      formControlName="stateName"
-      id="stateName"
-      [matAutocomplete]="auto"
-      class="input-box-style"
-      [class.custom-readonly-input]="isStateReadonly()"
-      aria-label="Search for State"
-    />
-    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
-      @for (state of filteredStates | async; track $index) {
-        <mat-option [value]="state.name" (onSelectionChange)="onStateSelection(state)">{{
-          state.name
-        }}</mat-option>
-      }
-      @if (noDataFound()) {
-        <mat-option class="text-muted" disabled>No results found for your search.</mat-option>
-      }
-    </mat-autocomplete>
-  </form>`,
-  styles: [],
+  templateUrl: './state-search.html',
+  styleUrl: './state-search.scss',
 })
 export class StateSearch implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -91,7 +81,7 @@ export class StateSearch implements OnInit, OnDestroy {
 
   // Sync value sent by parent.
   readonly syncStateFromParentEffect = effect(() => {
-    console.log('State id sent by parent to child: ', this.stateId());
+    // console.log('State id sent by parent to child: ', this.stateId());
     const id = this.stateId();
 
     if (id === '' && !this.isStateReadonly()) this.patchStateName('');
@@ -110,7 +100,7 @@ export class StateSearch implements OnInit, OnDestroy {
         catchError((err) => {
           console.error('Failed to load states', err);
           return of([]);
-        }),
+        })
       )
       .subscribe((states: IState[]) => {
         this.stateList = states;
@@ -123,7 +113,7 @@ export class StateSearch implements OnInit, OnDestroy {
             const filtered = this.filterStates(value || '');
             this.noDataFound.set(filtered.length === 0);
             return filtered;
-          }),
+          })
         );
       });
   }
@@ -131,7 +121,9 @@ export class StateSearch implements OnInit, OnDestroy {
   // Helper: To filter states.
   private filterStates(value: string): IState[] {
     const searchValue = value.toLowerCase().trim();
-    return this.stateList.filter((state) => state.name.toLowerCase().includes(searchValue));
+    return this.stateList.filter((state) =>
+      state.name.toLowerCase().includes(searchValue)
+    );
   }
 
   // Option selected from child dropdown.
@@ -140,7 +132,7 @@ export class StateSearch implements OnInit, OnDestroy {
     if (callback) {
       callback(state);
     }
-    console.log('State obj sent by child to parent: ', state);
+    // console.log('State obj sent by child to parent: ', state);
   }
 
   // Helper to patch state value.
@@ -151,5 +143,6 @@ export class StateSearch implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.setupReadonlyEffect?.destroy();
   }
 }

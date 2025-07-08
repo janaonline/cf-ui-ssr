@@ -1,0 +1,19 @@
+<div class="row justify-content-around gap-3 flex-wrap py-3 px-2">
+  @for (item of items(); track $index) {
+  <div
+    class="col border p-3 rounded-3 shadow-sm text-center card bg-white"
+    style="min-width: 150px"
+  >
+    <div class="card-data">
+      <img
+        class="m-2"
+        [src]="item['src']"
+        [alt]="item['label']"
+        style="width: 2rem; height: 2rem"
+      />
+      <p class="m-2 fw-bold">{{ item["value"] | inrFormat : "auto" }}</p>
+      <p class="m-2 text-secondary custom-font-size-6">{{ item["label"] }}</p>
+    </div>
+  </div>
+  }
+</div>

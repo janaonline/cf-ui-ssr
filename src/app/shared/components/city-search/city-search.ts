@@ -1,6 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import {
@@ -14,35 +27,16 @@ import {
 } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
-
 @Component({
   selector: 'app-city-search',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatAutocompleteModule, MatOptionModule],
-  template: ` <form [formGroup]="myForm" class="d-flex gap-2">
-    <input
-      type="text"
-      class="input-box-style"
-      placeholder="Search for ULBs"
-      matInput
-      formControlName="ulbName"
-      [matAutocomplete]="auto"
-      id="ulbName"
-    />
-    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-      <mat-option
-        *ngFor="let option of filteredUlbs()"
-        [value]="option.name"
-        (onSelectionChange)="onCitySelection(option)"
-      >
-        <small>{{ option.name }}</small>
-      </mat-option>
-      @if (noDataFound()) {
-        <mat-option class="text-muted" disabled>No results found.</mat-option>
-      }
-    </mat-autocomplete>
-  </form>`,
-  styleUrls: [],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatOptionModule,
+  ],
+  templateUrl: './city-search.html',
+  styleUrl: './city-search.scss',
 })
 export class CitySearch implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
@@ -79,8 +73,12 @@ export class CitySearch implements OnInit, OnDestroy {
             this.noDataFound.set(false);
             return of([]);
           }
-          return this.commonService.postGlobalSearchData(value.trim(), 'ulb', this.stateId());
-        }),
+          return this.commonService.postGlobalSearchData(
+            value.trim(),
+            'ulb',
+            this.stateId()
+          );
+        })
       )
       .subscribe({
         next: (res: any) => {
@@ -98,25 +96,29 @@ export class CitySearch implements OnInit, OnDestroy {
 
   // If parent sends isCityReaonly then disable input box.
   readonly setupReadonlyEffect = effect(() => {
-    this.isCityReadonly() ? this.ulbNameControl.disable() : this.ulbNameControl.enable();
+    this.isCityReadonly()
+      ? this.ulbNameControl.disable()
+      : this.ulbNameControl.enable();
   });
 
   // When parent sends ulb name - patch the value.
   private syncParentValueEffect = effect(() => {
     const name = this.cityName();
     this.myForm.patchValue({ ulbName: name }, { emitEvent: false });
-    console.log('ULB name is sent from parent to child: ', this.cityName());
+    // console.log('ULB name is sent from parent to child: ', this.cityName());
   });
 
   // Inform parent when option is selected from dropdown.
   onCitySelection(city: IULB): void {
     const callback = this.selectCity();
     if (callback) callback(city);
-    console.log('ULB obj is sent from child to parent: ', city);
+    // console.log('ULB obj is sent from child to parent: ', city);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.setupReadonlyEffect?.destroy();
+    this.syncParentValueEffect?.destroy();
   }
 }

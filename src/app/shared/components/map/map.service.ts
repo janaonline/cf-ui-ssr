@@ -45,7 +45,7 @@ export class MapService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: object
-  ) { }
+  ) {}
 
   private async loadLeaflet(): Promise<void> {
     if (this.leafletLoaded) return;
@@ -67,14 +67,20 @@ export class MapService {
     this.cityMarkersGroup = new this.L.LayerGroup();
   }
 
-  async initMap(elementId: string, config: MapConfig, options?: Leaflet.MapOptions): Promise<void> {
+  async initMap(
+    elementId: string,
+    config: MapConfig,
+    options?: Leaflet.MapOptions
+  ): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
 
     await this.loadLeaflet();
 
     if (this.map) this.destroyMap();
 
-    const container = document.getElementById('map-container') as LeafletHTMLElement;
+    const container = document.getElementById(
+      'map-container'
+    ) as LeafletHTMLElement;
     if (container && container._leaflet_id) delete container._leaflet_id;
 
     this.map = this.L.map(elementId, {
@@ -91,10 +97,15 @@ export class MapService {
   }
 
   loadAndAddStates(): Observable<StateGeoJson> {
-    return this.http.get<StateGeoJson>('/assets/jsonFile/state_boundaries_24Jan2024.json');
+    return this.http.get<StateGeoJson>(
+      '/assets/jsonFile/state_boundaries_24Jan2024.json'
+    );
   }
 
-  addGeoJsonLayer(geoJsonData: StateGeoJson, stateCode: string): Leaflet.GeoJSON | null {
+  addGeoJsonLayer(
+    geoJsonData: StateGeoJson,
+    stateCode: string
+  ): Leaflet.GeoJSON | null {
     if (!isPlatformBrowser(this.platformId) || !this.map) return null;
 
     return this.L.geoJSON(geoJsonData, {
@@ -125,7 +136,9 @@ export class MapService {
           },
           mouseout: () => {
             if (layer instanceof this.L.Path && !stateCode) {
-              layer.setStyle({ fillColor: this.defaultStateLayerStyle.fillColor });
+              layer.setStyle({
+                fillColor: this.defaultStateLayerStyle.fillColor,
+              });
             }
           },
         });
@@ -152,7 +165,11 @@ export class MapService {
     }, 400);
   }
 
-  addCityMarkersToMap(stateCode: string, ulbId: string, ulbsList: ULBDataPoint[]): void {
+  addCityMarkersToMap(
+    stateCode: string,
+    ulbId: string,
+    ulbsList: ULBDataPoint[]
+  ): void {
     if (!isPlatformBrowser(this.platformId) || !this.map) return;
 
     this.clearCityMarkers();
@@ -163,7 +180,10 @@ export class MapService {
       const lng = ulb.location.lng;
 
       if (lat && lng) {
-        const popup = this.L.popup({ closeButton: false, autoClose: true }).setContent(this.createToolTip(ulb.name || ''));
+        const popup = this.L.popup({
+          closeButton: false,
+          autoClose: true,
+        }).setContent(this.createToolTip(ulb.name || ''));
         const marker = this.addMarker(+lat, +lng, ulb).bindPopup(popup);
         this.cityMarkersGroup.addLayer(marker);
 
@@ -177,7 +197,9 @@ export class MapService {
           newlySelectedMarker = marker;
         }
       } else {
-        console.warn(`Invalid coordinates: ${ulb.name} (Lat: ${lat}, Lng: ${lng})`);
+        console.warn(
+          `Invalid coordinates: ${ulb.name} (Lat: ${lat}, Lng: ${lng})`
+        );
       }
     });
 
@@ -186,7 +208,12 @@ export class MapService {
   }
 
   updateSelectedULBMarker(ulbId: string): void {
-    if (!isPlatformBrowser(this.platformId) || !this.map || !this.cityMarkersGroup) return;
+    if (
+      !isPlatformBrowser(this.platformId) ||
+      !this.map ||
+      !this.cityMarkersGroup
+    )
+      return;
 
     let selectedMarker: Leaflet.Marker | null = null;
 
