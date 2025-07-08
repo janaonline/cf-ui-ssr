@@ -96,3 +96,11 @@ export interface ISlb {
   nationalValue: number;
   compPercentage: number;
 }
+
+export interface IMoneyInfoRes {
+  result: ExploresectionTable[];
+  year: string;
+  audit_status: string | null;
+  isActive: boolean;
+  lastModifiedAt: string | null;
+}

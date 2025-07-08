@@ -5,15 +5,15 @@ import { ICreditRatingData } from '../../core/models/creditRating/creditRatingRe
 import {
   BorrowingsKeys,
   BsIsData,
-  ExploresectionTable,
-  ISlb,
+  IMoneyInfoRes,
+  ISlb
 } from '../../core/models/interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Money info cards: tax rev, own rev, grants, tot rev, tot exp, bs size.
   getMoneyInfo(year: string = '', stateId: string = '', ulbId: string = '') {
@@ -22,13 +22,7 @@ export class DashboardService {
     if (stateId) params = params.set('stateId', stateId);
     if (ulbId) params = params.set('ulbId', ulbId);
 
-    return this.http.get<{
-      result: ExploresectionTable[];
-      year: string;
-      audit_status: string | null;
-      isActive: boolean;
-      lastModifiedAt: string | null;
-    }>(`${environment.api.url}dashboard/financial-info/get-data`, { params });
+    return this.http.get<IMoneyInfoRes>(`${environment.api.url}dashboard/financial-info/get-data`, { params });
   }
 
   // City page: balance sheet and income statement table.
