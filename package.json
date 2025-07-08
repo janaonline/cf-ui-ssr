@@ -11,7 +11,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs",
-    "serve:prod": "pm2 start dist/cf-ui-ssr/server/server.mjs --name cf-ui-ssr"
+    "serve:prod": "pm2 start ecosystem.config.js --only cf-ui-ssr",
+    "serve:dev": "pm2 start ecosystem.config.js --only dev-cf-ui-ssr"
   },
   "prettier": {
     "overrides": [

@@ -10,6 +10,17 @@ module.exports = {
                 PORT: 4000,
                 PM2_ENABLED: "true"
             }
+        },
+        {
+            name: 'dev-cf-ui-ssr',
+            script: 'dist/cf-ui-ssr/server/server.mjs',
+            instances: 1,
+            exec_mode: 'fork',
+            env: {
+                NODE_ENV: 'development',
+                PORT: 4200,
+                PM2_ENABLED: "true"
+            }
         }
     ]
 };
