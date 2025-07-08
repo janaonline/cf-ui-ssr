@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: 🛠️ Build Angular SSR
-        run: npm run build:ssr
+        run: npm run build
 
       - name: 🚀 Deploy to Server via SSH
         uses: appleboy/scp-action@v0.1.4
