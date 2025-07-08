@@ -41,4 +41,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/html/seo-cicd/cf-ui-ssr
-            pm2 reload ecosystem.config.js --only dev-cf-ui-ssr || pm2 start ecosystem.config.js --only dev-cf-ui-ssr
+            pm2 reload ecosystem.config.js --only cf-ui-ssr || pm2 start ecosystem.config.js --only cf-ui-ssr
