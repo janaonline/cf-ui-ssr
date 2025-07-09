@@ -1,5 +1,192 @@
-@if (this.yearsSignal().length === 0) {
-<app-no-data-found></app-no-data-found>
-} @else {
-<p>financial-indicator works!</p>
-}
+<section class="container my-4">
+  @if (this.years().length === 0) {
+  <app-no-data-found></app-no-data-found>
+  } @else {
+  <!-- Show Loader -->
+  @if(isLoading()) {
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  } @else {
+
+  <!-- Main Buttons. -->
+  <app-tab-buttons
+    [buttons]="buttons"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
+  ></app-tab-buttons>
+
+  <!-- Filters  -->
+  <div
+    class="border rounded bg-light p-4 my-4 row justify-content-evenly align-items-center"
+  >
+    <p class="col-sm-12 col-md-6">
+      Greater Hyderabad Municipal Corporation <b>Total Revenue</b> vs National
+      <b>Weighted Average</b>
+    </p>
+    <!-- Filter: years-->
+    <form [formGroup]="myForm" class="col-sm-12 col-md-3">
+      <label for="slbYears" class="d-block fw-bold mb-2">
+        Financial years
+      </label>
+      <select
+        id="slbYears"
+        formControlName="year"
+        class="form-select w-100"
+        style="padding-block: 0.6rem"
+      >
+        @for (year of years(); track year) {
+        <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </form>
+
+    <!-- Filter: Compare by -->
+    <form [formGroup]="myForm" class="col-sm-12 col-md-3">
+      <label for="slbYears" class="d-block fw-bold mb-2"> Compare by </label>
+      <select
+        id="slbYears"
+        formControlName="year"
+        class="form-select w-100"
+        style="padding-block: 0.6rem"
+      >
+        @for (year of years(); track year) {
+        <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </form>
+  </div>
+
+  <div class="row justify-content-between my-4">
+    <!-- Left side: Chart -->
+    <div
+      class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2 border border-2 border-info"
+    >
+      <!-- Expand, download, Share/ Embed -->
+      <div class="d-flex justify-content-end gap-3 text-cfSecondary mb-3">
+        @for (item of items; track $index) {
+        <div class="d-flex flex-column align-items-center custom-font-size-6">
+          <i [class]="item.icon"></i>{{ item.label }}
+        </div>
+        }
+      </div>
+
+      <div class="overflow-x-auto flex-grow-1">
+        <div class="w-100 h-100 chart-container">
+          <app-charts [chartConfig]="chartData"></app-charts>
+        </div>
+      </div>
+    </div>
+    <!-- Rigth side: Fyi -->
+    <div
+      class="col-sm-12 col-lg-4 px-4 py-3 mb-2 border border-2 border-cfPrimary rounded"
+    >
+      <!-- Info -->
+      <div
+        class="alert alert-success custom-font-size-7 d-flex align-items-start p-2"
+        role="alert"
+      >
+        <span class="mt-1">
+          <!-- <mat-icon
+            class="custom-font-size-7"
+            style="height: 15px; width: 15px"
+          >
+            brightness_1
+          </mat-icon> -->
+        </span>
+        CAGR of 10% between 2020-21 and 2022-23 years (ULB Total Revenue for FY'
+        2020-21 is Rs.2937 Cr. ULB Total Revenue for FY' 2022-23 is Rs. 3883
+        Cr.)
+      </div>
+      <!-- Accordion -->
+      <div class="accordion">
+        <!-- <div class="">
+            <button class="btn btn-sm btn-outline-cfSecondary" (click)="accordion().openAll()">
+              Expand All
+            </button>
+            <button class="btn btn-sm btn-outline-cfSecondary" (click)="accordion().closeAll()">
+              Collapse All
+            </button>
+          </div> -->
+        <mat-accordion class="mat-custom-style">
+          <!-- Panel 1 -->
+          <mat-expansion-panel class="bg-light">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="fw-bold">
+                About this Indicator
+              </mat-panel-title>
+              <!-- <mat-panel-description>
+                Type the country name
+                <mat-icon>map</mat-icon>
+              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+
+            <p>
+              Sum of: (a) tax revenues, (b) non-tax revenues, (c) assigned
+              (shared) revenue, (c) grants-in-aid, (d) loans and (e) other
+              receipts.
+            </p>
+            <p>
+              Tax revenue includes Property Tax, Professional Tax, Entertainment
+              Tax among others Non-tax revenue includes user charges (including
+              for water supply, sewerage etc), fees, rentals from municipal
+              property, among others Know more...
+            </p>
+            <p>
+              Sum of: (a) tax revenues, (b) non-tax revenues, (c) assigned
+              (shared) revenue, (c) grants-in-aid, (d) loans and (e) other
+              receipts. Tax revenue includes Property Tax, Professional Tax,
+              Entertainment Tax among others Non-tax revenue includes user
+              charges (including for water supply, sewerage etc), fees, rentals
+              from municipal property, among others
+            </p>
+          </mat-expansion-panel>
+
+          <!-- Panel 2 -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title> Personal data </mat-panel-title>
+              <!-- <mat-panel-description>
+                Type your name and age
+                <mat-icon>account_circle</mat-icon>
+              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+              <mat-label>First name</mat-label>
+              <input matInput />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Age</mat-label>
+              <input matInput type="number" min="1" />
+            </mat-form-field>
+          </mat-expansion-panel>
+
+          <!-- Panel 3 -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title> Day of the trip </mat-panel-title>
+              <!-- <mat-panel-description>
+                Inform the date you wish to travel
+                <mat-icon>date_range</mat-icon>
+              </mat-panel-description> -->
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+              <mat-label>Date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                (focus)="picker.open()"
+                readonly
+              />
+            </mat-form-field>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+  </div>
+  } }
+</section>

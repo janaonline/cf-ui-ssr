@@ -14,13 +14,12 @@
       [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav"
     >
-      <!-- <i class="fs-4 bi bi-list"></i> -->
-      <mat-icon
+      <i class="fs-4 bi bi-list"></i>
+      <!-- <mat-icon
         class="fs-4 d-flex align-items-center"
         aria-hidden="false"
         aria-label="menu icon"
-        >menu</mat-icon
-      >
+        >menu</mat-icon> -->
     </button>
     <!-- <mat-icon class="fs-4" aria-hidden="false" aria-label="menu icon">menu</mat-icon> -->
 
@@ -49,10 +48,9 @@
           [attr.aria-expanded]="showMobileNav"
           (click)="showMobileNav = !showMobileNav"
         >
-          <!-- <i class="fs-4 bi bi-x-lg">X</i> -->
-          <mat-icon class="fs-4" aria-hidden="false" aria-label="close icon"
-            >close</mat-icon
-          >
+          <i class="fs-4 bi bi-x-lg"></i>
+          <!-- <mat-icon class="fs-4" aria-hidden="false" aria-label="close icon"
+            >close</mat-icon > -->
         </button>
         } @for (menu of menus; track $index) { @if (menu.child?.length) {
         <li class="active" [matMenuTriggerFor]="DashboardMenu">
@@ -61,13 +59,13 @@
             routerLinkActive="active"
           >
             {{ menu.name }}
-            <!-- <i class="bi bi-caret-down-fill"></i> -->
-            <mat-icon
+            <i class="bi bi-caret-down-fill"></i>
+            <!-- <mat-icon
               class="fs-4"
               aria-hidden="false"
               aria-label="arrow_drop_down icon"
               >arrow_drop_down</mat-icon
-            >
+            > -->
           </a>
         </li>
         <mat-menu #DashboardMenu="matMenu">
@@ -75,7 +73,7 @@
           <a
             mat-menu-item
             [href]="childMenu.href"
-            class=""
+            [class.border-bottom]="!$last"
             routerLinkActive="active"
           >
             {{ childMenu.name }}
@@ -122,13 +120,13 @@
           [matMenuTriggerFor]="loginMenu"
         >
           Login
-          <mat-icon
+          <!-- <mat-icon
             class="fs-5"
             aria-hidden="false"
             aria-label="arrow_drop_down icon"
             >arrow_drop_down</mat-icon
-          >
-          <!-- <i class="bi bi-caret-down-fill"></i> -->
+          > -->
+          <i class="bi bi-caret-down-fill"></i>
         </button>
         <mat-menu #loginMenu="matMenu">
           <button
@@ -136,26 +134,20 @@
             class="border-bottom"
             (click)="loginLogout('15thFC')"
           >
-            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon"
-              >login</mat-icon
-            >
-            XV FC Grant
+            <!-- <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> -->
+            <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
           </button>
           <button
             mat-menu-item
             class="border-bottom"
             (click)="loginLogout('XVIFC')"
           >
-            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon"
-              >login</mat-icon
-            >
-            XVI FC Data Collection
+            <!-- <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> -->
+            <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection
           </button>
           <button mat-menu-item (click)="loginLogout('ranking')">
-            <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon"
-              >login</mat-icon
-            >
-            Rankings 2022
+            <!-- <mat-icon class="fs-5" aria-hidden="false" aria-label="login icon">login</mat-icon> -->
+            <i class="bi bi-box-arrow-in-right"></i> Rankings 2022
           </button>
         </mat-menu>
         } @if (isLoggedIn) {
@@ -164,23 +156,22 @@
           [matMenuTriggerFor]="logoutMenu"
         >
           <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
-          <!-- <i class="bi bi-caret-down-fill"></i> -->
-          <mat-icon
+          <i class="bi bi-caret-down-fill"></i>
+          <!-- <mat-icon
             class="fs-5"
             aria-hidden="false"
             aria-label="arrow_drop_down icon"
-            >arrow_drop_down</mat-icon
-          >
+            >arrow_drop_down</mat-icon> -->
         </button>
         <mat-menu #logoutMenu="matMenu">
           <div class="text-center my-1 p-1">
-            <!-- <i class="bi bi-person-circle fs-4 text-dark"></i> -->
-            <mat-icon
+            <i class="bi bi-person-circle fs-4 text-dark"></i>
+            <!-- <mat-icon
               class="fs-4"
               aria-hidden="false"
               aria-label="account_circle icon"
               >account_circle</mat-icon
-            >
+            > -->
           </div>
           <div class="text-center my-1 p-1 border-bottom">
             {{ user?.name }}
