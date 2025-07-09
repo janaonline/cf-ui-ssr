@@ -8,7 +8,7 @@ import { SponsersPartners } from './sponsers-partners/sponsers-partners';
 @Component({
   selector: 'app-home',
   imports: [
-    // Spotlight, 
+    Spotlight, 
     SearchBar,
     DiscoverSection,
     DashboardMapSection,
