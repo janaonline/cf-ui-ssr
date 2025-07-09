@@ -22,7 +22,6 @@ import {
   ULBDataPoint,
 } from './interfaces';
 import { MapService } from './map.service';
-// import { allUlbsData } from '../../../core/constants/ulbsListLocalStorage';
 
 @Component({
   selector: 'app-map',
@@ -53,7 +52,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private mapService: MapService
+    private mapService: MapService,
   ) {}
 
   // Set map zoom based on screen width.
@@ -153,7 +152,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
         next: (data: StateGeoJson) => {
           const features = this.stateCode
             ? data.features.filter(
-                (f) => f.properties['ST_CODE'] === this.stateCode
+                (f) => f.properties['ST_CODE'] === this.stateCode,
               )
             : data.features;
           // console.log('state length = ', features.length);
@@ -164,21 +163,24 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
           this.stateLayer = this.mapService.addGeoJsonLayer(
             stateGeoJson,
-            this.stateCode
+            this.stateCode,
           );
 
           if (this.stateCode && features.length && this.stateLayer) {
             this.mapService.flyToStateBounds(this.stateLayer, [0, 0], 1.5, 0.5);
-            this.loadCityCoordinates();
-            this.mapService.addCityMarkersToMap(
-              this.stateCode,
-              this.ulbId,
-              this.ulbsList
-            );
+            // this.loadCityCoordinates();
+            this.getUlbsObservable(this.stateCode).subscribe({
+              next: (res) =>
+                (this.ulbsList = res['data'][this.stateCode]['ulbs']),
+              error: (error) => console.error('Failed to get data'),
+              complete: () => {
+                this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
+              },
+            });
           } else {
             this.mapService.map?.setView(
               this.mapConfig.initialView,
-              this.mapConfig.initialZoom
+              this.mapConfig.initialZoom,
             );
             this.mapService.clearCityMarkers();
           }
@@ -190,9 +192,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       });
   }
 
-  private loadCityCoordinates(): void {
-    // this.ulbsList = this.stateCode ? allUlbsData[this.stateCode]?.ulbs || [] : [];
-    this.ulbsList = [];
+  private getUlbsObservable(statecode: string) {
+    return this.mapService.getUlbsData(statecode);
   }
 
   public resetMap(): void {
@@ -204,7 +205,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     this.mapService.clearCityMarkers();
     this.mapService.map?.setView(
       this.mapConfig.initialView,
-      this.mapConfig.initialZoom
+      this.mapConfig.initialZoom,
     );
     this.loadMapData();
   }

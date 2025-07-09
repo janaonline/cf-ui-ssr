@@ -1,7 +1,18 @@
-import { Component } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import {
+  Component,
+  Inject,
+  makeStateKey,
+  PLATFORM_ID,
+  signal,
+  TransferState,
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { CommonService } from '../../../../core/services/common.service';
+
+// --- TransferState Keys ---
+const VISITOR_KEY = makeStateKey<number>('visitorKey');
 
 @Component({
   selector: 'app-footer',
@@ -10,7 +21,8 @@ import { CommonService } from '../../../../core/services/common.service';
   styleUrl: './footer.scss',
 })
 export class Footer {
-  public totalUsersVisit: number | undefined;
+  public totalUsersVisit = signal<number>(0);
+  isLoading = signal<boolean>(true);
   public readonly footerLinks = [
     { href: '/home', title: 'Home' },
     {
@@ -49,34 +61,73 @@ export class Footer {
   public mailLabel = 'contact@cityfinance.in';
   private destroy$ = new Subject<void>();
 
-  constructor(private _commonService: CommonService, private router: Router) {}
+  constructor(
+    private _commonService: CommonService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private transferState: TransferState,
+  ) {}
 
   ngOnInit() {
+    this.loadData();
     this.getPageDetails();
-    this.fetchUserVisitCount();
   }
 
-  private fetchUserVisitCount() {
+  private loadData() {
+    this.isLoading.set(true);
+
+    // --- TransferState check for client-side hydration ---
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(VISITOR_KEY)
+    ) {
+      // console.log('CLIENT-SIDE (footer): Hydrating data from TransferState...');
+
+      // Retrieve and set all data from TransferState
+      this.totalUsersVisit.set(this.transferState.get(VISITOR_KEY, 0));
+
+      // Remove keys from TransferState to prevent memory leaks for subsequent client-side navigations
+      this.transferState.remove(VISITOR_KEY);
+
+      this.isLoading.set(false);
+      return;
+    }
+
+    // --- Server-side or Client-side (no TransferState) API Calls ---
+    // console.log(
+    //   `${isPlatformServer(this.platformId) ? 'SERVER' : 'CLIENT'} footer.ts: API called.`,
+    // );
+
+    // Call API.
     this._commonService
       .getWebsiteVisitCount()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (res: number) => {
-          return (this.totalUsersVisit = res);
+        next: (res) => {
+          this.totalUsersVisit.set(res);
+          this.isLoading.set(false);
         },
-        error: (error) =>
-          console.error('Error in fetching visitors count: ', error),
+        error: (error) => {
+          console.error('Failed to fetch visitor count', error);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          // --- Store in TransferState on Server ---
+          if (isPlatformServer(this.platformId)) {
+            this.transferState.set(VISITOR_KEY, this.totalUsersVisit());
+          }
+        },
       });
   }
 
-  // Check if rankins.
+  // Check if rankings.
   private getPageDetails() {
     this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
         ),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe({
         next: (event: NavigationEnd) => {

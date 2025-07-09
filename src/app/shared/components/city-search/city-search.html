@@ -9,15 +9,16 @@
     id="ulbName"
   />
   <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-    <mat-option
-      *ngFor="let option of filteredUlbs()"
-      [value]="option.name"
-      (onSelectionChange)="onCitySelection(option)"
-    >
-      <small>{{ option.name }}</small>
-    </mat-option>
+    @for (option of filteredUlbs(); track $index) {
+      <mat-option
+        [value]="option.name"
+        (onSelectionChange)="onCitySelection(option)"
+      >
+        <small>{{ option.name }}</small>
+      </mat-option>
+    }
     @if (noDataFound()) {
-    <mat-option class="text-muted" disabled>No results found.</mat-option>
+      <mat-option class="text-muted" disabled>No results found.</mat-option>
     }
   </mat-autocomplete>
 </form>

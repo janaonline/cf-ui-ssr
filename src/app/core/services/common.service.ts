@@ -1,5 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  makeStateKey,
+  PLATFORM_ID,
+  TransferState,
+} from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import {
   AfsPopupData,
@@ -9,15 +15,47 @@ import {
 } from '../models/interfaces';
 import { IState } from '../models/state/state';
 import { environment } from './../../../environments/environment';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 
+const VISUALIZATION_COUNT_KEY = makeStateKey<number>('visualizationCount ');
 @Injectable({
   providedIn: 'root',
 })
 export class CommonService {
-  constructor(private http: HttpClient) {}
   dataForVisualizationCount = new BehaviorSubject<number>(0);
   private searchItem: BehaviorSubject<any> = new BehaviorSubject([]);
   castSearchItem = this.searchItem.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private transferState: TransferState,
+  ) {
+    // Read from transfer state - Client.
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(VISUALIZATION_COUNT_KEY)
+    ) {
+      const count = this.transferState.get(VISUALIZATION_COUNT_KEY, 0);
+      this.dataForVisualizationCount.next(count);
+      this.transferState.remove(VISUALIZATION_COUNT_KEY);
+    }
+  }
+
+  // Ticker on home page.
+  setDataForVisualizationCount(VisualizationCount: string) {
+    if (VisualizationCount) {
+      const count = parseFloat(VisualizationCount.replace(/,/g, ''));
+
+      // Save to BehaviorSubject
+      this.dataForVisualizationCount.next(count);
+
+      // Store in TransferState on server.
+      if (isPlatformServer(this.platformId)) {
+        this.transferState.set(VISUALIZATION_COUNT_KEY, count);
+      }
+    }
+  }
 
   updateSearchItem(searchItem: any) {
     this.searchItem.next(searchItem);
@@ -66,7 +104,7 @@ export class CommonService {
     }
     return this.http.post(
       `${environment.api.url}recentSearchKeyword/search?type=${type}${stateData}`,
-      dataString
+      dataString,
     );
   }
 
@@ -79,7 +117,7 @@ export class CommonService {
 
   // Get bond amount
   public getBondIssuerItemAmount(
-    state: string = ''
+    state: string = '',
   ): Observable<BondIssuances> {
     const url = state
       ? `${environment.api.url}bond-issuances/municipal-bonds/${state}`
@@ -96,15 +134,8 @@ export class CommonService {
 
   getUlbByState(stateCode: string) {
     return this.http.get(
-      environment.api.url + '/states/' + stateCode + '/ulbs'
+      environment.api.url + '/states/' + stateCode + '/ulbs',
     );
-  }
-
-  setDataForVisualizationCount(VisualizationCount: string) {
-    if (VisualizationCount) {
-      const count = parseFloat(VisualizationCount.replace(/,/g, ''));
-      this.dataForVisualizationCount.next(count);
-    }
   }
 
   // Based on Ulb id return population, area, pop density, wards, yrs of data, UA
@@ -113,14 +144,14 @@ export class CommonService {
     const params = { ulbId };
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/city/city-details`,
-      { params }
+      { params },
     );
   }
 
   // National/ State data.
   public getExploreSectionData(
     stateCode: string = '',
-    stateId: string = ''
+    stateId: string = '',
   ): Observable<ExploreSectionResponse> {
     let params = new HttpParams();
     if (stateCode) params = params.set('stateCode', stateCode);
@@ -128,7 +159,7 @@ export class CommonService {
 
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/home-page/get-Data`,
-      { params }
+      { params },
     );
   }
 
@@ -136,7 +167,7 @@ export class CommonService {
   public getLedgerYears(
     stateCode: string = '',
     ulbId: string = '',
-    auditStatus: string = ''
+    auditStatus: string = '',
   ) {
     let params = new HttpParams();
     if (stateCode) params = params.set('stateCode', stateCode);
@@ -145,7 +176,7 @@ export class CommonService {
 
     return this.http.get<{ ledgerYears: string[] }>(
       `${environment.api.url}common/get-latest-standardized-year`,
-      { params }
+      { params },
     );
   }
 
@@ -156,7 +187,7 @@ export class CommonService {
 
     return this.http.get<{ slbYears: string[] }>(
       `${environment.api.url}common/get-latest-slbs-year`,
-      { params }
+      { params },
     );
   }
 
@@ -168,14 +199,14 @@ export class CommonService {
 
     return this.http.get<{ borrowingYears: string[] }>(
       `${environment.api.url}common/get-latest-borrowings-year`,
-      { params }
+      { params },
     );
   }
 
   // Annual accounts popup - Show BS, BSS, IS, ISE, CF, AR in one popup.
   getReports(ulbId: string, financialYear: string, auditType: string = '') {
     return this.http.get<{ data: AfsPopupData; success: boolean }>(
-      `${environment.api.url}ledger/ulb-financial-data/files/${ulbId}?financialYear=${financialYear}&auditType=${auditType}`
+      `${environment.api.url}ledger/ulb-financial-data/files/${ulbId}?financialYear=${financialYear}&auditType=${auditType}`,
     );
   }
 
@@ -187,10 +218,10 @@ export class CommonService {
     ulb: string,
     ulbId = '',
     globalName = '',
-    skip: number = 0
+    skip: number = 0,
   ) {
     return this.http.get<{ data: FileMetadata[] }>(
-      `${environment.api.url}annual-accounts/datasets?year=${year}&type=${type}&category=${category}&state=${state}&ulb=${ulb}&ulbId=${ulbId}&globalName=${globalName}&skip=${skip}`
+      `${environment.api.url}annual-accounts/datasets?year=${year}&type=${type}&category=${category}&state=${state}&ulb=${ulb}&ulbId=${ulbId}&globalName=${globalName}&skip=${skip}`,
     );
   }
 }
