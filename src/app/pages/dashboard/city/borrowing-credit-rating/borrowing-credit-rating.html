@@ -4,7 +4,15 @@
     (selectedButtonKeyChange)="onSelectedButtonChange($event)"
   ></app-tab-buttons>
 
-  @if (currentSelectedButtonKey() === 'borrowing') { @if (isBorrowingDisabled) {
+  @if (isLoading()) {
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  } @else {
+  <!-- Borrowing section -->
+  @if (currentSelectedButtonKey() === 'borrowing') {
+  <!-- Show no data found if years are not available. -->
+  @if (borrowingYears().length === 0) {
   <app-no-data-found></app-no-data-found>
   } @else {
   <p>Below are the details of Municipal Bond Issuances undertaken by the ULB</p>
@@ -56,8 +64,9 @@
   } } }
 
   <!-- Credit ratings -->
-  @if (currentSelectedButtonKey() === 'creditRating') { @if
-  (isCreditRatingDisabled) {
+  @if (currentSelectedButtonKey() === 'creditRating') {
+  <!-- Show no data found if years are not available. -->
+  @if (creditRatingYears.length === 0) {
   <app-no-data-found></app-no-data-found>
   } @else {
   <div class="border rounded bg-light p-4 my-4 row justify-content-between">
@@ -95,5 +104,5 @@
       </tbody>
     </table>
   </div>
-  } }
+  } } }
 </section>
