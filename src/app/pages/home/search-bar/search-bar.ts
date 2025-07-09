@@ -18,9 +18,12 @@ import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  filter,
   of,
+  Subject,
   switchMap,
   take,
+  takeUntil,
 } from 'rxjs';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
@@ -85,6 +88,7 @@ export class SearchBar {
       _id: '5eb5844f76a3b61f40ba0695',
     },
   ];
+  private destroy$ = new Subject<void>();
 
   constructor(
     protected _commonService: CommonService,
@@ -140,26 +144,27 @@ export class SearchBar {
   globaSearch() {
     this.globalFormControl.valueChanges
       .pipe(
+        takeUntil(this.destroy$),
         debounceTime(300),
         distinctUntilChanged(),
+        filter((value) => value.length > 1),
         switchMap((query) => {
           this.searchKey = query.trim();
-          if (!this.searchKey || this.searchKey.length < 2) {
+          if (!this.searchKey?.trim()) {
             this.filteredOptions = [];
             this.noDataFound = false;
             return of([]);
           }
 
           return this._commonService
-            .postGlobalSearchData(query, '', '')
+            .postGlobalSearchData(query.trim(), '', '')
             .pipe(catchError(() => of([])));
         }),
       )
       .subscribe((res: any) => {
         console.log('global search data', res.data);
         this.filteredOptions = res.data || [];
-        this.noDataFound =
-          this.filteredOptions.length === 0 && this.searchKey.length !== 0;
+        this.noDataFound = this.filteredOptions.length === 0;
       });
   }
 
@@ -214,14 +219,17 @@ export class SearchBar {
 
     const type = searchValue?.type;
     this.checkType(type);
-    this._commonService.postRecentSearchValue(this.postBody).subscribe(
-      (res: any) => {
-        //    console.log('serach res', res)
-      },
-      (error: any) => {
-        //   console.log(error)
-      },
-    );
+    this._commonService
+      .postRecentSearchValue(this.postBody)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (res: any) => {
+          //    console.log('serach res', res)
+        },
+        (error: any) => {
+          //   console.log(error)
+        },
+      );
     const option = {
       type: searchValue.type,
       _id: searchValue._id,
@@ -233,14 +241,17 @@ export class SearchBar {
     //console.log('option', option)
     this.checkType(option);
     if (option.type != 'searchKeyword')
-      this._commonService.postRecentSearchValue(this.postBody).subscribe(
-        (res: any) => {
-          // console.log('serach res', res)
-        },
-        (error: any) => {
-          // console.log(error)
-        },
-      );
+      this._commonService
+        .postRecentSearchValue(this.postBody)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (res: any) => {
+            // console.log('serach res', res)
+          },
+          (error: any) => {
+            // console.log(error)
+          },
+        );
     //console.log('option', option)
 
     if (option.type == 'state') {
@@ -288,18 +299,21 @@ export class SearchBar {
     // console.log('paramContent', paramContent)
     const financialYearList: any = [];
     const promise = new Promise((resolve, reject) => {
-      this._commonService.getStateWiseFYs(paramContent).subscribe(
-        (res: any) => {
-          if (res && res.success) {
-            resolve(
-              res['data'] && res['data']['FYs'] ? res['data']['FYs'] : [],
-            );
-          }
-        },
-        (err: { message: string }) => {
-          console.log(err.message);
-        },
-      );
+      this._commonService
+        .getStateWiseFYs(paramContent)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (res: any) => {
+            if (res && res.success) {
+              resolve(
+                res['data'] && res['data']['FYs'] ? res['data']['FYs'] : [],
+              );
+            }
+          },
+          (err: { message: string }) => {
+            console.log(err.message);
+          },
+        );
     });
     financialYearList.push(promise);
     Promise.all(financialYearList).then((value) => {
@@ -314,5 +328,10 @@ export class SearchBar {
       //   this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`)
       // }
     });
+  }
+
+  ngDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

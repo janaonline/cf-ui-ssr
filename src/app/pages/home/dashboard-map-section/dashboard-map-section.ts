@@ -51,7 +51,6 @@ export class DashboardMapSection {
 
   myForm!: FormGroup;
   noDataFound: boolean = true;
-  // isLoading: boolean = true;
   isLoading = signal<boolean>(true);
   showMap: boolean = false;
 
@@ -123,20 +122,21 @@ export class DashboardMapSection {
     private transferState: TransferState,
   ) {}
 
+  // One time functions.
   ngOnInit(): void {
     this.fetchCreditRatingsData();
     this.fetchStateList();
     this.loadData('state');
   }
 
+  // On filter - API calls.
   private loadData(getUlbData: string = 'state'): void {
     this.fetchBondIssuances();
     this.updateRatingSummary();
     getUlbData === 'ulb' ? this.fetchUlbData() : this.fetchExploreSectionData();
   }
 
-  // ----- Get data -----
-  // Get municipal bonds data.
+  // Get municipal bonds data - card 5.
   private fetchBondIssuances(): void {
     this.isLoading.set(true);
 
@@ -169,7 +169,7 @@ export class DashboardMapSection {
     }
   }
 
-  // Get credit rating data.
+  // Get credit rating data - Card 3, 4.
   private fetchCreditRatingsData(): void {
     this.isLoading.set(true);
 
@@ -205,7 +205,7 @@ export class DashboardMapSection {
     }
   }
 
-  // Compute total, creditRatingAboveBBB_Minus count.
+  // Helper: Compute total, creditRatingAboveBBB_Minus count.
   private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
     const computedData: CreditRatingMap = {
       India: { total: 0, creditRatingAboveBBB_Minus: 0 },
@@ -231,7 +231,7 @@ export class DashboardMapSection {
     return computedData;
   }
 
-  // Update credit ratings summary.
+  // Helper: Update credit ratings summary.
   private updateRatingSummary(): void {
     const selected = this.selectedStateNameSignal() || 'India';
     const ratingData = this.creditRating()[selected] || {
@@ -284,7 +284,7 @@ export class DashboardMapSection {
     }
   }
 
-  // Explore section data - ULB.
+  // Explore section data - ULB filter.
   private fetchUlbData(): void {
     this.isLoading.set(true);
 
@@ -345,6 +345,7 @@ export class DashboardMapSection {
           error: (error: any) =>
             console.error('Error in loading explore section data: ', error),
           complete: () => {
+            // Combine all the data - grid section (National and state filter)
             this.exploreData().gridDetails = [
               ...this.exploreData().gridDetails,
               {
@@ -374,6 +375,7 @@ export class DashboardMapSection {
               (a, b) => a.sequence - b.sequence,
             );
 
+            // Ticker above search bar - homepage.
             this._commonService.setDataForVisualizationCount(
               this.exploreData().gridDetails[0].value?.toString(),
             );
@@ -389,7 +391,6 @@ export class DashboardMapSection {
     }
   }
 
-  // ----- Search section -----
   // State object sent by child - Drop down selection.
   public onStateSelected = (stateObj: IState) => {
     // console.log('State obj sent by child to parent', stateObj);

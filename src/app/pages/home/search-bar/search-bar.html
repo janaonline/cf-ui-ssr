@@ -35,14 +35,12 @@
         [formControl]="globalFormControl"
         [matAutocomplete]="auto"
       />
-      <mat-autocomplete #auto="matAutocomplete">
+      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
         <!-- [routerLink]="['/dashboard/' + option?.type + '/' + option?._id]" -->
         @for (option of filteredOptions; track $index) {
           <mat-option
             [value]="option?.name"
-            (click)="dashboardNav(option)"
-            (keydown.enter)="dashboardNav(option)"
-            (keydown.space)="dashboardNav(option)"
+            (onSelectionChange)="dashboardNav(option)"
           >
             <span> {{ option?.name }} </span>
             <small class="text-secondary">
