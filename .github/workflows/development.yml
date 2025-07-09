@@ -3,7 +3,7 @@ name: Deploy Angular SSR App
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main # or your default branch
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
           node-version: 22
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: 🛠️ Build Angular SSR
         run: npm run build
