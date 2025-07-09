@@ -2,6 +2,12 @@
     font-size: calc(2rem + 2vw);
 }
 
+.countup-span {
+    display: inline-block;
+    min-width: 60px;
+    text-align: right;
+}
+
 .search-box {
     display: flex;
     justify-content: center;

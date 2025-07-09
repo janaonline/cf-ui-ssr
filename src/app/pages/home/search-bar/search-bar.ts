@@ -131,12 +131,8 @@ export class SearchBar {
     this._commonService.dataForVisualizationCount
       .pipe(take(1))
       .subscribe((res) => {
-        if (!this.coveredUlbCount()) this.coveredUlbCount.set(res);
-
-        // Store in transfer state - server
-        if (isPlatformServer(this.platFormId)) {
-          this.transferState.set(ULB_COUNT_KEY, this.coveredUlbCount());
-        }
+        if (this.coveredUlbCount() === this.DEFAULT_VALUE)
+          this.coveredUlbCount.set(res);
       });
   }
 
