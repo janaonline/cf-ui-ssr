@@ -1,14 +1,13 @@
 <div class="d-flex my-4 overflow-x-auto">
   @for (btn of buttons(); track $index) {
-  <button
-    role="button"
-    class="btn rounded-3 m-2 text-nowrap font-bold py-1 px-2"
-    [class.btn-cfSecondary]="selectedBtnKey() === btn.key"
-    [class.btn-outline-cfSecondary]="selectedBtnKey() !== btn.key"
-    (click)="buttonClick(btn.key)"
-  >
-    {{ btn.label }}
-  </button>
-
+    <button
+      role="button"
+      class="btn rounded-5 m-2 text-nowrap font-bold py-1 px-2"
+      [class.btn-cfPrimary]="selectedBtnKey() === btn.key"
+      [class.btn-outline-cfPrimary]="selectedBtnKey() !== btn.key"
+      (click)="buttonClick(btn.key)"
+    >
+      {{ btn.label }}
+    </button>
   }
 </div>
