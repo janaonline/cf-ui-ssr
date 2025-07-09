@@ -11,15 +11,18 @@ import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserUtility } from '../../../../core/util/user/user';
 import { MatIconModule } from '@angular/material/icon';
+import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
+import { GlobalLoaderService } from '../../../../core/services/loaders/global-loader.service';
+import { HomeHeaderService } from './home-header.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-navbar',
   imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.scss'
+  styleUrl: './navbar.scss',
 })
 export class Navbar {
-
   private accessChecker = new AccessChecker();
   isProd: boolean = false;
   canViewUserList: boolean = false;
@@ -43,15 +46,24 @@ export class Navbar {
       name: 'Dashboard',
       href: '',
       child: [
-        { name: 'National Performance', href: '/dashboard/national/61e150439ed0e8575c881028' },
+        {
+          name: 'National Performance',
+          href: '/dashboard/national/61e150439ed0e8575c881028',
+        },
         { name: 'Own Revenue Performance', href: '/own-revenue-dashboard' },
-        { name: 'Service Level Benchmarks Performance', href: '/dashboard/slb' },
-        { name: 'Municipal Bonds', href: '/municipal-bonds' },
-        { name: 'Municipal Budgets', href: '/municipal-budgets' },
+        {
+          name: 'Service Level Benchmarks Performance',
+          href: '/dashboard/slb',
+        },
+        // { name: 'Municipal Bonds', href: '/municipal-bonds' },
+        // { name: 'Municipal Budgets', href: '/municipal-budgets' },
       ],
     },
 
-    { name: 'Resources', href: '/resources-dashboard/data-sets/income_statement' },
+    {
+      name: 'Resources',
+      href: '/resources-dashboard/data-sets/income_statement',
+    },
   ];
 
   showMobileNav: boolean = false;
@@ -59,6 +71,9 @@ export class Navbar {
   constructor(
     public _router: Router,
     private authService: AuthService,
+    private globalLoaderService: GlobalLoaderService,
+    private homeHeaderService: HomeHeaderService,
+    private dialog: MatDialog
   ) {
     this.initializeAccessChecking();
     // this._router.events.subscribe((event: any) => {
@@ -91,7 +106,10 @@ export class Navbar {
       // ...this.menus,
       // (role === USER_TYPE.PMU && { name: 'State resources', href: '/mohua-form/state-resource-manager' }),
       // (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: '15<sup>th</sup> FC Grants', href: '/fc-home-page' }),
-      role === USER_TYPE.ULB && { name: `XVI FC Data Collection`, link: '/xvifc-form' },
+      role === USER_TYPE.ULB && {
+        name: `XVI FC Data Collection`,
+        link: '/xvifc-form',
+      },
       role === USER_TYPE.ULB && {
         name: `User Manual`,
         href: './assets/USER-MANUAL-XVI-FC-Data-Collection.pdf',
@@ -136,7 +154,8 @@ export class Navbar {
       sessionID = sessionStorage.getItem('sessionID');
     sessionStorage.clear();
     sessionStorage.setItem('sessionID', sessionID || '');
-    if (postLoginNavigation) sessionStorage.setItem('postLoginNavigation', postLoginNavigation);
+    if (postLoginNavigation)
+      sessionStorage.setItem('postLoginNavigation', postLoginNavigation);
   }
   // @HostListener('window:scroll', ['$event'])
   // handleScroll() {
@@ -160,12 +179,10 @@ export class Navbar {
     if (type == '15thFC') {
       // this._router.navigateByUrl("/fc_grant");
       window.location.href = '/fc_grant';
-    }
-    else if (type == 'XVIFC') {
+    } else if (type == 'XVIFC') {
       // this._router.navigateByUrl("/login/xvi-fc");
       window.location.href = '/login/xvi-fc';
-    }
-    else if (type == 'ranking') {
+    } else if (type == 'ranking') {
       // this._router.navigateByUrl("/rankings/login");
       window.location.href = '/rankings/login';
     } else if (type == 'logout') {
@@ -177,7 +194,6 @@ export class Navbar {
       // this._router.navigateByUrl("rankings/home");
       window.location.href = '/';
     }
-
   }
 
   loginLogout_bkp(type: string) {
@@ -253,5 +269,42 @@ export class Navbar {
   private updateStickyState(): void {
     if (!this.menuElement) return;
     this.isSticky = window.scrollY >= this.elementPosition;
+  }
+
+  public showRequestDemoPopup(): void {
+    // Frontend config flags for handling the module.
+    const moduleInfo = {
+      saveToLocalStorage: false,
+      endPoint: 'request-demo/getDemoForm',
+    };
+    const downloadInfo = { module: 'requestDemo' }; // Info about the file download for backend payload.
+    const dialogRef = this.dialog.open(UserInfoDialog, {
+      data: { downloadInfo, moduleInfo },
+    });
+
+    dialogRef.afterClosed().subscribe((data: any) => {
+      if (data) {
+        this.globalLoaderService.showLoader();
+        this.homeHeaderService.submitDemoData(data).subscribe({
+          next: () => {
+            // this.utilityService.swalPopup(
+            //   'Sucess!',
+            //   "We'll get back to you shortly!",
+            //   'success'
+            // );
+            this.globalLoaderService.stopLoader();
+          },
+          error: (error) => {
+            this.globalLoaderService.stopLoader();
+            console.error('Error in updating request demo data: ', error);
+            // this.utilityService.swalPopup(
+            //   'Failed to submit data!',
+            //   error?.error?.message,
+            //   'error'
+            // );
+          },
+        });
+      }
+    });
   }
 }
