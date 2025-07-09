@@ -62,17 +62,17 @@ export class Spotlight {
       {
         "imageUrl": "/assets/images/homepage_v2/spotlight/xvi-fc-constitution.webp",
         "name": "XVI FC Constitution & Terms of Reference",
-        "downloadUrl": "/assets/images/homepage_v2/spotlight/16th-FC-Members-Appointment-1.pdf"
+        "downloadUrl": "/assets/images/homepage/spotlight/16th-FC-Members-Appointment-1.pdf"
       },
       {
         "imageUrl": "/assets/images/homepage_v2/spotlight/cfr-framework.webp",
         "name": "City Finance Rankings Framework",
-        "downloadUrl": "/assets/images/homepage_v2/spotlight/CFR-Framework.pdf"
+        "downloadUrl": "/assets/images/homepage/spotlight/CFR-Framework.pdf"
       },
       {
         "imageUrl": "/assets/images/homepage_v2/spotlight/asics-2023-report.webp",
         "name": "ASICS Report 2023",
-        "downloadUrl": "/assets/images/homepage_v2/spotlight/ASICS-2023-report.pdf"
+        "downloadUrl": "/assets/images/homepage/spotlight/ASICS-2023-report.pdf"
       },
       {
         "imageUrl": "/assets/images/homepage_v2/spotlight/indian-urban-infrastructure.webp",
