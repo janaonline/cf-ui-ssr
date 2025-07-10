@@ -21,8 +21,8 @@ export const environment = {
   api: {
     url: baseUrl + '/api/v1/',
   },
-  fcUrl: '/fc',
   v1Url: '/v1',
+  v2Url: '/fc',
   environment: env,
   isProduction,
   versionCheckURL: baseUrl + '/version.json',

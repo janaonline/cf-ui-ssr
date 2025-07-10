@@ -10,8 +10,8 @@ export const environment = {
   api: {
     url: baseUrl + '/api/v1/',
   },
-  fcUrl: 'http://localhost:4300',
   v1Url: 'http://localhost:4200',
+  v2Url: 'http://localhost:4300',
   environment: env,
   isProduction,
   versionCheckURL: baseUrl + '/version.json',

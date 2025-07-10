@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
-import { environment } from '../../../../../environments/environment.development';
+import { environment } from '../../../../../environments/environment';
 import { IUserLoggedInDetails } from '../../../../core/models/login/userLoggedInDetails';
 import { USER_TYPE } from '../../../../core/models/user/userType';
 import { AuthService } from '../../../../core/services/auth.service';
