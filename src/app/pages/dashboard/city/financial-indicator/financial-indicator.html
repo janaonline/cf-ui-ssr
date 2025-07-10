@@ -37,7 +37,7 @@
     >
       <p class="">
         Greater Hyderabad Municipal Corporation <b>Total Revenue</b> v/s
-        <b>State Average</b>
+        <b>State Municipal Corporation Average</b>
       </p>
 
       <div class="row justify-content-between align-items-center">
@@ -124,6 +124,7 @@
             <ng-container *ngIf="isIndicatorDetails(indicator)">
               <mat-accordion class="mat-custom-style">
                 @for (acc of accordions; track acc.key+$index) {
+                @if(indicator[acc.key].length) {
                 <mat-expansion-panel class="mb-3">
                   <mat-expansion-panel-header>
                     <mat-panel-title class="custom-font-size-6 fw-bold">
@@ -148,7 +149,7 @@
                   />
                   } }
                 </mat-expansion-panel>
-                }
+                } }
               </mat-accordion>
             </ng-container>
           </ng-container>

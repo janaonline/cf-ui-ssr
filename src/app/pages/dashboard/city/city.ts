@@ -24,6 +24,7 @@ import {
   takeUntil,
   throwError,
 } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { IMoneyInfoRes } from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
@@ -67,6 +68,7 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
   styleUrl: './city.scss',
 })
 export class City {
+  v1Url = environment.v1Url;
   loadedTabs: boolean[] = [true, false, false, false];
   ulbIdSignal = signal('');
   isLoading = signal(true);

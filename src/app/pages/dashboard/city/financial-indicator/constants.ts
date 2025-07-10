@@ -185,7 +185,7 @@ export const subButtons: { [key: string]: SubButton } = {
         },
         {
           type: 'text',
-          content: 'Explore REVENUE PER CAPITA stats of selected ULB',
+          content: 'Explore REVENUE MIX stats of selected ULB',
         },
         {
           type: 'text',
@@ -223,18 +223,7 @@ export const subButtons: { [key: string]: SubButton } = {
             'Share of (a) Own Revenues, (b) Assigned revenue, (c)Grants, (d) Interest Income and (e) Other Receipts, as a percentage of total revenue of the ULB',
         },
       ],
-      performanceAssessed: [
-        {
-          type: 'text',
-          content:
-            '(1) Green bullet point - ULB Own Revenue to Total Revenue percentage is higher than state average',
-        },
-        {
-          type: 'text',
-          content:
-            '(2) Red bullet ponit - ULB Own Revenue to Total Revenue percentage is lower than state average',
-        },
-      ],
+      performanceAssessed: [],
       nextsteps: [
         {
           type: 'text',
@@ -267,7 +256,7 @@ export const subButtons: { [key: string]: SubButton } = {
     },
   },
   ownRevenue: {
-    text: 'Own reveneue refers to money received or earned by a ULB from its own sources during a financial year, including from taxes, fees, user charges, etc.',
+    text: 'Own revenue refers to money received or earned by a ULB from its own sources during a financial year, including from taxes, fees, user charges, etc.',
     buttons: [
       { key: 'totOwnRev', label: 'Total Own Revenue' },
       { key: 'ownRevPerCapita', label: 'Own Revenue per Capita' },
@@ -472,7 +461,7 @@ export const subButtons: { [key: string]: SubButton } = {
     text: 'Revenue Expenditure refers to spending on day-to-day operations such as salaries, subsidies, maintenance, and interest payments — these do not create lasting assets.',
     buttons: [
       { key: 'totRevex', label: 'Total Revenue Expenditure' },
-      { key: 'revexPerCapita', label: 'Reveneue Expenditure per Capita' },
+      { key: 'revexPerCapita', label: 'Revenue Expenditure per Capita' },
       { key: 'revexMix', label: 'Revenue Expenditure Mix' },
     ],
     totRevex: {
@@ -546,7 +535,27 @@ export const subButtons: { [key: string]: SubButton } = {
             'Revenue expenditure earned or received by a ULB per person during the financial year',
         },
       ],
-      calculation: [],
+      calculation: [
+        {
+          type: 'text',
+          content: 'Sum of all the administrative & operating expenses.',
+        },
+        {
+          type: 'text',
+          content:
+            'Total population = population of ULB as per 2011 census where available, else self-reported by the ULB',
+        },
+        {
+          type: 'text',
+          content:
+            'State average = Simple average of all ULB revenue expenditure per capita of the state based on population of each ULB',
+        },
+        {
+          type: 'text',
+          content:
+            'Revenue Expenditure per capita = Revenue Expenditure/Total population',
+        },
+      ],
       performanceAssessed: [
         {
           type: 'text',
@@ -597,7 +606,13 @@ export const subButtons: { [key: string]: SubButton } = {
             'Revenue Expenditure mix refers to the combination of establishment expenditure, Administrative Expenditure, O & M Expenditure, Interest & Finance Expenditure, and others',
         },
       ],
-      calculation: [],
+      calculation: [
+        {
+          type: 'text',
+          content:
+            'Share of: (a) Establishment expenses, (b) Administrative expenses, (c) Operation & Maintenance, (d) Interest & finance charges and (e) Others, as a percentage of total revenue expenditure of the ULB',
+        },
+      ],
       performanceAssessed: [],
       nextsteps: [
         {
