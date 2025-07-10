@@ -34,7 +34,7 @@ export class Navbar {
   btnName = 'Login for 15th FC Grants';
   sticky: boolean = false;
   isCollapsed = true;
-  prefixUrl = environment.prefixUrl;
+  v1Url = environment.v1Url;
 
   menus: any = [
     // {
@@ -48,12 +48,15 @@ export class Navbar {
       child: [
         {
           name: 'National Performance',
-          href: '/dashboard/national/61e150439ed0e8575c881028',
+          href: this.v1Url + '/dashboard/national/61e150439ed0e8575c881028',
         },
-        { name: 'Own Revenue Performance', href: '/own-revenue-dashboard' },
+        {
+          name: 'Own Revenue Performance',
+          href: this.v1Url + '/own-revenue-dashboard',
+        },
         {
           name: 'Service Level Benchmarks Performance',
-          href: '/dashboard/slb',
+          href: this.v1Url + '/dashboard/slb',
         },
         // { name: 'Municipal Bonds', href: '/municipal-bonds' },
         // { name: 'Municipal Budgets', href: '/municipal-budgets' },
@@ -62,7 +65,7 @@ export class Navbar {
 
     {
       name: 'Resources',
-      href: '/resources-dashboard/data-sets/income_statement',
+      href: this.v1Url + '/resources-dashboard/data-sets/income_statement',
     },
   ];
 
@@ -178,13 +181,13 @@ export class Navbar {
     localStorage.setItem('loginType', type);
     if (type == '15thFC') {
       // this._router.navigateByUrl("/fc_grant");
-      window.location.href = '/fc_grant';
+      window.location.href = this.v1Url + '/fc_grant';
     } else if (type == 'XVIFC') {
       // this._router.navigateByUrl("/login/xvi-fc");
-      window.location.href = '/login/xvi-fc';
+      window.location.href = this.v1Url + '/login/xvi-fc';
     } else if (type == 'ranking') {
       // this._router.navigateByUrl("/rankings/login");
-      window.location.href = '/rankings/login';
+      window.location.href = this.v1Url + '/rankings/login';
     } else if (type == 'logout') {
       this.authService.loginLogoutCheck.next(false);
       // this.newCommonService.setFormStatus2223.next(false);
