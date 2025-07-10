@@ -79,26 +79,20 @@ export class BorrowingCreditRating implements OnDestroy {
 
   // Distinct bonds years.
   private getBorrowingsYears() {
-    if (this.borrowingYears().length === 0) {
-      this._commonService.borrowingYears(this.ulbIdSignal()).subscribe({
-        next: (res) => {
-          this.borrowingYears.set(res.borrowingYears);
-        },
-        error: (error) =>
-          console.error('Failed to get borrowingYears: ', error),
-        complete: () => this.getBorrowingsData(),
-      });
-    }
+    this.isLoading.set(true);
+    this._commonService.borrowingYears(this.ulbIdSignal()).subscribe({
+      next: (res) => {
+        this.borrowingYears.set(res.borrowingYears);
+        if (res.borrowingYears.length) this.getBorrowingsData();
+        this.isLoading.set(false);
+      },
+      error: (error) => console.error('Failed to get borrowingYears: ', error),
+    });
   }
 
   readonly ulbIdChangeEffect = effect(() => {
     const ulbId = this.ulbIdSignal();
-    if (!ulbId) return;
-
-    if (this.currentSelectedButtonKey() === this.buttons[0].key) {
-      this.getBorrowingsYears();
-      // this.getBorrowingsData();
-    }
+    if (ulbId) this.getBorrowingsYears();
   });
 
   private getBorrowingsData(): void {
@@ -120,15 +114,18 @@ export class BorrowingCreditRating implements OnDestroy {
             this.bondsData.length / this.COLS_PER_PAGE
           );
           this.createStructure();
+          this.isLoading.set(false);
         },
         error: (error) => {
           this.isLoading.set(false);
           console.error('Failed to fetch borrowings data: ', error);
+          this.isLoading.set(false);
         },
       });
   }
 
   private createStructure(): void {
+    this.isLoading.set(true);
     const tableStructure = cloneDeep(TABLE_STRUCTURE);
     this.displayedColumns = [...this.displayedColumnsStructure];
 
