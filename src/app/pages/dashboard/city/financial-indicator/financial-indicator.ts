@@ -9,9 +9,10 @@ import {
   DEFAULT_FONT_FAMILY,
 } from '../../../../shared/components/charts/constants';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
-import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { ButtonObj } from '../../../../core/models/interfaces';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
+import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { buttons, subButtons } from './constants';
+import { ButtonObj } from '../../../../core/models/interfaces';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -37,14 +38,11 @@ export class FinancialIndicator {
     { icon: 'bi bi-download', label: 'Download' },
     { icon: 'bi bi-share-fill', label: 'Share' },
   ];
-  readonly buttons: ButtonObj[] = [
-    { key: 'revenue', label: 'Revenue' },
-    { key: 'ownRevenue', label: 'Own Revenue' },
-    { key: 'expenditure', label: 'Expenditure' },
-    { key: 'capex', label: 'Capital Expenditure' },
-  ];
-  legendItems: { color: string; label: string; icon: string }[] = [];
+  readonly buttons: ButtonObj[] = buttons;
+  readonly subButtons = subButtons;
+
   currentSelectedButtonKey = signal<string>('');
+  subButton = signal<string>('');
 
   myForm!: FormGroup;
   years = input.required<string[]>();
@@ -63,6 +61,15 @@ export class FinancialIndicator {
   onSelectedButtonChange(key: string): void {
     console.log('Button key sent from child to parent:', key);
     this.currentSelectedButtonKey.set(key);
+    this.subButton.set(
+      subButtons[this.currentSelectedButtonKey()].buttons[0].key
+    );
+  }
+
+  // Output emitted by child to parent
+  onSelectedSubButtonChange(key: string): void {
+    console.log('Sub button key sent from child to parent:', key);
+    this.subButton.set(key);
   }
 
   chartData: ChartConfig = {
@@ -88,6 +95,7 @@ export class FinancialIndicator {
           data: [2937, 3524, 3883],
           backgroundColor: [this.secondaryColor],
           borderRadius: 5,
+          barThickness: 60,
         },
         {
           type: 'bar',
@@ -95,7 +103,24 @@ export class FinancialIndicator {
           data: [1576, 1946, 3037],
           backgroundColor: [this.primaryColor],
           borderRadius: 5,
+          barThickness: 60,
         },
+        // {
+        //   type: 'bar',
+        //   label: 'National Avg',
+        //   data: [1576, 1946, 3037],
+        //   backgroundColor: [this.primaryColor],
+        //   borderRadius: 5,
+        //   // barThickness: 60,
+        // },
+        // {
+        //   type: 'bar',
+        //   label: 'National Avg',
+        //   data: [1576, 1946, 3037],
+        //   backgroundColor: [this.primaryColor],
+        //   borderRadius: 5,
+        //   // barThickness: 60,
+        // },
       ],
     },
     options: baseChartOptions(

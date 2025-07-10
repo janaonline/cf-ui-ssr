@@ -9,7 +9,7 @@ export type ChartType =
 export interface ChartDataSet {
   type?: 'bar' | 'line'; // For mixed charts
   label: string;
-  data: number[];
+  data: (number | null)[];
   backgroundColor?: string | string[];
   borderColor?: string;
   borderWidth?: number;
@@ -17,6 +17,7 @@ export interface ChartDataSet {
   borderRadius?: number;
   tension?: number;
   fill?: boolean;
+  barThickness?: number;
 }
 
 export interface ChartOptions {

@@ -16,61 +16,86 @@
     (selectedButtonKeyChange)="onSelectedButtonChange($event)"
   ></app-tab-buttons>
 
+  <!-- Sub buttons. -->
+  <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
+  <app-tab-buttons
+    [buttons]="subButtons[currentSelectedButtonKey()].buttons"
+    (selectedButtonKeyChange)="onSelectedSubButtonChange($event)"
+  ></app-tab-buttons>
+
   <!-- Filters  -->
-  <div
+  <!-- <div
     class="border rounded bg-light p-4 my-4 row justify-content-evenly align-items-center"
   >
-    <p class="col-sm-12 col-md-6">
-      Greater Hyderabad Municipal Corporation <b>Total Revenue</b> vs National
-      <b>Weighted Average</b>
-    </p>
-    <!-- Filter: years-->
-    <form [formGroup]="myForm" class="col-sm-12 col-md-3">
-      <label for="slbYears" class="d-block fw-bold mb-2">
-        Financial years
-      </label>
-      <select
-        id="slbYears"
-        formControlName="year"
-        class="form-select w-100"
-        style="padding-block: 0.6rem"
-      >
-        @for (year of years(); track year) {
-        <option [value]="year">{{ year }}</option>
-        }
-      </select>
-    </form>
 
-    <!-- Filter: Compare by -->
-    <form [formGroup]="myForm" class="col-sm-12 col-md-3">
-      <label for="slbYears" class="d-block fw-bold mb-2"> Compare by </label>
-      <select
-        id="slbYears"
-        formControlName="year"
-        class="form-select w-100"
-        style="padding-block: 0.6rem"
-      >
-        @for (year of years(); track year) {
-        <option [value]="year">{{ year }}</option>
-        }
-      </select>
-    </form>
-  </div>
+  </div> -->
 
   <div class="row justify-content-between my-4">
     <!-- Left side: Chart -->
     <div
-      class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2 border border-2 border-info"
+      class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2"
     >
-      <!-- Expand, download, Share/ Embed -->
-      <div class="d-flex justify-content-end gap-3 text-cfSecondary mb-3">
-        @for (item of items; track $index) {
-        <div class="d-flex flex-column align-items-center custom-font-size-6">
-          <i [class]="item.icon"></i>{{ item.label }}
+      <p class="">
+        Greater Hyderabad Municipal Corporation <b>Total Revenue</b> v/s
+        <b>State Average</b>
+      </p>
+
+      <div class="row justify-content-between align-items-center">
+        <!-- Filters -->
+        <div
+          class="col-sm-12 col-md-6 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3"
+        >
+          <input
+            class="rounded border px-2 py-2 custom-font-size-6"
+            id="filterInput"
+            value="Compare by National Avg"
+            #input
+            disabled
+          />
+
+          <!-- Filter: years-->
+          <form [formGroup]="myForm" class="">
+            <label for="slbYears" class="d-none fw-bold mb-2">
+              Financial years
+            </label>
+            <select
+              id="slbYears"
+              formControlName="year"
+              class="form-select w-100 custom-font-size-6 bg-light"
+              style="padding-block: 0.6rem"
+            >
+              @for (year of years(); track year) {
+              <option [value]="year">{{ year }}</option>
+              }
+            </select>
+          </form>
+
+          <!-- Reset icon -->
+          <div
+            class="d-flex flex-column align-items-center custom-font-size-7 text-cfSecondary"
+          >
+            <i
+              class="bi bi-arrow-clockwise custom-font-size-6"
+              tabindex="0"
+              aria-label="Reset search"
+            ></i
+            >Reset
+          </div>
         </div>
-        }
+
+        <!-- Expand, download, Share/ Embed -->
+        <div
+          class="col-sm-12 col-md-6 mb-4 d-flex justify-content-end gap-3 text-cfSecondary"
+        >
+          @for (item of items; track $index) {
+          <div class="d-flex flex-column align-items-center custom-font-size-7">
+            <i [class]="item.icon + ' custom-font-size-6'"></i>{{ item.label }}
+          </div>
+          }
+        </div>
       </div>
 
+      <!-- Chart -->
       <div class="overflow-x-auto flex-grow-1">
         <div class="w-100 h-100 chart-container">
           <app-charts [chartConfig]="chartData"></app-charts>
@@ -78,47 +103,27 @@
       </div>
     </div>
     <!-- Rigth side: Fyi -->
-    <div
-      class="col-sm-12 col-lg-4 px-4 py-3 mb-2 border border-2 border-cfPrimary rounded"
-    >
+    <div class="col-sm-12 col-lg-4 ps-5 pb-3 mb-2 rounded">
       <!-- Info -->
       <div
-        class="alert alert-success custom-font-size-7 d-flex align-items-start p-2"
+        class="alert alert-success d-flex align-items-start p-2"
+        style="font-size: 0.65rem"
         role="alert"
       >
-        <span class="mt-1">
-          <!-- <mat-icon
-            class="custom-font-size-7"
-            style="height: 15px; width: 15px"
-          >
-            brightness_1
-          </mat-icon> -->
-        </span>
-        CAGR of 10% between 2020-21 and 2022-23 years (ULB Total Revenue for FY'
-        2020-21 is Rs.2937 Cr. ULB Total Revenue for FY' 2022-23 is Rs. 3883
-        Cr.)
+        <i class="bi bi-circle-fill text-success custom-font-size-7"></i>
+        &nbsp;CAGR of 10% between 2020-21 and 2022-23 years (ULB Total Revenue
+        for FY' 2020-21 is Rs.2937 Cr. ULB Total Revenue for FY' 2022-23 is Rs.
+        3883 Cr.)
       </div>
       <!-- Accordion -->
       <div class="accordion">
-        <!-- <div class="">
-            <button class="btn btn-sm btn-outline-cfSecondary" (click)="accordion().openAll()">
-              Expand All
-            </button>
-            <button class="btn btn-sm btn-outline-cfSecondary" (click)="accordion().closeAll()">
-              Collapse All
-            </button>
-          </div> -->
         <mat-accordion class="mat-custom-style">
           <!-- Panel 1 -->
-          <mat-expansion-panel class="bg-light">
+          <mat-expansion-panel class="mb-3">
             <mat-expansion-panel-header>
-              <mat-panel-title class="fw-bold">
+              <mat-panel-title class="custom-font-size-6 fw-bold">
                 About this Indicator
               </mat-panel-title>
-              <!-- <mat-panel-description>
-                Type the country name
-                <mat-icon>map</mat-icon>
-              </mat-panel-description> -->
             </mat-expansion-panel-header>
 
             <p>
@@ -143,13 +148,11 @@
           </mat-expansion-panel>
 
           <!-- Panel 2 -->
-          <mat-expansion-panel>
+          <mat-expansion-panel class="mb-3">
             <mat-expansion-panel-header>
-              <mat-panel-title> Personal data </mat-panel-title>
-              <!-- <mat-panel-description>
-                Type your name and age
-                <mat-icon>account_circle</mat-icon>
-              </mat-panel-description> -->
+              <mat-panel-title class="custom-font-size-6 fw-bold">
+                Calculation
+              </mat-panel-title>
             </mat-expansion-panel-header>
 
             <mat-form-field>
@@ -164,13 +167,51 @@
           </mat-expansion-panel>
 
           <!-- Panel 3 -->
-          <mat-expansion-panel>
+          <mat-expansion-panel class="mb-3">
             <mat-expansion-panel-header>
-              <mat-panel-title> Day of the trip </mat-panel-title>
-              <!-- <mat-panel-description>
-                Inform the date you wish to travel
-                <mat-icon>date_range</mat-icon>
-              </mat-panel-description> -->
+              <mat-panel-title class="custom-font-size-6 fw-bold">
+                How is performance assessed?
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+              <mat-label>Date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                (focus)="picker.open()"
+                readonly
+              />
+            </mat-form-field>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-expansion-panel>
+
+          <!-- Panel 4 -->
+          <mat-expansion-panel class="mb-3">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="custom-font-size-6 fw-bold">
+                Analysis
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-form-field>
+              <mat-label>Date</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                (focus)="picker.open()"
+                readonly
+              />
+            </mat-form-field>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-expansion-panel>
+
+          <!-- Panel 5 -->
+          <mat-expansion-panel class="mb-3">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="custom-font-size-6 fw-bold">
+                Next Steps
+              </mat-panel-title>
             </mat-expansion-panel-header>
 
             <mat-form-field>

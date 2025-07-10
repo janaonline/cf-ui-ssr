@@ -25,7 +25,6 @@ import {
   throwError,
 } from 'rxjs';
 import { IMoneyInfoRes } from '../../../core/models/interfaces';
-import { IState } from '../../../core/models/state/state';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
 import { CitySearch } from '../../../shared/components/city-search/city-search';
@@ -89,7 +88,7 @@ export class City {
     private _commonService: CommonService,
     private _dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {}
 
   ngOnInit(): void {
@@ -128,7 +127,7 @@ export class City {
       this.slbYears.set(this.transferState.get(SLB_YEARS_KEY, []));
       this.moneyInfoRes.set(this.transferState.get(MONEY_INFO_KEY, null));
       this.selectedLedgerYear.set(
-        this.transferState.get(SELECTED_LEDGER_YEAR, ''),
+        this.transferState.get(SELECTED_LEDGER_YEAR, '')
       );
 
       // this.setDerivedCityProperties(this.cityDetails());
@@ -185,11 +184,11 @@ export class City {
             initialData: of(initialResults),
             moneyInfoRes: this.getMoneyInfoObservable(
               this.selectedLedgerYear(),
-              this.ulbIdSignal(),
+              this.ulbIdSignal()
             ),
           });
         }),
-        takeUntil(this.destroy$),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (finalRes) => {
@@ -214,7 +213,7 @@ export class City {
             this.transferState.set(MONEY_INFO_KEY, this.moneyInfoRes());
             this.transferState.set(
               SELECTED_LEDGER_YEAR,
-              this.selectedLedgerYear(),
+              this.selectedLedgerYear()
             );
           }
 
@@ -223,7 +222,7 @@ export class City {
         error: (error: Error) => {
           console.error(
             `${this.getPlatForm()}: Uncaught Error in loadData(): `,
-            error,
+            error
           );
           this.handleLoadingAndError(error);
           this.isLoading.set(false);
@@ -256,7 +255,7 @@ export class City {
     this.isLoading.set(false);
     this.hasError.set(true);
     this.errorMessage.set(
-      'An error occurred while loading data. Please try again.',
+      'An error occurred while loading data. Please try again.'
     );
     // TODO add snackbar;
   }
@@ -286,7 +285,7 @@ export class City {
           this.hasError.set(true);
           this.errorMessage.set(`Failed to load money info for ${year}.`);
           return throwError(() => error);
-        }),
+        })
       )
       .subscribe({
         next: (res: IMoneyInfoRes) => {
