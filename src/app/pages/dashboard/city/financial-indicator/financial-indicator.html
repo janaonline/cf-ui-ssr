@@ -43,7 +43,7 @@
       <div class="row justify-content-between align-items-center">
         <!-- Filters -->
         <div
-          class="col-sm-12 col-md-6 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3"
+          class="col-sm-12 col-md-7 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3"
         >
           <input
             class="rounded border px-2 py-2 custom-font-size-6"
@@ -55,11 +55,11 @@
 
           <!-- Filter: years-->
           <form [formGroup]="myForm" class="">
-            <label for="slbYears" class="d-none fw-bold mb-2">
+            <label for="finanaicalYears" class="d-none fw-bold mb-2">
               Financial years
             </label>
             <select
-              id="slbYears"
+              id="finanaicalYears"
               formControlName="year"
               class="form-select w-100 custom-font-size-6 bg-light"
               style="padding-block: 0.6rem"
@@ -85,7 +85,7 @@
 
         <!-- Expand, download, Share/ Embed -->
         <div
-          class="col-sm-12 col-md-6 mb-4 d-flex justify-content-end gap-3 text-cfSecondary"
+          class="col-sm-12 col-md-5 mb-4 d-flex justify-content-end gap-3 text-cfSecondary"
         >
           @for (item of items; track $index) {
           <div class="d-flex flex-column align-items-center custom-font-size-7">
@@ -117,115 +117,42 @@
       </div>
       <!-- Accordion -->
       <div class="accordion">
-        <mat-accordion class="mat-custom-style">
-          <!-- Panel 1 -->
-          <mat-expansion-panel class="mb-3">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="custom-font-size-6 fw-bold">
-                About this Indicator
-              </mat-panel-title>
-            </mat-expansion-panel-header>
+        <ng-container
+          *ngIf="subButtons[currentSelectedButtonKey()] as currentSubButton"
+        >
+          <ng-container *ngIf="currentSubButton[subButton()] as indicator">
+            <ng-container *ngIf="isIndicatorDetails(indicator)">
+              <mat-accordion class="mat-custom-style">
+                @for (acc of accordions; track acc.key+$index) {
+                <mat-expansion-panel class="mb-3">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="custom-font-size-6 fw-bold">
+                      {{ acc.label }}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
 
-            <p>
-              Sum of: (a) tax revenues, (b) non-tax revenues, (c) assigned
-              (shared) revenue, (c) grants-in-aid, (d) loans and (e) other
-              receipts.
-            </p>
-            <p>
-              Tax revenue includes Property Tax, Professional Tax, Entertainment
-              Tax among others Non-tax revenue includes user charges (including
-              for water supply, sewerage etc), fees, rentals from municipal
-              property, among others Know more...
-            </p>
-            <p>
-              Sum of: (a) tax revenues, (b) non-tax revenues, (c) assigned
-              (shared) revenue, (c) grants-in-aid, (d) loans and (e) other
-              receipts. Tax revenue includes Property Tax, Professional Tax,
-              Entertainment Tax among others Non-tax revenue includes user
-              charges (including for water supply, sewerage etc), fees, rentals
-              from municipal property, among others
-            </p>
-          </mat-expansion-panel>
-
-          <!-- Panel 2 -->
-          <mat-expansion-panel class="mb-3">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="custom-font-size-6 fw-bold">
-                Calculation
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <mat-form-field>
-              <mat-label>First name</mat-label>
-              <input matInput />
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Age</mat-label>
-              <input matInput type="number" min="1" />
-            </mat-form-field>
-          </mat-expansion-panel>
-
-          <!-- Panel 3 -->
-          <mat-expansion-panel class="mb-3">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="custom-font-size-6 fw-bold">
-                How is performance assessed?
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <mat-form-field>
-              <mat-label>Date</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                (focus)="picker.open()"
-                readonly
-              />
-            </mat-form-field>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-expansion-panel>
-
-          <!-- Panel 4 -->
-          <mat-expansion-panel class="mb-3">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="custom-font-size-6 fw-bold">
-                Analysis
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <mat-form-field>
-              <mat-label>Date</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                (focus)="picker.open()"
-                readonly
-              />
-            </mat-form-field>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-expansion-panel>
-
-          <!-- Panel 5 -->
-          <mat-expansion-panel class="mb-3">
-            <mat-expansion-panel-header>
-              <mat-panel-title class="custom-font-size-6 fw-bold">
-                Next Steps
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <mat-form-field>
-              <mat-label>Date</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                (focus)="picker.open()"
-                readonly
-              />
-            </mat-form-field>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-expansion-panel>
-        </mat-accordion>
+                  @for (item of indicator[acc.key]; track item.type+$index) {
+                  @if (item.type === 'text') {
+                  <p>{{ item.content }}</p>
+                  } @else if (item.type === 'hyperlink') {
+                  <p>
+                    <a [href]="item.link" target="_blank" rel="noopener">{{
+                      item.content
+                    }}</a>
+                  </p>
+                  } @else if (item.type === 'img') {
+                  <img
+                    [src]="item.link"
+                    [alt]="item.content"
+                    style="max-width: 100%"
+                  />
+                  } }
+                </mat-expansion-panel>
+                }
+              </mat-accordion>
+            </ng-container>
+          </ng-container>
+        </ng-container>
       </div>
     </div>
   </div>

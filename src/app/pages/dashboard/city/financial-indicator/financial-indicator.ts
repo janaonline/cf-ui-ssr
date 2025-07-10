@@ -1,6 +1,7 @@
 import { Component, input, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatAccordion } from '@angular/material/expansion';
+import { ButtonObj } from '../../../../core/models/interfaces';
 import { MaterialModule } from '../../../../material.module';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
@@ -11,8 +12,7 @@ import {
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { buttons, subButtons } from './constants';
-import { ButtonObj } from '../../../../core/models/interfaces';
+import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -40,6 +40,7 @@ export class FinancialIndicator {
   ];
   readonly buttons: ButtonObj[] = buttons;
   readonly subButtons = subButtons;
+  readonly accordions = accordions;
 
   currentSelectedButtonKey = signal<string>('');
   subButton = signal<string>('');
@@ -61,15 +62,22 @@ export class FinancialIndicator {
   onSelectedButtonChange(key: string): void {
     console.log('Button key sent from child to parent:', key);
     this.currentSelectedButtonKey.set(key);
-    this.subButton.set(
-      subButtons[this.currentSelectedButtonKey()].buttons[0].key
-    );
   }
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
     console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
+  }
+
+  // Type Guard Function
+  isIndicatorDetails(
+    value: string | ButtonObj[] | IndicatorDetails
+  ): value is IndicatorDetails {
+    return (
+      (value as IndicatorDetails).aboutIndicator !== undefined &&
+      Array.isArray((value as IndicatorDetails).aboutIndicator)
+    );
   }
 
   chartData: ChartConfig = {
