@@ -14,13 +14,9 @@ import {
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as L from 'leaflet';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { IULB } from '../../../core/models/ulb';
 import { UserUtility } from '../../../core/util/user/user';
-import {
-  MapConfig,
-  ResettableMap,
-  StateGeoJson,
-  ULBDataPoint,
-} from './interfaces';
+import { MapConfig, ResettableMap, StateGeoJson } from './interfaces';
 import { MapService } from './map.service';
 
 @Component({
@@ -34,11 +30,12 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // Note: Ensure the map component is initialized only after the parent component has fully loaded and rendered.
   @Input() stateCode!: string;
   @Input() ulbId!: string;
-  @Output() ulbIdChange = new EventEmitter<string>();
+  @Output() ulbObjChange = new EventEmitter<IULB>();
+  @Output() slugNameChange = new EventEmitter<string>();
   @Output() stateCodeChange = new EventEmitter<string>();
 
   private readonly DEFAULT_ZOOM_LEVEL = 4.2;
-  private ulbsList: ULBDataPoint[] = [];
+  private ulbsList: IULB[] = [];
   private stateLayer: L.GeoJSON | null = null; // To hold current state layer.
   private mapConfig: MapConfig = {
     initialView: [23, 81],
@@ -52,7 +49,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private mapService: MapService,
+    private mapService: MapService
   ) {}
 
   // Set map zoom based on screen width.
@@ -127,10 +124,11 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
     this.mapService.ulbCodeClicked$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((code) => {
-        if (code && this.ulbId !== code) {
-          this.ulbId = code;
-          this.ulbIdChange.emit(code);
+      .subscribe((ulbObj) => {
+        if (ulbObj && this.ulbId !== ulbObj._id) {
+          // console.log('ulb obj = ', ulbObj, this.ulbId);
+          this.ulbObjChange.emit(ulbObj);
+          this.ulbId = ulbObj._id;
         }
       });
   }
@@ -152,7 +150,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
         next: (data: StateGeoJson) => {
           const features = this.stateCode
             ? data.features.filter(
-                (f) => f.properties['ST_CODE'] === this.stateCode,
+                (f) => f.properties['ST_CODE'] === this.stateCode
               )
             : data.features;
           // console.log('state length = ', features.length);
@@ -163,7 +161,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
           this.stateLayer = this.mapService.addGeoJsonLayer(
             stateGeoJson,
-            this.stateCode,
+            this.stateCode
           );
 
           if (this.stateCode && features.length && this.stateLayer) {
@@ -180,7 +178,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
           } else {
             this.mapService.map?.setView(
               this.mapConfig.initialView,
-              this.mapConfig.initialZoom,
+              this.mapConfig.initialZoom
             );
             this.mapService.clearCityMarkers();
           }
@@ -205,7 +203,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     this.mapService.clearCityMarkers();
     this.mapService.map?.setView(
       this.mapConfig.initialView,
-      this.mapConfig.initialZoom,
+      this.mapConfig.initialZoom
     );
     this.loadMapData();
   }
