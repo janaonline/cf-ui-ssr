@@ -6,4 +6,24 @@
     background-color: #F7DBBF;
     color: black;
     border-radius: 23px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.unselected-btn:hover {
+    background-color: #eac8a4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.unselected-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(247, 219, 191, 0.6);
+}
+
+.unselected-btn:active {
+    background-color: #d9b58f;
+    transform: scale(0.97);
 }
