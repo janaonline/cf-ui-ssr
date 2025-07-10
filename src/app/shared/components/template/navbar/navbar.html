@@ -96,7 +96,7 @@
             [class]="menu.class"
             [attr.href]="menu.href"
             [innerHTML]="menu.name"
-            [target]="menu.target"
+            [target]="menu.target || '_self'"
             routerLinkActive="active"
           ></a>
           }
