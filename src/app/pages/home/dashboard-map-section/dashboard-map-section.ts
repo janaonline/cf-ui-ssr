@@ -465,7 +465,7 @@ export class DashboardMapSection {
   }
 
   checkIfBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
+    return !isPlatformServer(this.platformId);
   }
 
   // Unsubscribe.

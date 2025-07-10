@@ -13,10 +13,17 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { TABLE_STRUCTURE } from './constants';
+import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 
 @Component({
   selector: 'app-borrowing-credit-rating',
-  imports: [TabButtons, NoDataFound, MatTableModule, ReactiveFormsModule],
+  imports: [
+    TabButtons,
+    NoDataFound,
+    MatTableModule,
+    ReactiveFormsModule,
+    PreLoader,
+  ],
   templateUrl: './borrowing-credit-rating.html',
   styleUrl: './borrowing-credit-rating.scss',
 })
@@ -28,9 +35,7 @@ export class BorrowingCreditRating implements OnDestroy {
   readonly displayedColumnsStructure: string[] = ['header'];
   currentSelectedButtonKey = signal<string>('');
   readonly ulbIdSignal = input.required<string>();
-  // readonly borrowingYears = input.required<string[]>();
   borrowingYears = signal<string[]>([]);
-  isBorrowingDisabled: boolean = true;
 
   private readonly COLS_PER_PAGE = 3;
   currentPage = 0;
@@ -39,7 +44,7 @@ export class BorrowingCreditRating implements OnDestroy {
   isPrevDisabled = true;
   isNextDisabled = true;
 
-  isLoading = true;
+  isLoading = signal<boolean>(true);
   displayedColumns: string[] = [];
 
   dataSource!: BorrowingsData[];
@@ -74,22 +79,23 @@ export class BorrowingCreditRating implements OnDestroy {
 
   // Distinct bonds years.
   private getBorrowingsYears() {
-    this._commonService.borrowingYears(this.ulbIdSignal()).subscribe({
-      next: (res) => {
-        this.isBorrowingDisabled = false;
-        if (res.borrowingYears.length === 0) this.isBorrowingDisabled = true;
-        this.borrowingYears.set(res.borrowingYears);
-
-        // console.log('bonds years: ', res.borrowingYears, this.isBorrowingDisabled);
-      },
-      error: (error) => console.error('Failed to get borrowingYears: ', error),
-      complete: () => this.getBorrowingsData(),
-    });
+    if (this.borrowingYears().length === 0) {
+      this._commonService.borrowingYears(this.ulbIdSignal()).subscribe({
+        next: (res) => {
+          this.borrowingYears.set(res.borrowingYears);
+        },
+        error: (error) =>
+          console.error('Failed to get borrowingYears: ', error),
+        complete: () => this.getBorrowingsData(),
+      });
+    }
   }
 
   readonly ulbIdChangeEffect = effect(() => {
     const ulbId = this.ulbIdSignal();
-    if (ulbId && this.currentSelectedButtonKey() === this.buttons[0].key) {
+    if (!ulbId) return;
+
+    if (this.currentSelectedButtonKey() === this.buttons[0].key) {
       this.getBorrowingsYears();
       // this.getBorrowingsData();
     }
@@ -103,7 +109,7 @@ export class BorrowingCreditRating implements OnDestroy {
     )
       return;
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.dashboardService
       .getBorrowingsData(this.ulbIdSignal())
       .pipe(takeUntil(this.destroy$))
@@ -116,7 +122,7 @@ export class BorrowingCreditRating implements OnDestroy {
           this.createStructure();
         },
         error: (error) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           console.error('Failed to fetch borrowings data: ', error);
         },
       });
@@ -143,7 +149,7 @@ export class BorrowingCreditRating implements OnDestroy {
 
     this.currentPage = 0;
     this.updateDisplayedColumns();
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   private updateDisplayedColumns(): void {
@@ -220,7 +226,6 @@ export class BorrowingCreditRating implements OnDestroy {
   creditRatingData: ICreditRatingData[] = [];
 
   private subscriptions: Subscription[] = [];
-  isCreditRatingDisabled = true;
   myForm!: FormGroup;
 
   // Watch ULB changes
@@ -232,7 +237,6 @@ export class BorrowingCreditRating implements OnDestroy {
       // Reset state when ULB changes
       this.creditRatingYears = [];
       this.filteredCreditRating = [];
-      this.isCreditRatingDisabled = true;
 
       if (this.creditRatingData.length) {
         this.processCreditRatingData();
@@ -245,6 +249,7 @@ export class BorrowingCreditRating implements OnDestroy {
   // Fetch credit rating data from service
   private getCreditRatingsData(): void {
     // console.log('Fetching credit rating data...', abc);
+    this.isLoading.set(true);
     this.dashboardService.getCreditRatingsData().subscribe({
       next: (res) => {
         this.creditRatingData = res || [];
@@ -255,6 +260,7 @@ export class BorrowingCreditRating implements OnDestroy {
       },
       complete: () => {
         this.processCreditRatingData();
+        this.isLoading.set(false);
       },
     });
   }
@@ -264,13 +270,13 @@ export class BorrowingCreditRating implements OnDestroy {
     this.extractDistinctYears();
     if (this.creditRatingYears.length > 0) {
       this.initializeForm(this.creditRatingYears[0]);
-    } else {
-      this.isCreditRatingDisabled = true;
     }
   }
 
   // Extract years for current ULB
   private extractDistinctYears(): void {
+    this.isLoading.set(true);
+
     const ulbName = this.ulbName();
     const yearSet = new Set<string>();
 
@@ -284,11 +290,14 @@ export class BorrowingCreditRating implements OnDestroy {
     this.creditRatingYears = Array.from(yearSet).sort((a, b) =>
       b.localeCompare(a)
     );
-    this.isCreditRatingDisabled = this.creditRatingYears.length === 0;
+
+    this.isLoading.set(false);
   }
 
   // Build the form and set up listeners
   private initializeForm(defaultYear: string = ''): void {
+    this.isLoading.set(true);
+
     if (!this.creditRatingYears.length) return;
 
     if (this.myForm) {
@@ -307,6 +316,7 @@ export class BorrowingCreditRating implements OnDestroy {
     });
 
     if (sub) this.subscriptions.push(sub);
+    this.isLoading.set(false);
   }
 
   // Filter data by selected year and ULB

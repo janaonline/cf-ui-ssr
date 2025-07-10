@@ -1,0 +1,23 @@
+.chart-container {
+    min-height: 500px;
+    min-width: 500px;
+    // min-height: min(510px, 50vw);
+    // min-width: min(510px, 50vw);
+
+    // border: 1px solid green;
+}
+
+.mat-custom-style {
+    --mat-expansion-header-text-font: var(--ff-base);
+
+    p {
+        font-family: var(--ff-base);
+        font-weight: var(--fw-medium);
+        font-size: 0.813rem;
+    }
+}
+
+.accordion {
+    overflow-y: auto;
+    max-height: 510px
+}

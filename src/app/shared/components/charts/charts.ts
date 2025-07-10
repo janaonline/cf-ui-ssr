@@ -6,50 +6,10 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
-import { Chart, ChartOptions, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+import { ChartConfig } from './chart-interfaces';
 Chart.register(...registerables);
 
-// In a new file, e.g., chart-types.ts
-export interface ChartDataSet {
-  label: string;
-  data: number[];
-  backgroundColor?: string | string[];
-  borderColor?: string | string[];
-  borderRadius?: number;
-  borderWidth?: number;
-  pointBackgroundColor?: string;
-  fill?: boolean;
-  tension?: number;
-  // type?: 'bar' | 'line'; // For mixed charts
-}
-
-export interface ChartConfig {
-  chartType:
-    | 'barChart'
-    | 'lineChart'
-    | 'pieChart'
-    | 'mixedChart'
-    | 'gaugeChart'
-    | 'doughnut';
-  chartId: string;
-  labels?: string[];
-  datasets: ChartDataSet[];
-  options?: ChartOptions;
-
-  additionalInfo?: slbData;
-
-  // Todo: create another interface
-  // idx: number;
-  // indicatorType: string;
-  // value: number;
-}
-
-export interface slbData {
-  indicatorName: string;
-  value: number;
-  nationalAvg: number;
-  unit: string;
-}
 @Component({
   selector: 'app-charts',
   imports: [],
@@ -92,7 +52,7 @@ export class Charts implements AfterViewInit, OnDestroy {
 
     // Destroy existing chart instance if any (for updates later)
     if (this.chartInstance) {
-      // this.chartInstance.destroy();
+      this.chartInstance.destroy();
     }
 
     const config = this.chartConfig();
@@ -134,10 +94,7 @@ export class Charts implements AfterViewInit, OnDestroy {
       case 'mixedChart':
         this.chartInstance = new Chart(ctx, {
           type: 'bar',
-          data: {
-            labels: config.labels,
-            datasets: config.datasets,
-          },
+          data: config.data,
           options: config.options,
           // config.options || baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
         });
@@ -164,3 +121,165 @@ export class Charts implements AfterViewInit, OnDestroy {
     }
   }
 }
+
+// // Sample/ Examples
+// // Bar Chart
+// private createBarCanvas() {
+//   console.log('createBarCanvas()');
+//   new Chart(this.barCanvas.nativeElement, {
+//     type: 'bar',
+//     data: {
+//       labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+//       datasets: [
+//         {
+//           label: '2023-24',
+//           data: [12, 19, 3],
+//           backgroundColor: ['#65D2F3'],
+//           borderRadius: 5,
+//         },
+//         {
+//           label: '2022-23',
+//           data: [10, 8, 6],
+//           backgroundColor: ['#1596E6'],
+//           borderRadius: 5,
+//         },
+//         {
+//           label: '2021-22',
+//           data: [12, 10, 14],
+//           backgroundColor: ['#245ABF'],
+//           borderRadius: 5,
+//         },
+//       ],
+//     },
+//     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+//   });
+// }
+
+// // Mixed Chart
+// private createMixedChartCanvas() {
+//   console.log('createMixedChartCanvas()');
+//   new Chart(this.mixedChartCanvas.nativeElement, {
+//     type: 'bar',
+//     data: {
+//       labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+//       datasets: [
+//         {
+//           type: 'line',
+//           label: 'Y-o-Y Growth',
+//           data: [25, 45, 35, 55],
+//           borderWidth: 2,
+//           borderColor: '#f43f5e',
+//           pointBackgroundColor: '#f43f5e',
+//           fill: false,
+//           tension: 0.3,
+//         },
+//         {
+//           type: 'bar',
+//           label: 'ULB Name',
+//           data: [30, 50, 40, 60],
+//           backgroundColor: ['#1596E6'],
+//           borderRadius: 5,
+//         },
+//         {
+//           type: 'bar',
+//           label: 'State Avg',
+//           data: [12, 10, 14],
+//           backgroundColor: ['#245ABF'],
+//           borderRadius: 5,
+//         },
+//       ],
+//     },
+//     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
+//   });
+// }
+
+// // Line Chart
+// private createLineCanvas() {
+//   console.log('createLineCanvas()');
+//   new Chart(this.lineCanvas.nativeElement, {
+//     type: 'line',
+//     data: {
+//       labels: ['Jan', 'Feb', 'Mar'],
+//       datasets: [
+//         {
+//           label: 'Dataset Label',
+//           data: [10, 15, 30],
+//           borderWidth: 2,
+//           borderColor: '#FF6384',
+//           pointBackgroundColor: '#FF6384',
+//           fill: false,
+//           tension: 0.3,
+//         },
+//       ],
+//     },
+//     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Months', 'Amt in ₹ Cr'),
+//   });
+// }
+
+// // Pie Chart
+// private createPieCanvas() {
+//   console.log('createPieCanvas()');
+//   new Chart(this.pieCanvas.nativeElement, {
+//     type: 'doughnut',
+//     data: {
+//       labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+//       datasets: [
+//         {
+//           label: 'Pie Dataset',
+//           data: [30, 50, 20],
+//           backgroundColor: ['#65D2F3', '#1596E6', '#245ABF'],
+//           borderRadius: 5,
+//           borderWidth: 1,
+//         },
+//       ],
+//     },
+//     options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+//   });
+// }
+
+// // Half Donut
+// private createGaugeCanvas() {
+//   console.log('createGaugeCanvas()');
+//   new Chart(this.halfDonutCanvas.nativeElement, {
+//     type: 'doughnut',
+//     data: {
+//       labels: ['Own Source Revenue'],
+//       datasets: [
+//         {
+//           label: 'Own source revenue',
+//           data: [80, 20],
+//           backgroundColor: ['#65D2F3', '#f8f9fa'],
+//           borderWidth: 1,
+//           borderRadius: 5,
+//         },
+//         {
+//           label: 'label 2',
+//           data: [40, 60],
+//           backgroundColor: ['#65D2F3', '#f8f9fa'],
+//           borderWidth: 1,
+//           borderRadius: 5,
+//         },
+//         {
+//           label: 'label 3',
+//           data: [70, 30],
+//           backgroundColor: ['#65D2F3', '#f8f9fa'],
+//           borderWidth: 1,
+//           borderRadius: 5,
+//         },
+//       ],
+//     },
+//     options: {
+//       circumference: 180,
+//       rotation: 270,
+//       cutout: '65%',
+//       plugins: {
+//         legend: { display: false },
+//         tooltip: {
+//           filter: (tooltipItem) => {
+//             return tooltipItem.dataIndex === 0;
+//           },
+//         },
+//       },
+//     },
+//   });
+// }
