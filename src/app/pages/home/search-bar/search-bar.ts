@@ -1,8 +1,4 @@
-import {
-  isPlatformBrowser,
-  isPlatformServer,
-  TitleCasePipe,
-} from '@angular/common';
+import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
 import {
   Component,
   Inject,
@@ -25,10 +21,10 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
 import { ResourcesDashboardService } from '../../../core/services/resources-dashboard.service';
-import { environment } from '../../../../environments/environment';
 
 const ULB_COUNT_KEY = makeStateKey<number>('ulbCount');
 
@@ -51,7 +47,8 @@ export class SearchBar {
   globalOptions = [];
   noDataFound = false;
   // recentSearchArray: any = [];
-  filteredOptions: any = [];
+  // filteredOptions: any = [];
+  filteredOptions = signal<any[]>([]);
   postBody: any;
   stopNavigation: any;
   readonly DEFAULT_VALUE = 4000;
@@ -153,7 +150,7 @@ export class SearchBar {
         switchMap((query) => {
           this.searchKey = query.trim();
           if (!this.searchKey?.trim()) {
-            this.filteredOptions = [];
+            this.filteredOptions.set([]);
             this.noDataFound = false;
             return of([]);
           }
@@ -165,8 +162,8 @@ export class SearchBar {
       )
       .subscribe((res: any) => {
         console.log('global search data', res.data);
-        this.filteredOptions = res.data || [];
-        this.noDataFound = this.filteredOptions.length === 0;
+        this.filteredOptions.set(res.data || []);
+        this.noDataFound = this.filteredOptions().length === 0;
       });
   }
 
@@ -197,7 +194,7 @@ export class SearchBar {
     //  console.log('filterOptions', this.filteredOptions)
     //  console.log('form control', this.globalFormControl.value)
 
-    const searchArray: any = this.filteredOptions;
+    const searchArray: any = this.filteredOptions();
     const searchValue = searchArray.find(
       (e: any) =>
         e?.name.toLowerCase() == this.globalFormControl?.value.toLowerCase()
