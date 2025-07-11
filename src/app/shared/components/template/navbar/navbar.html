@@ -25,7 +25,7 @@
         } @for (menu of menus; track $index) { @if (menu.child?.length) {
         <li class="active" [matMenuTriggerFor]="DashboardMenu">
           <a class="nav-link d-flex align-items-center" routerLinkActive="active">
-            {{ menu.name }}
+            {{ menu.name }}&nbsp;
             <i class="bi bi-caret-down-fill"></i>
           </a>
         </li>
@@ -58,7 +58,7 @@
       <div class="ms-2">
         @if (!isLoggedIn) {
         <button class="btn btn-cfPrimary fw-bold d-flex align-items-center" [matMenuTriggerFor]="loginMenu">
-          Login
+          Login&nbsp;
           <i class="bi bi-caret-down-fill"></i>
         </button>
         <mat-menu #loginMenu="matMenu">
