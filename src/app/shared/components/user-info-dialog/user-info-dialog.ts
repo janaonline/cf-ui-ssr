@@ -53,8 +53,8 @@ export class UserInfoDialog {
     private _snackBar: MatSnackBar,
   ) { }
 
-  title: string = 'Download';
-  desc: string = 'Please enter your information below to download the file(s).';
+  title: string = 'User Information';
+  desc: string = '';
   isLoading: boolean = false;
   fields: FieldConfig[] = [];
   userInfo: FormGroup = new FormGroup({});

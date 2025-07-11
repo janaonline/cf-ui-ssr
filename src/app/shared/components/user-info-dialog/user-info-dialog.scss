@@ -3,6 +3,19 @@
     font-weight: var(--fw-medium);
 }
 
-.mat-mdc-dialog-container {
-    --mdc-dialog-container-shape: 20px;
+.compact-input .mat-form-field-infix {
+    padding: 2px 6px;
 }
+
+// ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+//   padding: 2px 6px;
+// }
+
+// ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+//     padding: 0; // remove default padding if needed
+// }
+
+// ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+//     padding: 0.25rem 0.5rem; // adjust as needed
+//     min-height: unset; // optional: allow smaller height
+// }

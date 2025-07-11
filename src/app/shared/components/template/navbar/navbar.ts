@@ -274,8 +274,11 @@ export class Navbar {
       getEndPointUrl: 'request-demo/getDemoForm',
       postEndPointUrl: 'request-demo/postDemoData',
     };
+
     const downloadInfo = { module: 'requestDemo' }; // Info about the file download for backend payload.
     const dialogRef = this.dialog.open(UserInfoDialog, {
+      width: '800px',
+      maxWidth: '70vw',
       data: { downloadInfo, moduleInfo },
     });
 
