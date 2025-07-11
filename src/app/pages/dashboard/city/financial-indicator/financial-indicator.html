@@ -69,13 +69,22 @@
       </div>
 
       <!-- Chart -->
-      @for (chartData of chartsData; track $index) {
+      <div class="d-flex flex-wrap justify-content-center gap-1">
+        @for (chartData of chartsData; track $index) {
+        <div [class.flex-grow-1]="['mixedChart'].includes(chartData.chartType)">
+          <div class="" [ngClass]="chartData.chartType">
+            <app-charts [chartConfig]="chartData"></app-charts>
+          </div>
+        </div>
+        }
+      </div>
+      <!-- @for (chartData of chartsData; track $index) {
       <div class="overflow-x-auto flex-grow-1">
         <div class="w-100 h-100 chart-container">
           <app-charts [chartConfig]="chartData"></app-charts>
         </div>
       </div>
-      }
+      } -->
 
     </div>
     <!-- Rigth side: Fyi -->

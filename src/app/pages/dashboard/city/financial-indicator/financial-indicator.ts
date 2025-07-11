@@ -28,6 +28,24 @@ import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
   styleUrl: './financial-indicator.scss',
 })
 export class FinancialIndicator {
+  readonly graphColors = [
+    '#1b4965',
+    '#357C91',
+    '#A6D6E3',
+    '#8A63CC',
+    '#B388FF',
+    '#CDA9FF',
+  ]
+
+  // readonly graphColors = [
+  //   '#1b4965',
+  //   '#62b6cb',
+  //   '#B388FF',
+  //   '#FFB5E8',
+  //   '#FFD6A5',
+  //   '#9BF6FF',
+  //   '#BFFCC6'
+  // ]
   readonly disabledColor = '#e9ecef';
   readonly primaryColor = '#1b4965';
   readonly secondaryColor = '#62b6cb';
@@ -81,63 +99,109 @@ export class FinancialIndicator {
   }
 
   chartsData: ChartConfig[] = [
+    // Doughnut
     {
-      chartId: 'mixed0',
-      chartType: 'mixedChart',
-      labels: ['2020-21', '2021-22', '2022-23'],
-      data: {
-        labels: ['2020-21', '2021-22', '2022-23'],
-        datasets: [
-          {
-            type: 'line',
-            label: 'Y-o-Y Growth',
-            data: [-20, -10, 0],
-            borderWidth: 2,
-            borderColor: this.lineColor,
-            pointBackgroundColor: this.lineColor,
-            fill: false,
-            tension: 0.3,
-          },
-          {
-            type: 'bar',
-            label: 'ULB Name',
-            data: [2937, 3524, 3883],
-            backgroundColor: [this.secondaryColor],
-            borderRadius: 5,
-            barThickness: 60,
-          },
-          {
-            type: 'bar',
-            label: 'National Avg',
-            data: [1576, 1946, 3037],
-            backgroundColor: [this.primaryColor],
-            borderRadius: 5,
-            barThickness: 60,
-          },
-          // {
-          //   type: 'bar',
-          //   label: 'National Avg',
-          //   data: [1576, 1946, 3037],
-          //   backgroundColor: [this.primaryColor],
-          //   borderRadius: 5,
-          //   // barThickness: 60,
-          // },
-          // {
-          //   type: 'bar',
-          //   label: 'National Avg',
-          //   data: [1576, 1946, 3037],
-          //   backgroundColor: [this.primaryColor],
-          //   borderRadius: 5,
-          //   // barThickness: 60,
-          // },
-        ],
-      },
-      options: baseChartOptions(
-        DEFAULT_FONT_FAMILY,
-        true,
-        'Years',
-        'Amt in ₹ Cr'
-      ),
-    }
+      chartId: 'pie0',
+      chartType: 'gaugeChart',
+      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+      datasets: [
+        {
+          label: 'Pie Dataset',
+          data: [30, 10, 20, 20, 20, 10],
+          backgroundColor: this.graphColors.slice(0, 7),
+          borderRadius: 3,
+          borderWidth: 1,
+        },
+      ],
+      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+    },
+    {
+      chartId: 'pie1',
+      chartType: 'gaugeChart',
+      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+      datasets: [
+        {
+          label: 'Pie Dataset',
+          data: [30, 10, 20, 20, 20, 10],
+          backgroundColor: this.graphColors.slice(0, 7),
+          borderRadius: 3,
+          borderWidth: 1,
+        },
+      ],
+      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+    },
+    {
+      chartId: 'pie1',
+      chartType: 'gaugeChart',
+      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+      datasets: [
+        {
+          label: 'Pie Dataset',
+          data: [30, 10, 20, 20, 20, 10],
+          backgroundColor: this.graphColors.slice(0, 7),
+          borderRadius: 3,
+          borderWidth: 1,
+        },
+      ],
+      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+    },
+    // {
+    //   chartId: 'mixed0',
+    //   chartType: 'mixedChart',
+    //   labels: ['2020-21', '2021-22', '2022-23'],
+    //   data: {
+    //     labels: ['2020-21', '2021-22', '2022-23'],
+    //     datasets: [
+    //       {
+    //         type: 'line',
+    //         label: 'Y-o-Y Growth',
+    //         data: [2937, 3524, 3883],
+    //         borderWidth: 2,
+    //         borderColor: this.lineColor,
+    //         pointBackgroundColor: this.lineColor,
+    //         fill: false,
+    //         tension: 0.3,
+    //       },
+    //       {
+    //         type: 'bar',
+    //         label: 'ULB Name',
+    //         data: [2937, 3524, 3883],
+    //         backgroundColor: [this.secondaryColor],
+    //         borderRadius: 5,
+    //         barThickness: 60,
+    //       },
+    //       {
+    //         type: 'bar',
+    //         label: 'National Avg',
+    //         data: [1576, 1946, 3037],
+    //         backgroundColor: [this.primaryColor],
+    //         borderRadius: 5,
+    //         barThickness: 60,
+    //       },
+    //       // {
+    //       //   type: 'bar',
+    //       //   label: 'National Avg',
+    //       //   data: [1576, 1946, 3037],
+    //       //   backgroundColor: [this.primaryColor],
+    //       //   borderRadius: 5,
+    //       //   // barThickness: 60,
+    //       // },
+    //       // {
+    //       //   type: 'bar',
+    //       //   label: 'National Avg',
+    //       //   data: [1576, 1946, 3037],
+    //       //   backgroundColor: [this.primaryColor],
+    //       //   borderRadius: 5,
+    //       //   // barThickness: 60,
+    //       // },
+    //     ],
+    //   },
+    //   options: baseChartOptions(
+    //     DEFAULT_FONT_FAMILY,
+    //     true,
+    //     'Years',
+    //     'Amt in ₹ Cr'
+    //   ),
+    // }
   ];
 }

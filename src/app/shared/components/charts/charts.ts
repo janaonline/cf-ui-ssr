@@ -99,6 +99,7 @@ export class Charts implements AfterViewInit, OnDestroy {
           // config.options || baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
         });
         break;
+      // For gauge chart use gaugeChartOptions
       case 'gaugeChart':
         this.chartInstance = new Chart(ctx, {
           type: 'doughnut',
