@@ -33,6 +33,7 @@ import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { Map } from '../../../shared/components/map/map';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { StateSearch } from '../../../shared/components/state-search/state-search';
+import { environment } from '../../../../environments/environment';
 
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 const STATE_LIST_KEY = makeStateKey<any>('stateList');
@@ -48,6 +49,8 @@ const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 })
 export class DashboardMapSection {
   @ViewChild('map') mapComponent!: Map;
+
+  v1Url = environment.v1Url;
 
   myForm!: FormGroup;
   noDataFound: boolean = true;
@@ -121,7 +124,7 @@ export class DashboardMapSection {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     private transferState: TransferState
-  ) {}
+  ) { }
 
   // One time functions.
   ngOnInit(): void {
@@ -368,9 +371,8 @@ export class DashboardMapSection {
               },
               {
                 sequence: 6,
-                label: `Municipal Bond Issuances Of Rs. ${
-                  this.bondIssuances().bondIssueAmount
-                } Cr With Details`,
+                label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
+                  } Cr With Details`,
                 value: `${this.bondIssuances().totalMunicipalBonds}`,
                 info: '',
                 src: '',
@@ -461,12 +463,16 @@ export class DashboardMapSection {
 
   // View state/ city dashboard.
   public viewDashboard(): void {
-    if (this.ulbSlugName())
+    if (this.ulbSlugName()) {
       this.router.navigateByUrl(`/dashboard/city/${this.ulbSlugName()}`);
-    else
-      this.router.navigateByUrl(
-        `/dashboard/state/${this.selectedStateIdSignal()}`
-      );
+    }
+    else {
+      // this.router.navigateByUrl(
+      //   `/dashboard/state/${this.selectedStateIdSignal()}`,
+      // );
+      window.location.href =
+        `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+    }
   }
 
   checkIfBrowser(): boolean {
