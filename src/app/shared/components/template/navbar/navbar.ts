@@ -271,7 +271,8 @@ export class Navbar {
     // Frontend config flags for handling the module.
     const moduleInfo = {
       saveToLocalStorage: false,
-      endPoint: 'request-demo/getDemoForm',
+      getEndPointUrl: 'request-demo/getDemoForm',
+      postEndPointUrl: 'request-demo/postDemoData',
     };
     const downloadInfo = { module: 'requestDemo' }; // Info about the file download for backend payload.
     const dialogRef = this.dialog.open(UserInfoDialog, {
