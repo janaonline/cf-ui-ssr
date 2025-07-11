@@ -1,6 +1,7 @@
 import { Component, input, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatAccordion } from '@angular/material/expansion';
+import html2canvas from 'html2canvas';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { MaterialModule } from '../../../../material.module';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
@@ -45,9 +46,10 @@ export class FinancialIndicator {
   // readonly accentColor = '#bee9e8';
   readonly lineColor = '#f43f5e';
   readonly items = [
-    { icon: 'bi bi-arrows-fullscreen', label: 'Expand' },
+    // { icon: 'bi bi-arrows-fullscreen', label: 'Expand' },
+    // { icon: 'bi bi-share-fill', label: 'Share' },
+    { icon: 'bi bi-arrow-clockwise', label: 'Reset' },
     { icon: 'bi bi-download', label: 'Download' },
-    { icon: 'bi bi-share-fill', label: 'Share' },
   ];
   readonly buttons: ButtonObj[] = buttons;
   readonly subButtons = subButtons;
@@ -94,6 +96,11 @@ export class FinancialIndicator {
       Array.isArray((value as IndicatorDetails).aboutIndicator)
     );
   }
+
+  getButtonLabel(arr: ButtonObj[], key: string) {
+    return arr.find(e => e.key === key)?.label;
+  }
+
   // Create chart.
   private getChartData() {
     console.log('Sub button, Curr button: ', this.subButton(), this.currentSelectedButtonKey());
@@ -161,5 +168,63 @@ export class FinancialIndicator {
       }
 
     }, 2000);
+  }
+
+  // isExpanded: boolean = false;
+  showLoader = signal<boolean>(false);
+  takeAction(selectedIcon: string) {
+    console.log("Clicked icon: ", selectedIcon)
+    this.showLoader.set(true);
+    // if (selectedIcon === 'Expand') this.isExpanded = !this.isExpanded;
+
+    if (selectedIcon === 'Download') {
+      setTimeout(() => {
+        const chartElement = document.getElementById('chartContainer');
+        if (!chartElement) return;
+
+        // html2canvas(chartElement).then(canvas => {
+        //   const link = document.createElement('a');
+        //   link.download = 'chart-snapshot.png';
+        //   link.href = canvas.toDataURL('image/png');
+        //   link.click();
+        // });
+
+        const mainBtn = this.getButtonLabel(this.buttons, this.currentSelectedButtonKey());
+        const subBtn = this.getButtonLabel(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
+        const imgName = `${mainBtn}_${subBtn}.png`;
+        const chartContainer = document.getElementById('chartContainer');
+        const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
+
+        // Hide elements
+        elementsToHide?.forEach(el => {
+          (el as HTMLElement).style.visibility = 'hidden';
+        });
+
+        if (!chartContainer) return;
+
+        html2canvas(chartContainer).then(canvas => {
+          // Re-show hidden elements
+          elementsToHide?.forEach(el => {
+            (el as HTMLElement).style.visibility = 'visible';
+          });
+
+          // Save the image
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL('image/png');
+          link.download = imgName;
+          link.click();
+
+          this.showLoader.set(false);
+        }).catch(err => {
+          // Restore elements in case of error
+          elementsToHide?.forEach(el => {
+            (el as HTMLElement).style.visibility = 'visible';
+          });
+          console.error('Error capturing chart:', err);
+          this.showLoader.set(false);
+        });
+      }, 0);
+
+    }
   }
 }
