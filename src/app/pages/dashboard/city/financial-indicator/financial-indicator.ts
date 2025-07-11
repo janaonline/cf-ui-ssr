@@ -51,7 +51,7 @@ export class FinancialIndicator {
 
   isLoading = signal<boolean>(true);
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.myForm = this.fb.group({ year: [this.years()[0]] });
@@ -80,62 +80,64 @@ export class FinancialIndicator {
     );
   }
 
-  chartData: ChartConfig = {
-    chartId: 'mixed0',
-    chartType: 'mixedChart',
-    labels: ['2020-21', '2021-22', '2022-23'],
-    data: {
+  chartsData: ChartConfig[] = [
+    {
+      chartId: 'mixed0',
+      chartType: 'mixedChart',
       labels: ['2020-21', '2021-22', '2022-23'],
-      datasets: [
-        {
-          type: 'line',
-          label: 'Y-o-Y Growth',
-          data: [-20, -10, 0],
-          borderWidth: 2,
-          borderColor: this.lineColor,
-          pointBackgroundColor: this.lineColor,
-          fill: false,
-          tension: 0.3,
-        },
-        {
-          type: 'bar',
-          label: 'ULB Name',
-          data: [2937, 3524, 3883],
-          backgroundColor: [this.secondaryColor],
-          borderRadius: 5,
-          barThickness: 60,
-        },
-        {
-          type: 'bar',
-          label: 'National Avg',
-          data: [1576, 1946, 3037],
-          backgroundColor: [this.primaryColor],
-          borderRadius: 5,
-          barThickness: 60,
-        },
-        // {
-        //   type: 'bar',
-        //   label: 'National Avg',
-        //   data: [1576, 1946, 3037],
-        //   backgroundColor: [this.primaryColor],
-        //   borderRadius: 5,
-        //   // barThickness: 60,
-        // },
-        // {
-        //   type: 'bar',
-        //   label: 'National Avg',
-        //   data: [1576, 1946, 3037],
-        //   backgroundColor: [this.primaryColor],
-        //   borderRadius: 5,
-        //   // barThickness: 60,
-        // },
-      ],
-    },
-    options: baseChartOptions(
-      DEFAULT_FONT_FAMILY,
-      true,
-      'Years',
-      'Amt in ₹ Cr'
-    ),
-  };
+      data: {
+        labels: ['2020-21', '2021-22', '2022-23'],
+        datasets: [
+          {
+            type: 'line',
+            label: 'Y-o-Y Growth',
+            data: [-20, -10, 0],
+            borderWidth: 2,
+            borderColor: this.lineColor,
+            pointBackgroundColor: this.lineColor,
+            fill: false,
+            tension: 0.3,
+          },
+          {
+            type: 'bar',
+            label: 'ULB Name',
+            data: [2937, 3524, 3883],
+            backgroundColor: [this.secondaryColor],
+            borderRadius: 5,
+            barThickness: 60,
+          },
+          {
+            type: 'bar',
+            label: 'National Avg',
+            data: [1576, 1946, 3037],
+            backgroundColor: [this.primaryColor],
+            borderRadius: 5,
+            barThickness: 60,
+          },
+          // {
+          //   type: 'bar',
+          //   label: 'National Avg',
+          //   data: [1576, 1946, 3037],
+          //   backgroundColor: [this.primaryColor],
+          //   borderRadius: 5,
+          //   // barThickness: 60,
+          // },
+          // {
+          //   type: 'bar',
+          //   label: 'National Avg',
+          //   data: [1576, 1946, 3037],
+          //   backgroundColor: [this.primaryColor],
+          //   borderRadius: 5,
+          //   // barThickness: 60,
+          // },
+        ],
+      },
+      options: baseChartOptions(
+        DEFAULT_FONT_FAMILY,
+        true,
+        'Years',
+        'Amt in ₹ Cr'
+      ),
+    }
+  ];
 }
