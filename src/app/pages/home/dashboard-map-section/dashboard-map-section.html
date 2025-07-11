@@ -9,13 +9,14 @@
   <!-- Map section -->
   <div class="col-md-12 col-lg-6 d-flex flex-column">
     <div class="position-relative" style="min-height: 500px">
-      @if (showMap && checkIfBrowser()) {
+      <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
+      @if (showMap()) {
       <app-map
         #map
         [stateCode]="selectedStateCodeSignal()"
         (stateCodeChange)="selectedStateCodeChange($event)"
         [ulbId]="selectedCityIdSignal()"
-        (ulbIdChange)="selectedCityIdChange($event)"
+        (ulbObjChange)="selectedUlbObjChange($event)"
       ></app-map>
       }
     </div>

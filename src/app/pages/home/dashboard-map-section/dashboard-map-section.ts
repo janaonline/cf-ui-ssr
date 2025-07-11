@@ -55,7 +55,7 @@ export class DashboardMapSection {
   myForm!: FormGroup;
   noDataFound: boolean = true;
   isLoading = signal<boolean>(true);
-  showMap: boolean = false;
+  showMap = signal<boolean>(false);
 
   selectedStateCodeSignal = signal<string>('');
   selectedStateIdSignal = signal<string>('');
@@ -67,6 +67,7 @@ export class DashboardMapSection {
 
   selectedCityNameSignal = signal<string>('');
   selectedCityIdSignal = signal<string>('');
+  ulbSlugName = signal<string>('');
   cityData: any = []; // TODO: Avoid API call to get this data.
   filteredUlbs!: Observable<any[]>;
 
@@ -123,13 +124,17 @@ export class DashboardMapSection {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     private transferState: TransferState
-  ) {}
+  ) { }
 
   // One time functions.
   ngOnInit(): void {
     this.fetchCreditRatingsData();
     this.fetchStateList();
     this.loadData('state');
+  }
+
+  ngAfterViewInit() {
+    this.showMap.set(true);
   }
 
   // On filter - API calls.
@@ -302,10 +307,10 @@ export class DashboardMapSection {
 
       this.isLoading.set(false);
     } else {
-      if (this.selectedCityIdSignal()) {
+      if (this.ulbSlugName()) {
         this.isLoading.set(true);
         this._commonService
-          .getCityData(this.selectedCityIdSignal())
+          .getCityData(this.ulbSlugName())
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (res: ExploreSectionResponse) => {
@@ -334,7 +339,6 @@ export class DashboardMapSection {
       this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
       this.transferState.remove(GRID_DATA_KEY);
       this.isLoading.set(false);
-      this.showMap = true;
     } else {
       this._commonService
         .getExploreSectionData(
@@ -367,9 +371,8 @@ export class DashboardMapSection {
               },
               {
                 sequence: 6,
-                label: `Municipal Bond Issuances Of Rs. ${
-                  this.bondIssuances().bondIssueAmount
-                } Cr With Details`,
+                label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
+                  } Cr With Details`,
                 value: `${this.bondIssuances().totalMunicipalBonds}`,
                 info: '',
                 src: '',
@@ -386,7 +389,6 @@ export class DashboardMapSection {
             );
 
             this.isLoading.set(false);
-            this.showMap = true;
 
             if (isPlatformServer(this.platformId)) {
               this.transferState.set(GRID_DATA_KEY, this.exploreData());
@@ -420,13 +422,18 @@ export class DashboardMapSection {
   // ulb object sent by child - Drop down selection.
   public onUlbSelected = (ulbObj: IULB) => {
     // console.log('Ulb obj received from child to parent', ulbObj);
-    this.setUlbData(ulbObj._id, ulbObj.name);
+    this.setUlbData(ulbObj._id, ulbObj.name, ulbObj.slug);
   };
 
   // Helper: Update signal values with latest ulb data.
-  private setUlbData(_id: string = '', name: string = ''): void {
+  private setUlbData(
+    _id: string = '',
+    name: string = '',
+    slug: string = ''
+  ): void {
     this.selectedCityIdSignal.set(_id);
     this.selectedCityNameSignal.set(name);
+    this.ulbSlugName.set(slug);
 
     this.loadData('ulb');
   }
@@ -442,12 +449,9 @@ export class DashboardMapSection {
   }
 
   // Update data when ulb is changed from map.
-  public selectedCityIdChange(ulbId: string): void {
-    // console.log('Ulb clicked on map: ', ulbId);
-    const ulbData = this.cityData?.find(
-      (e: { _id: string }) => e?._id === ulbId
-    );
-    if (ulbData) this.setUlbData(ulbData._id, ulbData.name);
+  public selectedUlbObjChange(ulbObj: IULB): void {
+    // console.log('Ulb clicked on map: ', ulbObj);
+    if (ulbObj) this.setUlbData(ulbObj._id, ulbObj.name, ulbObj.slug);
   }
 
   // Reset map to india.
@@ -459,17 +463,15 @@ export class DashboardMapSection {
 
   // View state/ city dashboard.
   public viewDashboard(): void {
-    if (this.selectedCityIdSignal())
-      this.router.navigateByUrl(
-        `/dashboard/city/${this.selectedCityIdSignal()}`
-      );
+    if (this.ulbSlugName()) {
+      this.router.navigateByUrl(`/dashboard/city/${this.ulbSlugName()}`);
+    }
     else {
       // this.router.navigateByUrl(
       //   `/dashboard/state/${this.selectedStateIdSignal()}`,
       // );
-      window.location.href = `${
-        this.v1Url
-      }/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+      window.location.href =
+        `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
     }
   }
 

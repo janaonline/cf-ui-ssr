@@ -99,7 +99,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   // selectedBtn = 'balanceSheet';
   selectedBtn = signal<string>('');
   reportForm!: FormGroup;
-  isLoading: boolean = true;
+  isLoading = signal<boolean>(true);
   private subscriptions: Subscription[] = [];
 
   readonly HEADERS_STRUCTURE: TableColumns[] = [
@@ -141,22 +141,22 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     this.initializeForm();
   }
 
-  private getBsIsData(): void {
-    if (!this.ulbIdSignal() || !this.selectedBtn()) return;
-    this.isLoading = true;
+  private getBsIsData(ulbId: string, btnKey: string): void {
+    if (!ulbId || !btnKey) return;
+    this.isLoading.set(true);
 
     this.dashboardService
-      .getBsIsData(this.ulbIdSignal(), this.selectedBtn())
+      .getBsIsData(ulbId, btnKey)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           // console.log('getBsIsData() called');
           this.ledgerData = res['data'];
           this.population = res['population'];
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         error: (error) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           console.error('Failed to get data: getBsIsData()', error);
         },
         complete: () => this.updateTableData(),
@@ -164,11 +164,10 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   readonly ulbChangeEffect = effect(() => {
-    if (this.ulbIdSignal()) this.getBsIsData();
-  });
-
-  readonly yearsChangeEffect = effect(() => {
-    if (this.yearsSignal()) this.createHeaders();
+    if (this.ulbIdSignal()) {
+      this.getBsIsData(this.ulbIdSignal(), this.selectedBtn());
+      this.createHeaders();
+    }
   });
 
   private initializeForm(): void {
@@ -352,7 +351,6 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.ulbChangeEffect?.destroy();
-    this.yearsChangeEffect?.destroy();
   }
 }
 

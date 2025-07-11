@@ -1,6 +1,7 @@
 import { IState } from './state/state';
 import { ulbType } from './ulbTypes';
 export interface IULB {
+  location: { lat: number | string | null; lng: number | string | null };
   amrut: 'Yes' | 'No' | undefined;
   _id: string;
   slug?: string;

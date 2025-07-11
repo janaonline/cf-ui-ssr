@@ -1,5 +1,6 @@
 // TODO: remove unwanted keys and clean all the interface.
 import * as L from 'leaflet';
+import { IULB } from '../../../core/models/ulb';
 
 export interface ULBDataPoint {
   location: { lat: number | string | null; lng: number | string | null };
@@ -12,6 +13,7 @@ export interface ULBDataPoint {
   area: number | null;
   population: number;
   amrut: string;
+  slug: string;
 }
 
 export interface StateGeoJson {
@@ -44,7 +46,7 @@ export interface ResettableMap {
 
 export interface ULBStateData {
   state: string;
-  ulbs: ULBDataPoint[];
+  ulbs: IULB[];
   _id: string;
 }
 
