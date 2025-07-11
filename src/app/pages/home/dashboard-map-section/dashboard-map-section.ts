@@ -52,7 +52,7 @@ export class DashboardMapSection {
   myForm!: FormGroup;
   noDataFound: boolean = true;
   isLoading = signal<boolean>(true);
-  showMap: boolean = false;
+  showMap = signal<boolean>(false);
 
   selectedStateCodeSignal = signal<string>('');
   selectedStateIdSignal = signal<string>('');
@@ -128,6 +128,10 @@ export class DashboardMapSection {
     this.fetchCreditRatingsData();
     this.fetchStateList();
     this.loadData('state');
+  }
+
+  ngAfterViewInit() {
+    this.showMap.set(true);
   }
 
   // On filter - API calls.
@@ -332,7 +336,6 @@ export class DashboardMapSection {
       this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
       this.transferState.remove(GRID_DATA_KEY);
       this.isLoading.set(false);
-      this.showMap = true;
     } else {
       this._commonService
         .getExploreSectionData(
@@ -384,7 +387,6 @@ export class DashboardMapSection {
             );
 
             this.isLoading.set(false);
-            this.showMap = true;
 
             if (isPlatformServer(this.platformId)) {
               this.transferState.set(GRID_DATA_KEY, this.exploreData());

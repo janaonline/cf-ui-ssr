@@ -76,6 +76,7 @@ export class City {
   ulbIdSignal = signal('');
   ulbSlugName = signal('');
   isLoading = signal(true);
+  showMap = signal(false);
   isMoneyInfoLoading = signal(false);
   private destroy$ = new Subject<void>();
 
@@ -109,6 +110,11 @@ export class City {
           this.loadData(citySlugName);
         } else if (!citySlugName) this.isLoading.set(false);
       });
+  }
+
+  // ngAfterViewInit is browser-only
+  ngAfterViewInit(): void {
+    this.showMap.set(true);
   }
 
   // Consolidated method to load all necessary data for the city.
