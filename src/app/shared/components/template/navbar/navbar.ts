@@ -1,5 +1,7 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -10,11 +12,7 @@ import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserUtility } from '../../../../core/util/user/user';
-import { MatIconModule } from '@angular/material/icon';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
-import { GlobalLoaderService } from '../../../../core/services/loaders/global-loader.service';
-import { HomeHeaderService } from './home-header.service';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-navbar',
@@ -74,14 +72,9 @@ export class Navbar {
   constructor(
     public _router: Router,
     private authService: AuthService,
-    private globalLoaderService: GlobalLoaderService,
-    private homeHeaderService: HomeHeaderService,
     private dialog: MatDialog
   ) {
     this.initializeAccessChecking();
-    // this._router.events.subscribe((event: any) => {
-
-    // });
   }
 
   checkUserLoggedIn() {
