@@ -11,10 +11,8 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ButtonObj, ISlb } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { MaterialModule } from '../../../../material.module';
-import {
-  ChartConfig,
-  Charts,
-} from '../../../../shared/components/charts/charts';
+import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
+import { Charts } from '../../../../shared/components/charts/charts';
 import { gaugeChartOptions } from '../../../../shared/components/charts/constants';
 import { CitySearch } from '../../../../shared/components/city-search/city-search';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
@@ -41,6 +39,7 @@ export class Slb implements OnInit, OnDestroy {
   readonly primaryColor = '#1b4965';
   readonly secondaryColor = '#62b6cb';
   readonly accentColor = '#bee9e8';
+  readonly success = '#198754';
 
   // Input from parent.
   readonly ulbId = input.required<string>();
@@ -76,6 +75,7 @@ export class Slb implements OnInit, OnDestroy {
       label: 'Storm Water Drainage',
     },
   ];
+  legendItems: { color: string; label: string; icon: string }[] = [];
   currentSelectedButtonKey = signal<string>('');
   myForm!: FormGroup;
   private subscriptions: Subscription[] = [];
@@ -172,9 +172,35 @@ export class Slb implements OnInit, OnDestroy {
           },
           complete: () => {
             this.createChartRes();
+            this.buildLegendItems();
           },
         });
     }
+  }
+
+  private buildLegendItems() {
+    this.legendItems = [
+      {
+        color: this.primaryColor,
+        label: this.isCompareUlb ? this.compareUlbObj.name : 'Benchmark',
+        icon: 'bi bi-circle-fill',
+      },
+      {
+        color: this.secondaryColor,
+        label: 'National avg',
+        icon: 'bi bi-circle-fill',
+      },
+      {
+        color: this.accentColor,
+        label: this.ulbName,
+        icon: 'bi bi-circle-fill',
+      },
+      {
+        color: this.success,
+        label: 'ULB performance is better than National avg',
+        icon: 'bi bi-hand-thumbs-up-fill',
+      },
+    ];
   }
 
   private createChartRes(): void {

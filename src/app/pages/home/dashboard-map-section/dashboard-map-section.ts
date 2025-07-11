@@ -33,6 +33,7 @@ import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { Map } from '../../../shared/components/map/map';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { StateSearch } from '../../../shared/components/state-search/state-search';
+import { environment } from '../../../../environments/environment';
 
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 const STATE_LIST_KEY = makeStateKey<any>('stateList');
@@ -48,6 +49,8 @@ const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 })
 export class DashboardMapSection {
   @ViewChild('map') mapComponent!: Map;
+
+  v1Url = environment.v1Url;
 
   myForm!: FormGroup;
   noDataFound: boolean = true;
@@ -119,7 +122,7 @@ export class DashboardMapSection {
     private assetService: AssetsService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {}
 
   // One time functions.
@@ -336,7 +339,7 @@ export class DashboardMapSection {
       this._commonService
         .getExploreSectionData(
           this.selectedStateCodeSignal(),
-          this.selectedStateIdSignal(),
+          this.selectedStateIdSignal()
         )
         .subscribe({
           next: (res: ExploreSectionResponse) => {
@@ -364,7 +367,9 @@ export class DashboardMapSection {
               },
               {
                 sequence: 6,
-                label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount} Cr With Details`,
+                label: `Municipal Bond Issuances Of Rs. ${
+                  this.bondIssuances().bondIssueAmount
+                } Cr With Details`,
                 value: `${this.bondIssuances().totalMunicipalBonds}`,
                 info: '',
                 src: '',
@@ -372,12 +377,12 @@ export class DashboardMapSection {
             ];
 
             this.exploreData().gridDetails.sort(
-              (a, b) => a.sequence - b.sequence,
+              (a, b) => a.sequence - b.sequence
             );
 
             // Ticker above search bar - homepage.
             this._commonService.setDataForVisualizationCount(
-              this.exploreData().gridDetails[0].value?.toString(),
+              this.exploreData().gridDetails[0].value?.toString()
             );
 
             this.isLoading.set(false);
@@ -402,7 +407,7 @@ export class DashboardMapSection {
   private setStateData(
     code: string = '',
     _id: string = '',
-    name: string = '',
+    name: string = ''
   ): void {
     this.selectedStateCodeSignal.set(code);
     this.selectedStateIdSignal.set(_id);
@@ -440,7 +445,7 @@ export class DashboardMapSection {
   public selectedCityIdChange(ulbId: string): void {
     // console.log('Ulb clicked on map: ', ulbId);
     const ulbData = this.cityData?.find(
-      (e: { _id: string }) => e?._id === ulbId,
+      (e: { _id: string }) => e?._id === ulbId
     );
     if (ulbData) this.setUlbData(ulbData._id, ulbData.name);
   }
@@ -456,16 +461,20 @@ export class DashboardMapSection {
   public viewDashboard(): void {
     if (this.selectedCityIdSignal())
       this.router.navigateByUrl(
-        `/dashboard/city/${this.selectedCityIdSignal()}`,
+        `/dashboard/city/${this.selectedCityIdSignal()}`
       );
-    else
-      this.router.navigateByUrl(
-        `/dashboard/state/${this.selectedStateIdSignal()}`,
-      );
+    else {
+      // this.router.navigateByUrl(
+      //   `/dashboard/state/${this.selectedStateIdSignal()}`,
+      // );
+      window.location.href = `${
+        this.v1Url
+      }/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+    }
   }
 
   checkIfBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
+    return !isPlatformServer(this.platformId);
   }
 
   // Unsubscribe.

@@ -1,8 +1,4 @@
-import {
-  isPlatformBrowser,
-  isPlatformServer,
-  TitleCasePipe,
-} from '@angular/common';
+import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
 import {
   Component,
   Inject,
@@ -25,6 +21,7 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
 import { ResourcesDashboardService } from '../../../core/services/resources-dashboard.service';
@@ -50,7 +47,8 @@ export class SearchBar {
   globalOptions = [];
   noDataFound = false;
   // recentSearchArray: any = [];
-  filteredOptions: any = [];
+  // filteredOptions: any = [];
+  filteredOptions = signal<any[]>([]);
   postBody: any;
   stopNavigation: any;
   readonly DEFAULT_VALUE = 4000;
@@ -89,13 +87,14 @@ export class SearchBar {
     },
   ];
   private destroy$ = new Subject<void>();
+  v1Url = environment.v1Url;
 
   constructor(
     protected _commonService: CommonService,
     private router: Router,
     public resourceDashboard: ResourcesDashboardService,
     @Inject(PLATFORM_ID) private platFormId: Object,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {
     // this.resourceDashboard.getPdfData(this.pdfInput).subscribe((res: any) => {
     //   const response = res?.data.map((elem: any) => {
@@ -151,7 +150,7 @@ export class SearchBar {
         switchMap((query) => {
           this.searchKey = query.trim();
           if (!this.searchKey?.trim()) {
-            this.filteredOptions = [];
+            this.filteredOptions.set([]);
             this.noDataFound = false;
             return of([]);
           }
@@ -159,12 +158,12 @@ export class SearchBar {
           return this._commonService
             .postGlobalSearchData(query.trim(), '', '')
             .pipe(catchError(() => of([])));
-        }),
+        })
       )
       .subscribe((res: any) => {
         console.log('global search data', res.data);
-        this.filteredOptions = res.data || [];
-        this.noDataFound = this.filteredOptions.length === 0;
+        this.filteredOptions.set(res.data || []);
+        this.noDataFound = this.filteredOptions().length === 0;
       });
   }
 
@@ -195,10 +194,10 @@ export class SearchBar {
     //  console.log('filterOptions', this.filteredOptions)
     //  console.log('form control', this.globalFormControl.value)
 
-    const searchArray: any = this.filteredOptions;
+    const searchArray: any = this.filteredOptions();
     const searchValue = searchArray.find(
       (e: any) =>
-        e?.name.toLowerCase() == this.globalFormControl?.value.toLowerCase(),
+        e?.name.toLowerCase() == this.globalFormControl?.value.toLowerCase()
     );
     //  console.log(searchValue);
     if (!searchValue) return;
@@ -228,7 +227,7 @@ export class SearchBar {
         },
         (error: any) => {
           //   console.log(error)
-        },
+        }
       );
     const option = {
       type: searchValue.type,
@@ -250,13 +249,14 @@ export class SearchBar {
           },
           (error: any) => {
             // console.log(error)
-          },
+          }
         );
     //console.log('option', option)
 
     if (option.type == 'state') {
       this.getYears(option);
       // this.router.navigateByUrl(`/dashboard/state?stateId=${option._id}`)
+      window.location.href = `${this.v1Url}/dashboard/state?stateId=${option._id}`;
     }
 
     if (option.type == 'ulb') {
@@ -265,7 +265,7 @@ export class SearchBar {
 
     if (option.type == 'searchKeyword') {
       this.router.navigateByUrl(
-        `/resources-dashboard/learning-center/toolkits`,
+        `/resources-dashboard/learning-center/toolkits`
       );
     }
   }
@@ -306,13 +306,13 @@ export class SearchBar {
           (res: any) => {
             if (res && res.success) {
               resolve(
-                res['data'] && res['data']['FYs'] ? res['data']['FYs'] : [],
+                res['data'] && res['data']['FYs'] ? res['data']['FYs'] : []
               );
             }
           },
           (err: { message: string }) => {
             console.log(err.message);
-          },
+          }
         );
     });
     financialYearList.push(promise);
@@ -322,7 +322,7 @@ export class SearchBar {
       this.stopNavigation = yearList;
       sessionStorage.setItem('financialYearList', JSON.stringify(yearList));
       this.router.navigateByUrl(
-        `/dashboard/state?stateId=${searchStateId._id}`,
+        `/dashboard/state?stateId=${searchStateId._id}`
       );
       // if(searchStateId?.type == 'state'){
       //   this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`)

@@ -39,9 +39,6 @@
       ></app-city-search>
     </div>
 
-    <!-- Reset search -->
-    <!-- <mat-icon class="text-success">refresh</mat-icon> -->
-
     <!-- Filter: Years Dropdown -->
     <form [formGroup]="myForm" class="col-sm-12 col-md-2">
       <label for="slbYears" class="d-block fw-bold mb-2">Financial years</label>
@@ -65,24 +62,22 @@
   <app-pre-loader></app-pre-loader>
   } @else {
   <!-- Chart legend -->
+  @if (legendItems.length){
   <div class="d-flex flex-wrap mt-3 py-1 gap-2">
+    @for (item of legendItems; track $index) {
     <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-      <mat-icon [ngStyle]="{ color: primaryColor }">brightness_1</mat-icon>
-      {{ this.isCompareUlb ? this.compareUlbObj.name : "Benchmark" }}
+      <i
+        class="{{ item.icon }} fs-5"
+        [ngStyle]="item.color ? { color: item.color } : {}"
+        [class]="item.icon + ' fs-5'"
+      ></i>
+      &nbsp;
+      {{ item.label }}
     </div>
-    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-      <mat-icon [ngStyle]="{ color: secondaryColor }">brightness_1</mat-icon>
-      National avg
-    </div>
-    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-      <mat-icon [ngStyle]="{ color: accentColor }">brightness_1</mat-icon>
-      {{ ulbName }}
-    </div>
-    <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-      <mat-icon class="text-success">thumb_up_alt</mat-icon>
-      ULB performance is better than National avg
-    </div>
+    }
   </div>
+  }
+
   <!-- Charts -->
   <div class="slbs-container">
     @for (item of chartData; track $index) {
@@ -97,7 +92,11 @@
         <p class="m-0 p-0 custom-font-size-7 text-center">
           {{ item.additionalInfo?.indicatorName }}
         </p>
-        <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon>
+        <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
+        <i
+          class="bi bi-hand-thumbs-up-fill fs-5"
+          [class]="showThumbUp(item)"
+        ></i>
       </div>
     </div>
     }

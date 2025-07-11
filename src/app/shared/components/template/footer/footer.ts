@@ -10,6 +10,7 @@ import {
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { CommonService } from '../../../../core/services/common.service';
+import { environment } from '../../../../../environments/environment';
 
 // --- TransferState Keys ---
 const VISITOR_KEY = makeStateKey<number>('visitorKey');
@@ -21,18 +22,26 @@ const VISITOR_KEY = makeStateKey<number>('visitorKey');
   styleUrl: './footer.scss',
 })
 export class Footer {
+  v1Url = environment.v1Url;
+
   public totalUsersVisit = signal<number>(0);
   isLoading = signal<boolean>(true);
   public readonly footerLinks = [
     { href: '/home', title: 'Home' },
     {
-      href: '/dashboard/national/61e150439ed0e8575c881028',
+      href: this.v1Url + '/dashboard/national/61e150439ed0e8575c881028',
       title: 'Financial',
     },
-    { href: '/own-revenue-dashboard', title: 'Own Revenue Performance' },
-    { href: '/dashboard/slb', title: 'Service Level Benchmarks Performance' },
     {
-      href: '/resources-dashboard/learning-center/toolkits',
+      href: this.v1Url + '/own-revenue-dashboard',
+      title: 'Own Revenue Performance',
+    },
+    {
+      href: this.v1Url + '/dashboard/slb',
+      title: 'Service Level Benchmarks Performance',
+    },
+    {
+      href: this.v1Url + '/resources-dashboard/learning-center/toolkits',
       title: 'Resources',
     },
   ];
@@ -65,7 +74,7 @@ export class Footer {
     private _commonService: CommonService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {}
 
   ngOnInit() {
@@ -125,9 +134,9 @@ export class Footer {
     this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd,
+          (event): event is NavigationEnd => event instanceof NavigationEnd
         ),
-        takeUntil(this.destroy$),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (event: NavigationEnd) => {

@@ -1,4 +1,12 @@
-import { Component, input, output, signal } from '@angular/core';
+import {
+  Component,
+  input,
+  OnChanges,
+  OnInit,
+  output,
+  signal,
+  SimpleChanges,
+} from '@angular/core';
 import { ButtonObj } from '../../../core/models/interfaces';
 
 @Component({
@@ -7,7 +15,7 @@ import { ButtonObj } from '../../../core/models/interfaces';
   templateUrl: './tab-buttons.html',
   styleUrl: './tab-buttons.scss',
 })
-export class TabButtons {
+export class TabButtons implements OnInit, OnChanges {
   // Input signal to receive the array of buttons from the parent.
   buttons = input.required<ButtonObj[]>();
 
@@ -25,6 +33,10 @@ export class TabButtons {
       this.selectedBtnKey.set(this.buttons()[0].key);
       this.selectedButtonKeyChange.emit(this.buttons()[0].key);
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('changes: ', changes);
   }
 
   buttonClick(key: string): void {
