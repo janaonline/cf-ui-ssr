@@ -36,7 +36,7 @@ export interface SlbData {
 // Common chart (not mixed)
 export interface BaseChartConfig {
   chartId: string;
-  chartType: Exclude<ChartType, 'mixedChart'>;
+  chartType: ChartType;
   labels?: string[];
   datasets: ChartDataSet[];
   options?: ChartOptions;
@@ -44,16 +44,17 @@ export interface BaseChartConfig {
 }
 
 // Mixed chart
-export interface MixedChartConfig {
-  chartId: string;
-  chartType: 'mixedChart';
-  data: {
-    labels?: string[];
-    datasets: ChartDataSet[];
-  };
-  labels: string[];
-  options?: ChartOptions;
-  additionalInfo?: SlbData;
-}
+// export interface MixedChartConfig {
+//   chartId: string;
+//   chartType: 'mixedChart';
+//   data: {
+//     labels?: string[];
+//     datasets: ChartDataSet[];
+//   };
+//   labels: string[];
+//   options?: ChartOptions;
+//   additionalInfo?: SlbData;
+// }
 
-export type ChartConfig = BaseChartConfig | MixedChartConfig;
+// export type ChartConfig = BaseChartConfig | MixedChartConfig;
+export type ChartConfig = BaseChartConfig;

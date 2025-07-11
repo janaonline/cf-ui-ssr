@@ -13,6 +13,7 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
+import { res, resStruct } from './temp';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -29,27 +30,19 @@ import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
 })
 export class FinancialIndicator {
   readonly graphColors = [
-    '#1b4965',
-    '#357C91',
-    '#A6D6E3',
-    '#8A63CC',
-    '#B388FF',
-    '#CDA9FF',
+    "#62b6cb",
+    "#1b4965",
+    "#bee9e8",
+    "#43B5A0",
+    "#F4A261",
+    "#5885AF",
+    "#F6D743"
   ]
 
-  // readonly graphColors = [
-  //   '#1b4965',
-  //   '#62b6cb',
-  //   '#B388FF',
-  //   '#FFB5E8',
-  //   '#FFD6A5',
-  //   '#9BF6FF',
-  //   '#BFFCC6'
-  // ]
   readonly disabledColor = '#e9ecef';
-  readonly primaryColor = '#1b4965';
-  readonly secondaryColor = '#62b6cb';
-  readonly accentColor = '#bee9e8';
+  // readonly primaryColor = '#1b4965';
+  // readonly secondaryColor = '#62b6cb';
+  // readonly accentColor = '#bee9e8';
   readonly lineColor = '#f43f5e';
   readonly items = [
     { icon: 'bi bi-arrows-fullscreen', label: 'Expand' },
@@ -69,6 +62,9 @@ export class FinancialIndicator {
 
   isLoading = signal<boolean>(true);
 
+  chartsData: ChartConfig[] = [];
+  output = signal<resStruct | undefined>(undefined);
+
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -86,6 +82,7 @@ export class FinancialIndicator {
   onSelectedSubButtonChange(key: string): void {
     console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
+    this.getChartData();
   }
 
   // Type Guard Function
@@ -97,111 +94,72 @@ export class FinancialIndicator {
       Array.isArray((value as IndicatorDetails).aboutIndicator)
     );
   }
+  // Create chart.
+  private getChartData() {
+    console.log('Sub button, Curr button: ', this.subButton(), this.currentSelectedButtonKey());
+    setTimeout(() => {
 
-  chartsData: ChartConfig[] = [
-    // Doughnut
-    {
-      chartId: 'pie0',
-      chartType: 'gaugeChart',
-      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
-      datasets: [
-        {
-          label: 'Pie Dataset',
-          data: [30, 10, 20, 20, 20, 10],
-          backgroundColor: this.graphColors.slice(0, 7),
-          borderRadius: 3,
-          borderWidth: 1,
-        },
-      ],
-      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
-    },
-    {
-      chartId: 'pie1',
-      chartType: 'gaugeChart',
-      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
-      datasets: [
-        {
-          label: 'Pie Dataset',
-          data: [30, 10, 20, 20, 20, 10],
-          backgroundColor: this.graphColors.slice(0, 7),
-          borderRadius: 3,
-          borderWidth: 1,
-        },
-      ],
-      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
-    },
-    {
-      chartId: 'pie1',
-      chartType: 'gaugeChart',
-      // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
-      datasets: [
-        {
-          label: 'Pie Dataset',
-          data: [30, 10, 20, 20, 20, 10],
-          backgroundColor: this.graphColors.slice(0, 7),
-          borderRadius: 3,
-          borderWidth: 1,
-        },
-      ],
-      options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
-    },
-    // {
-    //   chartId: 'mixed0',
-    //   chartType: 'mixedChart',
-    //   labels: ['2020-21', '2021-22', '2022-23'],
-    //   data: {
-    //     labels: ['2020-21', '2021-22', '2022-23'],
-    //     datasets: [
-    //       {
-    //         type: 'line',
-    //         label: 'Y-o-Y Growth',
-    //         data: [2937, 3524, 3883],
-    //         borderWidth: 2,
-    //         borderColor: this.lineColor,
-    //         pointBackgroundColor: this.lineColor,
-    //         fill: false,
-    //         tension: 0.3,
-    //       },
-    //       {
-    //         type: 'bar',
-    //         label: 'ULB Name',
-    //         data: [2937, 3524, 3883],
-    //         backgroundColor: [this.secondaryColor],
-    //         borderRadius: 5,
-    //         barThickness: 60,
-    //       },
-    //       {
-    //         type: 'bar',
-    //         label: 'National Avg',
-    //         data: [1576, 1946, 3037],
-    //         backgroundColor: [this.primaryColor],
-    //         borderRadius: 5,
-    //         barThickness: 60,
-    //       },
-    //       // {
-    //       //   type: 'bar',
-    //       //   label: 'National Avg',
-    //       //   data: [1576, 1946, 3037],
-    //       //   backgroundColor: [this.primaryColor],
-    //       //   borderRadius: 5,
-    //       //   // barThickness: 60,
-    //       // },
-    //       // {
-    //       //   type: 'bar',
-    //       //   label: 'National Avg',
-    //       //   data: [1576, 1946, 3037],
-    //       //   backgroundColor: [this.primaryColor],
-    //       //   borderRadius: 5,
-    //       //   // barThickness: 60,
-    //       // },
-    //     ],
-    //   },
-    //   options: baseChartOptions(
-    //     DEFAULT_FONT_FAMILY,
-    //     true,
-    //     'Years',
-    //     'Amt in ₹ Cr'
-    //   ),
-    // }
-  ];
+
+      if (res.chartType === 'barChart') {
+        this.output.set(res);
+        const obj: ChartConfig = {
+          chartId: `${res.chartType}_0`,
+          chartType: res.chartType,
+          labels: res.labels,
+          datasets: [],
+          options: baseChartOptions(DEFAULT_FONT_FAMILY, true, res.axes?.x, res.axes?.y),
+        };
+
+        const barThickness = res.data.length > 4 ? { barThickness: 60 } : {};
+
+        res.data.forEach((chart) => {
+          if (chart.type === 'line') {
+            obj.datasets.push({
+              type: 'line',
+              label: chart.label,
+              data: chart.data,
+              borderColor: chart.backgroundColor?.[0],
+              pointBackgroundColor: chart.backgroundColor?.[0],
+              borderWidth: 2,
+              fill: false,
+              tension: 0.3,
+            });
+          } else {
+            obj.datasets.push({
+              type: 'bar',
+              label: chart.label,
+              data: chart.data,
+              backgroundColor: chart.backgroundColor?.[0],
+              borderRadius: 5,
+              ...barThickness
+            });
+          }
+        });
+
+        this.chartsData = [obj];
+        // console.log(this.chartsData)
+      }
+
+      if (res.chartType === 'gaugeChart') {
+        this.output.set(res);
+        this.chartsData = res.data.map((chart, idx) => {
+          return {
+            chartId: `${res.chartType}_${idx}`,
+            chartType: `${res.chartType}`,
+            datasets: [
+              {
+                label: chart.label,
+                data: chart.data,
+                backgroundColor: res.legendColors,
+                borderRadius: 3,
+                borderWidth: 1,
+              },
+            ],
+            options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+          }
+        })
+      }
+
+    }, 2000);
+  }
 }

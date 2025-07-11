@@ -71,13 +71,26 @@
       <!-- Chart -->
       <div class="d-flex flex-wrap justify-content-center gap-1">
         @for (chartData of chartsData; track $index) {
-        <div [class.flex-grow-1]="['mixedChart'].includes(chartData.chartType)">
+        <div [class.flex-grow-1]="['mixedChart', 'barChart'].includes(chartData.chartType)">
           <div class="" [ngClass]="chartData.chartType">
             <app-charts [chartConfig]="chartData"></app-charts>
           </div>
         </div>
         }
       </div>
+
+      <!-- Legends for pie, doughnut, gauge chart. -->
+      @if (output()?.legendColors?.length){
+      <div class="d-flex flex-wrap mt-3 py-1 gap-2">
+        @for (label of output()?.labels; track $index) {
+        <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
+          <i class="bi bi-circle-fill fs-5" [ngStyle]="{ color: output()?.legendColors?.[$index] }"></i>
+          &nbsp;
+          {{ label }}
+        </div>
+        }
+      </div>
+      }
       <!-- @for (chartData of chartsData; track $index) {
       <div class="overflow-x-auto flex-grow-1">
         <div class="w-100 h-100 chart-container">
@@ -89,13 +102,15 @@
     </div>
     <!-- Rigth side: Fyi -->
     <div class="col-sm-12 col-lg-4 ps-md-5 pb-3 mb-2 rounded">
-      <!-- Info -->
+      <!-- Info: Hide for MIX -->
+      @if(!subButton().toLowerCase().includes('mix')) {
       <div class="alert alert-success d-flex align-items-start p-2" style="font-size: 0.65rem" role="alert">
         <i class="bi bi-circle-fill text-success custom-font-size-7"></i>
         &nbsp;CAGR of 10% between 2020-21 and 2022-23 years (ULB Total Revenue
         for FY' 2020-21 is Rs.2937 Cr. ULB Total Revenue for FY' 2022-23 is Rs.
         3883 Cr.)
       </div>
+      }
       <!-- Accordion -->
       <!-- TODO: Clean the code -->
       <div class="accordion">
