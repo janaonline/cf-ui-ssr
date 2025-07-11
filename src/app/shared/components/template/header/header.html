@@ -1,44 +1,25 @@
 <div class="bg-white">
-  <div class="alert alert-info text-center" role="alert">
+  <div class="alert alert-info text-center m-0" role="alert">
     <i class="bi bi-bell"></i>
     NEW ON CITY FINANCE: 10,000+ budget documents of 2,000 cities(FY 2020-2024)
     are now available for download.
-    <a
-      class="alert-link"
-      [href]="`${v1Url}/resources-dashboard/data-sets/income_statement`"
-      >Click here to access files.</a
-    >
+    <a class="alert-link" [href]="`${v1Url}/resources-dashboard/data-sets/income_statement`">Click here to access
+      files.</a>
   </div>
   <header class="border-bottom">
-    <div
-      class="container d-none d-md-flex justify-content-between align-items-center py-1 px-0"
-    >
+    <div class="container d-none d-md-flex justify-content-between align-items-center py-1 px-0">
       <div>
-        <img
-          src="./assets/images/emblem-of-india.svg"
-          width="11"
-          alt="Emblem of India"
-          class="me-2"
-        />
-        <span class="text-10px"
-          >MINISTRY OF HOUSING AND URBAN AFFAIRS | GOVERNMENT OF INDIA</span
-        >
+        <img src="./assets/images/emblem-of-india.svg" width="11" alt="Emblem of India" class="me-2" />
+        <span class="text-10px">MINISTRY OF HOUSING AND URBAN AFFAIRS | GOVERNMENT OF INDIA</span>
       </div>
       <div>
-        <a
-          (click)="scrollToMainContent()"
-          href="javascript:void(0)"
-          class="text-12px me-2 text-decoration-none text-cfPrimary"
-        >
+        <a (click)="scrollToMainContent()" href="javascript:void(0)"
+          class="text-12px me-2 text-decoration-none text-cfPrimary">
           Skip To Main Content
         </a>
         @for (size of textSize; track $index) {
-        <button
-          type="button"
-          class="text-{{ size }} cursor-pointer btn btn-outline-dark active"
-          [class.active]="currentTextSize === size"
-          (click)="setFontSize(size)"
-        >
+        <button type="button" class="text-{{ size }} cursor-pointer btn btn-outline-dark active"
+          [class.active]="currentTextSize === size" (click)="setFontSize(size)">
           A
         </button>
         }

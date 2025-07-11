@@ -62,13 +62,13 @@
         <!-- State Map -->
         <div class="position-relative row" style="min-height: 350px">
           <!-- @if (stateCodeSignal() && ulbIdSignal()) { -->
-          @if (cityDetails()?.state?.code && ulbIdSignal()) {
+          @if (cityDetails()?.state?.code && ulbIdSignal() && showMap()) {
           <!-- [stateCode]="stateCodeSignal()" -->
           <app-map
             #map
             [stateCode]="cityDetails()?.state?.code"
             [ulbId]="ulbIdSignal()"
-            (ulbIdChange)="selectedCityIdChange($event)"
+            (ulbObjChange)="selectedUlbObjChange($event)"
           ></app-map>
           }
         </div>

@@ -4,13 +4,9 @@ import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import type * as Leaflet from 'leaflet';
 import { Observable, Subject } from 'rxjs'; // Import throwError
 import { environment } from '../../../../environments/environment';
+import { IULB } from '../../../core/models/ulb';
 import { IStateLayerStyle } from '../../../core/util/map/models/mapCreationConfig';
-import {
-  MapConfig,
-  StateGeoJson,
-  ULBDataPoint,
-  ULBStateData,
-} from './interfaces';
+import { MapConfig, StateGeoJson, ULBStateData } from './interfaces';
 
 interface LeafletHTMLElement extends HTMLElement {
   _leaflet_id?: number;
@@ -18,7 +14,7 @@ interface LeafletHTMLElement extends HTMLElement {
 
 declare module 'leaflet' {
   interface Marker {
-    ulbData?: ULBDataPoint;
+    ulbData?: IULB;
   }
 }
 
@@ -47,12 +43,12 @@ export class MapService {
 
   private stateCodeClickedSubject = new Subject<string>();
   public stateCodeClicked$ = this.stateCodeClickedSubject.asObservable();
-  private ulbCodeClickedSubject = new Subject<string>();
+  private ulbCodeClickedSubject = new Subject<IULB | undefined>();
   public ulbCodeClicked$ = this.ulbCodeClickedSubject.asObservable();
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: object,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
   /**
@@ -96,7 +92,7 @@ export class MapService {
   async initMap(
     elementId: string,
     config: MapConfig,
-    options?: Leaflet.MapOptions,
+    options?: Leaflet.MapOptions
   ): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -110,11 +106,11 @@ export class MapService {
     if (this.map) this.destroyMap();
 
     const mapContainer = document.getElementById(
-      elementId,
+      elementId
     ) as LeafletHTMLElement;
     if (!mapContainer) {
       console.error(
-        `Map container with ID "${elementId}" not found in the DOM.`,
+        `Map container with ID "${elementId}" not found in the DOM.`
       );
       return;
     }
@@ -144,7 +140,7 @@ export class MapService {
    */
   loadAndAddStates(): Observable<StateGeoJson> {
     return this.http.get<StateGeoJson>(
-      '/assets/jsonFile/state_boundaries_24Jan2024.json',
+      '/assets/jsonFile/state_boundaries_24Jan2024.json'
     );
   }
 
@@ -156,7 +152,7 @@ export class MapService {
    */
   addGeoJsonLayer(
     geoJsonData: StateGeoJson,
-    stateCode: string,
+    stateCode: string
   ): Leaflet.GeoJSON | null {
     if (!isPlatformBrowser(this.platformId) || !this.map || !this.L)
       return null;
@@ -212,7 +208,7 @@ export class MapService {
     layer: Leaflet.GeoJSON,
     padding: Leaflet.PointExpression,
     maxZoomOffset: number,
-    duration: number,
+    duration: number
   ): void {
     if (!isPlatformBrowser(this.platformId) || !this.map) return;
 
@@ -235,7 +231,7 @@ export class MapService {
    * @param ulbId The ID of the currently selected ULB (for initial selection).
    * @param ulbsList Array of ULB data points.
    */
-  addCityMarkersToMap(ulbId: string, ulbsList: ULBDataPoint[]): void {
+  addCityMarkersToMap(ulbId: string, ulbsList: IULB[]): void {
     if (!isPlatformBrowser(this.platformId) || !this.map || !this.L) return;
 
     this.clearCityMarkers(); // Clear existing markers
@@ -269,7 +265,7 @@ export class MapService {
         }
       } else {
         console.warn(
-          `Invalid coordinates for ULB: ${ulb.name} (Lat: ${lat}, Lng: ${lng})`,
+          `Invalid coordinates for ULB: ${ulb.name} (Lat: ${lat}, Lng: ${lng})`
         );
       }
     });
@@ -324,11 +320,7 @@ export class MapService {
    * @param ulb ULB data to associate with the marker.
    * @returns The created Leaflet.Marker.
    */
-  private addMarker(
-    lat: number,
-    lng: number,
-    ulb: ULBDataPoint,
-  ): Leaflet.Marker {
+  private addMarker(lat: number, lng: number, ulb: IULB): Leaflet.Marker {
     const marker = this.L.marker([lat, lng], {
       icon: this.blueIcon,
       interactive: true,
@@ -360,7 +352,8 @@ export class MapService {
       marker.setIcon(this.selectedIcon);
       this.selectedMarker = marker;
       // Emit the ULB ID of the clicked marker
-      this.ulbCodeClickedSubject.next(marker.ulbData?._id || '');
+      // console.log('marker data', marker?.ulbData);
+      this.ulbCodeClickedSubject.next(marker.ulbData);
     } else {
       this.selectedMarker = null;
       // this.ulbCodeClickedSubject.next('');

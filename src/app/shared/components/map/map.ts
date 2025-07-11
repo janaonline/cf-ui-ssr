@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -9,18 +9,15 @@ import {
   OnDestroy,
   Output,
   PLATFORM_ID,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as L from 'leaflet';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { debounceTime, Subject, take, takeUntil } from 'rxjs';
+import { IULB } from '../../../core/models/ulb';
 import { UserUtility } from '../../../core/util/user/user';
-import {
-  MapConfig,
-  ResettableMap,
-  StateGeoJson,
-  ULBDataPoint,
-} from './interfaces';
+import { MapConfig, ResettableMap, StateGeoJson } from './interfaces';
 import { MapService } from './map.service';
 
 @Component({
@@ -34,11 +31,14 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // Note: Ensure the map component is initialized only after the parent component has fully loaded and rendered.
   @Input() stateCode!: string;
   @Input() ulbId!: string;
-  @Output() ulbIdChange = new EventEmitter<string>();
+  @Output() ulbObjChange = new EventEmitter<IULB>();
+  @Output() slugNameChange = new EventEmitter<string>();
   @Output() stateCodeChange = new EventEmitter<string>();
 
+  isBrowser = signal(false);
+
   private readonly DEFAULT_ZOOM_LEVEL = 4.2;
-  private ulbsList: ULBDataPoint[] = [];
+  private ulbsList: IULB[] = [];
   private stateLayer: L.GeoJSON | null = null; // To hold current state layer.
   private mapConfig: MapConfig = {
     initialView: [23, 81],
@@ -47,13 +47,14 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     maxZoom: this.getZoomLevel() + 2,
   };
   private destroy$ = new Subject<void>();
-  public isMapLoading = true;
+  public isMapLoading = signal<boolean>(true);
   private mapInitialized = false;
+  ngZone: any;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private mapService: MapService,
-  ) {}
+    private mapService: MapService
+  ) { }
 
   // Set map zoom based on screen width.
   private getZoomLevel(): number {
@@ -76,6 +77,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const stateChanged =
       changes['stateCode'] &&
       !changes['stateCode'].isFirstChange() &&
@@ -97,8 +100,22 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   }
 
   ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+    this.isBrowser.set(true);
 
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.initializeMap();
+      }, 1000);
+    }
+
+    // if (isPlatformBrowser(this.platformId)) {
+    //   this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+    //     this.initializeMap();
+    //   });
+    // }
+  }
+
+  private initializeMap(): void {
     this.mapService.destroyMap();
     const container = document.getElementById('map-container');
 
@@ -127,17 +144,18 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
     this.mapService.ulbCodeClicked$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((code) => {
-        if (code && this.ulbId !== code) {
-          this.ulbId = code;
-          this.ulbIdChange.emit(code);
+      .subscribe((ulbObj) => {
+        if (ulbObj && this.ulbId !== ulbObj._id) {
+          // console.log('ulb obj = ', ulbObj, this.ulbId);
+          this.ulbObjChange.emit(ulbObj);
+          this.ulbId = ulbObj._id;
         }
       });
   }
 
   private loadMapData(): void {
-    if (!this.mapInitialized) return;
-    this.isMapLoading = true;
+    if (!this.mapInitialized || isPlatformServer(this.platformId)) return;
+    this.isMapLoading.set(true);
 
     // Remove previous state layer if any
     if (this.stateLayer) {
@@ -152,10 +170,10 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
         next: (data: StateGeoJson) => {
           const features = this.stateCode
             ? data.features.filter(
-                (f) => f.properties['ST_CODE'] === this.stateCode,
-              )
+              (f) => f.properties['ST_CODE'] === this.stateCode
+            )
             : data.features;
-          // console.log('state length = ', features.length);
+          console.log('state length = ', features.length);
           const stateGeoJson: StateGeoJson = {
             type: 'FeatureCollection',
             features,
@@ -163,7 +181,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
           this.stateLayer = this.mapService.addGeoJsonLayer(
             stateGeoJson,
-            this.stateCode,
+            this.stateCode
           );
 
           if (this.stateCode && features.length && this.stateLayer) {
@@ -180,14 +198,16 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
           } else {
             this.mapService.map?.setView(
               this.mapConfig.initialView,
-              this.mapConfig.initialZoom,
+              this.mapConfig.initialZoom
             );
             this.mapService.clearCityMarkers();
           }
+
+          this.isMapLoading.set(false);
         },
-        error: (err) => console.error('Error loading map data:', err),
-        complete: () => {
-          this.isMapLoading = false;
+        error: (err) => {
+          console.error('Error loading map data:', err);
+          this.isMapLoading.set(false);
         },
       });
   }
@@ -205,7 +225,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     this.mapService.clearCityMarkers();
     this.mapService.map?.setView(
       this.mapConfig.initialView,
-      this.mapConfig.initialZoom,
+      this.mapConfig.initialZoom
     );
     this.loadMapData();
   }

@@ -25,7 +25,10 @@ import {
   throwError,
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { IMoneyInfoRes } from '../../../core/models/interfaces';
+import {
+  ExploreSectionResponse,
+  IMoneyInfoRes,
+} from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
 import { CitySearch } from '../../../shared/components/city-search/city-search';
@@ -71,7 +74,9 @@ export class City {
   v1Url = environment.v1Url;
   loadedTabs: boolean[] = [true, false, false, false];
   ulbIdSignal = signal('');
+  ulbSlugName = signal('');
   isLoading = signal(true);
+  showMap = signal(false);
   isMoneyInfoLoading = signal(false);
   private destroy$ = new Subject<void>();
 
@@ -97,19 +102,24 @@ export class City {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        const cityId = params.get('cityId') || '';
+        const citySlugName = params.get('cityId') || '';
         this.selectedLedgerYear.set('');
 
-        if (cityId && cityId !== this.ulbIdSignal()) {
-          this.ulbIdSignal.set(cityId);
-          this.loadData(cityId);
-        } else if (!cityId) this.isLoading.set(false);
+        if (citySlugName && citySlugName !== this.ulbSlugName()) {
+          this.ulbSlugName.set(citySlugName);
+          this.loadData(citySlugName);
+        } else if (!citySlugName) this.isLoading.set(false);
       });
+  }
+
+  // ngAfterViewInit is browser-only
+  ngAfterViewInit(): void {
+    this.showMap.set(true);
   }
 
   // Consolidated method to load all necessary data for the city.
   // Handles TransferState logic to prevent redundant API calls on the client.
-  private loadData(cityId: string): void {
+  private loadData(citySlugName: string): void {
     this.isLoading.set(true);
     this.hasError.set(false);
     this.errorMessage.set('');
@@ -132,6 +142,8 @@ export class City {
         this.transferState.get(SELECTED_LEDGER_YEAR, '')
       );
 
+      // Set ulb id.
+      this.ulbIdSignal.set(this.cityDetails().ulbId);
       // this.setDerivedCityProperties(this.cityDetails());
 
       // Remove keys from TransferState to prevent memory leaks for subsequent client-side navigations
@@ -146,98 +158,111 @@ export class City {
     }
 
     // --- Server-side or Client-side (no TransferState) API Calls ---
-    // console.log(`${this.getPlatForm()}: making api calls for: ${cityId}`);
+    this.getCityDetailsObservable(citySlugName).subscribe({
+      next: (res) => {
+        this.cityDetails.set(res);
+        this.ulbIdSignal.set(res.ulbId);
+        // console.log(res);
+      },
+      error: (error: Error) => {
+        console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
+        this.handleLoadingAndError(error);
+        this.isLoading.set(false);
+      },
+      complete: () => {
+        // Use forkJoin to fetch independent data in parallel.
+        // getMoneyInfoObservable() needs year so use switchMap.
+        forkJoin({
+          distinctYearsRes: this.getLedgerYearsObservable(this.ulbIdSignal()),
+          distinctSlbYearsRes: this.getSlbYearsObservable(this.ulbIdSignal()),
+          // cityDetailsRes: this.getCityDetailsObservable(cityId),
+        })
+          .pipe(
+            catchError((error) => {
+              console.error(`${this.getPlatForm()}: Error in API calls`, error);
+              this.handleLoadingAndError(error);
+              return throwError(() => error);
+            }),
+            // Once distinctYearsRes is available, update selectedLedgerYear()
+            // Use switchMap to fetch moneyInfoRes based on the updated year.
+            switchMap((initialResults) => {
+              // Update ledgerYears and selectedLedgerYear immediately
+              this.ledgerYears.set(initialResults.distinctYearsRes.ledgerYears);
+              this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
 
-    // Use forkJoin to fetch independent data in parallel.
-    // getMoneyInfoObservable() needs year so use switchMap.
-    forkJoin({
-      distinctYearsRes: this.getLedgerYearsObservable(cityId),
-      distinctSlbYearsRes: this.getSlbYearsObservable(cityId),
-      cityDetailsRes: this.getCityDetailsObservable(cityId),
-    })
-      .pipe(
-        catchError((error) => {
-          console.error(`${this.getPlatForm()}: Error in API calls`, error);
-          this.handleLoadingAndError(error);
-          return throwError(() => error);
-        }),
-        // Once distinctYearsRes is available, update selectedLedgerYear()
-        // Use switchMap to fetch moneyInfoRes based on the updated year.
-        switchMap((initialResults) => {
-          // Update ledgerYears and selectedLedgerYear immediately
-          this.ledgerYears.set(initialResults.distinctYearsRes.ledgerYears);
-          this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
+              // City details: grid view data, State data.
+              // this.cityDetails.set(initialResults.cityDetailsRes);
 
-          // City details: grid view data, State data.
-          this.cityDetails.set(initialResults.cityDetailsRes);
-          // this.setDerivedCityProperties(this.cityDetails())
+              // If no ledger year, no need to fetch money info, return empty observable
+              if (!this.selectedLedgerYear()) {
+                console.warn(`${this.getPlatForm()}: Ledger year unavailable`);
+                return forkJoin({
+                  initialData: of(initialResults),
+                  moneyInfoRes: of(null),
+                });
+              }
 
-          // If no ledger year, no need to fetch money info, return empty observable
-          if (!this.selectedLedgerYear()) {
-            console.warn(`${this.getPlatForm()}: Ledger year unavailable`);
-            return forkJoin({
-              initialData: of(initialResults),
-              moneyInfoRes: of(null),
-            });
-          }
+              // Return an observable that also contains the result of getMoneyInfoObservable
+              return forkJoin({
+                initialData: of(initialResults),
+                moneyInfoRes: this.getMoneyInfoObservable(
+                  this.selectedLedgerYear(),
+                  this.ulbIdSignal()
+                ),
+              });
+            }),
+            takeUntil(this.destroy$)
+          )
+          .subscribe({
+            next: (finalRes) => {
+              const { initialData, moneyInfoRes } = finalRes;
 
-          // Return an observable that also contains the result of getMoneyInfoObservable
-          return forkJoin({
-            initialData: of(initialResults),
-            moneyInfoRes: this.getMoneyInfoObservable(
-              this.selectedLedgerYear(),
-              this.ulbIdSignal()
-            ),
+              // Ledger Years
+              this.ledgerYears.set(initialData.distinctYearsRes.ledgerYears);
+              this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
+
+              // SLB years
+              this.slbYears.set(initialData.distinctSlbYearsRes.slbYears);
+
+              // Money info: info cards.
+              this.moneyInfoRes.set(moneyInfoRes);
+
+              // --- Store in TransferState on Server ---
+              if (isPlatformServer(this.platformId)) {
+                // Store all fetched data in TransferState only if on the server
+                this.transferState.set(CITY_DETAILS_KEY, this.cityDetails());
+                this.transferState.set(LEDGER_YEARS_KEY, this.ledgerYears());
+                this.transferState.set(SLB_YEARS_KEY, this.slbYears());
+                this.transferState.set(MONEY_INFO_KEY, this.moneyInfoRes());
+                this.transferState.set(
+                  SELECTED_LEDGER_YEAR,
+                  this.selectedLedgerYear()
+                );
+              }
+
+              this.isLoading.set(false);
+            },
+            error: (error: Error) => {
+              console.error(
+                `${this.getPlatForm()}: Uncaught Error in loadData(): `,
+                error
+              );
+              this.handleLoadingAndError(error);
+              this.isLoading.set(false);
+            },
           });
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: (finalRes) => {
-          const { initialData, moneyInfoRes } = finalRes;
-
-          // Ledger Years
-          this.ledgerYears.set(initialData.distinctYearsRes.ledgerYears);
-          this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
-
-          // SLB years
-          this.slbYears.set(initialData.distinctSlbYearsRes.slbYears);
-
-          // Money info: info cards.
-          this.moneyInfoRes.set(moneyInfoRes);
-
-          // --- Store in TransferState on Server ---
-          if (isPlatformServer(this.platformId)) {
-            // Store all fetched data in TransferState only if on the server
-            this.transferState.set(CITY_DETAILS_KEY, this.cityDetails());
-            this.transferState.set(LEDGER_YEARS_KEY, this.ledgerYears());
-            this.transferState.set(SLB_YEARS_KEY, this.slbYears());
-            this.transferState.set(MONEY_INFO_KEY, this.moneyInfoRes());
-            this.transferState.set(
-              SELECTED_LEDGER_YEAR,
-              this.selectedLedgerYear()
-            );
-          }
-
-          this.isLoading.set(false);
-        },
-        error: (error: Error) => {
-          console.error(
-            `${this.getPlatForm()}: Uncaught Error in loadData(): `,
-            error
-          );
-          this.handleLoadingAndError(error);
-          this.isLoading.set(false);
-        },
-      });
+      },
+    });
   }
 
   getPlatForm(): 'SERVER' | 'CLIENT' {
     return isPlatformServer(this.platformId) ? 'SERVER' : 'CLIENT';
   }
 
-  private getCityDetailsObservable(cityId: string): Observable<any> {
-    return this._commonService.getCityData(cityId);
+  private getCityDetailsObservable(
+    citySlugName: string
+  ): Observable<ExploreSectionResponse> {
+    return this._commonService.getCityData(citySlugName);
   }
 
   private getLedgerYearsObservable(cityId: string) {
@@ -305,13 +330,17 @@ export class City {
   onUlbSelected = (ulbObj: IULB): void => {
     // console.log('Value of ULB sent by child to parent: onUlbSelected()');
     // console.log(ulbObj, this.platformId);
-    if (ulbObj._id) this.updateUlbIdAndNavigate(ulbObj._id);
+    if (ulbObj.slug) this.updateUlbIdAndNavigate(ulbObj.slug);
   };
 
   // ----- Map Section -----
-  public selectedCityIdChange($event: string): void {
-    // console.log('ulbIdChange from map', this.ulbIdSignal(), $event);
-    if ($event) this.updateUlbIdAndNavigate($event);
+
+  public selectedUlbObjChange(ulbObj: IULB): void {
+    // console.log('Ulb clicked on map: ', ulbObj);
+    if (ulbObj.slug) this.updateUlbIdAndNavigate(ulbObj.slug);
+    else {
+      console.error('ULB slug not found');
+    }
   }
 
   // Navigate to other ulb.

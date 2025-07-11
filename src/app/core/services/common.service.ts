@@ -29,7 +29,7 @@ export class CommonService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState,
+    private transferState: TransferState
   ) {
     // Read from transfer state - Client.
     if (
@@ -104,7 +104,7 @@ export class CommonService {
     }
     return this.http.post(
       `${environment.api.url}recentSearchKeyword/search?type=${type}${stateData}`,
-      dataString,
+      dataString
     );
   }
 
@@ -117,7 +117,7 @@ export class CommonService {
 
   // Get bond amount
   public getBondIssuerItemAmount(
-    state: string = '',
+    state: string = ''
   ): Observable<BondIssuances> {
     const url = state
       ? `${environment.api.url}bond-issuances/municipal-bonds/${state}`
@@ -134,24 +134,26 @@ export class CommonService {
 
   getUlbByState(stateCode: string) {
     return this.http.get(
-      environment.api.url + '/states/' + stateCode + '/ulbs',
+      environment.api.url + '/states/' + stateCode + '/ulbs'
     );
   }
 
   // Based on Ulb id return population, area, pop density, wards, yrs of data, UA
-  public getCityData(ulbId: string = ''): Observable<ExploreSectionResponse> {
+  public getCityData(
+    citySlugName: string = ''
+  ): Observable<ExploreSectionResponse> {
     // if (!ulbId) this._uitlity.swalPopup('Error', 'ULB Id is mandatory!', 'error');
-    const params = { ulbId };
+    const params = { citySlugName };
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/city/city-details`,
-      { params },
+      { params }
     );
   }
 
   // National/ State data.
   public getExploreSectionData(
     stateCode: string = '',
-    stateId: string = '',
+    stateId: string = ''
   ): Observable<ExploreSectionResponse> {
     let params = new HttpParams();
     if (stateCode) params = params.set('stateCode', stateCode);
@@ -159,7 +161,7 @@ export class CommonService {
 
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/home-page/get-Data`,
-      { params },
+      { params }
     );
   }
 
@@ -167,7 +169,7 @@ export class CommonService {
   public getLedgerYears(
     stateCode: string = '',
     ulbId: string = '',
-    auditStatus: string = '',
+    auditStatus: string = ''
   ) {
     let params = new HttpParams();
     if (stateCode) params = params.set('stateCode', stateCode);
@@ -176,7 +178,7 @@ export class CommonService {
 
     return this.http.get<{ ledgerYears: string[] }>(
       `${environment.api.url}common/get-latest-standardized-year`,
-      { params },
+      { params }
     );
   }
 
@@ -187,7 +189,7 @@ export class CommonService {
 
     return this.http.get<{ slbYears: string[] }>(
       `${environment.api.url}common/get-latest-slbs-year`,
-      { params },
+      { params }
     );
   }
 
@@ -199,14 +201,14 @@ export class CommonService {
 
     return this.http.get<{ borrowingYears: string[] }>(
       `${environment.api.url}common/get-latest-borrowings-year`,
-      { params },
+      { params }
     );
   }
 
   // Annual accounts popup - Show BS, BSS, IS, ISE, CF, AR in one popup.
   getReports(ulbId: string, financialYear: string, auditType: string = '') {
     return this.http.get<{ data: AfsPopupData; success: boolean }>(
-      `${environment.api.url}ledger/ulb-financial-data/files/${ulbId}?financialYear=${financialYear}&auditType=${auditType}`,
+      `${environment.api.url}ledger/ulb-financial-data/files/${ulbId}?financialYear=${financialYear}&auditType=${auditType}`
     );
   }
 
@@ -218,10 +220,10 @@ export class CommonService {
     ulb: string,
     ulbId = '',
     globalName = '',
-    skip: number = 0,
+    skip: number = 0
   ) {
     return this.http.get<{ data: FileMetadata[] }>(
-      `${environment.api.url}annual-accounts/datasets?year=${year}&type=${type}&category=${category}&state=${state}&ulb=${ulb}&ulbId=${ulbId}&globalName=${globalName}&skip=${skip}`,
+      `${environment.api.url}annual-accounts/datasets?year=${year}&type=${type}&category=${category}&state=${state}&ulb=${ulb}&ulbId=${ulbId}&globalName=${globalName}&skip=${skip}`
     );
   }
 }
