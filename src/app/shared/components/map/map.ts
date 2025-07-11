@@ -10,7 +10,7 @@ import {
   Output,
   PLATFORM_ID,
   signal,
-  SimpleChanges,
+  SimpleChanges
 } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as L from 'leaflet';
@@ -48,12 +48,11 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   };
   private destroy$ = new Subject<void>();
   public isMapLoading = signal<boolean>(true);
-  private mapInitialized = false;
-  ngZone: any;
+  mapInitialized = signal<boolean>(false);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private mapService: MapService
+    private mapService: MapService,
   ) { }
 
   // Set map zoom based on screen width.
@@ -90,11 +89,11 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       !changes['ulbId'].isFirstChange() &&
       changes['ulbId'].previousValue !== changes['ulbId'].currentValue;
 
-    if (stateChanged && this.mapInitialized) {
+    if (stateChanged && this.mapInitialized()) {
       this.loadMapData();
     }
 
-    if (ulbChanged && this.mapInitialized) {
+    if (ulbChanged && this.mapInitialized()) {
       this.mapService.updateSelectedULBMarker(changes['ulbId'].currentValue);
     }
   }
@@ -105,7 +104,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
         this.initializeMap();
-      }, 1000);
+      }, 100);
     }
 
     // if (isPlatformBrowser(this.platformId)) {
@@ -116,6 +115,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   }
 
   private initializeMap(): void {
+    this.mapInitialized.set(false);
     this.mapService.destroyMap();
     const container = document.getElementById('map-container');
 
@@ -124,11 +124,16 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       return;
     }
 
-    this.mapService.initMap('map-container', this.mapConfig);
-    this.mapInitialized = true;
-    this.loadMapData();
+    const isMapInitiated = this.mapService.initMap('map-container', this.mapConfig);
+    isMapInitiated.then((value) => {
+      if (value) {
+        this.mapInitialized.set(true);
+        this.loadMapData();
 
-    this.subscribeToMapEvents();
+        this.subscribeToMapEvents();
+      } else console.warn('Map not initialized')
+    })
+
   }
 
   private subscribeToMapEvents(): void {
@@ -154,7 +159,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   }
 
   private loadMapData(): void {
-    if (!this.mapInitialized || isPlatformServer(this.platformId)) return;
+    if (!this.mapInitialized() || isPlatformServer(this.platformId)) return;
     this.isMapLoading.set(true);
 
     // Remove previous state layer if any
@@ -188,12 +193,11 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
             this.mapService.flyToStateBounds(this.stateLayer, [0, 0], 1.5, 0.5);
             // this.loadCityCoordinates();
             this.getUlbsObservable(this.stateCode).subscribe({
-              next: (res) =>
-                (this.ulbsList = res['data'][this.stateCode]['ulbs']),
-              error: (error) => console.error('Failed to get data'),
-              complete: () => {
+              next: (res) => {
+                this.ulbsList = res['data'][this.stateCode]['ulbs'];
                 this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
               },
+              error: () => console.error('Failed to get data'),
             });
           } else {
             this.mapService.map?.setView(
