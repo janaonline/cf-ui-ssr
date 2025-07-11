@@ -14,6 +14,10 @@ export const routes: Routes = [
         component: Home,
     },
     {
+        path: 'map',
+        loadComponent: () => import('./pages/india-map/india-map').then(m => m.IndiaMap),
+    },
+    {
         path: 'dashboard',
         children: [
             { path: '', redirectTo: 'national', pathMatch: 'full' },
