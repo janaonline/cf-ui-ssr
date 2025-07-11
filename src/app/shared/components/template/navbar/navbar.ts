@@ -286,28 +286,6 @@ export class Navbar {
     });
 
     dialogRef.afterClosed().subscribe((data: any) => {
-      if (data) {
-        this.globalLoaderService.showLoader();
-        this.homeHeaderService.submitDemoData(data).subscribe({
-          next: () => {
-            // this.utilityService.swalPopup(
-            //   'Sucess!',
-            //   "We'll get back to you shortly!",
-            //   'success'
-            // );
-            this.globalLoaderService.stopLoader();
-          },
-          error: (error) => {
-            this.globalLoaderService.stopLoader();
-            console.error('Error in updating request demo data: ', error);
-            // this.utilityService.swalPopup(
-            //   'Failed to submit data!',
-            //   error?.error?.message,
-            //   'error'
-            // );
-          },
-        });
-      }
     });
   }
 }

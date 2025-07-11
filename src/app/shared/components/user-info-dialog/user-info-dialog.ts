@@ -1,35 +1,63 @@
-import { Component, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { FieldConfig } from '../../../core/models/filed-config';
-import { Subject } from 'rxjs';
+import { ChangeDetectorRef, Component, Inject } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
   MatDialogRef,
+  MatDialogTitle,
 } from '@angular/material/dialog';
-import { PreLoader } from '../pre-loader/pre-loader';
 import { MatDivider } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FieldConfig } from '../../../core/models/filed-config';
+import { UtilityService } from '../../../core/services/utility-service';
+import { PreLoader } from '../pre-loader/pre-loader';
+import { UserInfoDialogueService } from './user-info-dialogue-service';
 
 @Component({
   selector: 'app-user-info-dialog',
-  imports: [PreLoader, MatDialogActions, MatDivider],
+  imports: [
+    PreLoader,
+    ReactiveFormsModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatDivider,
+  ],
   templateUrl: './user-info-dialog.html',
   styleUrl: './user-info-dialog.scss',
 })
 export class UserInfoDialog {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public matDialogData: any,
+    private userInfoService: UserInfoDialogueService,
+    private dialogRef: MatDialogRef<UserInfoDialog>,
+    private utilityService: UtilityService,
+    private cdr: ChangeDetectorRef,
+    private _snackBar: MatSnackBar,
+  ) { }
+
   title: string = 'Download';
   desc: string = 'Please enter your information below to download the file(s).';
   isLoading: boolean = false;
   fields: FieldConfig[] = [];
   userInfo: FormGroup = new FormGroup({});
-  private destroy$ = new Subject<void>();
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public matDialogData: any,
-    // private downloadUserService: DownloadUserInfoService,
-    public dialogRef: MatDialogRef<UserInfoDialog> // private utilityService: UtilityService, // private dynamicFormService: DynamicFormService
-  ) {}
 
   ngOnInit(): void {
     this.getFields();
@@ -37,51 +65,113 @@ export class UserInfoDialog {
 
   private getFields(): void {
     this.isLoading = true;
-    // this.downloadUserService
-    //   .getUserInfoQuestions(this.matDialogData?.moduleInfo?.endPoint)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((res: any) => {
-    //     this.fields = res.data.data;
-    //     this.title = res.data.title || this.title;
-    //     this.desc = res.data.desc || this.desc;
-    //     this.userInfo = this.dynamicFormService.toFormGroup(this.fields);
-    //     this.isLoading = false;
-    //   });
+    this.userInfoService
+      .getUserInfoQuestions(this.matDialogData?.moduleInfo?.endPoint)
+      .subscribe((res: any) => {
+        this.fields = res.data.data;
+        this.title = res.data.title || this.title;
+        this.desc = res.data.desc || this.desc;
+        this.userInfo = this.toFormGroup(this.fields);
+        this.isLoading = false;
+        this.cdr.detectChanges(); // 👈 force update detection
+      });
   }
 
   public submitUserInfo(): void {
-    if (this.userInfo.valid) {
-      let payload = { ...this.userInfo.value };
-
-      // If saveToLocalStorage is true then store data in localStorage.
-      if (this.matDialogData?.moduleInfo?.saveToLocalStorage) {
-        localStorage.setItem('userInfo', JSON.stringify(this.userInfo.value));
-
-        payload = {
-          ...this.userInfo.value,
-          ...this.matDialogData.downloadInfo,
-        };
-      }
-
-      //   this.dialogRef.close(payload);
-    } else {
-      //   this.utilityService.swalPopup(
-      //     'Validation Failed!',
-      //     'Failed to download file!',
-      //     'error'
-      //   );
-      console.error('Invalid user info.');
+    if (this.userInfo.invalid) {
+      return;
     }
+    let payload = { ...this.userInfo.value };
+
+    // If saveToLocalStorage is true then store data in localStorage.
+    if (this.matDialogData?.moduleInfo?.saveToLocalStorage) {
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo.value));
+
+      payload = {
+        ...this.userInfo.value,
+        ...this.matDialogData.downloadInfo,
+      };
+    }
+    this.submitData(payload);
+
   }
 
-  // submitUserInfo(): void {
-  //   if (this.userInfo.valid) {
-  //     localStorage.setItem('userInfo', JSON.stringify(this.userInfo.value));
-  //     const payload = { ...this.userInfo.value, ...this.matDialogData.downloadInfo };
-  //     this.dialogRef.close(payload);
-  //   } else {
-  //     this.utilityService.swalPopup('Validation Failed!', 'Failed to download file!', 'error');
-  //     console.error('Invalid user info.');
-  //   }
-  // }
+  submitData(data: any) {
+    this.userInfoService.submitData('request-demo/postDemoData', data).subscribe({
+      next: () => {
+        this.triggerSnackbar(`We'll get back to you shortly!`);
+        this.dialogRef.close(true);
+      },
+      error: (error) => {
+        this.triggerSnackbar(`Something went wrong! Please try again later.`);
+      },
+    });
+  }
+
+  triggerSnackbar(msg: string) {
+    this._snackBar.open(msg, 'Close', {
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      duration: 2000,
+      // panelClass: ['snackbar-success']
+      panelClass: ['custom-snackbar-success'],
+    });
+  }
+
+  private toFormGroup(questions: FieldConfig[]): FormGroup {
+    const group: any = {};
+    questions.forEach((question: FieldConfig) => {
+      group[question.key] = new FormControl(
+        question.value || '',
+        this.bindValidations(question.validations)
+      );
+    });
+    return new FormGroup(group);
+  }
+
+  private bindValidations(validations: any) {
+    if (validations && validations.length > 0) {
+      const validators: any = [];
+      validations.forEach((row: any) => {
+        switch (row.name) {
+          case 'required':
+            validators.push(Validators.required);
+            break;
+          case 'nullValidator':
+            validators.push(Validators.nullValidator);
+            break;
+          case 'pattern':
+            validators.push(Validators.pattern(row.validator));
+            break;
+          case 'min':
+            validators.push(Validators.min(row.validator));
+            break;
+          case 'max':
+            validators.push(Validators.max(row.validator));
+            break;
+          case 'minlength':
+            validators.push(Validators.minLength(row.validator));
+            break;
+          case 'maxlength':
+            validators.push(Validators.maxLength(row.validator));
+            break;
+          case 'email':
+            validators.push(
+              Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$')
+            );
+            break;
+        }
+      });
+
+      return Validators.compose(validators);
+    }
+    return null;
+  }
+
+  public hasError(key: string, name: string) {
+    if (name === 'email') name = 'pattern';
+    return (this.userInfo.get(key) as FormControl).hasError(name);
+  }
+
+
 }
