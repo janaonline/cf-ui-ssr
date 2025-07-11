@@ -1,4 +1,4 @@
-import { Component ,OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Spotlight } from './spotlight/spotlight';
 import { SearchBar } from './search-bar/search-bar';
 import { DiscoverSection } from './discover-section/discover-section';
@@ -8,7 +8,7 @@ import { Title, Meta } from '@angular/platform-browser';
 @Component({
   selector: 'app-home',
   imports: [
-    Spotlight, 
+    Spotlight,
     SearchBar,
     DiscoverSection,
     DashboardMapSection,
@@ -17,10 +17,10 @@ import { Title, Meta } from '@angular/platform-browser';
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
-  constructor(private titleService: Title, private metaService: Meta) {}
+  constructor(private titleService: Title, private metaService: Meta) { }
 
   ngOnInit() {
-    this.titleService.setTitle('City Finance— Financial Data of 4,000+ Indian Cities');
+    this.titleService.setTitle('City Finance - Financial Data of 4,000+ Indian Cities');
 
     this.metaService.updateTag({
       name: 'description',
@@ -39,7 +39,7 @@ export class Home implements OnInit {
 
     this.metaService.updateTag({
       property: 'og:title',
-      content: 'City Finance— Financial Data of 4,000+ Indian Cities'
+      content: 'City Finance - Financial Data of 4,000+ Indian Cities'
     });
 
     this.metaService.updateTag({
