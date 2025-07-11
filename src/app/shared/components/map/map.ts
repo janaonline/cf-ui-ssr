@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import * as L from 'leaflet';
-import { debounceTime, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { UserUtility } from '../../../core/util/user/user';
 import { MapConfig, ResettableMap, StateGeoJson } from './interfaces';
@@ -173,7 +173,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
               (f) => f.properties['ST_CODE'] === this.stateCode
             )
             : data.features;
-          console.log('state length = ', features.length);
+          // console.log('state length = ', features.length);
           const stateGeoJson: StateGeoJson = {
             type: 'FeatureCollection',
             features,
