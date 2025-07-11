@@ -53,8 +53,8 @@ export class UserInfoDialog {
     private _snackBar: MatSnackBar,
   ) { }
 
-  title: string = 'Download';
-  desc: string = 'Please enter your information below to download the file(s).';
+  title: string = 'User Information';
+  desc: string = '';
   isLoading: boolean = false;
   fields: FieldConfig[] = [];
   userInfo: FormGroup = new FormGroup({});
@@ -66,7 +66,7 @@ export class UserInfoDialog {
   private getFields(): void {
     this.isLoading = true;
     this.userInfoService
-      .getUserInfoQuestions(this.matDialogData?.moduleInfo?.endPoint)
+      .getUserInfoQuestions(this.matDialogData?.moduleInfo?.getEndPointUrl)
       .subscribe((res: any) => {
         this.fields = res.data.data;
         this.title = res.data.title || this.title;
@@ -97,7 +97,7 @@ export class UserInfoDialog {
   }
 
   submitData(data: any) {
-    this.userInfoService.submitData('request-demo/postDemoData', data).subscribe({
+    this.userInfoService.submitData(this.matDialogData?.moduleInfo?.postEndPointUrl, data).subscribe({
       next: () => {
         this.triggerSnackbar(`We'll get back to you shortly!`);
         this.dialogRef.close(true);
