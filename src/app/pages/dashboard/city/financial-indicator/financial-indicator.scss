@@ -4,7 +4,6 @@
     min-width: 500px;
     width: 100%;
     height: 100%;
-    overflow-x: auto;
     flex-grow: 1;
     // border: 1px solid green;
 }
@@ -17,6 +16,14 @@
     // border: 1px solid green;
 }
 
+// .chart-container {
+//     min-height: 500px;
+//     min-width: 500px;
+//     width: 100%;
+//     height: 100%;
+//     flex-grow: 1;
+//     // border: 1px solid green;
+// }
 
 .mat-custom-style {
     --mat-expansion-header-text-font: var(--ff-base);
