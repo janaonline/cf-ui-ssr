@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, Renderer2, RendererFactory2 } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, Renderer2, RendererFactory2, DOCUMENT } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -9,6 +9,7 @@ export class SeoService {
   private renderer: Renderer2;
 
   constructor(
+    @Inject(DOCUMENT) private document: Document,
     private titleService: Title,
     private metaService: Meta,
     private rendererFactory: RendererFactory2,
@@ -26,17 +27,17 @@ export class SeoService {
   }
 
   setJsonLd(schema: object): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const script = this.renderer.createElement('script');
-      script.type = 'application/ld+json';
-      script.text = JSON.stringify(schema);
-      this.removeOldJsonLd(); // Optional: clean previous tags
-      this.renderer.appendChild(document.head, script);
-    }
+    // if (isPlatformBrowser(this.platformId)) {
+    const script = this.renderer.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(schema);
+    this.removeOldJsonLd(); // Optional: clean previous tags
+    this.renderer.appendChild(this.document.head, script);
+    // }
   }
 
   private removeOldJsonLd() {
-    const existing = document.head.querySelectorAll('script[type="application/ld+json"]');
+    const existing = this.document.head.querySelectorAll('script[type="application/ld+json"]');
     existing.forEach(el => el.remove());
   }
 }
