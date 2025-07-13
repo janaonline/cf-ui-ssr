@@ -8,10 +8,7 @@
     }
 
     <!-- Go to state dashbard -->
-    <a
-      [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`"
-      class="custom-font-size-7"
-    >
+    <a [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`" class="custom-font-size-7">
       Go To {{ cityDetails()?.state?.name }} Dashboard
       <!-- Go To {{ selectedStateNameSignal() }} Dashboard -->
     </a>
@@ -39,21 +36,13 @@
       <!-- Right Section -->
       <div class="col-sm-12 col-md-6 my-3">
         <!-- State and ULB search -->
-        <div
-          class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1"
-        >
+        <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
           <!-- [stateName]="selectedStateNameSignal()" -->
-          <app-state-search
-            [stateName]="cityDetails()?.state?.name"
-            [isStateReadonly]="true"
-          ></app-state-search>
+          <app-state-search [stateName]="cityDetails()?.state?.name" [isStateReadonly]="true"></app-state-search>
           <!-- @if (selectedStateNameSignal()) { -->
           @if (cityDetails()?.state?.name) {
-          <app-city-search
-            [selectCity]="onUlbSelected"
-            [cityName]="cityDetails()?.ulbName"
-            [stateId]="cityDetails()?.state._id"
-          ></app-city-search>
+          <app-city-search [selectCity]="onUlbSelected" [cityName]="cityDetails()?.ulbName"
+            [stateId]="cityDetails()?.state._id"></app-city-search>
           <!-- [cityName]="selectedCityNameSignal()"
             [stateId]="selectedStateIdSignal()" -->
           }
@@ -64,12 +53,8 @@
           <!-- @if (stateCodeSignal() && ulbIdSignal()) { -->
           @if (cityDetails()?.state?.code && ulbIdSignal() && showMap()) {
           <!-- [stateCode]="stateCodeSignal()" -->
-          <app-map
-            #map
-            [stateCode]="cityDetails()?.state?.code"
-            [ulbId]="ulbIdSignal()"
-            (ulbObjChange)="selectedUlbObjChange($event)"
-          ></app-map>
+          <app-map #map [stateCode]="cityDetails()?.state?.code" [ulbId]="ulbIdSignal()"
+            (ulbObjChange)="selectedUlbObjChange($event)"></app-map>
           }
         </div>
       </div>
@@ -85,22 +70,16 @@
     }
 
     <!-- Last modified date -->
-    <p
-      class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
-      style="font-size: 0.75rem"
-    >
+    <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
+      style="font-size: 0.75rem">
       Last updated on:
       {{ moneyInfoRes()?.lastModifiedAt | date : "mediumDate" }}; Source:
       {{
-        moneyInfoRes()?.audit_status === "Audited" ? "Audited" : "Provisional"
+      moneyInfoRes()?.audit_status === "Audited" ? "Audited" : "Provisional"
       }}
       financial statements for the year
-      <select
-        class="form-select form-select-sm w-auto d-inline-block"
-        [value]="selectedLedgerYear()"
-        (change)="onMoneyInfoYearChange($event)"
-        id="years"
-      >
+      <select class="form-select form-select-sm w-auto d-inline-block" [value]="selectedLedgerYear()"
+        (change)="onMoneyInfoYearChange($event)" id="years">
         @for (year of ledgerYears(); track $index) {
         <option [value]="year" [selected]="year === selectedLedgerYear()">
           {{ year }}
@@ -115,41 +94,27 @@
   <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
 
   <mat-tab-group (selectedIndexChange)="onTabChange($event)">
-    <mat-tab
-      label="Financial Indicators"
-      [disabled]="ledgerYears().length === 0"
-    >
+    <mat-tab label="Financial Indicators" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[0]) {
-      <app-financial-indicator
-        [years]="ledgerYears()"
-      ></app-financial-indicator>
+      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
+        [ulbName]="cityDetails().ulbName"></app-financial-indicator>
       }
     </mat-tab>
-    <mat-tab
-      label="Balance Sheet & Income Statement"
-      [disabled]="ledgerYears().length === 0"
-    >
+    <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[1]) {
-      <app-balancesheet-incomestatement
-        [yearsSignal]="ledgerYears()"
-        [ulbIdSignal]="ulbIdSignal()"
-      ></app-balancesheet-incomestatement>
+      <app-balancesheet-incomestatement [yearsSignal]="ledgerYears()"
+        [ulbIdSignal]="ulbIdSignal()"></app-balancesheet-incomestatement>
       }
     </mat-tab>
-    <mat-tab
-      label="Service Level BenchMark"
-      [disabled]="slbYears().length === 0"
-    >
+    <mat-tab label="Service Level BenchMark" [disabled]="slbYears().length === 0">
       @if (loadedTabs[2]) {
       <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()"></app-slb>
       }
     </mat-tab>
     <mat-tab label="Borrowing & Credit Rating">
       @if (loadedTabs[3]) {
-      <app-borrowing-credit-rating
-        [ulbIdSignal]="ulbIdSignal()"
-        [ulbName]="cityDetails().ulbName"
-      ></app-borrowing-credit-rating>
+      <app-borrowing-credit-rating [ulbIdSignal]="ulbIdSignal()"
+        [ulbName]="cityDetails().ulbName"></app-borrowing-credit-rating>
       }
       <!-- [ulbName]="selectedCityNameSignal()" -->
     </mat-tab>

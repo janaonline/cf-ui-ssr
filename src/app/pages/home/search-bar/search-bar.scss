@@ -4,8 +4,10 @@
 
 .countup-span {
     display: inline-block;
-    min-width: 60px;
     text-align: right;
+
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
 }
 
 .search-box {

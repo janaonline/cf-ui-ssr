@@ -25,18 +25,27 @@ export class TabButtons implements OnInit, OnChanges {
   // Internal signal to keep track of the currently selected button's key
   selectedBtnKey = signal<string>('');
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
-    // console.log('buttons sent from parent to child: ', this.buttons());
-    if (this.buttons().length > 0) {
-      this.selectedBtnKey.set(this.buttons()[0].key);
-      this.selectedButtonKeyChange.emit(this.buttons()[0].key);
-    }
+    this.setDefaultSelectedButton();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes: ', changes);
+    if (changes['buttons'] && !changes['buttons'].firstChange) {
+      this.setDefaultSelectedButton();
+    }
+  }
+
+  private setDefaultSelectedButton(): void {
+    if (this.buttons()?.length === 0) return;
+
+    const defaultKey = this.buttons()[0].key;
+
+    if (this.selectedBtnKey() !== defaultKey) {
+      this.selectedBtnKey.set(defaultKey);
+      this.selectedButtonKeyChange.emit(defaultKey);
+    }
   }
 
   buttonClick(key: string): void {

@@ -1,0 +1,53 @@
+<div class="dialog-container">
+    <mat-dialog-content class="mat-typography text-dark">
+        <div class="border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare by Average(s)</div>
+        <!-- <p class="fw-bold mb-2">{{ radioOptions.title }}</p> -->
+        <form [formGroup]="myForm" class=''>
+            @for (option of radioOptions(); track option.key) {
+            <div class="mb-1">
+                <input type="radio" [id]="option.key" [value]="option.key" formControlName="compareType" class="me-1" />
+                <label [for]="option.key" class="me-3">{{ option.label }}</label>
+            </div>
+            }
+        </form>
+
+        <div class="text-center my-3 w-100">-OR-</div>
+
+        <div class="border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare by upto 3 ULB(s)</div>
+        <div class="w-100">
+            <!-- <app-city-search [selectCity]="onUlbSelected" [cityName]="resetCity()"></app-city-search> -->
+            <!-- City search -->
+            <form [formGroup]="myForm" class="d-flex gap-2">
+                <input type="text" class="input-box-style" placeholder="Search for ULBs" matInput
+                    formControlName="ulbName" [matAutocomplete]="auto" id="ulbName" />
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    @for (option of filteredUlbs(); track $index) {
+                    <mat-option [value]="option.name" (onSelectionChange)="onCitySelection(option)">
+                        <small>{{ option.name }}</small>
+                    </mat-option>
+                    }
+                    @if (noDataFound()) {
+                    <mat-option class="text-muted" disabled>No results found.</mat-option>
+                    }
+                </mat-autocomplete>
+            </form>
+
+            <!-- Show selected cities -->
+            <div class="d-flex flex-wrap gap-2 my-1">
+                @for (city of citiesArr.slice(0, 3); track $index) {
+                <div class="badge bg-light border border-secondary text-dark d-flex align-items-center p-1 pe-3 rounded-pill"
+                    style="max-width: 12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                    [title]="city.name">
+                    <span class="me-2 text-truncate flex-grow-1">{{ city.name }}</span>
+                    <button type="button" class="btn-close btn-sm reset-btn-styles" aria-label="Close"
+                        (click)="removeCity($index)"><i class="bi bi-x-circle"></i></button>
+                </div>
+                }
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions class="d-flex justify-content-center gap-3">
+        <button class="btn btn-cfPrimary" (click)="filterSelected()">Apply</button>
+        <button class="btn btn-outline-cfPrimary" (click)="filterSelected('reset')">Reset</button>
+    </mat-dialog-actions>
+</div>

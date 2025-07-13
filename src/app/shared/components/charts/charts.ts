@@ -91,14 +91,15 @@ export class Charts implements AfterViewInit, OnDestroy {
           // options: config.options || baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
         });
         break;
-      case 'mixedChart':
-        this.chartInstance = new Chart(ctx, {
-          type: 'bar',
-          data: config.data,
-          options: config.options,
-          // config.options || baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
-        });
-        break;
+      // case 'mixedChart':
+      //   this.chartInstance = new Chart(ctx, {
+      //     type: 'bar',
+      //     data: config.data,
+      //     options: config.options,
+      //     // config.options || baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
+      //   });
+      //   break;
+      // For gauge chart use gaugeChartOptions
       case 'gaugeChart':
         this.chartInstance = new Chart(ctx, {
           type: 'doughnut',
@@ -124,74 +125,92 @@ export class Charts implements AfterViewInit, OnDestroy {
 
 // // Sample/ Examples
 // // Bar Chart
-// private createBarCanvas() {
-//   console.log('createBarCanvas()');
-//   new Chart(this.barCanvas.nativeElement, {
-//     type: 'bar',
-//     data: {
-//       labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
-//       datasets: [
-//         {
-//           label: '2023-24',
-//           data: [12, 19, 3],
-//           backgroundColor: ['#65D2F3'],
-//           borderRadius: 5,
-//         },
-//         {
-//           label: '2022-23',
-//           data: [10, 8, 6],
-//           backgroundColor: ['#1596E6'],
-//           borderRadius: 5,
-//         },
-//         {
-//           label: '2021-22',
-//           data: [12, 10, 14],
-//           backgroundColor: ['#245ABF'],
-//           borderRadius: 5,
-//         },
-//       ],
-//     },
-//     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
-//   });
-// }
+// {
+//   chartId: 'bar0',
+//     chartType: 'barChart',
+//       labels: ['2020-21', '2021-22', '2022-23'],
+//         datasets: [
+//           {
+//             type: 'line',
+//             label: 'Y-o-Y Growth',
+//             data: [2937, 3524, 3883],
+//             borderWidth: 2,
+//             borderColor: this.lineColor,
+//             pointBackgroundColor: this.lineColor,
+//             fill: false,
+//             tension: 0.3,
+//           },
+//           {
+//             type: 'bar',
+//             label: 'ULB Name',
+//             data: [2937, 3524, 3883],
+//             backgroundColor: [this.graphColors[0]],
+//             borderRadius: 5,
+//             barThickness: 60,
+//           },
+//           {
+//             type: 'bar',
+//             label: 'National Avg',
+//             data: [1576, 1946, 3037],
+//             backgroundColor: [this.graphColors[1]],
+//             borderRadius: 5,
+//             barThickness: 60,
+//           }
+//         ],
+//           options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+//     }
 
 // // Mixed Chart
-// private createMixedChartCanvas() {
-//   console.log('createMixedChartCanvas()');
-//   new Chart(this.mixedChartCanvas.nativeElement, {
-//     type: 'bar',
-//     data: {
-//       labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
-//       datasets: [
-//         {
-//           type: 'line',
-//           label: 'Y-o-Y Growth',
-//           data: [25, 45, 35, 55],
-//           borderWidth: 2,
-//           borderColor: '#f43f5e',
-//           pointBackgroundColor: '#f43f5e',
-//           fill: false,
-//           tension: 0.3,
-//         },
-//         {
-//           type: 'bar',
-//           label: 'ULB Name',
-//           data: [30, 50, 40, 60],
-//           backgroundColor: ['#1596E6'],
-//           borderRadius: 5,
-//         },
-//         {
-//           type: 'bar',
-//           label: 'State Avg',
-//           data: [12, 10, 14],
-//           backgroundColor: ['#245ABF'],
-//           borderRadius: 5,
-//         },
-//       ],
+// {
+//   chartId: 'mixed0',
+//     chartType: 'barChart',
+//       labels: ['2020-21', '2021-22', '2022-23'],
+//         datasets: [
+//           {
+//             type: 'line',
+//             label: 'Y-o-Y Growth',
+//             data: [2937, 3524, 3883],
+//             borderWidth: 2,
+//             borderColor: this.lineColor,
+//             pointBackgroundColor: this.lineColor,
+//             fill: false,
+//             tension: 0.3,
+//           },
+//           {
+//             type: 'bar',
+//             label: 'ULB Name',
+//             data: [2937, 3524, 3883],
+//             backgroundColor: [this.graphColors[0]],
+//             borderRadius: 5,
+//             barThickness: 60,
+//           },
+//           {
+//             type: 'bar',
+//             label: 'National Avg',
+//             data: [1576, 1946, 3037],
+//             backgroundColor: [this.graphColors[1]],
+//             borderRadius: 5,
+//             barThickness: 60,
+//           },
+//           // {
+//           //   type: 'bar',
+//           //   label: 'National Avg',
+//           //   data: [1576, 1946, 3037],
+//           //   backgroundColor: [this.graphColors[2]],
+//           //   borderRadius: 5,
+//           //   // barThickness: 60,
+//           // },
+//           // {
+//           //   type: 'bar',
+//           //   label: 'National Avg',
+//           //   data: [1576, 1946, 3037],
+//           //   backgroundColor: [this.graphColors[3]],
+//           //   borderRadius: 5,
+//           //   // barThickness: 60,
+//           // },
+//         ],
+//           options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
 //     },
-//     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Revenue', 'Amt in ₹ Cr'),
-//   });
-// }
 
 // // Line Chart
 // private createLineCanvas() {
@@ -283,3 +302,20 @@ export class Charts implements AfterViewInit, OnDestroy {
 //     },
 //   });
 // }
+
+// Example 2:
+// {
+//   chartId: 'pie1',
+//     chartType: 'gaugeChart',
+//       // labels: ['Own Source Revenue', 'Grants', 'Assigned Revenue'],
+//       datasets: [
+//         {
+//           label: 'Pie Dataset 3',
+//           data: [30, 10, 20, 20, 20, 10],
+//           backgroundColor: this.graphColors.slice(0, 7),
+//           borderRadius: 3,
+//           borderWidth: 1,
+//         },
+//       ],
+//         options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+//     },

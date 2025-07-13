@@ -117,7 +117,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   dataSource: object[] = [];
   filteredDataSource = new MatTableDataSource<object>();
   ledgerData!: BsIsData[];
-  private population!: number;
+  population!: number;
 
   readonly DOWNLOAD_REPORTS_HEADERS_STRUCTURE: TableColumns[] = [
     { key: 'type', value: 'Download Report', class: '' },
@@ -135,7 +135,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private commonService: CommonService,
     private utilityService: UtilityService,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -206,6 +206,11 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   get currencyFormat(): 'inr' | 'k' | 'lakh' | 'cr' {
     return this.reportForm.get('currencyFormat')?.value ?? 'inr';
+  }
+
+  get buttonLabel(): 'Balance Sheet' | 'Income Statement' {
+    // TODO: User label from array options.
+    return this.reportType === 'balanceSheet' ? 'Balance Sheet' : 'Income Statement';
   }
 
   private updateTableData(): void {

@@ -49,7 +49,7 @@ export class MapService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: object
-  ) {}
+  ) { }
 
   /**
    * Dynamically loads the Leaflet library.
@@ -93,13 +93,13 @@ export class MapService {
     elementId: string,
     config: MapConfig,
     options?: Leaflet.MapOptions
-  ): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) return;
+  ): Promise<boolean> {
+    if (!isPlatformBrowser(this.platformId)) return true;
 
     await this.loadLeaflet();
     if (!this.L || !this.leafletLoaded) {
       console.error('Leaflet library not loaded, cannot initialize map.');
-      return;
+      return false;
     }
 
     // Destroy existing map instance to prevent leaks
@@ -112,7 +112,7 @@ export class MapService {
       console.error(
         `Map container with ID "${elementId}" not found in the DOM.`
       );
-      return;
+      return false;
     }
 
     // Leaflet can cache internal IDs on the DOM element. Deleting this
@@ -132,6 +132,8 @@ export class MapService {
       zoomSnap: 0.01,
       ...options,
     }).setView(config.initialView, config.initialZoom, { animate: true });
+
+    return true;
   }
 
   /**

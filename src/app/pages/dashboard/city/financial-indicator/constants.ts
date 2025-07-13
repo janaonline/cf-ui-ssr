@@ -8,6 +8,13 @@ export const buttons: ButtonObj[] = [
   { key: 'capex', label: 'Capital Expenditure' },
 ];
 
+export const compraeByOptions = (ulbType: string) => [
+  { key: 'state', label: `State ${ulbType} Average` },
+  { key: 'national', label: `National ${ulbType} Average` },
+  { key: 'popCat', label: `${ulbType} Population Average` },
+  { key: 'ulbType', label: `${ulbType} Average` },
+]
+
 type Accordion = {
   key: 'aboutIndicator' | 'calculation' | 'performanceAssessed' | 'nextsteps';
   label: string;
