@@ -164,8 +164,7 @@ export class FinancialIndicator {
     console.log('calc type: ', calcType)
 
     const body: IFinancialIndicatorsChart = {
-      // years: this.createYearsArr(),
-      years: [this.year],
+      years: this.getcalcType === 'mix' ? [this.year] : this.createYearsArr(),
       compareType,
       ulbId: this.ulbIdSignal(),
       lineItem: this.currentSelectedButtonKey(),
