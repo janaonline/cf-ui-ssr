@@ -1,9 +1,10 @@
 import { isPlatformServer } from '@angular/common';
-import { Component, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import { Component, effect, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
+import { Subject, takeUntil } from 'rxjs';
 import { ButtonObj, CalcType, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { MaterialModule } from '../../../../material.module';
 import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
@@ -72,14 +73,20 @@ export class FinancialIndicator {
 
   myForm!: FormGroup;
   years = input.required<string[]>();
-  accordion = viewChild.required(MatAccordion);
 
   isLoading = signal<boolean>(true);
+  isChartLoading = signal<boolean>(true);
+  isChartDownloading = signal<boolean>(false);
 
   chartsData = signal<ChartConfig[]>([]);
   output = signal<resStruct | undefined>(undefined);
+
   dialogResult!: IFinancialIndicatorsChart;
   readonly dialog = inject(MatDialog);
+
+  accordion = viewChild.required(MatAccordion);
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -88,15 +95,20 @@ export class FinancialIndicator {
   ) { }
 
   ngOnInit() {
+    console.log('years:', this.years())
     this.myForm = this.fb.group({ year: [this.years()[0]] });
     this.isLoading.set(false);
 
-    this.myForm.get('year')?.valueChanges.subscribe({
-      next: (newYearValue) => {
-        this.getChartData();
-      }
-    })
+    this.myForm.get('year')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.getChartData()
+      })
   }
+
+  readonly ulbIdChangeEffect = effect(() => {
+    if (this.ulbIdSignal()) this.getChartData();
+  })
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
@@ -108,7 +120,7 @@ export class FinancialIndicator {
   onSelectedSubButtonChange(key: string): void {
     // console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
-    this.getChartData();
+    // if (this.years().length) this.getChartData('btn');
   }
 
   // Type Guard Function
@@ -121,45 +133,84 @@ export class FinancialIndicator {
     );
   }
 
-  getButtonLabel(arr: ButtonObj[], key: string) {
+  // Retrieves the label from a list of Arrray based on the provided key.
+  private getLabelByKey(arr: ButtonObj[], key: string): string | undefined {
+    if (!Array.isArray(arr) || typeof key !== 'string') {
+      console.warn('Invalid arguments passed to getLabelByKey');
+      return undefined;
+    }
+
     return arr.find(e => e.key === key)?.label;
   }
 
+  // Get selected button(s) label.
   buttonType(): string {
-    return this.getButtonLabel(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
+    return this.getLabelByKey(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
   }
 
-  get year() {
+  // Return selected year.
+  private getYear() {
     return this.myForm.get('year')?.value;
   }
 
-  get getcalcType(): CalcType {
+  // Get calcType based on sub button selected.
+  private getcalcType(): CalcType {
     const subBtn = this.subButton();
 
     if (['totRev', 'totOwnRev', 'totRevex', 'capex',].includes(subBtn)) return 'total';
     else if (['revPerCapita', 'ownRevPerCapita', 'revexPerCapita', 'capexPerCapita',].includes(subBtn)) return 'perCapita';
+    // else if (['revMix', 'ownRevMix', 'revexMix'].includes(subBtn)) return 'mix';
     return 'mix';
   }
 
+  // Displayed above graph.
   getCompType() {
     const compType = this.dialogResult?.compareType || 'state';
     if (compType === 'ulbs') return 'Selected ULB(s)'
-    return this.getButtonLabel(compraeByOptions(this.ulbType()), compType);
+    return this.getLabelByKey(compraeByOptions(this.ulbType()), compType);
   }
 
-  createBodyStructure(): IFinancialIndicatorsChart {
-    // if (!this.dialogResult) {
-    //   console.warn('createBodyStructure: dialogResult is undefined, using defaults');
-    // }
+  // Create chart.
+  private getChartData(): void {
+    this.isChartLoading.set(true);
 
-    const {
-      compareType = 'state',
-      calcType = this.getcalcType,
-      compareUlbs = []
-    } = this.dialogResult ?? {};
+    // Create body/ payload structure.
+    const body = this.createBodyStructure();
 
+    // Don't call API if year is unavailable.
+    if (body.years.length === 0) return;
+
+    this.dashboardService.getFinancialIndicatorsChartData(body)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (apiRes: { data: ChartResStruct }) => {
+          const res = apiRes.data;
+
+          if (res.chartType === 'barChart') {
+            const structureData = this.buildBarChartConfigurations(res);
+            this.chartsData.set(structureData);
+          }
+          else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
+            const structureData = this.buildGaugeChartConfigurations(res);
+            this.chartsData.set(structureData);
+          }
+
+          this.isChartLoading.set(false);
+        },
+        error: () => {
+          console.error('Failed to create chart.');
+          this.isChartLoading.set(false);
+        },
+      })
+  }
+
+  // Helper: Consolidate all the data - payload/ body for the API.
+  private createBodyStructure(): IFinancialIndicatorsChart {
+    const { compareType = 'state', calcType = this.getcalcType(), compareUlbs = [] } = this.dialogResult ?? {};
+
+    // If 'mix' then only one year data has to be fetched.
     const body: IFinancialIndicatorsChart = {
-      years: this.getcalcType === 'mix' ? [this.year] : this.createYearsArr(),
+      years: this.getcalcType() === 'mix' ? [this.getYear()] : this.createYearsArr(),
       compareType,
       ulbId: this.ulbIdSignal(),
       lineItem: this.currentSelectedButtonKey(),
@@ -170,12 +221,12 @@ export class FinancialIndicator {
     return body;
   }
 
-
-  createYearsArr(): string[] {
+  // Helper: Based on current year selected create years array with T, T-2, T-1.
+  private createYearsArr(): string[] {
     const yearStr: string = this.myForm.get('year')?.value;
 
     if (!yearStr || !/^\d{4}-\d{2}$/.test(yearStr)) {
-      console.warn('Invalid year format. Expected format: YYYY-YY');
+      // console.warn('Invalid year format. Expected format: YYYY-YY');
       return [];
     }
 
@@ -191,90 +242,72 @@ export class FinancialIndicator {
     return years;
   }
 
-  isChartLoading = signal<boolean>(true);
-  // Create chart.
-  private getChartData() {
-    this.isChartLoading.set(true);
-    const body = this.createBodyStructure();
-    // console.log("body = ", body)
+  // Helper: Add additional options to the API res - Bar chart.
+  private buildBarChartConfigurations(chartData: ChartResStruct): ChartConfig[] {
+    // Set chart output state
+    this.output.set(chartData);
 
-    this.dashboardService.getFinancialIndicatorsChartData(body).subscribe({
-      next: (apiRes: { data: ChartResStruct }) => {
-        // console.log("chart data: ", apiRes);
-        const res = apiRes.data;
+    // Initialize chart config object
+    const config: ChartConfig = {
+      chartId: `${chartData.chartType}_0`,
+      chartType: chartData.chartType,
+      labels: chartData.labels,
+      datasets: [],
+      options: baseChartOptions(DEFAULT_FONT_FAMILY, true, chartData.axes?.x, chartData.axes?.y),
+    };
 
-        if (res.chartType === 'barChart') {
-          this.output.set(res);
-          const obj: ChartConfig = {
-            chartId: `${res.chartType}_0`,
-            chartType: res.chartType,
-            labels: res.labels,
-            datasets: [],
-            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, res.axes?.x, res.axes?.y),
-          };
+    // Populate datasets based on type
+    for (const chart of chartData.data) {
+      const dataset: any = {
+        type: chart.type,
+        label: chart.label,
+        data: chart.data,
+      };
 
-          // const barThickness = res.data.length > 3 ? { barThickness: 60 } : {};
-          // console.log("leng", res.data.length)
+      if (chart.type === 'line') {
+        Object.assign(dataset, {
+          borderColor: chart.backgroundColor?.[0],
+          pointBackgroundColor: chart.backgroundColor?.[0],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.3,
+        });
+      } else {
+        Object.assign(dataset, {
+          backgroundColor: chart.backgroundColor?.[0],
+          borderRadius: 5,
+        });
+      }
 
-          res.data.forEach((chart) => {
-            if (chart.type === 'line') {
-              obj.datasets.push({
-                type: 'line',
-                label: chart.label,
-                data: chart.data,
-                borderColor: chart.backgroundColor?.[0],
-                pointBackgroundColor: chart.backgroundColor?.[0],
-                borderWidth: 2,
-                fill: false,
-                tension: 0.3,
-              });
-            } else {
-              obj.datasets.push({
-                type: 'bar',
-                label: chart.label,
-                data: chart.data,
-                backgroundColor: chart.backgroundColor?.[0],
-                borderRadius: 5,
-                // ...barThickness
-              });
-            }
-          });
+      config.datasets.push(dataset);
+    }
 
-          this.chartsData.set([obj]);
-          // console.log(this.chartsData)
-        }
+    return [config];
+  }
 
-        if (res.chartType === 'gaugeChart' && this.getcalcType === 'mix') {
-          this.chartsData.set([]);
-          this.output.set(res);
+  // Helper: Add additional options to the API res - Gauge chart.
+  private buildGaugeChartConfigurations(res: ChartResStruct): ChartConfig[] {
+    this.chartsData.set([]);
+    this.output.set(res);
 
-          const modifiedChartData: ChartConfig[] = res.data.map((chart, idx) => {
-            return {
-              chartId: `${res.chartType}_${idx}`,
-              chartType: `${res.chartType}`,
-              datasets: [
-                {
-                  label: chart.label,
-                  data: chart.data,
-                  backgroundColor: res.legendColors,
-                  borderRadius: 3,
-                  borderWidth: 1,
-                },
-              ],
-              options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
-            }
-          })
-
-          this.chartsData.set(modifiedChartData);
-        }
-
-        this.isChartLoading.set(false);
-      },
-      error: () => {
-        console.error('Failed to create chart.');
-        this.isChartLoading.set(false);
-      },
+    const config: ChartConfig[] = res.data.map((chart, idx) => {
+      return {
+        chartId: `${res.chartType}_${idx}`,
+        chartType: `${res.chartType}`,
+        datasets: [
+          {
+            label: chart.label,
+            data: chart.data,
+            backgroundColor: res.legendColors,
+            borderRadius: 3,
+            borderWidth: 1,
+          },
+        ],
+        options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+      }
     })
+
+    return config;
   }
 
   // Open compare by dialog 
@@ -287,34 +320,24 @@ export class FinancialIndicator {
       data: { ulbType: this.ulbType() }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      // console.log('Dialog result: ', result);
-      this.dialogResult = result;
-      if (result) this.getChartData();
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        this.dialogResult = result;
+        if (result) this.getChartData();
+      });
   }
 
-  // isExpanded: boolean = false;
-  showLoader = signal<boolean>(false);
   takeAction(selectedIcon: string) {
-    // console.log("Clicked icon: ", selectedIcon)
-    this.showLoader.set(true);
-    // if (selectedIcon === 'Expand') this.isExpanded = !this.isExpanded;
+    this.isChartDownloading.set(true);
 
     if (selectedIcon === 'Download') {
       setTimeout(() => {
         const chartElement = document.getElementById('chartContainer');
         if (!chartElement) return;
 
-        // html2canvas(chartElement).then(canvas => {
-        //   const link = document.createElement('a');
-        //   link.download = 'chart-snapshot.png';
-        //   link.href = canvas.toDataURL('image/png');
-        //   link.click();
-        // });
-
-        const mainBtn = this.getButtonLabel(this.buttons, this.currentSelectedButtonKey());
-        const subBtn = this.getButtonLabel(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
+        const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
+        const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
         const imgName = `${mainBtn}_${subBtn}.png`;
         const chartContainer = document.getElementById('chartContainer');
         const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
@@ -338,17 +361,23 @@ export class FinancialIndicator {
           link.download = imgName;
           link.click();
 
-          this.showLoader.set(false);
+          this.isChartDownloading.set(false);
         }).catch(err => {
           // Restore elements in case of error
           elementsToHide?.forEach(el => {
             (el as HTMLElement).style.visibility = 'visible';
           });
           console.error('Error capturing chart:', err);
-          this.showLoader.set(false);
+          this.isChartDownloading.set(false);
         });
       }, 0);
 
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.ulbIdChangeEffect.destroy()
   }
 }

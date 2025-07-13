@@ -27,7 +27,7 @@
 
   <div class="row justify-content-between my-4 position-relative">
     <!-- Left side: Chart -->
-    @if (showLoader()) {
+    @if (isChartDownloading()) {
     <div class="custom-spinner-overlay position-absolute">
       <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
       <mat-spinner></mat-spinner>
