@@ -18,6 +18,7 @@ if (baseUrl.includes('staging')) {
 }
 
 export const environment = {
+  baseUrl,
   api: {
     url: baseUrl + '/api/v1/',
   },

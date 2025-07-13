@@ -7,6 +7,7 @@ let STORAGE_BASEURL =
 let env = 'dev';
 
 export const environment = {
+  baseUrl,
   api: {
     url: baseUrl + '/api/v1/',
   },
