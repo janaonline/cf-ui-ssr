@@ -196,34 +196,33 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     );
   }
 
-  get reportType(): string {
+  reportType(): string {
     return this.reportForm.get('reportType')?.value ?? 'summary';
   }
 
-  get valueType(): string {
+  valueType(): string {
     return this.reportForm.get('valueType')?.value ?? 'absolute';
   }
 
-  get currencyFormat(): 'inr' | 'k' | 'lakh' | 'cr' {
+  currencyFormat(): 'inr' | 'k' | 'lakh' | 'cr' {
     return this.reportForm.get('currencyFormat')?.value ?? 'inr';
   }
 
-  get buttonLabel(): 'Balance Sheet' | 'Income Statement' {
-    // TODO: User label from array options.
-    return this.reportType === 'balanceSheet' ? 'Balance Sheet' : 'Income Statement';
+  buttonLabel(): 'Balance Sheet' | 'Income Statement' {
+    return this.selectedBtn() === 'balanceSheet' ? 'Balance Sheet' : 'Income Statement';
   }
 
   private updateTableData(): void {
     // console.log(this.ledgerData)
     this.dataSource = (this.ledgerData as { reportType?: string }[]).filter(
-      (ele) => !ele.reportType || ele.reportType === this.reportType
+      (ele) => !ele.reportType || ele.reportType === this.reportType()
     );
 
     this.filteredDataSource = new MatTableDataSource(this.dataSource);
   }
 
   getFormattedValue(value: number): number {
-    return this.valueType === 'perCapita' ? value / this.population : value;
+    return this.valueType() === 'perCapita' ? value / this.population : value;
   }
 
   // Create headers based on years [].
