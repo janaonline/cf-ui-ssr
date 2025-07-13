@@ -1,13 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ICreditRatingData } from '../../core/models/creditRating/creditRatingResponse';
 import {
   BorrowingsKeys,
   BsIsData,
+  IFinancialIndicatorsChart,
   IMoneyInfoRes,
   ISlb
 } from '../../core/models/interfaces';
+import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -76,5 +79,10 @@ export class DashboardService {
     return this.http.get<{ data: ISlb[] }>(`${environment.api.url}indicators`, {
       params,
     });
+  }
+
+  // Get financial indicators data.
+  getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<{ data: ChartResStruct }> {
+    return this.http.post<{ data: ChartResStruct }>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
 }

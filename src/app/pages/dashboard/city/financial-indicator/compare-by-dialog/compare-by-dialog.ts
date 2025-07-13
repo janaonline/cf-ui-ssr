@@ -3,14 +3,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogActions, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged, filter, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { FinancialIndicatorsCompareByPaylod } from '../../../../../core/models/interfaces';
 import { IULB } from '../../../../../core/models/ulb';
 import { CommonService } from '../../../../../core/services/common.service';
 import { MaterialModule } from "../../../../../material.module";
-
-interface ResPayload {
-  compareType: 'state' | 'national' | 'popCat' | 'ulbType' | 'ulbs'
-  ulbs?: string[]
-}
 
 @Component({
   selector: 'app-compare-by-dialog',
@@ -138,11 +134,11 @@ export class CompareByDialog {
       this.citiesArr = [];
       this.myForm.patchValue({ 'compareType': this.radioOptions[0].key })
     } else {
-      const payload: ResPayload = { compareType: this.myForm.get('compareType')?.value };
+      const payload: FinancialIndicatorsCompareByPaylod = { compareType: this.myForm.get('compareType')?.value };
       const ulbIds = this.citiesArr.map(e => e._id);
       if (ulbIds.length) {
         payload['compareType'] = 'ulbs';
-        payload['ulbs'] = ulbIds;
+        payload['compareUlbs'] = ulbIds;
       }
 
       this.dialogRef.close(payload)

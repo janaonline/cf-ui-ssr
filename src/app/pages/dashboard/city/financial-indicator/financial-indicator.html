@@ -77,9 +77,16 @@
         </div>
       </div>
 
+      @if (isChartLoading()) {
+      <app-pre-loader></app-pre-loader>
+      <app-pre-loader></app-pre-loader>
+      <app-pre-loader></app-pre-loader>
+      <app-pre-loader></app-pre-loader>
+      }
+      @else {
       <!-- Chart -->
       <div class="d-flex flex-wrap justify-content-center gap-1">
-        @for (chartData of chartsData; track $index) {
+        @for (chartData of chartsData(); track $index) {
         <div [ngClass]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
           <div class="" [ngClass]="chartData.chartType">
             <app-charts [chartConfig]="chartData"></app-charts>
@@ -87,6 +94,7 @@
         </div>
         }
       </div>
+      }
 
       <!-- Legends for pie, doughnut, gauge chart. -->
       @if (output()?.legendColors?.length){

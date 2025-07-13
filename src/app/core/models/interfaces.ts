@@ -104,3 +104,38 @@ export interface IMoneyInfoRes {
   isActive: boolean;
   lastModifiedAt: string | null;
 }
+
+type compareType = 'state' | 'national' | 'popCat' | 'ulbType' | 'ulbs';
+export type LineItemType = 'revenue' | 'ownRevenue' | 'revex' | 'capex';
+export type CalcType = 'total' | 'perCapita' | 'mix';
+
+export interface IFinancialIndicatorsChart {
+  years: string[];
+  compareType: compareType,
+  ulbId: string,
+  lineItem: LineItemType,
+  calcType: CalcType,
+  compareUlbs: string[]
+}
+
+export interface FinancialIndicatorsCompareByPaylod {
+  compareType: compareType
+  compareUlbs?: string[]
+}
+
+// export interface ChartResponse {
+//   success: boolean;
+//   data: ChartData;
+// }
+
+// export interface ChartData {
+//   chartType: 'gaugeChart' | string;
+//   labels: string[];
+//   legendColors: string[];
+//   data: ChartSeries[];
+// }
+
+// export interface ChartSeries {
+//   label: string;
+//   data: number[];
+// }

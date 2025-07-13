@@ -56,5 +56,20 @@ export interface BaseChartConfig {
 //   additionalInfo?: SlbData;
 // }
 
+
+export interface ChartResStruct {
+  chartType: ChartType;
+  labels: string[];
+  legendColors: string[];
+  axes?: { x: string, y: string }
+  data:
+  {
+    type?: string;
+    label: string;
+    data: (number | null)[];
+    backgroundColor?: string[];
+  }[];
+}
+
 // export type ChartConfig = BaseChartConfig | MixedChartConfig;
 export type ChartConfig = BaseChartConfig;

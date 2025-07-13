@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { Component, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
-import { ButtonObj } from '../../../../core/models/interfaces';
+import { ButtonObj, CalcType, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { MaterialModule } from '../../../../material.module';
-import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
+import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import {
   baseChartOptions,
@@ -14,10 +15,28 @@ import {
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { DashboardService } from '../../dashboard-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
-import { res, resStruct } from './temp';
-import { isPlatformServer } from '@angular/common';
+import { resStruct } from './temp';
+
+export interface ChartResponse {
+  success: boolean;
+  data: ChartData;
+}
+
+export interface ChartData {
+  chartType: 'gaugeChart' | string;
+  labels: string[];
+  legendColors: string[];
+  data: ChartSeries[];
+}
+
+export interface ChartSeries {
+  label: string;
+  data: number[];
+}
+
 
 @Component({
   selector: 'app-financial-indicator',
@@ -59,7 +78,9 @@ export class FinancialIndicator {
   readonly subButtons = subButtons;
   readonly accordions = accordions;
 
-  currentSelectedButtonKey = signal<string>('');
+  readonly ulbIdSignal = input.required<string>();
+
+  currentSelectedButtonKey = signal<LineItemType>('revenue');
   subButton = signal<string>('');
 
   myForm!: FormGroup;
@@ -68,24 +89,32 @@ export class FinancialIndicator {
 
   isLoading = signal<boolean>(true);
 
-  chartsData: ChartConfig[] = [];
+  chartsData = signal<ChartConfig[]>([]);
   output = signal<resStruct | undefined>(undefined);
+  dialogResult!: IFinancialIndicatorsChart;
   readonly dialog = inject(MatDialog);
 
   constructor(
     private fb: FormBuilder,
+    private dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
   ngOnInit() {
     this.myForm = this.fb.group({ year: [this.years()[0]] });
     this.isLoading.set(false);
+
+    this.myForm.get('year')?.valueChanges.subscribe({
+      next: (newYearValue) => {
+        this.getChartData();
+      }
+    })
   }
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
     console.log('Button key sent from child to parent:', key);
-    this.currentSelectedButtonKey.set(key);
+    this.currentSelectedButtonKey.set(key as LineItemType);
   }
 
   // Output emitted by child to parent
@@ -109,73 +138,148 @@ export class FinancialIndicator {
     return arr.find(e => e.key === key)?.label;
   }
 
+  get year() {
+    return this.myForm.get('year')?.value;
+  }
+
+  get getcalcType(): CalcType {
+    const subBtn = this.subButton();
+
+    if (['totRev', 'totOwnRev', 'totRevex', 'capex',].includes(subBtn)) return 'total';
+    else if (['revPerCapita', 'ownRevPerCapita', 'revexPerCapita', 'capexPerCapita',].includes(subBtn)) return 'perCapita';
+    return 'mix';
+  }
+
+  createBodyStructure(): IFinancialIndicatorsChart {
+    // if (!this.dialogResult) {
+    //   console.warn('createBodyStructure: dialogResult is undefined, using defaults');
+    // }
+
+    const {
+      compareType = 'state',
+      calcType = this.getcalcType,
+      compareUlbs = []
+    } = this.dialogResult ?? {};
+
+    console.log('calc type: ', calcType)
+
+    const body: IFinancialIndicatorsChart = {
+      // years: this.createYearsArr(),
+      years: [this.year],
+      compareType,
+      ulbId: this.ulbIdSignal(),
+      lineItem: this.currentSelectedButtonKey(),
+      calcType,
+      compareUlbs
+    };
+
+    return body;
+  }
+
+
+  createYearsArr(): string[] {
+    const yearStr: string = this.myForm.get('year')?.value;
+
+    if (!yearStr || !/^\d{4}-\d{2}$/.test(yearStr)) {
+      console.warn('Invalid year format. Expected format: YYYY-YY');
+      return [];
+    }
+
+    const endYear = parseInt(yearStr.slice(0, 4), 10);
+
+    const years: string[] = [];
+    for (let i = 2; i >= 0; i--) {
+      const start = endYear - i;
+      const end = (start + 1).toString().slice(-2);
+      years.push(`${start}-${end}`);
+    }
+
+    return years;
+  }
+
+  isChartLoading = signal<boolean>(true);
   // Create chart.
   private getChartData() {
-    console.log('Sub button, Curr button: ', this.subButton(), this.currentSelectedButtonKey());
-    setTimeout(() => {
+    this.isChartLoading.set(true);
+    const body = this.createBodyStructure();
+    console.log("body = ", body)
 
+    this.dashboardService.getFinancialIndicatorsChartData(body).subscribe({
+      next: (apiRes: { data: ChartResStruct }) => {
+        console.log("chart data: ", apiRes);
+        const res = apiRes.data;
 
-      if (res.chartType === 'barChart') {
-        this.output.set(res);
-        const obj: ChartConfig = {
-          chartId: `${res.chartType}_0`,
-          chartType: res.chartType,
-          labels: res.labels,
-          datasets: [],
-          options: baseChartOptions(DEFAULT_FONT_FAMILY, true, res.axes?.x, res.axes?.y),
-        };
+        if (res.chartType === 'barChart') {
+          this.output.set(res);
+          const obj: ChartConfig = {
+            chartId: `${res.chartType}_0`,
+            chartType: res.chartType,
+            labels: res.labels,
+            datasets: [],
+            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, res.axes?.x, res.axes?.y),
+          };
 
-        const barThickness = res.data.length > 4 ? { barThickness: 60 } : {};
+          const barThickness = res.data.length > 4 ? { barThickness: 60 } : {};
 
-        res.data.forEach((chart) => {
-          if (chart.type === 'line') {
-            obj.datasets.push({
-              type: 'line',
-              label: chart.label,
-              data: chart.data,
-              borderColor: chart.backgroundColor?.[0],
-              pointBackgroundColor: chart.backgroundColor?.[0],
-              borderWidth: 2,
-              fill: false,
-              tension: 0.3,
-            });
-          } else {
-            obj.datasets.push({
-              type: 'bar',
-              label: chart.label,
-              data: chart.data,
-              backgroundColor: chart.backgroundColor?.[0],
-              borderRadius: 5,
-              ...barThickness
-            });
-          }
-        });
-
-        this.chartsData = [obj];
-        // console.log(this.chartsData)
-      }
-
-      if (res.chartType === 'gaugeChart') {
-        this.output.set(res);
-        this.chartsData = res.data.map((chart, idx) => {
-          return {
-            chartId: `${res.chartType}_${idx}`,
-            chartType: `${res.chartType}`,
-            datasets: [
-              {
+          res.data.forEach((chart) => {
+            if (chart.type === 'line') {
+              obj.datasets.push({
+                type: 'line',
                 label: chart.label,
                 data: chart.data,
-                backgroundColor: res.legendColors,
-                borderRadius: 3,
-                borderWidth: 1,
-              },
-            ],
-            options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
-          }
-        })
-      }
+                borderColor: chart.backgroundColor?.[0],
+                pointBackgroundColor: chart.backgroundColor?.[0],
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+              });
+            } else {
+              obj.datasets.push({
+                type: 'bar',
+                label: chart.label,
+                data: chart.data,
+                backgroundColor: chart.backgroundColor?.[0],
+                borderRadius: 5,
+                ...barThickness
+              });
+            }
+          });
 
-    }, 2000);
+          this.chartsData.set([obj]);
+          // console.log(this.chartsData)
+        }
+
+        if (res.chartType === 'gaugeChart' && this.getcalcType === 'mix') {
+          this.chartsData.set([]);
+          this.output.set(res);
+
+          const modifiedChartData: ChartConfig[] = res.data.map((chart, idx) => {
+            return {
+              chartId: `${res.chartType}_${idx}`,
+              chartType: `${res.chartType}`,
+              datasets: [
+                {
+                  label: chart.label,
+                  data: chart.data,
+                  backgroundColor: res.legendColors,
+                  borderRadius: 3,
+                  borderWidth: 1,
+                },
+              ],
+              options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+            }
+          })
+
+          this.chartsData.set(modifiedChartData);
+        }
+
+        this.isChartLoading.set(false);
+      },
+      error: () => {
+        console.error('Failed to create chart.');
+        this.isChartLoading.set(false);
+      },
+    })
   }
 
   // Open compare by dialog 
@@ -189,6 +293,8 @@ export class FinancialIndicator {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('Dialog result: ', result);
+      this.dialogResult = result;
+      this.getChartData();
     });
   }
 
