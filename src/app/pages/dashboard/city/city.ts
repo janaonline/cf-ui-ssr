@@ -31,6 +31,7 @@ import {
 } from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
+import { SeoService } from '../../../core/services/seo/seo.service';
 import { CitySearch } from '../../../shared/components/city-search/city-search';
 import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { InfoCards } from '../../../shared/components/info-cards/info-cards';
@@ -94,9 +95,10 @@ export class City {
     private router: Router,
     private _commonService: CommonService,
     private _dashboardService: DashboardService,
+    private seoService: SeoService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private transferState: TransferState
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.activatedRoute.paramMap
@@ -110,6 +112,28 @@ export class City {
           this.loadData(citySlugName);
         } else if (!citySlugName) this.isLoading.set(false);
       });
+
+  }
+
+  setSeo() {
+    this.seoService.updateTitle(`${this.cityDetails().ulbName} Financial Performance Data | City Finance`);
+
+    this.seoService.updateMetaTags([
+      { name: 'description', content: `Explore comprehensive municipal finance data of ${this.cityDetails().ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators.` },
+      { name: 'keywords', content: `City Finance, ${this.cityDetails().ulbName}, ${this.ulbSlugName()}, city financial performance, municipal finance, resources, benchmarks, urban finance, city updates` },
+      { property: 'og:title', content: `${this.cityDetails().ulbName} Financial Performance Data | City Finance` },
+      { property: 'og:description', content: `Explore comprehensive municipal finance data of ${this.cityDetails().ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators` },
+      { property: 'og:url', content: `${environment.baseUrl}/dashboard/city${this.ulbSlugName()}` },
+      { property: 'og:type', content: 'website' },
+      // { property: 'robotsrobots', content: 'index, follow' }
+    ]);
+
+    this.seoService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "City Finance",
+      "url": "https://www.cityfinance.in"
+    });
   }
 
   // ngAfterViewInit is browser-only
@@ -154,6 +178,7 @@ export class City {
       this.transferState.remove(MONEY_INFO_KEY);
 
       this.isLoading.set(false);
+      this.setSeo();
       return;
     }
 
@@ -162,6 +187,7 @@ export class City {
       next: (res) => {
         this.cityDetails.set(res);
         this.ulbIdSignal.set(res.ulbId);
+        this.setSeo();
         // console.log(res);
       },
       error: (error: Error) => {
