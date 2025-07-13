@@ -17,7 +17,7 @@ import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
-import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
+import { accordions, buttons, compraeByOptions, IndicatorDetails, subButtons } from './constants';
 import { resStruct } from './temp';
 
 export interface ChartResponse {
@@ -37,7 +37,6 @@ export interface ChartSeries {
   data: number[];
 }
 
-
 @Component({
   selector: 'app-financial-indicator',
   imports: [
@@ -53,21 +52,6 @@ export interface ChartSeries {
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialIndicator {
-  readonly graphColors = [
-    "#62b6cb",
-    "#1b4965",
-    "#bee9e8",
-    "#43B5A0",
-    "#F4A261",
-    "#5885AF",
-    "#F6D743"
-  ]
-
-  readonly disabledColor = '#e9ecef';
-  // readonly primaryColor = '#1b4965';
-  // readonly secondaryColor = '#62b6cb';
-  // readonly accentColor = '#bee9e8';
-  readonly lineColor = '#f43f5e';
   readonly items = [
     // { icon: 'bi bi-arrows-fullscreen', label: 'Expand' },
     // { icon: 'bi bi-share-fill', label: 'Share' },
@@ -76,9 +60,12 @@ export class FinancialIndicator {
   ];
   readonly buttons: ButtonObj[] = buttons;
   readonly subButtons = subButtons;
+  readonly compraeByOptions = compraeByOptions;
   readonly accordions = accordions;
 
   readonly ulbIdSignal = input.required<string>();
+  readonly ulbName = input.required<string>();
+  readonly ulbType = input.required<string>();
 
   currentSelectedButtonKey = signal<LineItemType>('revenue');
   subButton = signal<string>('');
@@ -113,13 +100,13 @@ export class FinancialIndicator {
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
-    console.log('Button key sent from child to parent:', key);
+    // console.log('Button key sent from child to parent:', key);
     this.currentSelectedButtonKey.set(key as LineItemType);
   }
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
-    console.log('Sub button key sent from child to parent:', key);
+    // console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
     this.getChartData();
   }
@@ -138,6 +125,10 @@ export class FinancialIndicator {
     return arr.find(e => e.key === key)?.label;
   }
 
+  buttonType(): string {
+    return this.getButtonLabel(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
+  }
+
   get year() {
     return this.myForm.get('year')?.value;
   }
@@ -150,6 +141,12 @@ export class FinancialIndicator {
     return 'mix';
   }
 
+  getCompType() {
+    const compType = this.dialogResult?.compareType || 'state';
+    if (compType === 'ulbs') return 'Selected ULB(s)'
+    return this.getButtonLabel(compraeByOptions(this.ulbType()), compType);
+  }
+
   createBodyStructure(): IFinancialIndicatorsChart {
     // if (!this.dialogResult) {
     //   console.warn('createBodyStructure: dialogResult is undefined, using defaults');
@@ -160,8 +157,6 @@ export class FinancialIndicator {
       calcType = this.getcalcType,
       compareUlbs = []
     } = this.dialogResult ?? {};
-
-    console.log('calc type: ', calcType)
 
     const body: IFinancialIndicatorsChart = {
       years: this.getcalcType === 'mix' ? [this.year] : this.createYearsArr(),
@@ -201,11 +196,11 @@ export class FinancialIndicator {
   private getChartData() {
     this.isChartLoading.set(true);
     const body = this.createBodyStructure();
-    console.log("body = ", body)
+    // console.log("body = ", body)
 
     this.dashboardService.getFinancialIndicatorsChartData(body).subscribe({
       next: (apiRes: { data: ChartResStruct }) => {
-        console.log("chart data: ", apiRes);
+        // console.log("chart data: ", apiRes);
         const res = apiRes.data;
 
         if (res.chartType === 'barChart') {
@@ -218,7 +213,8 @@ export class FinancialIndicator {
             options: baseChartOptions(DEFAULT_FONT_FAMILY, true, res.axes?.x, res.axes?.y),
           };
 
-          const barThickness = res.data.length > 4 ? { barThickness: 60 } : {};
+          // const barThickness = res.data.length > 3 ? { barThickness: 60 } : {};
+          // console.log("leng", res.data.length)
 
           res.data.forEach((chart) => {
             if (chart.type === 'line') {
@@ -239,7 +235,7 @@ export class FinancialIndicator {
                 data: chart.data,
                 backgroundColor: chart.backgroundColor?.[0],
                 borderRadius: 5,
-                ...barThickness
+                // ...barThickness
               });
             }
           });
@@ -288,19 +284,20 @@ export class FinancialIndicator {
     const dialogRef = this.dialog.open(CompareByDialog, {
       width: '700px',
       maxWidth: '70vw',
+      data: { ulbType: this.ulbType() }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog result: ', result);
+      // console.log('Dialog result: ', result);
       this.dialogResult = result;
-      this.getChartData();
+      if (result) this.getChartData();
     });
   }
 
   // isExpanded: boolean = false;
   showLoader = signal<boolean>(false);
   takeAction(selectedIcon: string) {
-    console.log("Clicked icon: ", selectedIcon)
+    // console.log("Clicked icon: ", selectedIcon)
     this.showLoader.set(true);
     // if (selectedIcon === 'Expand') this.isExpanded = !this.isExpanded;
 

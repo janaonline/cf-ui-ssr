@@ -35,8 +35,7 @@
     }
     <div class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2" id="chartContainer">
       <p class="">
-        Greater Hyderabad Municipal Corporation <b>Total Revenue</b> v/s
-        <b>State Municipal Corporation Average</b>
+        {{ulbName()}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
       </p>
 
       <div class="row justify-content-between align-items-center">
@@ -45,8 +44,7 @@
           <!-- <input class="rounded border px-2 py-2 custom-font-size-6 w-100" id="filterInput"
             value="State Municipal Corporation Average" #input disabled /> -->
           <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-100"
-            (click)="openCompareByDialog()">State Municipal Corporation
-            Average</button>
+            (click)="openCompareByDialog()">{{getCompType()}}</button>
 
           <!-- Filter: years-->
           <form [formGroup]="myForm" class="w-50">

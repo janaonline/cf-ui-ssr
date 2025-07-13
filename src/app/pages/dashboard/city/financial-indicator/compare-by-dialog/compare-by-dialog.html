@@ -3,7 +3,7 @@
         <div class="border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare by Average(s)</div>
         <!-- <p class="fw-bold mb-2">{{ radioOptions.title }}</p> -->
         <form [formGroup]="myForm" class=''>
-            @for (option of radioOptions; track option.key) {
+            @for (option of radioOptions(); track option.key) {
             <div class="mb-1">
                 <input type="radio" [id]="option.key" [value]="option.key" formControlName="compareType" class="me-1" />
                 <label [for]="option.key" class="me-3">{{ option.label }}</label>

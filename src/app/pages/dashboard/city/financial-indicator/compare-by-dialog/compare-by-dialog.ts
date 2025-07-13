@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, Inject, signal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialogActions, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { debounceTime, distinctUntilChanged, filter, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { FinancialIndicatorsCompareByPaylod } from '../../../../../core/models/interfaces';
 import { IULB } from '../../../../../core/models/ulb';
 import { CommonService } from '../../../../../core/services/common.service';
 import { MaterialModule } from "../../../../../material.module";
+import { compraeByOptions } from '../constants';
 
 @Component({
   selector: 'app-compare-by-dialog',
@@ -15,12 +16,7 @@ import { MaterialModule } from "../../../../../material.module";
   styleUrl: './compare-by-dialog.scss'
 })
 export class CompareByDialog {
-  readonly radioOptions = [
-    { key: 'state', label: 'State Average' },
-    { key: 'national', label: 'National Average' },
-    { key: 'popCat', label: 'Population Category Average' },
-    { key: 'ulbType', label: 'ULB Type Average' },
-  ];
+  radioOptions = signal<{ key: string; label: string; }[]>([]);
   myForm!: FormGroup;
   citiesArr: IULB[] = [];
   readonly filteredUlbs = signal<IULB[]>([]);
@@ -31,11 +27,15 @@ export class CompareByDialog {
     private commonService: CommonService,
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<CompareByDialog>,
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+  }
 
   ngOnInit() {
+    this.radioOptions.set(compraeByOptions(this.data.ulbType));
+
     this.myForm = new FormGroup({
-      compareType: new FormControl(this.radioOptions[0].key),
+      compareType: new FormControl(this.radioOptions()[0].key),
       ulbName: new FormControl(''),
     })
 
@@ -108,7 +108,7 @@ export class CompareByDialog {
 
     this.citiesArr.push(city);
     this.myForm.get('ulbName')?.patchValue('')
-    if (this.citiesArr.length > 0) this.myForm.patchValue({ 'compareType': this.radioOptions[0].key })
+    if (this.citiesArr.length > 0) this.myForm.patchValue({ 'compareType': this.radioOptions()[0].key })
   }
 
   // Remove searched city.
@@ -132,7 +132,7 @@ export class CompareByDialog {
   filterSelected(key: string = '') {
     if (key === 'reset') {
       this.citiesArr = [];
-      this.myForm.patchValue({ 'compareType': this.radioOptions[0].key })
+      this.myForm.patchValue({ 'compareType': this.radioOptions()[0].key })
     } else {
       const payload: FinancialIndicatorsCompareByPaylod = { compareType: this.myForm.get('compareType')?.value };
       const ulbIds = this.citiesArr.map(e => e._id);

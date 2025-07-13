@@ -96,7 +96,8 @@
   <mat-tab-group (selectedIndexChange)="onTabChange($event)">
     <mat-tab label="Financial Indicators" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[0]) {
-      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()"></app-financial-indicator>
+      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
+        [ulbName]="cityDetails().ulbName"></app-financial-indicator>
       }
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
