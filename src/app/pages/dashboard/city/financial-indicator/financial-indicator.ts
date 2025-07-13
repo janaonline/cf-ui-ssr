@@ -1,5 +1,6 @@
-import { Component, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
 import { ButtonObj } from '../../../../core/models/interfaces';
@@ -13,8 +14,10 @@ import {
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, IndicatorDetails, subButtons } from './constants';
 import { res, resStruct } from './temp';
+import { isPlatformServer } from '@angular/common';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -28,6 +31,7 @@ import { res, resStruct } from './temp';
   ],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss',
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialIndicator {
   readonly graphColors = [
@@ -48,7 +52,7 @@ export class FinancialIndicator {
   readonly items = [
     // { icon: 'bi bi-arrows-fullscreen', label: 'Expand' },
     // { icon: 'bi bi-share-fill', label: 'Share' },
-    { icon: 'bi bi-arrow-clockwise', label: 'Reset' },
+    // { icon: 'bi bi-arrow-clockwise', label: 'Reset' },
     { icon: 'bi bi-download', label: 'Download' },
   ];
   readonly buttons: ButtonObj[] = buttons;
@@ -66,8 +70,12 @@ export class FinancialIndicator {
 
   chartsData: ChartConfig[] = [];
   output = signal<resStruct | undefined>(undefined);
+  readonly dialog = inject(MatDialog);
 
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) { }
 
   ngOnInit() {
     this.myForm = this.fb.group({ year: [this.years()[0]] });
@@ -168,6 +176,20 @@ export class FinancialIndicator {
       }
 
     }, 2000);
+  }
+
+  // Open compare by dialog 
+  openCompareByDialog() {
+    if (isPlatformServer(this.platformId)) return;
+
+    const dialogRef = this.dialog.open(CompareByDialog, {
+      width: '700px',
+      maxWidth: '70vw',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog result: ', result);
+    });
   }
 
   // isExpanded: boolean = false;

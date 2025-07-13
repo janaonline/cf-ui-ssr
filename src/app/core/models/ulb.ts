@@ -3,6 +3,7 @@ import { ulbType } from './ulbTypes';
 export interface IULB {
   location: { lat: number | string | null; lng: number | string | null };
   amrut: 'Yes' | 'No' | undefined;
+  isActive: boolean;
   _id: string;
   slug?: string;
   area: number;

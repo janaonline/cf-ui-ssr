@@ -1,4 +1,6 @@
-<nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom">
+<!-- TODO: giving error -->
+<!-- <nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom"> -->
+<nav #stickyMenu class="bg-white shadow-bottom">
   <div class="container d-flex justify-content-between align-items-center bg-white">
     <button class="mobile-nav-ham" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav">
