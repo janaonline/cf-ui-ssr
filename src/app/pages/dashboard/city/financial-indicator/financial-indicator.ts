@@ -156,7 +156,9 @@ export class FinancialIndicator {
 
   // Get selected button(s) label.
   buttonType(): string {
-    return this.getLabelByKey(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
+    // return this.getLabelByKey(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
+    const subBtnArr = this.subButtons[this.currentSelectedButtonKey()].buttons;
+    return this.getLabelByKey(subBtnArr, this.subButton()) || 'Total Revenue';
   }
 
   // Return selected year.
@@ -232,7 +234,7 @@ export class FinancialIndicator {
       years: this.getcalcType() === 'mix' ? [this.getYear()] : this.createYearsArr(),
       compareType,
       ulbId: this.ulbIdSignal(),
-      lineItem: this.currentSelectedButtonKey(),
+      lineItem: untracked(() => this.currentSelectedButtonKey()),
       calcType,
       compareUlbs
     };
@@ -265,6 +267,7 @@ export class FinancialIndicator {
   private buildBarChartConfigurations(chartData: ChartResStruct): ChartConfig[] {
     // Set chart output state
     this.output.set(chartData);
+    // console.log('chart data', chartData)
 
     // Initialize chart config object
     const config: ChartConfig = {
