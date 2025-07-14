@@ -108,7 +108,7 @@ export class Navbar {
       },
       role === USER_TYPE.ULB && {
         name: `User Manual`,
-        href: './assets/USER-MANUAL-XVI-FC-Data-Collection.pdf',
+        href: 'https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/USER-MANUAL-XVI-FC-Data-Collection.pdf',
         target: '_blank',
       },
       this.inRole([USER_TYPE.XVIFC, USER_TYPE.XVIFC_STATE]) && {
