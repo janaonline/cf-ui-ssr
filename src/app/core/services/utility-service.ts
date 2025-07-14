@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import FileSaver from 'file-saver';
+import { saveAs } from 'file-saver';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UtilityService {
-  constructor() {}
+  constructor() { }
 
   public fetchFile(target_file_url: string, fileName: string): void {
     // Show a popup to indicate that the file is being downloaded
@@ -17,7 +17,7 @@ export class UtilityService {
         return response.blob();
       })
       .then((blob) => {
-        FileSaver.saveAs(blob, fileName);
+        saveAs(blob, fileName);
         // Swal.close();
         // this.swalPopup(
         //   'File Downloaded',
