@@ -198,7 +198,7 @@ export class FinancialIndicator {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (apiRes: { data: ChartResStruct, success: boolean }) => {
-            console.log(apiRes)
+            // console.log(apiRes)
             const res = apiRes.data;
             // Check if data is available.
             if (!apiRes.success) { this.isChartDataAvailable.set(false) }
