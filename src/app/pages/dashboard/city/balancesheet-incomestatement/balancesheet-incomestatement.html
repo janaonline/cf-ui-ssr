@@ -46,7 +46,7 @@
   </form>
 
   <!-- Table title. -->
-  <div class="bg-table-header p-3 text-center rounded fw-bold">{{reportType | titlecase}} {{buttonLabel}}</div>
+  <div class="bg-table-header p-3 text-center rounded fw-bold">{{reportType() | titlecase}} {{buttonLabel()}}</div>
 
 </section>
 
@@ -77,7 +77,7 @@
         @if (item.number && !element['isHeader']) {
         {{
         getFormattedValue(element[item.key])
-        | inrFormat : currencyFormat : currencyOptions
+        | inrFormat : currencyFormat() : currencyOptions
         }}
         } @else {
         {{ element[item.key] }}
