@@ -187,7 +187,7 @@ export class FinancialIndicator {
 
     // Create body/ payload structure.
     const body = this.createBodyStructure();
-    console.log("body: ", body)
+    // console.log("body: ", body)
 
     // Don't call API if year is unavailable.
     if (body.years.length > 0) {
