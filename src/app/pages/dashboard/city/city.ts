@@ -1,8 +1,7 @@
 import {
   CommonModule,
   isPlatformBrowser,
-  isPlatformServer,
-  TitleCasePipe,
+  isPlatformServer
 } from '@angular/common';
 import {
   Component,
