@@ -22,7 +22,8 @@
           <i class="fs-4 bi bi-x-lg"></i>
 
         </button>
-        } @for (menu of menus; track $index) { @if (menu.child?.length) {
+        } @for (menu of menus; track $index) {
+        @if (menu.child?.length) {
         <li class="active" [matMenuTriggerFor]="DashboardMenu">
           <a class="nav-link d-flex align-items-center" routerLinkActive="active">
             {{ menu.name }}&nbsp;
@@ -41,7 +42,8 @@
           @if (menu.link) {
           <a class="nav-link" [class]="menu.class" [routerLink]="menu.link" routerLinkActive="active"
             [innerHTML]="menu.name"></a>
-          } @if (menu.href) {
+          }
+          @if (menu.href) {
           <a class="nav-link" [class]="menu.class" [attr.href]="menu.href" [innerHTML]="menu.name"
             [target]="menu.target || '_self'"></a>
           }
