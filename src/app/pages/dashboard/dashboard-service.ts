@@ -6,11 +6,11 @@ import { ICreditRatingData } from '../../core/models/creditRating/creditRatingRe
 import {
   BorrowingsKeys,
   BsIsData,
+  IFinancialIndicatorRes,
   IFinancialIndicatorsChart,
   IMoneyInfoRes,
   ISlb
 } from '../../core/models/interfaces';
-import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -82,7 +82,7 @@ export class DashboardService {
   }
 
   // Get financial indicators data.
-  getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<{ data: ChartResStruct, success: boolean }> {
-    return this.http.post<{ data: ChartResStruct, success: boolean }>(`${environment.api.url}dashboard/city/financial-indicators`, body);
+  getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<IFinancialIndicatorRes> {
+    return this.http.post<IFinancialIndicatorRes>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
 }

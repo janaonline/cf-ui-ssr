@@ -1,3 +1,5 @@
+import { IFinancialIndicatorInfo } from "../../../core/models/interfaces";
+
 export type ChartType =
   | 'barChart'
   | 'lineChart'
@@ -58,6 +60,7 @@ export interface BaseChartConfig {
 
 
 export interface ChartResStruct {
+  info: IFinancialIndicatorInfo,
   chartType: ChartType;
   labels: string[];
   legendColors: string[];

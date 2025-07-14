@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
-import { ButtonObj, CalcType, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
+import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorRes, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { MaterialModule } from '../../../../material.module';
 import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
@@ -74,6 +74,7 @@ export class FinancialIndicator {
   myForm!: FormGroup;
   years = input.required<string[]>();
 
+  infoMsg = signal<IFinancialIndicatorInfo>({ msg: '', text: 'success' });
   isChartDataAvailable = signal<boolean>(true);
   isLoading = signal<boolean>(true);
   isChartLoading = signal<boolean>(true);
@@ -197,12 +198,15 @@ export class FinancialIndicator {
       this.dashboardService.getFinancialIndicatorsChartData(body)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (apiRes: { data: ChartResStruct, success: boolean }) => {
+          next: (apiRes: IFinancialIndicatorRes) => {
             // console.log(apiRes)
             const res = apiRes.data;
+
             // Check if data is available.
             if (!apiRes.success) { this.isChartDataAvailable.set(false) }
             else {
+              this.infoMsg.set(apiRes.data.info);
+
               this.isChartDataAvailable.set(true);
               if (res.chartType === 'barChart') {
                 const structureData = this.buildBarChartConfigurations(res);
