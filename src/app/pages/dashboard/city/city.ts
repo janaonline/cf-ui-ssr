@@ -118,8 +118,7 @@ export class City {
   }
 
   setSeo() {
-    const titleCasePipe = new TitleCasePipe();
-    const ulbName = titleCasePipe.transform(this.ulbSlugName());
+    const ulbName = this._commonService.toTitleCase(this.ulbSlugName());
     const title = `${ulbName} Financial Statements and Budgets | City Finance`
     const url = `${environment.baseUrl}/municipal-data/${this.ulbSlugName()}`;
     const keywords = `${this.ulbSlugName()} audited financial statements, municipal finance, ${this.ulbSlugName()} budget, ${this.ulbSlugName()} service level benchmarks`;
