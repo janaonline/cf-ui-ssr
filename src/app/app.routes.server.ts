@@ -3,7 +3,6 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    // path: 'city/:cityId',
     path: 'municipal-data/**',
     // renderMode: RenderMode.Prerender,
     renderMode: RenderMode.Server,
