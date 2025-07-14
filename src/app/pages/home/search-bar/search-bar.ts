@@ -164,7 +164,7 @@ export class SearchBar {
         })
       )
       .subscribe((res: any) => {
-        console.log('global search data', res.data);
+        // console.log('global search data', res.data);
         this.filteredOptions.set(res.data || []);
         this.noDataFound = this.filteredOptions().length === 0;
       });
@@ -221,17 +221,17 @@ export class SearchBar {
 
     const type = searchValue?.type;
     this.checkType(type);
-    this._commonService
-      .postRecentSearchValue(this.postBody)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (res: any) => {
-          //    console.log('serach res', res)
-        },
-        (error: any) => {
-          //   console.log(error)
-        }
-      );
+    // this._commonService
+    //   .postRecentSearchValue(this.postBody)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(
+    //     (res: any) => {
+    //       //    console.log('serach res', res)
+    //     },
+    //     (error: any) => {
+    //       //   console.log(error)
+    //     }
+    //   );
     const option = {
       type: searchValue.type,
       _id: searchValue._id,
@@ -242,18 +242,18 @@ export class SearchBar {
   dashboardNav(option: any) {
     //console.log('option', option)
     this.checkType(option);
-    if (option.type != 'searchKeyword')
-      this._commonService
-        .postRecentSearchValue(this.postBody)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (res: any) => {
-            // console.log('serach res', res)
-          },
-          (error: any) => {
-            // console.log(error)
-          }
-        );
+    // if (option.type != 'searchKeyword')
+    // this._commonService
+    //   .postRecentSearchValue(this.postBody)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(
+    //     (res: any) => {
+    //       // console.log('serach res', res)
+    //     },
+    //     (error: any) => {
+    //       // console.log(error)
+    //     }
+    //   );
     //console.log('option', option)
 
     if (option.type == 'state') {

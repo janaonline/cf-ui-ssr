@@ -1,3 +1,4 @@
+import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 import { IState } from './state/state';
 
 export interface BondIssuances {
@@ -121,6 +122,16 @@ export interface IFinancialIndicatorsChart {
 export interface FinancialIndicatorsCompareByPaylod {
   compareType: compareType
   compareUlbs?: string[]
+}
+
+export interface IFinancialIndicatorRes {
+  data: ChartResStruct,
+  success: boolean,
+}
+
+export interface IFinancialIndicatorInfo {
+  msg: string
+  text: 'success' | 'danger'
 }
 
 // export interface ChartResponse {
