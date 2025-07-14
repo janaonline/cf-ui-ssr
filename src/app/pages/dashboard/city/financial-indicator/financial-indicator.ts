@@ -74,6 +74,7 @@ export class FinancialIndicator {
   myForm!: FormGroup;
   years = input.required<string[]>();
 
+  isChartDataAvailable = signal<boolean>(true);
   isLoading = signal<boolean>(true);
   isChartLoading = signal<boolean>(true);
   isChartDownloading = signal<boolean>(false);
@@ -106,6 +107,7 @@ export class FinancialIndicator {
   }
 
   readonly canFetchChart = computed(() => {
+    // console.log(!!this.ulbIdSignal(), !!this.years().length, !!this.currentSelectedButtonKey(), !!this.subButton(), !isPlatformBrowser(this.platformId))
     return !!this.ulbIdSignal() &&
       !!this.years().length &&
       !!this.currentSelectedButtonKey() &&
@@ -114,7 +116,10 @@ export class FinancialIndicator {
 
   readonly ulbIdChangeEffect = effect(() => {
     if (!isPlatformBrowser(this.platformId)) return;
-    if (this.canFetchChart()) this.getChartData();
+    const canFetch = this.canFetchChart();
+    // console.log("canFetchChart:", canFetch);
+
+    if (canFetch) this.getChartData();
   })
 
   // Output emitted by child to parent
@@ -182,6 +187,7 @@ export class FinancialIndicator {
 
     // Create body/ payload structure.
     const body = this.createBodyStructure();
+    console.log("body: ", body)
 
     // Don't call API if year is unavailable.
     if (body.years.length > 0) {
@@ -189,16 +195,21 @@ export class FinancialIndicator {
       this.dashboardService.getFinancialIndicatorsChartData(body)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (apiRes: { data: ChartResStruct }) => {
+          next: (apiRes: { data: ChartResStruct, success: boolean }) => {
+            console.log(apiRes)
             const res = apiRes.data;
-
-            if (res.chartType === 'barChart') {
-              const structureData = this.buildBarChartConfigurations(res);
-              this.chartsData.set(structureData);
-            }
-            else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
-              const structureData = this.buildGaugeChartConfigurations(res);
-              this.chartsData.set(structureData);
+            // Check if data is available.
+            if (!apiRes.success) { this.isChartDataAvailable.set(false) }
+            else {
+              this.isChartDataAvailable.set(true);
+              if (res.chartType === 'barChart') {
+                const structureData = this.buildBarChartConfigurations(res);
+                this.chartsData.set(structureData);
+              }
+              else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
+                const structureData = this.buildGaugeChartConfigurations(res);
+                this.chartsData.set(structureData);
+              }
             }
 
             this.isChartLoading.set(false);
@@ -220,8 +231,8 @@ export class FinancialIndicator {
     const body: IFinancialIndicatorsChart = {
       years: this.getcalcType() === 'mix' ? [this.getYear()] : this.createYearsArr(),
       compareType,
-      ulbId: untracked(() => this.ulbIdSignal()),
-      lineItem: untracked(() => this.currentSelectedButtonKey()),
+      ulbId: this.ulbIdSignal(),
+      lineItem: this.currentSelectedButtonKey(),
       calcType,
       compareUlbs
     };
