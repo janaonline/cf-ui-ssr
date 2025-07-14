@@ -49,32 +49,35 @@
           }
         </li>
         } }
+        @if (!isLoggedIn) {
         <li>
           <button class="btn btn-outline-cfPrimary fw-bold border-2" (click)="showRequestDemoPopup()">
             Request a Demo
           </button>
         </li>
+        <li>
+          <button class="btn btn-cfPrimary fw-bold d-flex align-items-center" [matMenuTriggerFor]="loginMenu">
+            Login&nbsp;
+            <i class="bi bi-caret-down-fill"></i>
+          </button>
+          <mat-menu #loginMenu="matMenu">
+            <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
+              <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
+            </button>
+            <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
+              <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection
+            </button>
+            <button mat-menu-item (click)="loginLogout('ranking')">
+              <i class="bi bi-box-arrow-in-right"></i> Rankings 2022
+            </button>
+          </mat-menu>
+        </li>
+        }
       </ul>
 
       <!-- Login/ Logout -->
       <div class="ms-2">
-        @if (!isLoggedIn) {
-        <button class="btn btn-cfPrimary fw-bold d-flex align-items-center" [matMenuTriggerFor]="loginMenu">
-          Login&nbsp;
-          <i class="bi bi-caret-down-fill"></i>
-        </button>
-        <mat-menu #loginMenu="matMenu">
-          <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
-            <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
-          </button>
-          <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
-            <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection
-          </button>
-          <button mat-menu-item (click)="loginLogout('ranking')">
-            <i class="bi bi-box-arrow-in-right"></i> Rankings 2022
-          </button>
-        </mat-menu>
-        } @if (isLoggedIn) {
+        @if (isLoggedIn) {
         <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
           <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
           <i class="bi bi-caret-down-fill"></i>
