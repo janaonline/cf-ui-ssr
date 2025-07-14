@@ -1,5 +1,5 @@
-import { isPlatformServer } from '@angular/common';
-import { Component, effect, Inject, inject, input, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { Component, computed, effect, Inject, inject, input, PLATFORM_ID, signal, untracked, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
@@ -95,7 +95,6 @@ export class FinancialIndicator {
   ) { }
 
   ngOnInit() {
-    console.log('years:', this.years())
     this.myForm = this.fb.group({ year: [this.years()[0]] });
     this.isLoading.set(false);
 
@@ -106,8 +105,16 @@ export class FinancialIndicator {
       })
   }
 
+  readonly canFetchChart = computed(() => {
+    return !!this.ulbIdSignal() &&
+      !!this.years().length &&
+      !!this.currentSelectedButtonKey() &&
+      !!this.subButton();
+  });
+
   readonly ulbIdChangeEffect = effect(() => {
-    if (this.ulbIdSignal()) this.getChartData();
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (this.canFetchChart()) this.getChartData();
   })
 
   // Output emitted by child to parent
@@ -120,7 +127,6 @@ export class FinancialIndicator {
   onSelectedSubButtonChange(key: string): void {
     // console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
-    // if (this.years().length) this.getChartData('btn');
   }
 
   // Type Guard Function
@@ -178,30 +184,32 @@ export class FinancialIndicator {
     const body = this.createBodyStructure();
 
     // Don't call API if year is unavailable.
-    if (body.years.length === 0) return;
+    if (body.years.length > 0) {
 
-    this.dashboardService.getFinancialIndicatorsChartData(body)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (apiRes: { data: ChartResStruct }) => {
-          const res = apiRes.data;
+      this.dashboardService.getFinancialIndicatorsChartData(body)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (apiRes: { data: ChartResStruct }) => {
+            const res = apiRes.data;
 
-          if (res.chartType === 'barChart') {
-            const structureData = this.buildBarChartConfigurations(res);
-            this.chartsData.set(structureData);
-          }
-          else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
-            const structureData = this.buildGaugeChartConfigurations(res);
-            this.chartsData.set(structureData);
-          }
+            if (res.chartType === 'barChart') {
+              const structureData = this.buildBarChartConfigurations(res);
+              this.chartsData.set(structureData);
+            }
+            else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
+              const structureData = this.buildGaugeChartConfigurations(res);
+              this.chartsData.set(structureData);
+            }
 
-          this.isChartLoading.set(false);
-        },
-        error: () => {
-          console.error('Failed to create chart.');
-          this.isChartLoading.set(false);
-        },
-      })
+            this.isChartLoading.set(false);
+          },
+          error: () => {
+            console.error('Failed to create chart.');
+            this.isChartLoading.set(false);
+          },
+        })
+
+    }
   }
 
   // Helper: Consolidate all the data - payload/ body for the API.
@@ -212,8 +220,8 @@ export class FinancialIndicator {
     const body: IFinancialIndicatorsChart = {
       years: this.getcalcType() === 'mix' ? [this.getYear()] : this.createYearsArr(),
       compareType,
-      ulbId: this.ulbIdSignal(),
-      lineItem: this.currentSelectedButtonKey(),
+      ulbId: untracked(() => this.ulbIdSignal()),
+      lineItem: untracked(() => this.currentSelectedButtonKey()),
       calcType,
       compareUlbs
     };
