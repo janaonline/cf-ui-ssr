@@ -1,7 +1,7 @@
 import {
   CommonModule,
   isPlatformBrowser,
-  isPlatformServer,
+  isPlatformServer
 } from '@angular/common';
 import {
   Component,
@@ -117,14 +117,20 @@ export class City {
   }
 
   setSeo() {
-    this.seoService.updateTitle(`${this.cityDetails().ulbName} Financial Performance Data | City Finance`);
+    const ulbName = this._commonService.toTitleCase(this.ulbSlugName());
+    const title = `${ulbName} Financial Statements and Budgets | City Finance`
+    const url = `${environment.baseUrl}/municipal-data/${this.ulbSlugName()}`;
+    const keywords = `${this.ulbSlugName()} audited financial statements, municipal finance, ${this.ulbSlugName()} budget, ${this.ulbSlugName()} service level benchmarks`;
+    const desc = `Explore comprehensive municipal finance data of ${ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators`
+
+    this.seoService.updateTitle(title);
 
     this.seoService.updateMetaTags([
-      { name: 'description', content: `Explore comprehensive municipal finance data of ${this.cityDetails().ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators.` },
-      { name: 'keywords', content: `City Finance, ${this.cityDetails().ulbName}, ${this.ulbSlugName()}, city financial performance, municipal finance, resources, benchmarks, urban finance, city updates` },
-      { property: 'og:title', content: `${this.cityDetails().ulbName} Financial Performance Data | City Finance` },
-      { property: 'og:description', content: `Explore comprehensive municipal finance data of ${this.cityDetails().ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators` },
-      { property: 'og:url', content: `${environment.baseUrl}/dashboard/city${this.ulbSlugName()}` },
+      { name: 'description', content: desc },
+      { name: 'keywords', content: keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:url', content: url },
       { property: 'og:type', content: 'website' },
       // { property: 'robotsrobots', content: 'index, follow' }
     ]);
@@ -132,8 +138,8 @@ export class City {
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "City Finance",
-      "url": "https://www.cityfinance.in"
+      "name": title,
+      "url": url
     });
   }
 
@@ -371,8 +377,8 @@ export class City {
   }
 
   // Navigate to other ulb.
-  private updateUlbIdAndNavigate(newUlbId: string): void {
-    this.router.navigate(['/dashboard/city', newUlbId]);
+  private updateUlbIdAndNavigate(slug: string): void {
+    this.router.navigate(['/municipal-data', slug]);
   }
 
   // On tab changes call the chid components.

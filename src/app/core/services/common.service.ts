@@ -42,6 +42,14 @@ export class CommonService {
     }
   }
 
+  // eg: "firstname-lastname" to "Firstname Lastname"
+  toTitleCase(slug: string): string {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   // Ticker on home page.
   setDataForVisualizationCount(VisualizationCount: string) {
     if (VisualizationCount) {

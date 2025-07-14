@@ -82,7 +82,7 @@ export class DashboardService {
   }
 
   // Get financial indicators data.
-  getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<{ data: ChartResStruct }> {
-    return this.http.post<{ data: ChartResStruct }>(`${environment.api.url}dashboard/city/financial-indicators`, body);
+  getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<{ data: ChartResStruct, success: boolean }> {
+    return this.http.post<{ data: ChartResStruct, success: boolean }>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
 }

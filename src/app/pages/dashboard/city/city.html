@@ -3,7 +3,7 @@
     <!-- Show message if ULB is denotified. -->
     @if (moneyInfoRes()?.isActive === false) {
     <div class="alert alert-danger fw-bold text-center" role="alert">
-      This ULB has been denotified.
+      {{cityDetails().ulbName}} has been denotified.
     </div>
     }
 
