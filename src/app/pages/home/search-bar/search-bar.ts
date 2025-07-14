@@ -64,7 +64,7 @@ export class SearchBar {
       modifiedAt: '2022-06-18T01:43:12.527Z',
       name: 'Bruhat Bengaluru Mahanagara Palike',
       _id: '5f5610b3aab0f778b2d2cac0',
-      slug: 'bruhat-bengaluru-mahanagara-palike',
+      slug: 'bengaluru',
     },
     {
       isActive: true,
@@ -75,7 +75,7 @@ export class SearchBar {
       modifiedAt: '2022-03-30T02:21:07.299Z',
       name: 'Greater Hyderabad Municipal Corporation',
       _id: '5eb5844f76a3b61f40ba069a',
-      slug: 'greater-hyderabad-municipal-corporation',
+      slug: 'hyderabad',
     },
     {
       isActive: true,
@@ -86,7 +86,7 @@ export class SearchBar {
       modifiedAt: '2021-12-23T05:30:46.475Z',
       name: 'Greater Mumbai Municipal Corporation',
       _id: '5eb5844f76a3b61f40ba0695',
-      slug: 'brihanmumbai-municipal-corporation',
+      slug: 'mumbai',
     },
   ];
   private destroy$ = new Subject<void>();
@@ -263,7 +263,7 @@ export class SearchBar {
     }
 
     if (option.type == 'ulb') {
-      this.router.navigateByUrl(`/dashboard/city/${option.slug}`);
+      this.router.navigateByUrl(`/municipal-data/${option.slug}`);
     }
 
     if (option.type == 'searchKeyword') {

@@ -104,7 +104,8 @@ export class City {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        const citySlugName = params.get('cityId') || '';
+        const citySlugName = params.get('dataId') || '';
+        // const citySlugName = params.get('cityId') || '';
         this.selectedLedgerYear.set('');
 
         if (citySlugName && citySlugName !== this.ulbSlugName()) {
