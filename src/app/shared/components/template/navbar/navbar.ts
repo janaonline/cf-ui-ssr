@@ -97,14 +97,14 @@ export class Navbar {
     if (!this.user) {
       return;
     }
-    const role = this.user ? this.user.role : '';
+    const role = this.user.role;
     this.menus = [
       // ...this.menus,
       // (role === USER_TYPE.PMU && { name: 'State resources', href: '/mohua-form/state-resource-manager' }),
       // (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: '15<sup>th</sup> FC Grants', href: '/fc-home-page' }),
       role === USER_TYPE.ULB && {
         name: `XVI FC Data Collection`,
-        link: '/xvifc-form',
+        link: environment.v2Url + '/xvifc-form',
       },
       role === USER_TYPE.ULB && {
         name: `User Manual`,
@@ -113,7 +113,7 @@ export class Navbar {
       },
       this.inRole([USER_TYPE.XVIFC, USER_TYPE.XVIFC_STATE]) && {
         name: `Review XVI FC`,
-        link: '/admin/xvi-fc-review',
+        link: environment.v2Url + '/admin/xvi-fc-review',
       },
       // (this.notInRole([USER_TYPE.ULB, USER_TYPE.XVIFC_STATE]) && { name: `Rankings'22 Dashboard`, href: '/cfr/review-rankings-ulbform' }),
       // (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: 'Users', href: '/user/list/ULB' }),
