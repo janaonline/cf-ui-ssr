@@ -464,7 +464,7 @@ export class DashboardMapSection {
   // View state/ city dashboard.
   public viewDashboard(): void {
     if (this.ulbSlugName()) {
-      this.router.navigateByUrl(`/dashboard/city/${this.ulbSlugName()}`);
+      this.router.navigateByUrl(`/municipal-data/${this.ulbSlugName()}`);
     }
     else {
       // this.router.navigateByUrl(
