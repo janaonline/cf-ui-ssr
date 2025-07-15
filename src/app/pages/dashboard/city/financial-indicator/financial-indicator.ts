@@ -337,7 +337,7 @@ export class FinancialIndicator {
             borderWidth: 1,
           },
         ],
-        options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+        options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', '', true, '%'),
       }
     })
 

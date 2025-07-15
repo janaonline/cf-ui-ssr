@@ -101,6 +101,11 @@ export class Charts implements AfterViewInit, OnDestroy {
       //   break;
       // For gauge chart use gaugeChartOptions
       case 'gaugeChart':
+        const plugins = [];
+        if (config.options?.plugins?.customDataLabel?.enabled) {
+          plugins.push(this.customDataLabel);
+        }
+
         this.chartInstance = new Chart(ctx, {
           type: 'doughnut',
           data: {
@@ -108,7 +113,7 @@ export class Charts implements AfterViewInit, OnDestroy {
             datasets: config.datasets,
           },
           options: config.options,
-          plugins: [this.customDataLabel],
+          plugins,
         });
         break;
       default:
@@ -121,23 +126,25 @@ export class Charts implements AfterViewInit, OnDestroy {
   customDataLabel = {
     id: 'customDataLabel',
     afterDatasetsDraw(chart: Chart) {
+      const pluginOpts = chart.options.plugins?.customDataLabel;
+      if (!pluginOpts?.enabled) return;
+
+      const format = pluginOpts.format || '';
       const { ctx } = chart;
 
       chart.data.datasets.forEach((dataset, datasetIndex) => {
         const meta = chart.getDatasetMeta(datasetIndex);
 
         meta.data.forEach((element, index) => {
-          const tempVal = Number(dataset.data[index]);
-          console.log(typeof tempVal)
-          if (tempVal) {
-            const value = tempVal + '%';
+          const rawValue = Number(dataset.data[index]);
+          if (rawValue) {
+            const label = `${rawValue}${format}`;
             const position = element.tooltipPosition(true);
 
-            // ctx.fillStyle = '#000';
             ctx.font = '500 10px Montserrat';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(String(value), position.x, position.y);
+            ctx.fillText(label, position.x, position.y);
           }
         });
       });
