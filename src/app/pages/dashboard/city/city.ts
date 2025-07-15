@@ -187,105 +187,105 @@ export class City {
       this.isLoading.set(false);
       this.setSeo();
       return;
-    }
+    } else {
+      // --- Server-side or Client-side (no TransferState) API Calls ---
+      this.getCityDetailsObservable(citySlugName).subscribe({
+        next: (res) => {
+          this.cityDetails.set(res);
+          this.ulbIdSignal.set(res.ulbId);
+          this.setSeo();
+          // console.log(res);
+        },
+        error: (error: Error) => {
+          console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
+          this.handleLoadingAndError(error);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          // Use forkJoin to fetch independent data in parallel.
+          // getMoneyInfoObservable() needs year so use switchMap.
+          forkJoin({
+            distinctYearsRes: this.getLedgerYearsObservable(this.ulbIdSignal()),
+            distinctSlbYearsRes: this.getSlbYearsObservable(this.ulbIdSignal()),
+            // cityDetailsRes: this.getCityDetailsObservable(cityId),
+          })
+            .pipe(
+              catchError((error) => {
+                console.error(`${this.getPlatForm()}: Error in API calls`, error);
+                this.handleLoadingAndError(error);
+                return throwError(() => error);
+              }),
+              // Once distinctYearsRes is available, update selectedLedgerYear()
+              // Use switchMap to fetch moneyInfoRes based on the updated year.
+              switchMap((initialResults) => {
+                // Update ledgerYears and selectedLedgerYear immediately
+                this.ledgerYears.set(initialResults.distinctYearsRes.ledgerYears);
+                this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
 
-    // --- Server-side or Client-side (no TransferState) API Calls ---
-    this.getCityDetailsObservable(citySlugName).subscribe({
-      next: (res) => {
-        this.cityDetails.set(res);
-        this.ulbIdSignal.set(res.ulbId);
-        this.setSeo();
-        // console.log(res);
-      },
-      error: (error: Error) => {
-        console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
-        this.handleLoadingAndError(error);
-        this.isLoading.set(false);
-      },
-      complete: () => {
-        // Use forkJoin to fetch independent data in parallel.
-        // getMoneyInfoObservable() needs year so use switchMap.
-        forkJoin({
-          distinctYearsRes: this.getLedgerYearsObservable(this.ulbIdSignal()),
-          distinctSlbYearsRes: this.getSlbYearsObservable(this.ulbIdSignal()),
-          // cityDetailsRes: this.getCityDetailsObservable(cityId),
-        })
-          .pipe(
-            catchError((error) => {
-              console.error(`${this.getPlatForm()}: Error in API calls`, error);
-              this.handleLoadingAndError(error);
-              return throwError(() => error);
-            }),
-            // Once distinctYearsRes is available, update selectedLedgerYear()
-            // Use switchMap to fetch moneyInfoRes based on the updated year.
-            switchMap((initialResults) => {
-              // Update ledgerYears and selectedLedgerYear immediately
-              this.ledgerYears.set(initialResults.distinctYearsRes.ledgerYears);
-              this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
+                // City details: grid view data, State data.
+                // this.cityDetails.set(initialResults.cityDetailsRes);
 
-              // City details: grid view data, State data.
-              // this.cityDetails.set(initialResults.cityDetailsRes);
+                // If no ledger year, no need to fetch money info, return empty observable
+                if (!this.selectedLedgerYear()) {
+                  console.warn(`${this.getPlatForm()}: Ledger year unavailable`);
+                  return forkJoin({
+                    initialData: of(initialResults),
+                    moneyInfoRes: of(null),
+                  });
+                }
 
-              // If no ledger year, no need to fetch money info, return empty observable
-              if (!this.selectedLedgerYear()) {
-                console.warn(`${this.getPlatForm()}: Ledger year unavailable`);
+                // Return an observable that also contains the result of getMoneyInfoObservable
                 return forkJoin({
                   initialData: of(initialResults),
-                  moneyInfoRes: of(null),
+                  moneyInfoRes: this.getMoneyInfoObservable(
+                    this.selectedLedgerYear(),
+                    this.ulbIdSignal()
+                  ),
                 });
-              }
+              }),
+              takeUntil(this.destroy$)
+            )
+            .subscribe({
+              next: (finalRes) => {
+                const { initialData, moneyInfoRes } = finalRes;
 
-              // Return an observable that also contains the result of getMoneyInfoObservable
-              return forkJoin({
-                initialData: of(initialResults),
-                moneyInfoRes: this.getMoneyInfoObservable(
-                  this.selectedLedgerYear(),
-                  this.ulbIdSignal()
-                ),
-              });
-            }),
-            takeUntil(this.destroy$)
-          )
-          .subscribe({
-            next: (finalRes) => {
-              const { initialData, moneyInfoRes } = finalRes;
+                // Ledger Years
+                this.ledgerYears.set(initialData.distinctYearsRes.ledgerYears);
+                this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
 
-              // Ledger Years
-              this.ledgerYears.set(initialData.distinctYearsRes.ledgerYears);
-              this.selectedLedgerYear.set(this.ledgerYears()[0] || '');
+                // SLB years
+                this.slbYears.set(initialData.distinctSlbYearsRes.slbYears);
 
-              // SLB years
-              this.slbYears.set(initialData.distinctSlbYearsRes.slbYears);
+                // Money info: info cards.
+                this.moneyInfoRes.set(moneyInfoRes);
 
-              // Money info: info cards.
-              this.moneyInfoRes.set(moneyInfoRes);
+                // --- Store in TransferState on Server ---
+                if (isPlatformServer(this.platformId)) {
+                  // Store all fetched data in TransferState only if on the server
+                  this.transferState.set(CITY_DETAILS_KEY, this.cityDetails());
+                  this.transferState.set(LEDGER_YEARS_KEY, this.ledgerYears());
+                  this.transferState.set(SLB_YEARS_KEY, this.slbYears());
+                  this.transferState.set(MONEY_INFO_KEY, this.moneyInfoRes());
+                  this.transferState.set(
+                    SELECTED_LEDGER_YEAR,
+                    this.selectedLedgerYear()
+                  );
+                }
 
-              // --- Store in TransferState on Server ---
-              if (isPlatformServer(this.platformId)) {
-                // Store all fetched data in TransferState only if on the server
-                this.transferState.set(CITY_DETAILS_KEY, this.cityDetails());
-                this.transferState.set(LEDGER_YEARS_KEY, this.ledgerYears());
-                this.transferState.set(SLB_YEARS_KEY, this.slbYears());
-                this.transferState.set(MONEY_INFO_KEY, this.moneyInfoRes());
-                this.transferState.set(
-                  SELECTED_LEDGER_YEAR,
-                  this.selectedLedgerYear()
+                this.isLoading.set(false);
+              },
+              error: (error: Error) => {
+                console.error(
+                  `${this.getPlatForm()}: Uncaught Error in loadData(): `,
+                  error
                 );
-              }
-
-              this.isLoading.set(false);
-            },
-            error: (error: Error) => {
-              console.error(
-                `${this.getPlatForm()}: Uncaught Error in loadData(): `,
-                error
-              );
-              this.handleLoadingAndError(error);
-              this.isLoading.set(false);
-            },
-          });
-      },
-    });
+                this.handleLoadingAndError(error);
+                this.isLoading.set(false);
+              },
+            });
+        },
+      });
+    }
   }
 
   getPlatForm(): 'SERVER' | 'CLIENT' {

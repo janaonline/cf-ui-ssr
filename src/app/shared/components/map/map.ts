@@ -115,6 +115,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   }
 
   private initializeMap(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.mapInitialized.set(false);
     this.mapService.destroyMap();
     const container = document.getElementById('map-container');
