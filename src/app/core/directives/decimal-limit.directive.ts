@@ -11,7 +11,7 @@ export class DecimalLimitDirective {
   constructor(
     private el: ElementRef,
     private _snackBar: MatSnackBar,
-  ) {}
+  ) { }
 
   @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
     // console.log(event.key);
@@ -41,8 +41,7 @@ export class DecimalLimitDirective {
       horizontalPosition: 'end',
       verticalPosition: 'top',
       duration: 2000,
-      // panelClass: ['snackbar-success']
-      panelClass: ['custom-snackbar-success'],
+      panelClass: ['snackbar-success']
     });
   }
 }

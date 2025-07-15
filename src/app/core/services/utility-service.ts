@@ -22,7 +22,7 @@ export class UtilityService {
       .then((blob) => {
         saveAs(blob, fileName);
         this._globalLoaderService.hideLoader();
-        this.triggerSnackbar('File downloaded successfully!', 'snackbar-success');
+        this.triggerSnackbar('File downloaded successfully!',);
       })
       .catch((error) => {
         console.error('Error in fetching file: ', error);
@@ -32,7 +32,7 @@ export class UtilityService {
   }
 
   // Helper: Trigger snack-bar.
-  triggerSnackbar(msg: string, className: string): void {
+  triggerSnackbar(msg: string, className: string = 'snackbar-success'): void {
     this._snackBar.open(msg, 'Close', {
       horizontalPosition: 'end',
       verticalPosition: 'top',

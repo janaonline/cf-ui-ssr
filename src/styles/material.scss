@@ -1,14 +1,13 @@
-.custom-snackbar-success {
-  --mat-snackbar-container-color: green;
-  --mat-mdc-snack-bar-button-color: white;
-}
-
 .snackbar-success {
   --mat-snack-bar-container-color: #2e7d32;
 }
 
 .snackbar-danger {
   --mat-snack-bar-container-color: #c62828;
+}
+
+.snackbar-warn {
+  --mat-snack-bar-container-color: #f9a825;
 }
 
 .mdc-button .mdc-button__label {
