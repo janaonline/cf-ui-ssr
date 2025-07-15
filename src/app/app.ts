@@ -24,7 +24,7 @@ export class App {
     // const userData = {};
     // localStorage.setItem('userData', JSON.stringify(userData));
     // localStorage.setItem('id_token', '');
-    this.loaderService.showLoader();
+    // this.loaderService.showLoader();
   }
 
 }
