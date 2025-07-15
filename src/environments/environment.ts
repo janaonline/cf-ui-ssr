@@ -1,33 +1,11 @@
-const baseUrl = 'https://dev.cityfinance.in';
-//let baseUrl = 'http://localhost:8080';
-let GoogleTagID = 'G-803HPPLFMM';
-let isProduction: boolean = false;
-let STORAGE_BASEURL =
-  'https://jana-cityfinance-stg.s3.ap-south-1.amazonaws.com';
-let env = 'dev';
-
-if (baseUrl.includes('staging')) {
-  env = 'staging';
-} else if (
-  ['https://cityfinance.in', 'https://www.cityfinance.in'].includes(baseUrl)
-) {
-  env = 'prod';
-  isProduction = true;
-  GoogleTagID = 'G-5Z5B41B3G4';
-  STORAGE_BASEURL = 'https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com';
-}
-
 export const environment = {
-  baseUrl,
+  baseUrl: '',
   api: {
-    url: baseUrl + '/api/v1/',
+    url: 'http://localhost:8080/api/v1/',
   },
-  v1Url: '/v1',
-  v2Url: '/fc',
-  environment: env,
-  isProduction,
-  versionCheckURL: baseUrl + '/version.json',
-  STORAGE_BASEURL,
-  googleAnalyticsId: GoogleTagID,
-  storageType: 'S3Url', // 'S3Url' for S3 storage type, for azure change this to 'BlobUrl'
+  v1Url: 'http://localhost:4200',
+  v2Url: 'http://localhost:4300',
+  environment: 'local',
+  isProduction: false,
+  STORAGE_BASEURL: 'https://jana-cityfinance-stg.s3.ap-south-1.amazonaws.com',
 };
