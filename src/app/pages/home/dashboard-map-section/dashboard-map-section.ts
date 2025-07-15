@@ -37,7 +37,7 @@ import { environment } from '../../../../environments/environment';
 
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 const STATE_LIST_KEY = makeStateKey<any>('stateList');
-const BONDS_KEY = makeStateKey<any>('fetchBondIssuances');
+// const BONDS_KEY = makeStateKey<any>('fetchBondIssuances');
 const ULB_DATA_KEY = makeStateKey<any>('fetchUlbData');
 const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 
@@ -139,43 +139,44 @@ export class DashboardMapSection {
 
   // On filter - API calls.
   private loadData(getUlbData: string = 'state'): void {
-    this.fetchBondIssuances();
+    // this.fetchBondIssuances();
     this.updateRatingSummary();
     getUlbData === 'ulb' ? this.fetchUlbData() : this.fetchExploreSectionData();
   }
 
-  // Get municipal bonds data - card 5.
-  private fetchBondIssuances(): void {
-    this.isLoading.set(true);
+  // Added bonds data response in home-page api.
+  // // Get municipal bonds data - card 5.
+  // private fetchBondIssuances(): void {
+  //   this.isLoading.set(true);
 
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(BONDS_KEY)
-    ) {
-      const data = this.transferState.get(BONDS_KEY, []);
-      this.bondIssuances.set(data);
-      this.transferState.remove(BONDS_KEY);
+  //   if (
+  //     isPlatformBrowser(this.platformId) &&
+  //     this.transferState.hasKey(BONDS_KEY)
+  //   ) {
+  //     const data = this.transferState.get(BONDS_KEY, []);
+  //     this.bondIssuances.set(data);
+  //     this.transferState.remove(BONDS_KEY);
 
-      this.isLoading.set(false);
-    } else {
-      this._commonService
-        .getBondIssuerItemAmount(this.selectedStateIdSignal())
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: BondIssuances) => {
-            const data = { ...res, inProgress: false };
-            this.bondIssuances.set(data);
-            this.isLoading.set(false);
+  //     this.isLoading.set(false);
+  //   } else {
+  //     this._commonService
+  //       .getBondIssuerItemAmount(this.selectedStateIdSignal())
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe({
+  //         next: (res: BondIssuances) => {
+  //           const data = { ...res, inProgress: false };
+  //           this.bondIssuances.set(data);
+  //           this.isLoading.set(false);
 
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(BONDS_KEY, data);
-            }
-          },
-          error: (error: any) =>
-            console.error('Error in fetching bonds data: ', error),
-        });
-    }
-  }
+  //           if (isPlatformServer(this.platformId)) {
+  //             this.transferState.set(BONDS_KEY, data);
+  //           }
+  //         },
+  //         error: (error: any) =>
+  //           console.error('Error in fetching bonds data: ', error),
+  //       });
+  //   }
+  // }
 
   // Get credit rating data - Card 3, 4.
   private fetchCreditRatingsData(): void {
@@ -369,14 +370,14 @@ export class DashboardMapSection {
                 info: '',
                 src: '',
               },
-              {
-                sequence: 6,
-                label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
-                  } Cr With Details`,
-                value: `${this.bondIssuances().totalMunicipalBonds}`,
-                info: '',
-                src: '',
-              },
+              // {
+              //   sequence: 6,
+              //   label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
+              //     } Cr With Details`,
+              //   value: `${this.bondIssuances().totalMunicipalBonds}`,
+              //   info: '',
+              //   src: '',
+              // },
             ];
 
             this.exploreData().gridDetails.sort(

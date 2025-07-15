@@ -80,12 +80,12 @@ export class CountUpDirective implements OnChanges {
             const t = easing ? this.easeOutQuad(progress) : progress;
             const current = from + range * t;
 
-            this.el.nativeElement.innerText = Math.floor(current);
+            this.el.nativeElement.innerText = Math.floor(current).toLocaleString();
 
             if (progress < 1) {
                 requestAnimationFrame(step);
             } else {
-                this.el.nativeElement.innerText = Math.floor(to);
+                this.el.nativeElement.innerText = Math.floor(to).toLocaleString();
                 if (onComplete) onComplete();
             }
         };
