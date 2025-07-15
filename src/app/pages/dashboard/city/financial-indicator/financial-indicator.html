@@ -9,13 +9,25 @@
   <app-pre-loader></app-pre-loader>
   } @else {
 
-  <!-- Main Buttons. -->
-  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
+  <div class="position-relative">
+    @if (isChartLoading()) {
+    <!-- Overlay to block interaction -->
+    <div class="custom-spinner-overlay"></div>
+    }
 
-  <!-- Sub buttons. -->
-  <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
-  <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
-    (selectedButtonKeyChange)="onSelectedSubButtonChange($event)"></app-tab-buttons>
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+
+    <!-- Info about line item -->
+    <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
+
+    <!-- Sub Buttons -->
+    <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
+      (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
+    </app-tab-buttons>
+  </div>
+
 
   @if(!isChartDataAvailable()) {
   <app-no-data-found></app-no-data-found>
@@ -86,7 +98,6 @@
         </div>
         }
       </div>
-      }
 
       <!-- Legends for pie, doughnut, gauge chart. -->
       @if (output()?.legendColors?.length){
@@ -100,6 +111,8 @@
         }
       </div>
       }
+      }
+
       <!-- @for (chartData of chartsData; track $index) {
       <div class="overflow-x-auto flex-grow-1">
         <div class="w-100 h-100 chart-container">
