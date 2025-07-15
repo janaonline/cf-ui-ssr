@@ -257,9 +257,14 @@ export class FinancialIndicator {
 
     const endYear = parseInt(yearStr.slice(0, 4), 10);
 
+    const minYear = 2015;
     const years: string[] = [];
+
     for (let i = 2; i >= 0; i--) {
       const start = endYear - i;
+      if (start < minYear) {
+        continue;
+      }
       const end = (start + 1).toString().slice(-2);
       years.push(`${start}-${end}`);
     }
@@ -284,6 +289,8 @@ export class FinancialIndicator {
 
     // Populate datasets based on type
     for (const chart of chartData.data) {
+      const barThickness = chart.data.length < 3 ? { barThickness: 60 } : {}
+
       const dataset: any = {
         type: chart.type,
         label: chart.label,
@@ -302,6 +309,7 @@ export class FinancialIndicator {
         Object.assign(dataset, {
           backgroundColor: chart.backgroundColor?.[0],
           borderRadius: 5,
+          ...barThickness
         });
       }
 

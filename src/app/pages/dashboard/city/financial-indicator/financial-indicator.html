@@ -7,7 +7,6 @@
   <app-pre-loader></app-pre-loader>
   <app-pre-loader></app-pre-loader>
   <app-pre-loader></app-pre-loader>
-  <app-pre-loader></app-pre-loader>
   } @else {
 
   <!-- Main Buttons. -->
@@ -40,7 +39,7 @@
           <!-- <input class="rounded border px-2 py-2 custom-font-size-6 w-100" id="filterInput"
             value="State Municipal Corporation Average" #input disabled /> -->
           <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-100"
-            (click)="openCompareByDialog()">{{getCompType()}}</button>
+            (click)="openCompareByDialog()">Compare by: {{getCompType()}}</button>
 
           <!-- Filter: years-->
           <form [formGroup]="myForm" class="w-50">
@@ -72,7 +71,6 @@
       </div>
 
       @if (isChartLoading()) {
-      <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
