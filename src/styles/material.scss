@@ -3,6 +3,14 @@
   --mat-mdc-snack-bar-button-color: white;
 }
 
+.snackbar-success {
+  --mat-snack-bar-container-color: #2e7d32;
+}
+
+.snackbar-danger {
+  --mat-snack-bar-container-color: #c62828;
+}
+
 .mdc-button .mdc-button__label {
   color: #fff;
 }

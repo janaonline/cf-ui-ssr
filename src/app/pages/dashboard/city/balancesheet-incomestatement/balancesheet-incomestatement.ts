@@ -303,7 +303,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   private openDialog(data: AfsPopupData | null, fileType: string) {
-    console.log('openDialog', data, fileType);
+    // console.log('openDialog', data, fileType);
     // TODO: make this simple
     // const ulbInfo = { fileName: 'abc', type: 'pdf', module: 'cityPage' };
     const dialogRef = this.dialog.open(AfsPdfsDialog, {
