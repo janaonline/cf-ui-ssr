@@ -130,7 +130,9 @@ export class DashboardMapSection {
   ngOnInit(): void {
     this.fetchCreditRatingsData();
     this.fetchStateList();
-    this.loadData('state');
+    setTimeout(() => {
+      this.loadData('state');
+    }, 10);
   }
 
   ngAfterViewInit() {
