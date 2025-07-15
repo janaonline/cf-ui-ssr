@@ -9,11 +9,17 @@ export const buttons: ButtonObj[] = [
 ];
 
 export const compraeByOptions = (ulbType: string) => [
-  { key: 'state', label: `State ${ulbType} Average` },
-  { key: 'national', label: `National ${ulbType} Average` },
-  { key: 'popCat', label: `${ulbType} Population Average` },
+  { key: 'state', label: `State Average` },
+  { key: 'national', label: `National Average` },
+  { key: 'popCat', label: `Population Category Average` },
   { key: 'ulbType', label: `${ulbType} Average` },
 ]
+// export const compraeByOptions = (ulbType: string) => [
+//   { key: 'state', label: `State ${ulbType} Average` },
+//   { key: 'national', label: `National ${ulbType} Average` },
+//   { key: 'popCat', label: `${ulbType} Population Average` },
+//   { key: 'ulbType', label: `${ulbType} Average` },
+// ]
 
 type Accordion = {
   key: 'aboutIndicator' | 'calculation' | 'performanceAssessed' | 'nextsteps';
