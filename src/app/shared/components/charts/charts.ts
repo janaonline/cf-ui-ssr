@@ -108,6 +108,7 @@ export class Charts implements AfterViewInit, OnDestroy {
             datasets: config.datasets,
           },
           options: config.options,
+          plugins: [this.customDataLabel],
         });
         break;
       default:
@@ -115,6 +116,34 @@ export class Charts implements AfterViewInit, OnDestroy {
         break;
     }
   }
+
+  // Helper: To add text on pie chart.
+  customDataLabel = {
+    id: 'customDataLabel',
+    afterDatasetsDraw(chart: Chart) {
+      const { ctx } = chart;
+
+      chart.data.datasets.forEach((dataset, datasetIndex) => {
+        const meta = chart.getDatasetMeta(datasetIndex);
+
+        meta.data.forEach((element, index) => {
+          const tempVal = Number(dataset.data[index]);
+          console.log(typeof tempVal)
+          if (tempVal) {
+            const value = tempVal + '%';
+            const position = element.tooltipPosition(true);
+
+            // ctx.fillStyle = '#000';
+            ctx.font = '500 10px Montserrat';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(String(value), position.x, position.y);
+          }
+        });
+      });
+    }
+  };
+
 
   ngOnDestroy(): void {
     if (this.chartInstance) {

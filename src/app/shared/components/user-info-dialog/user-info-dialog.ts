@@ -99,22 +99,12 @@ export class UserInfoDialog {
   submitData(data: any) {
     this.userInfoService.submitData(this.matDialogData?.moduleInfo?.postEndPointUrl, data).subscribe({
       next: () => {
-        this.triggerSnackbar(`We'll get back to you shortly!`);
+        this.utilityService.triggerSnackbar(`We'll get back to you shortly!`,);
         this.dialogRef.close(true);
       },
       error: (error) => {
-        this.triggerSnackbar(`Something went wrong! Please try again later.`);
+        this.utilityService.triggerSnackbar(`Something went wrong! Please try again later.`, 'snackbar-danger');
       },
-    });
-  }
-
-  triggerSnackbar(msg: string) {
-    this._snackBar.open(msg, 'Close', {
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      duration: 2000,
-      // panelClass: ['snackbar-success']
-      panelClass: ['custom-snackbar-success'],
     });
   }
 

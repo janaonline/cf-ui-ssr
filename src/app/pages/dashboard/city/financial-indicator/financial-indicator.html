@@ -7,16 +7,27 @@
   <app-pre-loader></app-pre-loader>
   <app-pre-loader></app-pre-loader>
   <app-pre-loader></app-pre-loader>
-  <app-pre-loader></app-pre-loader>
   } @else {
 
-  <!-- Main Buttons. -->
-  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
+  <div class="position-relative">
+    @if (isChartLoading()) {
+    <!-- Overlay to block interaction -->
+    <div class="custom-spinner-overlay"></div>
+    }
 
-  <!-- Sub buttons. -->
-  <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
-  <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
-    (selectedButtonKeyChange)="onSelectedSubButtonChange($event)"></app-tab-buttons>
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+
+    <!-- Info about line item -->
+    <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
+
+    <!-- Sub Buttons -->
+    <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
+      (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
+    </app-tab-buttons>
+  </div>
+
 
   @if(!isChartDataAvailable()) {
   <app-no-data-found></app-no-data-found>
@@ -40,7 +51,7 @@
           <!-- <input class="rounded border px-2 py-2 custom-font-size-6 w-100" id="filterInput"
             value="State Municipal Corporation Average" #input disabled /> -->
           <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-100"
-            (click)="openCompareByDialog()">{{getCompType()}}</button>
+            (click)="openCompareByDialog()">Compare by: {{getCompType()}}</button>
 
           <!-- Filter: years-->
           <form [formGroup]="myForm" class="w-50">
@@ -75,7 +86,6 @@
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
-      <app-pre-loader></app-pre-loader>
       }
       @else {
       <!-- Chart -->
@@ -88,7 +98,6 @@
         </div>
         }
       </div>
-      }
 
       <!-- Legends for pie, doughnut, gauge chart. -->
       @if (output()?.legendColors?.length){
@@ -102,6 +111,8 @@
         }
       </div>
       }
+      }
+
       <!-- @for (chartData of chartsData; track $index) {
       <div class="overflow-x-auto flex-grow-1">
         <div class="w-100 h-100 chart-container">
@@ -119,7 +130,7 @@
       @if(infoMsg() && infoMsg().msg) {
       <div [ngClass]="'alert alert-' + infoMsg().text + ' d-flex align-items-start p-2'" style="font-size: 0.65rem;"
         role="alert">
-        <i class="bi bi-circle-fill text-success custom-font-size-7"></i>
+        <i [ngClass]="'bi bi-circle-fill ' + 'text- ' + infoMsg().text + 'custom-font-size-7'"></i>
         &nbsp;{{ infoMsg().msg }}
       </div>
       }}

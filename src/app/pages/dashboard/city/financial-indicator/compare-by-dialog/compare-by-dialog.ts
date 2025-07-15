@@ -8,6 +8,7 @@ import { IULB } from '../../../../../core/models/ulb';
 import { CommonService } from '../../../../../core/services/common.service';
 import { MaterialModule } from "../../../../../material.module";
 import { compraeByOptions } from '../constants';
+import { UtilityService } from '../../../../../core/services/utility-service';
 
 @Component({
   selector: 'app-compare-by-dialog',
@@ -25,6 +26,7 @@ export class CompareByDialog {
 
   constructor(
     private commonService: CommonService,
+    private utilityService: UtilityService,
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<CompareByDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -93,7 +95,7 @@ export class CompareByDialog {
   onCitySelection(city: IULB): void {
     // Allow only 3 ulbs.
     if (this.citiesArr.length === 3) {
-      this.triggerSnackbar(`Maximum of 3 ULBs can be selected!`);
+      this.utilityService.triggerSnackbar(`Maximum of 3 ULBs can be selected!`, 'snackbar-warn');
       this.myForm.get('ulbName')?.patchValue('')
       return;
     }
@@ -101,7 +103,7 @@ export class CompareByDialog {
     // Check for duplicates.
     const idx = this.citiesArr.findIndex(e => e._id === city._id);
     if (idx !== -1) {
-      this.triggerSnackbar(`ULB already selected!`);
+      this.utilityService.triggerSnackbar(`ULB already selected!`, 'snackbar-danger');
       this.myForm.get('ulbName')?.patchValue('')
       return;
     }
@@ -115,17 +117,6 @@ export class CompareByDialog {
   removeCity(idx: number) {
     // console.log('remove:', idx)
     this.citiesArr.splice(idx, 1);
-  }
-
-
-  triggerSnackbar(msg: string) {
-    this._snackBar.open(msg, 'Close', {
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      duration: 2000,
-      // panelClass: ['snackbar-success']
-      panelClass: ['custom-snackbar-success'],
-    });
   }
 
   // When Apply or Reset is clicked.

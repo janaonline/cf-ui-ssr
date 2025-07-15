@@ -1,69 +1,45 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
+import { GlobalLoaderService } from './loaders/global-loader.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UtilityService {
-  constructor() { }
+  constructor(
+    private _snackBar: MatSnackBar,
+    private _globalLoaderService: GlobalLoaderService,
+  ) { }
 
   public fetchFile(target_file_url: string, fileName: string): void {
-    // Show a popup to indicate that the file is being downloaded
-    // this.swalLoader();
-
     fetch(target_file_url)
       .then((response) => {
+        this._globalLoaderService.showLoader();
         if (!response.ok) throw new Error('Response was not ok.');
         return response.blob();
       })
       .then((blob) => {
         saveAs(blob, fileName);
-        // Swal.close();
-        // this.swalPopup(
-        //   'File Downloaded',
-        //   'File has been downloaded successfully!',
-        //   'success'
-        // );
+        this._globalLoaderService.hideLoader();
+        this.triggerSnackbar('File downloaded successfully!',);
       })
       .catch((error) => {
         console.error('Error in fetching file: ', error);
-        // Swal.close();
-        // this.swalPopup(
-        //   'Validation Failed!',
-        //   'Failed to download file!',
-        //   'error'
-        // );
+        this._globalLoaderService.hideLoader();
+        this.triggerSnackbar('Failed to download the file!', 'snackbar-danger');
       });
   }
 
-  // public swalPopup(
-  //   title: string,
-  //   text: string,
-  //   icon: SweetAlertIcon = 'success'
-  // ): void {
-  //   Swal.fire({
-  //     icon: icon,
-  //     title: title,
-  //     text: text,
-  //     showConfirmButton: false,
-  //     timer: 2000,
-  //   });
-  // }
-
-  // public swalLoader(): Promise<SweetAlertResult> {
-  //   return Swal.fire({
-  //     title: 'Downloading...',
-  //     text: 'Please wait while the file is being downloaded.',
-  //     icon: 'info',
-  //     showConfirmButton: false,
-  //     allowOutsideClick: false,
-  //     didOpen: () => {
-  //       Swal.showLoading();
-  //     },
-  //     timerProgressBar: true,
-  //     timer: 0, // No timer here, we'll control when to close the popup manually
-  //   });
-  // }
+  // Helper: Trigger snack-bar.
+  triggerSnackbar(msg: string, className: string = 'snackbar-success'): void {
+    this._snackBar.open(msg, 'Close', {
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      duration: 2000,
+      panelClass: [className],
+    });
+  }
 
   /**
    * @param includeTime - If true (default), returns both date and time in 'YYYY-MM-DD_HH-MM-SS' format.
