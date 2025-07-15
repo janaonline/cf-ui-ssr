@@ -7,3 +7,15 @@
   <app-feedback-widget></app-feedback-widget>
 </div>
 <app-footer></app-footer>
+
+@if (loaderService.loading()) {
+<div class="spinner"
+  style="z-index: 999999; display: flex; flex-direction: column;  position: fixed; top: 0px; bottom: 0px">
+  <!-- <div class="row"> -->
+  <mat-spinner></mat-spinner>
+  <!-- </div> -->
+  <div class="row">
+    <span class="spinText">Loading...</span>
+  </div>
+</div>
+}
