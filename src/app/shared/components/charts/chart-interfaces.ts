@@ -1,4 +1,9 @@
 import { IFinancialIndicatorInfo } from "../../../core/models/interfaces";
+import { ChartOptions as ChartJSOptions, ChartTypeRegistry } from 'chart.js';
+
+export interface ChartOptions extends Partial<ChartJSOptions<keyof ChartTypeRegistry>> {
+
+}
 
 export type ChartType =
   | 'barChart'
@@ -20,12 +25,6 @@ export interface ChartDataSet {
   tension?: number;
   fill?: boolean;
   barThickness?: number;
-}
-
-export interface ChartOptions {
-  // Include Chart.js options or your own abstraction
-  //   pointBackgroundColor: string;
-  //   borderRadius: number;
 }
 
 export interface SlbData {

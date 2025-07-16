@@ -1,4 +1,14 @@
-import { ChartOptions } from 'chart.js';
+// import 'chart.js';
+import { ChartOptions, ChartType } from 'chart.js';
+
+declare module 'chart.js' {
+  interface PluginOptionsByType<TType extends ChartType> {
+    customDataLabel?: {
+      enabled: boolean;
+      format: string;
+    };
+  }
+}
 
 export const DEFAULT_FONT_FAMILY = 'Montserrat';
 const TEXT_LIGHT = '#374151';
@@ -7,7 +17,9 @@ export const baseChartOptions = (
   fontFamily = 'DEFAULT_FONT_FAMILY',
   showAxes = true,
   xAxisLabel = 'X Axis',
-  yAxisLabel = 'Y Axis'
+  yAxisLabel = 'Y Axis',
+  showLabelOnChart = false,
+  label = '',
 ): ChartOptions => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -18,6 +30,10 @@ export const baseChartOptions = (
     intersect: false,
   },
   plugins: {
+    customDataLabel: {
+      enabled: showLabelOnChart,
+      format: label
+    },
     legend: { labels: { font: { family: fontFamily, size: 12 } } },
     tooltip: {
       titleFont: { family: fontFamily },
