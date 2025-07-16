@@ -18,11 +18,7 @@ export class UserUtility implements OnDestroy {
   userData: IUserLoggedInDetails = {} as IUserLoggedInDetails;
 
   constructor() {
-    // let data = localStorage.getItem('userData') as any;
     this.userData = JSON.parse(this.localStorageService.getItem('userData') || '{}') as IUserLoggedInDetails;
-    // userData = (userData ? JSON.parse(userData) : null) as IUserLoggedInDetails;
-    // if (data) {
-    // }
     UserUtility.loggedInDetails.next(this.userData);
   }
   ngOnDestroy(): void {

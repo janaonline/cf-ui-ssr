@@ -26,7 +26,7 @@ export class Navbar {
   canViewUserList: boolean = false;
   canViewULBSingUpListing: boolean = false;
   isLoggedIn: boolean = false;
-  user!: IUserLoggedInDetails | null;
+  user: IUserLoggedInDetails | null = {} as IUserLoggedInDetails;
   loggedInUserDetails: any;
   loggedInUserType: any;
   btnName = 'Login for 15th FC Grants';
@@ -67,12 +67,16 @@ export class Navbar {
   ];
 
   showMobileNav: boolean = false;
+  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in'];
+
 
   constructor(
     public _router: Router,
     private authService: AuthService,
     private dialog: MatDialog
   ) {
+    this.isLoggedIn = this.authService.loggedIn();
+    this.user = this.isLoggedIn ? this.user : null;
     this.initializeAccessChecking();
   }
 
@@ -83,8 +87,7 @@ export class Navbar {
   }
 
   checkUserLoggedIn() {
-    this.isLoggedIn = this.authService.loggedIn();
-    this.user = this.isLoggedIn ? this.user : null;
+
 
     this.initializeAccessChecking();
 
@@ -106,11 +109,11 @@ export class Navbar {
     const loggedin_menus = [
       // ...this.menus,
       // (role === USER_TYPE.PMU && { name: 'State resources', href: '/mohua-form/state-resource-manager' }),
-      // (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: '15<sup>th</sup> FC Grants', href: '/fc-home-page' }),
-      role === USER_TYPE.ULB && {
-        name: `15<sup>th</sup> FC Grants`,
-        href: environment.v1Url + '/fc-home-page',
-      },
+      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: '15<sup>th</sup> FC Grants', href: environment.v1Url + '/fc-home-page' }),
+      // role === USER_TYPE.ULB && {
+      //   name: `15<sup>th</sup> FC Grants`,
+      //   href: environment.v1Url + '/fc-home-page',
+      // },
       role === USER_TYPE.ULB && {
         name: `XVI FC Data Collection`,
         href: environment.v2Url + '/xvifc-form',
@@ -125,15 +128,24 @@ export class Navbar {
         href: environment.v2Url + '/admin/xvi-fc-review',
       },
       // (this.notInRole([USER_TYPE.ULB, USER_TYPE.XVIFC_STATE]) && { name: `Rankings'22 Dashboard`, href: '/cfr/review-rankings-ulbform' }),
-      // (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: 'Users', href: '/user/list/ULB' }),
+      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && this.isReadonlyUser() && { name: 'Users', href: environment.v1Url + '/user/list/ULB' }),
     ];
     this.menus = this.menus.concat(loggedin_menus.filter((menu) => menu));
   }
+
+  isReadonlyUser(): boolean {
+    if (this.user) {
+      return !this.readonlyEmails.includes(this.user.email);
+    }
+    return false
+  }
+
 
   notInRole(roles: string[]) {
     const role = this.user ? this.user.role : '';
     return !roles.includes(role);
   }
+
   inRole(roles: string[]) {
     const role = this.user ? this.user.role : '';
     return roles.includes(role);
