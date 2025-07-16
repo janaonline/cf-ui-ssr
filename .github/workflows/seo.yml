@@ -1,9 +1,9 @@
-name: Deploy Angular SSR App on development
+name: Deploy Angular SSR App on Seo
 
 on:
   push:
     branches:
-      - development # or your default branch
+      - main # or your default branch
 
 jobs:
   deploy:
@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/"
-          target: "/var/www/html/development-cicd/cf-ui-ssr"
+          target: "/var/www/html/seo-cicd/cf-ui-ssr"
 
       - name: 🔄 Restart PM2 on Server
         uses: appleboy/ssh-action@v1.0.0
@@ -40,5 +40,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/html/development-cicd/cf-ui-ssr
-            pm2 reload ecosystem.config.js --only dev-cf-ui-ssr || pm2 start ecosystem.config.js --only dev-cf-ui-ssr
+            cd /var/www/html/seo-cicd/cf-ui-ssr
+            pm2 reload ecosystem.config.js --only seo-cf-ui-ssr || pm2 start ecosystem.config.js --only seo-cf-ui-ssr
