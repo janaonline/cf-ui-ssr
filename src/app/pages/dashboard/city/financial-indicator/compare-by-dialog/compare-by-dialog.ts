@@ -34,10 +34,15 @@ export class CompareByDialog {
   }
 
   ngOnInit() {
+    // Get the array of options.
     this.radioOptions.set(compraeByOptions(this.data.ulbType));
 
+    // Keep selected values as is.
+    if (this.data.compareUlbsFromParent?.length) this.citiesArr = this.data.compareUlbsFromParent;
+    const compTyp = this.data.compareType || this.radioOptions()[0].key;
+
     this.myForm = new FormGroup({
-      compareType: new FormControl(this.radioOptions()[0].key),
+      compareType: new FormControl(compTyp),
       ulbName: new FormControl(''),
     })
 
@@ -130,6 +135,7 @@ export class CompareByDialog {
       if (ulbIds.length) {
         payload['compareType'] = 'ulbs';
         payload['compareUlbs'] = ulbIds;
+        payload['compareUlbsObj'] = this.citiesArr;
       }
 
       this.dialogRef.close(payload)
