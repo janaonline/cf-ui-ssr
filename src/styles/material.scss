@@ -35,3 +35,7 @@
 .mat-mdc-menu-item-text {
   --mat-menu-item-label-text-font: var(--ff-base);
 }
+
+.multiline-tooltip {
+  white-space: pre-line;
+}
