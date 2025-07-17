@@ -11,6 +11,7 @@ export const environment = {
   v2Url: '/fc',
   environment: 'dev',
   isProduction: false,
+  googleTagID: 'G-803HPPLFMM',
   STORAGE_BASEURL: 'https://jana-cityfinance-stg.s3.ap-south-1.amazonaws.com',
   googleAnalyticsId: 'G-803HPPLFMM',
 };

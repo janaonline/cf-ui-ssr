@@ -15,7 +15,8 @@ export class GoogleAnalyticsService {
 
   loggedInUserDetails = new UserUtility().getLoggedInUserDetails();
 
-  googleTagID = environment.environment === 'prod' ? 'G-5Z5B41B3G4' : 'G-803HPPLFMM';
+  // googleTagID = environment.environment === 'prod' ? 'G-5Z5B41B3G4' : 'G-803HPPLFMM';
+  googleTagID = environment.googleTagID;
 
   constructor(private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object, private gtmService: GtmService) {

@@ -8,5 +8,6 @@ export const environment = {
   v2Url: 'http://localhost:4300',
   environment: 'local',
   isProduction: false,
+  googleTagID: 'G-803HPPLFMM',
   STORAGE_BASEURL: 'https://jana-cityfinance-stg.s3.ap-south-1.amazonaws.com',
 };
