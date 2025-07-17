@@ -15,8 +15,12 @@ export class GoogleAnalyticsService {
 
   loggedInUserDetails = new UserUtility().getLoggedInUserDetails();
 
+  googleTagID = environment.environment === 'prod' ? 'G-5Z5B41B3G4' : 'G-803HPPLFMM';
+
   constructor(private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object, private gtmService: GtmService) { }
+    @Inject(PLATFORM_ID) private platformId: Object, private gtmService: GtmService) {
+
+  }
 
   init() {
     // Ensure this runs only in the browser
@@ -29,7 +33,7 @@ export class GoogleAnalyticsService {
 
   appendScript() {
     const script = document.createElement('script');
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${environment.googleAnalyticsId}`;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${this.googleTagID}`;
     script.async = true;
     document.getElementsByTagName('head')[0].appendChild(script);
     const gtagEl = document.createElement('script');
@@ -63,7 +67,7 @@ export class GoogleAnalyticsService {
         user_id: user._id,
       };
     }
-    gtag('config', environment.googleAnalyticsId, args);
+    gtag('config', this.googleTagID, args);
   }
 
   trackEvent(action: string, params?: any) {

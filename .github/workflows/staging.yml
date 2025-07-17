@@ -1,65 +1,44 @@
-name: Build and Deploy
- 
+name: Deploy Angular SSR App on Staging
+
 on:
   push:
     branches:
-      - "staging"
-  pull_request:
-    types:
-      - closed
-    branches:
-      - "staging"
- 
+      - staging # or your default branch
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.14.0]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm install --force
-    # - name: Install dependencies
-    #   run: npm install --save @types/lodash@4.14.74 --force
-    - name: Build Angular project
-      run: npm run build
-    - name: Prepare SSH key
-      run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
-          chmod 600 ssh_key
-  
-    - name:   Re-do the existing dist folder on server
-      run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "
-          if [ -d /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist_live ]; then
-            mv /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist_live /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist_$(date +'%Y-%m-%d_%I.%M%p');
-          fi"
-    - name: Copy dist files to server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SERVER_IP }}  # Add your server IP address as a secret in your repository
-        username: ${{ secrets.SERVER_USERNAME }}  # Add your server username as a secret
-        key: ${{ secrets.SSH_PRIVATE_KEY }}  # Add your server SSH private key as a secret
-        port: 22
-        source: "dist/*"  # Adjust this path based on your project structure
-        target: "/var/www/html/staging-cicd/cityfinance-ng-ui-v2/"  # Specify the destination path on your server
-    - name: Rename existing dist folder on server to dist_live
-      run: |
-            ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} "
-            if [ -d /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist ]; then
-              mv /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist /var/www/html/staging-cicd/cityfinance-ng-ui-v2/dist_live;
-            fi"
-    - name: Send acknowledgment to Microsoft Teams
-      run: |
-              curl -H 'Content-Type: application/json' -d '{
-                "text": "Deployment successful! on Staging Server."
-              }' ${{ secrets.TEAMS_WEBHOOK_URL }}
-    # - name: Deploy to server
-    #   run: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ${{ github.workspace }}/dist/* ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_PASSWORD }}@${{ secrets.SERVER_IP }}:/var/www/html/dev-jana/citifinance-ng-ui/dist/
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install dependencies
+        run: npm ci --force
+
+      - name: 🛠️ Build Angular SSR
+        run: npm run build:dev
+
+      - name: 🚀 Deploy to Server via SSH
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/"
+          target: "/var/www/html/seo-cicd/cf-ui-ssr"
+
+      - name: 🔄 Restart PM2 on Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/html/staging-cicd/cf-ui-ssr
+            pm2 reload ecosystem.config.js --only cf-ui-ssr || pm2 start ecosystem.config.js --only cf-ui-ssr

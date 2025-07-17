@@ -28,23 +28,27 @@ export class Home implements OnInit {
   }
 
   setSeo() {
-    this.seoService.updateTitle('City Finance - Financial Data of 4,000+ Indian Cities');
+    const title = 'City Finance - Financial Data of 4,000+ Indian Cities';
+    const description = 'Explore standardized, credible financial data of over 4,000 Indian urban local bodies. Access municipal budgets, audited statements, financial performance, credit ratings, and dashboards by state and city.';
+    const url = `${environment.baseUrl}/home`;
+
+    this.seoService.updateTitle(title);
 
     this.seoService.updateMetaTags([
-      { name: 'description', content: `Explore standardized, credible financial data of over 4,000 Indian urban local bodies. Access municipal budgets, audited statements, financial performance, credit ratings, and dashboards by state and city.` },
+      { name: 'description', content: description },
       { name: 'keywords', content: 'City Finance, city financial performance, municipal finance, resources, benchmarks, urban finance, city updates' },
-      { property: 'og:title', content: 'City Finance - Financial Data of 4,000+ Indian Cities' },
-      { property: 'og:description', content: 'Explore standardized, credible financial data of over 4,000 Indian urban local bodies. Access municipal budgets, audited statements, financial performance, credit ratings, and dashboards by state and city.' },
-      { property: 'og:url', content: `${environment.baseUrl}/home` },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:url', content: url },
       { property: 'og:type', content: 'website' },
-      { property: 'robotsrobots', content: 'index, follow' }
+      { property: 'robots', content: 'index, follow' }
     ]);
 
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "City Finance",
-      "url": `${environment.baseUrl}/home`
+      "url": url
     });
   }
 }

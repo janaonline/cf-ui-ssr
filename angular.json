@@ -70,7 +70,22 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ]
+            },
+            "staging": {
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -82,6 +97,11 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -94,6 +114,12 @@
             },
             "development": {
               "buildTarget": "cf-ui-ssr:build:development"
+            },
+            "staging": {
+              "buildTarget": "cf-ui-ssr:build:staging"
+            },
+            "local": {
+              "buildTarget": "cf-ui-ssr:build:local"
             }
           },
           "defaultConfiguration": "development"
