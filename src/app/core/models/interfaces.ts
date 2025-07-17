@@ -1,5 +1,6 @@
 import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 import { IState } from './state/state';
+import { IULB } from './ulb';
 
 export interface BondIssuances {
   bondIssueAmount: number;
@@ -117,11 +118,13 @@ export interface IFinancialIndicatorsChart {
   lineItem: LineItemType,
   calcType: CalcType,
   compareUlbs: string[]
+  compareUlbsObj?: IULB[],
 }
 
 export interface FinancialIndicatorsCompareByPaylod {
-  compareType: compareType
-  compareUlbs?: string[]
+  compareType: compareType,
+  compareUlbs?: string[],
+  compareUlbsObj?: IULB[],
 }
 
 export interface IFinancialIndicatorRes {

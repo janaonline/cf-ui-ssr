@@ -20,6 +20,7 @@ import { DashboardService } from '../../dashboard-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, compraeByOptions, IndicatorDetails, subButtons } from './constants';
 import { resStruct } from './temp';
+import { IULB } from '../../../../core/models/ulb';
 
 export interface ChartResponse {
   success: boolean;
@@ -83,6 +84,8 @@ export class FinancialIndicator {
   chartsData = signal<ChartConfig[]>([]);
   output = signal<resStruct | undefined>(undefined);
 
+  compareUlbsFromPopup!: IULB[] | undefined;
+  compareTypeFromPopup!: string;
   dialogResult!: IFinancialIndicatorsChart;
   readonly dialog = inject(MatDialog);
 
@@ -231,7 +234,9 @@ export class FinancialIndicator {
 
   // Helper: Consolidate all the data - payload/ body for the API.
   private createBodyStructure(): IFinancialIndicatorsChart {
-    const { compareType = 'state', calcType = this.getcalcType(), compareUlbs = [] } = this.dialogResult ?? {};
+    const { compareType = 'state', calcType = this.getcalcType(), compareUlbs = [], compareUlbsObj } = this.dialogResult ?? {};
+    this.compareUlbsFromPopup = compareUlbsObj;
+    this.compareTypeFromPopup = compareType;
 
     // If 'mix' then only one year data has to be fetched.
     const body: IFinancialIndicatorsChart = {
@@ -351,7 +356,7 @@ export class FinancialIndicator {
     const dialogRef = this.dialog.open(CompareByDialog, {
       width: '700px',
       maxWidth: '70vw',
-      data: { ulbType: this.ulbType() }
+      data: { ulbType: this.ulbType(), compareUlbsFromParent: this.compareUlbsFromPopup, compareType: this.compareTypeFromPopup }
     });
 
     dialogRef.afterClosed()

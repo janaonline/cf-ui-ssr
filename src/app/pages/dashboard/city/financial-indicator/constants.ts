@@ -113,14 +113,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore REVENUE PER CAPITA stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE PER CAPITA stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -151,14 +151,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       calculation: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content:
@@ -192,14 +192,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -238,14 +238,14 @@ export const subButtons: { [key: string]: SubButton } = {
       ],
       performanceAssessed: [],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE PER CAPITA stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE PER CAPITA stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -328,14 +328,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore OWN REVENUE PER CAPITA stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore OWN REVENUE PER CAPITA stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -394,14 +394,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore OWN REVENUE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore OWN REVENUE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -440,14 +440,14 @@ export const subButtons: { [key: string]: SubButton } = {
       ],
       performanceAssessed: [],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore OWN REVENUE PER CAPITA stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL OWN REVENUE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore OWN REVENUE PER CAPITA stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -510,15 +510,15 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content:
-            'Explore REVENUE EXPENDITURE PER CAPITA stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE EXPENDITURE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content:
+        //     'Explore REVENUE EXPENDITURE PER CAPITA stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE EXPENDITURE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -582,14 +582,14 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL REVENUE EXPENDITURE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content: 'Explore REVENUE EXPENDITURE MIX stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL REVENUE EXPENDITURE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content: 'Explore REVENUE EXPENDITURE MIX stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -628,15 +628,15 @@ export const subButtons: { [key: string]: SubButton } = {
       ],
       performanceAssessed: [],
       nextsteps: [
-        {
-          type: 'text',
-          content: 'Explore TOTAL REVENUE EXPENDITURE stats of selected ULB',
-        },
-        {
-          type: 'text',
-          content:
-            'Explore REVENUE EXPENDITURE PER CAPITA stats of selected ULB',
-        },
+        // {
+        //   type: 'text',
+        //   content: 'Explore TOTAL REVENUE EXPENDITURE stats of selected ULB',
+        // },
+        // {
+        //   type: 'text',
+        //   content:
+        //     'Explore REVENUE EXPENDITURE PER CAPITA stats of selected ULB',
+        // },
         {
           type: 'text',
           content: 'Explore Resources to augment your revenues:',
@@ -703,10 +703,29 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
+        // {
+        //   type: 'text',
+        //   content:
+        //     'Explore CAPITAL EXPENDITURE PER CAPITA stats of selected ULB',
+        // },
         {
           type: 'text',
-          content:
-            'Explore CAPITAL EXPENDITURE PER CAPITA stats of selected ULB',
+          content: 'Explore Resources to augment your revenues:',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/toolkits`,
+          content: '1. Property tax reforms toolkit (published by MoHUA)',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/eLearning`,
+          content: '2. E-learning modules on implementing property tax reforms',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/bestPractices`,
+          content: '3. Best Practices on property tax reforms',
         },
       ],
     },
@@ -753,9 +772,28 @@ export const subButtons: { [key: string]: SubButton } = {
         },
       ],
       nextsteps: [
+        // {
+        //   type: 'text',
+        //   content: 'Explore CAPITAL EXPENDITURE stats of selected ULB',
+        // },
         {
           type: 'text',
-          content: 'Explore CAPITAL EXPENDITURE stats of selected ULB',
+          content: 'Explore Resources to augment your revenues:',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/toolkits`,
+          content: '1. Property tax reforms toolkit (published by MoHUA)',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/eLearning`,
+          content: '2. E-learning modules on implementing property tax reforms',
+        },
+        {
+          type: 'hyperlink',
+          link: `${environment.v1Url}/resources-dashboard/learning-center/bestPractices`,
+          content: '3. Best Practices on property tax reforms',
         },
       ],
     },
