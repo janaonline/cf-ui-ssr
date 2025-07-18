@@ -21,7 +21,7 @@ import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, compraeByOptions, IndicatorDetails, subButtons } from './constants';
 import { resStruct } from './temp';
 import { IULB } from '../../../../core/models/ulb';
-// import { TreeTable } from './tree-table/tree-table';
+import { TreeTable } from './tree-table/tree-table';
 
 export interface ChartResponse {
   success: boolean;
@@ -49,7 +49,7 @@ export interface ChartSeries {
     MaterialModule,
     TabButtons,
     PreLoader,
-    // TreeTable
+    TreeTable
   ],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss',
