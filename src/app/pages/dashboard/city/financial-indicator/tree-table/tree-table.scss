@@ -1,0 +1,19 @@
+.table-header,
+.table-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.column {
+    padding: 8px;
+}
+
+.column.name {
+    flex: 2;
+}
+
+.column.year,
+.column.data {
+    flex: 1;
+}

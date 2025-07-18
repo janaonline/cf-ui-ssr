@@ -1,0 +1,32 @@
+<div class="table-header">
+    <button matIconButton disabled></button>
+    <div class="column name">Indicators</div>
+    @for(year of years; track $index) {
+    <div class="column year">{{year}}</div>
+    }
+</div>
+<mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+
+    <!-- This is the tree node template for leaf nodes -->
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        <!-- use a disabled button to provide padding for tree leaf -->
+        <!-- <button matIconButton disabled></button> -->
+        <div class="column name text-bg-secondary p-3 m-1">{{node.name}}</div>
+        @for(year of node.yearData; track $index) {
+        <div class="column year">{{year}}</div>
+        }
+    </mat-tree-node>
+    <!-- This is the tree node template for expandable nodes -->
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
+        [cdkTreeNodeTypeaheadLabel]="node.name">
+        <!-- <div class="table-row"> -->
+        <button matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+            <i class="bi bi-chevron-down" [class]="tree.isExpanded(node) ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+        </button>
+        <div class="column name text-bg-secondary p-3 m-1">{{node.name}}</div>
+        @for(year of node.yearData; track $index) {
+        <div class="column year m-1">{{year}}</div>
+        }
+        <!-- </div> -->
+    </mat-tree-node>
+</mat-tree>
