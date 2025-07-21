@@ -13,10 +13,9 @@
         <span class="text-10px">MINISTRY OF HOUSING AND URBAN AFFAIRS | GOVERNMENT OF INDIA</span>
       </div>
       <div>
-        <a (click)="scrollToMainContent()" href="javascript:void(0)"
-          class="text-12px me-2 text-decoration-none text-cfPrimary">
+        <button (click)="scrollToMainContent()" class="btn text-12px me-2 text-decoration-none text-cfPrimary">
           Skip To Main Content
-        </a>
+        </button>
         @for (size of textSize; track $index) {
         <button type="button" class="text-{{ size }} cursor-pointer btn btn-outline-dark active"
           [class.active]="currentTextSize === size" (click)="setFontSize(size)">

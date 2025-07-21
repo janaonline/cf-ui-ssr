@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Disallow internal or sensitive routes
+Disallow: /v1/
+Disallow: /fc/
+Disallow: /v1/fc_grant/
+Disallow: /v1/login/
+
+# Sitemap location
+Sitemap: https://www.cityfinance.in/sitemap.xml
