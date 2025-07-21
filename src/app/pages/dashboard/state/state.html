@@ -1,1 +1,99 @@
-<p>state works!</p>
+<section class="bg-light-primary py-3">
+    <div class="container">
+        <!-- Show message if ULB is denotified. -->
+        <!-- @if (moneyInfoRes()?.isActive === false) {
+        <div class="alert alert-danger fw-bold text-center" role="alert">
+            {{cityDetails().ulbName}} has been denotified.
+        </div>
+        } -->
+
+        <!-- Go to state dashbard -->
+        <a [href]="`${this.v1Url}/dashboard/national/61e150289ed0e8575c881024`" class="custom-font-size-7">
+            Go To National Dashboard
+        </a>
+
+        <!-- Grid data + Map  -->
+        <div class="row my-3">
+            <!-- Left section -->
+            <div class="col-sm-12 col-md-6">
+                <h1 class="fw-bold my-3 fs-2">Andhra Pradesh Dashboard</h1>
+                <p class="my-3">
+                    Summary of key state demographics and municipal (urban) indicators
+                </p>
+                <!-- Grid -->
+                @if (isLoading()) {
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                } @else {
+                <app-grid-view [gridData]="gridData"></app-grid-view>
+                <p class="text-secondary custom-font-size-7">
+                    *To enable standardization of nomenclature across states, we have reclassified all ULBs into one of
+                    the three categories - Municipal Corporation, Municipality or Town Panchayat
+                </p>
+                }
+            </div>
+
+            <!-- Right Section -->
+            <div class="col-sm-12 col-md-6 my-3">
+                <!-- State and ULB search -->
+                <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
+                    <app-state-search [stateName]="'Andhra Pradesh'" [isStateReadonly]="true"></app-state-search>
+                    <app-city-search [selectCity]="onUlbSelected" [cityName]="''"
+                        [stateId]="'5dcf9d7216a06aed41c748dd'"></app-city-search>
+                </div>
+
+                <!-- State Map -->
+                <div class="position-relative row" style="min-height: 350px">
+                    <!-- @if (stateCodeSignal() && ulbIdSignal()) { -->
+                    @if (showMap()) {
+                    <!-- [stateCode]="stateCodeSignal()" -->
+                    <app-map #map [stateCode]="'AP'" [ulbId]="''"
+                        (ulbObjChange)="selectedUlbObjChange($event)"></app-map>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Money Cards -->
+        <!-- @if (this.isLoading2) { -->
+        @if (this.isMoneyInfoLoading()) {
+        <app-pre-loader></app-pre-loader>
+        } @else {
+        <app-info-cards [items]="moneyInfoRes().result"></app-info-cards>
+        }
+
+        <!-- Last modified date -->
+        <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
+            style="font-size: 0.75rem">
+            Last updated on:
+            {{ moneyInfoRes().lastModifiedAt | date : "mediumDate" }}; Source:
+            financial statements for the year
+            <!-- <select class="form-select form-select-sm w-auto d-inline-block" [value]="selectedLedgerYear()"
+                (change)="onMoneyInfoYearChange($event)" id="years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select> -->
+        </p>
+    </div>
+</section>
+
+<section class="container matTabGroup">
+    <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+        <mat-tab label="Financial Indicators" [disabled]="false">
+            Financial Indicators
+        </mat-tab>
+
+        <mat-tab label="Service Level Benchmark" [disabled]="false">
+            Service Level Benchmark
+        </mat-tab>
+
+        <mat-tab label="Borrowings & Credit Rating" [disabled]="false">
+            Borrowings & Credit Rating
+        </mat-tab>
+    </mat-tab-group>
+</section>
