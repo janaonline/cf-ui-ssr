@@ -1,29 +1,6 @@
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-@import 'bootstrap/scss/mixins';
-
-
-* {
-    font-family: var(--ff-base);
-    font-weight: var(--fw-medium);
-    // font-family: Archivo;
-}
-
 .light-bg {
     background-color: #f8f9ff;
 }
-
-.wrap-bg {
-    background-image: url("/assets/images/homepage_v2/landing-bg.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    padding-bottom: $spacer * 15;
-
-    @include media-breakpoint-up(sm) {
-        padding-bottom: $spacer * 13;
-    }
-}
-
 
 // .container-fluid {
 //     padding-left: 0;
