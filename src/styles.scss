@@ -28,7 +28,7 @@
     --fw-light: 300;
     --fw-regular: 400;
     --fw-medium: 500;
-    // --fw-semi-bold: 600;
+    --fw-semi-bold: 600;
     --fw-bold: 700;
     // --fw-extra-bold: 800;
     // --fw-black: 900;
@@ -42,12 +42,13 @@
     --fs-7: 0.75rem;
     --fs-8: 0.625rem;
 
-    font-weight: var(--fw-medium);
+    // font-weight: var(--fw-medium);
 }
 
 html,
 body {
     height: 100%;
+    font-weight: var(--fw-medium);
 }
 
 body {
