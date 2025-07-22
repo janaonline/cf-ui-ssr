@@ -28,21 +28,11 @@
               "src/robots.txt",
               "src/sitemap.xml"
             ],
-            "stylePreprocessorOptions": {
-              "sass": {
-                "silenceDeprecations": [
-                  "mixed-decls",
-                  "color-functions",
-                  "global-builtin",
-                  "import"
-                ]
-              }
-            },
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/slick-carousel/slick/slick.scss",
-              "node_modules/slick-carousel/slick/slick-theme.scss",
+              "node_modules/slick-carousel/slick/slick.css",
+              "node_modules/slick-carousel/slick/slick-theme.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -54,9 +44,7 @@
             "ssr": {
               "entry": "src/server.ts"
             },
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           },
           "configurations": {
             "production": {
@@ -143,17 +131,15 @@
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "node_modules/slick-carousel/slick/slick.scss",
-              "node_modules/slick-carousel/slick/slick-theme.scss",
+              "node_modules/slick-carousel/slick/slick.css",
+              "node_modules/slick-carousel/slick/slick-theme.css",
               "src/styles.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/slick-carousel/slick/slick.min.js"
             ],
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           }
         }
       }
