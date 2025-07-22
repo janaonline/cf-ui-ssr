@@ -9,7 +9,7 @@ BUILD_PATH=dist
 TARGET_PATH=dist_ssr
 
 echo "Backup existing build folder..."
-mv $TARGET_PATH bkp/$TARGET_PATH-`date +"%y-%m-%d"
+mv $TARGET_PATH bkp/$TARGET_PATH-`date +"%y-%m-%d"`
 
 echo "Renaming new build folder..."
 # rm -rf $TARGET_PATH

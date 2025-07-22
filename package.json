@@ -14,7 +14,8 @@
     "exp:sm": "npx source-map-explorer dist/cf-ui-ssr/browser/*.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs"
+    "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs",
+    "ssr": "node dist/cf-ui-ssr/server/server.mjs"
   },
   "prettier": {
     "overrides": [
