@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../environments/environment';
-import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
+import { ExploreSectionResponse, ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { CitySearch } from "../../../shared/components/city-search/city-search";
@@ -11,6 +12,8 @@ import { InfoCards } from "../../../shared/components/info-cards/info-cards";
 import { Map } from "../../../shared/components/map/map";
 import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
 import { StateSearch } from "../../../shared/components/state-search/state-search";
+import { single, Subject, takeUntil } from 'rxjs';
+import { DashboardService } from '../dashboard-service';
 
 @Component({
   selector: 'app-state',
@@ -20,68 +23,19 @@ import { StateSearch } from "../../../shared/components/state-search/state-searc
 })
 export class State implements OnInit {
   readonly v1Url = environment.v1Url;
+
   isLoading = signal(false);
   isMoneyInfoLoading = signal(false);
   loadedTabs: boolean[] = [true, false, false, false];
   showMap = signal(true);
-  gridData: ExploresectionTable[] = [
-    {
-      sequence: 1,
-      label: 'Population',
-      value: '14 Million',
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 2,
-      label: 'Urban Area',
-      value: '4989 Sq km',
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 3,
-      label: 'Urban Population Density',
-      value: '2,719.77/ Sq km',
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 4,
-      label: 'Urban Local Bodies(ULBs)',
-      value: 123,
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 5,
-      label: 'ULBs part of Urban Agglomorations',
-      value: 2,
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 6,
-      label: 'Municipal Corporations*',
-      value: 17,
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 7,
-      label: 'Municipality*',
-      value: 80,
-      info: '',
-      src: '',
-    },
-    {
-      sequence: 8,
-      label: 'Town Panchayat*',
-      value: 26,
-      info: '',
-      src: '',
-    },
-  ];
+
+  ledgerYears = signal<string[]>([]);
+  selectedLedgerYear = signal<string>('');
+
+  slugName = signal<string>('');
+  stateDetails = signal<any>({});
+
+  gridData: ExploresectionTable[] = [];
   moneyInfoRes = signal<IMoneyInfoRes>({
     "result": [
       {
@@ -133,13 +87,32 @@ export class State implements OnInit {
     "lastModifiedAt": "2024-12-03T14:10:45.247Z",
   });
 
+  private destroy$ = new Subject<void>();
+
   constructor(
+    private activatedRoute: ActivatedRoute,
     private seoService: SeoService,
+    private dashboardService: DashboardService,
   ) { }
 
   ngOnInit() {
-    this.setSeo();
+    // this.activatedRoute.paramMap
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((params) => {
+    //     console.log(params)
+    //     const slugName = params.get('dataId') || '';
+    //     this.selectedLedgerYear.set('');
+
+    //     console.log(this.slugName(), slugName)
+
+    //     if (slugName && slugName !== this.slugName()) {
+    //       this.slugName.set(slugName);
+    //       this.loadData(slugName);
+    //     } else if (!slugName) this.isLoading.set(false);
+    //   });
+    this.loadData('test');
   }
+
   setSeo() {
     this.seoService.updateTitle(' Municipal Financial Data of AP Cities | City Finance ');
 
@@ -161,6 +134,35 @@ export class State implements OnInit {
 
     });
   }
+
+  // Fetch data.
+  loadData(slugName: string) {
+    this.isLoading.set(true);
+    // Check transfer state.
+
+    this.getStateDetailsObservable(slugName).subscribe({
+      next: (res: ExploreSectionResponse) => {
+        this.stateDetails.set(res);
+        console.log(this.stateDetails())
+      },
+      error: (error: Error) => {
+        this.isLoading.set(false);
+        console.error('Failed to get state details');
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
+    })
+  }
+
+  private getStateDetailsObservable(slugName: string) {
+    // if (!slugName) {
+    //   console.error('Sate name is required.');
+    //   return;
+    // }
+    return this.dashboardService.getStateDetails(slugName);
+  }
+
 
   // Ulb selected in city search drop down.
   onUlbSelected(ulbObj: IULB) {

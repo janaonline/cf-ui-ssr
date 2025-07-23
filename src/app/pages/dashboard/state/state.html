@@ -13,6 +13,7 @@
         </a>
 
         <!-- Grid data + Map  -->
+        @if(stateDetails()?.state?._id) {
         <div class="row my-3">
             <!-- Left section -->
             <div class="col-sm-12 col-md-6">
@@ -25,7 +26,7 @@
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
-                <app-grid-view [gridData]="gridData"></app-grid-view>
+                <app-grid-view [gridData]="stateDetails().gridDetails"></app-grid-view>
                 <p class="text-secondary custom-font-size-7">
                     *To enable standardization of nomenclature across states, we have reclassified all ULBs into one of
                     the three categories - Municipal Corporation, Municipality or Town Panchayat
@@ -37,22 +38,22 @@
             <div class="col-sm-12 col-md-6 my-3">
                 <!-- State and ULB search -->
                 <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
-                    <app-state-search [stateName]="'Andhra Pradesh'" [isStateReadonly]="true"></app-state-search>
+                    <app-state-search [stateName]="stateDetails().state.name"
+                        [isStateReadonly]="false"></app-state-search>
                     <app-city-search [selectCity]="onUlbSelected" [cityName]="''"
-                        [stateId]="'5dcf9d7216a06aed41c748dd'"></app-city-search>
+                        [stateId]="stateDetails().state._id"></app-city-search>
                 </div>
 
                 <!-- State Map -->
                 <div class="position-relative row" style="min-height: 350px">
-                    <!-- @if (stateCodeSignal() && ulbIdSignal()) { -->
-                    @if (showMap()) {
-                    <!-- [stateCode]="stateCodeSignal()" -->
-                    <app-map #map [stateCode]="'AP'" [ulbId]="''"
+                    @if (showMap() && stateDetails().state.code) {
+                    <app-map #map [stateCode]="stateDetails().state.code" [ulbId]="''"
                         (ulbObjChange)="selectedUlbObjChange($event)"></app-map>
                     }
                 </div>
             </div>
         </div>
+        }
 
         <!-- Money Cards -->
         <!-- @if (this.isLoading2) { -->

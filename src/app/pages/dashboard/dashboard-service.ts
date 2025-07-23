@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ICreditRatingData } from '../../core/models/creditRating/creditRatingResponse';
 import {
   BorrowingsKeys,
   BsIsData,
+  ExploreSectionResponse,
   IFinancialIndicatorRes,
   IFinancialIndicatorsChart,
   IMoneyInfoRes,
@@ -50,9 +51,7 @@ export class DashboardService {
 
     return this.http.get<{ data: BorrowingsKeys[] }>(
       `${environment.api.url}/BondIssuerItem`,
-      {
-        params,
-      }
+      { params }
     );
   }
 
@@ -84,5 +83,83 @@ export class DashboardService {
   // Get financial indicators data.
   getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<IFinancialIndicatorRes> {
     return this.http.post<IFinancialIndicatorRes>(`${environment.api.url}dashboard/city/financial-indicators`, body);
+  }
+
+  // Get state details.
+  getStateDetails(slugName: string): Observable<ExploreSectionResponse> {
+    const res: ExploreSectionResponse = {
+      lastModifiedAt: '',
+      popCat: '',
+      state: {
+        _id: '5dcf9d7216a06aed41c748dd',
+        name: 'Andhra Pradesh',
+        slug: 'andhra-pradesh',
+        censusCode: '',
+        code: 'AP',
+        regionalName: '',
+        totalUlbs: 123,
+      },
+      ulbId: '',
+      ulbName: '',
+      gridDetails: [
+        {
+          sequence: 1,
+          label: 'Population',
+          value: '14 Million',
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 2,
+          label: 'Urban Area',
+          value: '4989 Sq km',
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 3,
+          label: 'Urban Population Density',
+          value: '2,719.77/ Sq km',
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 4,
+          label: 'Urban Local Bodies(ULBs)',
+          value: 123,
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 5,
+          label: 'ULBs part of Urban Agglomorations',
+          value: 2,
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 6,
+          label: 'Municipal Corporations*',
+          value: 17,
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 7,
+          label: 'Municipality*',
+          value: 80,
+          info: '',
+          src: '',
+        },
+        {
+          sequence: 8,
+          label: 'Town Panchayat*',
+          value: 26,
+          info: '',
+          src: '',
+        },
+      ]
+    };
+    return of(res);
   }
 }
