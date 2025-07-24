@@ -96,25 +96,25 @@ export class State implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.activatedRoute.paramMap
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((params) => {
-    //     console.log(params)
-    //     const slugName = params.get('dataId') || '';
-    //     this.selectedLedgerYear.set('');
+    this.activatedRoute.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        console.log(params)
+        const slugName = params.get('slug') || '';
+        this.selectedLedgerYear.set('');
 
-    //     console.log(this.slugName(), slugName)
+        console.log(this.slugName(), slugName)
 
-    //     if (slugName && slugName !== this.slugName()) {
-    //       this.slugName.set(slugName);
-    //       this.loadData(slugName);
-    //     } else if (!slugName) this.isLoading.set(false);
-    //   });
-    this.loadData('test');
+        if (slugName && slugName !== this.slugName()) {
+          this.slugName.set(slugName);
+          this.loadData(slugName);
+        } else if (!slugName) this.isLoading.set(false);
+      });
+    // this.loadData('test');
   }
 
   setSeo() {
-    this.seoService.updateTitle(' Municipal Financial Data of AP Cities | City Finance ');
+    this.seoService.updateTitle('Municipal Financial Data of AP Cities | City Finance ');
 
     this.seoService.updateMetaTags([
       { name: 'description', content: `View aggregated municipal finance data availability for Andhra Pradesh cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure. ` },
@@ -131,7 +131,6 @@ export class State implements OnInit {
       "@type": "Organization",
       "name": "City Finance",
       "url": `https://cityfinance.in/dashboard/slb`
-
     });
   }
 

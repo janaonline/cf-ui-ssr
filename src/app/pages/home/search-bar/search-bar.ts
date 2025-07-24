@@ -259,11 +259,12 @@ export class SearchBar {
     if (option.type == 'state') {
       this.getYears(option);
       // this.router.navigateByUrl(`/dashboard/state?stateId=${option._id}`)
-      window.location.href = `${this.v1Url}/dashboard/state?stateId=${option._id}`;
+      // window.location.href = `${this.v1Url}/dashboard/state?stateId=${option._id}`;
+      this.router.navigateByUrl(`/municipal-data/state/${option.slug}`);
     }
 
     if (option.type == 'ulb') {
-      this.router.navigateByUrl(`/municipal-data/${option.slug}`);
+      this.router.navigateByUrl(`/municipal-data/city/${option.slug}`);
     }
 
     if (option.type == 'searchKeyword') {
