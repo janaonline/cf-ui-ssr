@@ -24,6 +24,9 @@ export class GoogleAnalyticsService {
   }
 
   init() {
+    if (environment.environment !== 'prod') {
+      return;
+    }
     // Ensure this runs only in the browser
     if (!isPlatformBrowser(this.platformId)) {
       return;
