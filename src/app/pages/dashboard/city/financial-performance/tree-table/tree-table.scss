@@ -1,19 +1,18 @@
-.table-header,
-.table-row {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
+* {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
+  font-size: 0.95rem;
 }
 
-.column {
-    padding: 8px;
+.mat-tree.cdk-tree {
+  background-color: white !important;
 }
 
-.column.name {
-    flex: 2;
+.onHover:hover {
+  background-color: #f8f9fa;
 }
 
-.column.year,
-.column.data {
-    flex: 1;
+.selected {
+  background-color: #f8f9fa;
+  font-weight: bold;
 }

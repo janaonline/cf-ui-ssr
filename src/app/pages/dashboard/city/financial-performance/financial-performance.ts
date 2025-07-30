@@ -56,10 +56,11 @@ export class FinancialPerformance {
       }
     ]
   });
+  selectedButton: ButtonObj | null = null;
 
   // Main Button Change Handler
   onSelectedButtonChange(btnKey: string) {
-    console.log('Main Button Changed:', btnKey);
+    this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
     this.currentSelectedButtonKey.set(btnKey);
   }
 

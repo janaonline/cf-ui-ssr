@@ -9,21 +9,35 @@ interface DataNode {
   info?: string;
   yearData?: string[];
   children?: DataNode[];
+  className: string;
+  isHeader?: boolean;
 }
 
 const Financial_Performance_DATA: DataNode[] = [
   {
+    name: 'Indicators',
+    yearData: ['2020-21', '2021-22', '2022-23'],
+    className: 'text-center fw-bold ',
+    isHeader: true,
+  },
+  {
     name: 'Total Expenditure to Total Revenue (%)',
-    yearData: ['56', '98', '78',],
+    yearData: ['99,999', '99,999', '99,999',],
     info: 'Total Expenditure to Total Revenue (%)',
     children: [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
-      { name: 'Own Source revenue to Total Revenue (%)', yearData: ['55', '87', '89',] },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55', '87', '89'],
+        className: 'ps-5 '
+      },
     ],
+    className: '',
   },
   {
     name: 'Grants to Total Revenue (%)',
@@ -33,14 +47,17 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
   {
     name: 'Own Source Revenue to Total Expenditure (%)',
@@ -50,14 +67,17 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
   {
     name: 'Own Source Revenue to Total Expenditure (%)',
@@ -67,14 +87,17 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
 
 ];
@@ -90,8 +113,6 @@ const Financial_Performance_DATA: DataNode[] = [
 export class TreeTable {
 
   dataSource = Financial_Performance_DATA;
-  years = ['2021-22', '2022-23', '2021-22'];
-
   childrenAccessor = (node: DataNode) => node.children ?? [];
 
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
