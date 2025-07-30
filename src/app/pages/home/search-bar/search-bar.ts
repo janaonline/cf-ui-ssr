@@ -1,44 +1,19 @@
 import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
-import {
-  Component,
-  Inject,
-  makeStateKey,
-  PLATFORM_ID,
-  signal,
-  TransferState,
-} from '@angular/core';
+import { Component, Inject, makeStateKey, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Router } from '@angular/router';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  of,
-  Subject,
-  switchMap,
-  take,
-  takeUntil,
-} from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, of, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
-import { ResourcesDashboardService } from '../../../core/services/resources-dashboard.service';
 
 const ULB_COUNT_KEY = makeStateKey<number>('ulbCount');
 
 @Component({
   standalone: true,
   selector: 'app-search-bar',
-  imports: [
-    // MaterialModule,
-    TitleCasePipe,
-    FormsModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    CountUpDirective,
-  ],
+  imports: [TitleCasePipe, FormsModule, ReactiveFormsModule, MatAutocompleteModule, CountUpDirective,],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.scss',
 })
@@ -56,34 +31,19 @@ export class SearchBar {
 
   recentSearchArray = [
     {
-      isActive: true,
       type: 'ulb',
-      __v: 0,
-      count: 1,
-      createdAt: '2022-06-18T01:43:12.527Z',
-      modifiedAt: '2022-06-18T01:43:12.527Z',
       name: 'Bruhat Bengaluru Mahanagara Palike',
       _id: '5f5610b3aab0f778b2d2cac0',
       slug: 'bengaluru',
     },
     {
-      isActive: true,
       type: 'ulb',
-      __v: 0,
-      count: 1,
-      createdAt: '2022-03-30T02:21:07.299Z',
-      modifiedAt: '2022-03-30T02:21:07.299Z',
       name: 'Greater Hyderabad Municipal Corporation',
       _id: '5eb5844f76a3b61f40ba069a',
       slug: 'hyderabad',
     },
     {
-      isActive: true,
       type: 'ulb',
-      __v: 0,
-      count: 1,
-      createdAt: '2021-12-23T05:30:46.475Z',
-      modifiedAt: '2021-12-23T05:30:46.475Z',
       name: 'Greater Mumbai Municipal Corporation',
       _id: '5eb5844f76a3b61f40ba0695',
       slug: 'mumbai',
@@ -95,21 +55,9 @@ export class SearchBar {
   constructor(
     protected _commonService: CommonService,
     private router: Router,
-    public resourceDashboard: ResourcesDashboardService,
     @Inject(PLATFORM_ID) private platFormId: Object,
     private transferState: TransferState
   ) {
-    // this.resourceDashboard.getPdfData(this.pdfInput).subscribe((res: any) => {
-    //   const response = res?.data.map((elem: any) => {
-    //     elem.createdAt = elem.createdAt.split("T")[0]
-    //     return elem
-    //   })
-    //   //  console.log("response", response)
-    //   // Commented for updating the order
-    //   // this.whatNewData = response
-    // }, (err: any) => {
-    //   // this.whatNewData = []
-    // })
   }
 
   ngOnInit() {
@@ -220,7 +168,7 @@ export class SearchBar {
     // }
 
     const type = searchValue?.type;
-    this.checkType(type);
+    // this.checkType(type);
     // this._commonService
     //   .postRecentSearchValue(this.postBody)
     //   .pipe(takeUntil(this.destroy$))
@@ -240,8 +188,9 @@ export class SearchBar {
   }
 
   dashboardNav(option: any) {
-    //console.log('option', option)
-    this.checkType(option);
+    console.log('option', option)
+    // return;
+    // this.checkType(option);
     // if (option.type != 'searchKeyword')
     // this._commonService
     //   .postRecentSearchValue(this.postBody)
@@ -257,8 +206,7 @@ export class SearchBar {
     //console.log('option', option)
 
     if (option.type == 'state') {
-      this.getYears(option);
-      // this.router.navigateByUrl(`/dashboard/state?stateId=${option._id}`)
+      // this.getYears(option);
       // window.location.href = `${this.v1Url}/dashboard/state?stateId=${option._id}`;
       this.router.navigateByUrl(`/municipal-data/state/${option.slug}`);
     }
@@ -274,65 +222,65 @@ export class SearchBar {
     }
   }
 
-  checkType(searchValue: any) {
-    const type = searchValue?.type;
-    if (type == 'ulb') {
-      this.postBody = {
-        type: searchValue.type,
-        ulb: searchValue._id,
-      };
-    }
-    if (type == 'state') {
-      this.postBody = {
-        type: searchValue.type,
-        state: searchValue._id,
-      };
-    }
-    if (type == 'searchKeyword') {
-      this.postBody = {
-        type: searchValue.type,
-        searchKeyword: searchValue._id,
-      };
-    }
-  }
+  // checkType(searchValue: any) {
+  //   const type = searchValue?.type;
+  //   if (type == 'ulb') {
+  //     this.postBody = {
+  //       type: searchValue.type,
+  //       ulb: searchValue._id,
+  //     };
+  //   }
+  //   if (type == 'state') {
+  //     this.postBody = {
+  //       type: searchValue.type,
+  //       state: searchValue._id,
+  //     };
+  //   }
+  //   if (type == 'searchKeyword') {
+  //     this.postBody = {
+  //       type: searchValue.type,
+  //       searchKeyword: searchValue._id,
+  //     };
+  //   }
+  // }
 
-  getYears(searchStateId: any) {
-    const paramContent: any = {
-      state: searchStateId._id,
-    };
-    // console.log('paramContent', paramContent)
-    const financialYearList: any = [];
-    const promise = new Promise((resolve, reject) => {
-      this._commonService
-        .getStateWiseFYs(paramContent)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (res: any) => {
-            if (res && res.success) {
-              resolve(
-                res['data'] && res['data']['FYs'] ? res['data']['FYs'] : []
-              );
-            }
-          },
-          (err: { message: string }) => {
-            console.log(err.message);
-          }
-        );
-    });
-    financialYearList.push(promise);
-    Promise.all(financialYearList).then((value) => {
-      // console.log('financialYearList', value);
-      const yearList = value && value.length ? value[0] : [];
-      this.stopNavigation = yearList;
-      sessionStorage.setItem('financialYearList', JSON.stringify(yearList));
-      this.router.navigateByUrl(
-        `/dashboard/state?stateId=${searchStateId._id}`
-      );
-      // if(searchStateId?.type == 'state'){
-      //   this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`)
-      // }
-    });
-  }
+  // getYears(searchStateId: any) {
+  //   const paramContent: any = {
+  //     state: searchStateId._id,
+  //   };
+  //   // console.log('paramContent', paramContent)
+  //   const financialYearList: any = [];
+  //   const promise = new Promise((resolve, reject) => {
+  //     this._commonService
+  //       .getStateWiseFYs(paramContent)
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe(
+  //         (res: any) => {
+  //           if (res && res.success) {
+  //             resolve(
+  //               res['data'] && res['data']['FYs'] ? res['data']['FYs'] : []
+  //             );
+  //           }
+  //         },
+  //         (err: { message: string }) => {
+  //           console.log(err.message);
+  //         }
+  //       );
+  //   });
+  //   financialYearList.push(promise);
+  //   Promise.all(financialYearList).then((value) => {
+  //     // console.log('financialYearList', value);
+  //     const yearList = value && value.length ? value[0] : [];
+  //     this.stopNavigation = yearList;
+  //     sessionStorage.setItem('financialYearList', JSON.stringify(yearList));
+  //     this.router.navigateByUrl(
+  //       `/dashboard/state?stateId=${searchStateId._id}`
+  //     );
+  //     // if(searchStateId?.type == 'state'){
+  //     //   this.router.navigateByUrl(`/dashboard/state?stateId=${searchStateId._id}`)
+  //     // }
+  //   });
+  // }
 
   ngDestroy() {
     this.destroy$.next();

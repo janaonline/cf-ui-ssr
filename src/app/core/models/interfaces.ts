@@ -114,7 +114,8 @@ export type CalcType = 'total' | 'perCapita' | 'mix';
 export interface IFinancialIndicatorsChart {
   years: string[];
   compareType: compareType,
-  ulbId: string,
+  ulbId?: string,
+  stateId?: string,
   lineItem: LineItemType,
   calcType: CalcType,
   compareUlbs: string[]

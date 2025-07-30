@@ -14,10 +14,12 @@ import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
 import { StateSearch } from "../../../shared/components/state-search/state-search";
 import { single, Subject, takeUntil } from 'rxjs';
 import { DashboardService } from '../dashboard-service';
+import { FinancialIndicator } from './financial-indicator/financial-indicator';
+import { IState } from '../../../core/models/state/state';
 
 @Component({
   selector: 'app-state',
-  imports: [PreLoader, GridView, StateSearch, CitySearch, Map, InfoCards, MatTabsModule, DatePipe],
+  imports: [PreLoader, GridView, StateSearch, CitySearch, Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator],
   templateUrl: './state.html',
   styleUrl: './state.scss'
 })
@@ -33,7 +35,9 @@ export class State implements OnInit {
   selectedLedgerYear = signal<string>('');
 
   slugName = signal<string>('');
+  stateIdSignal = signal('');
   stateDetails = signal<any>({});
+
 
   gridData: ExploresectionTable[] = [];
   moneyInfoRes = signal<IMoneyInfoRes>({
@@ -138,10 +142,11 @@ export class State implements OnInit {
   loadData(slugName: string) {
     this.isLoading.set(true);
     // Check transfer state.
-
-    this.getStateDetailsObservable(slugName).subscribe({
-      next: (res: ExploreSectionResponse) => {
-        this.stateDetails.set(res);
+    const params = { slug: slugName, year: this.selectedLedgerYear() || '2021-22' };
+    this.dashboardService.getStateDetails(params).subscribe({
+      // next: (res: ExploreSectionResponse) => {
+      next: (res: any) => {
+        this.stateDetails.set(res.data);
         console.log(this.stateDetails())
       },
       error: (error: Error) => {
@@ -153,15 +158,6 @@ export class State implements OnInit {
       }
     })
   }
-
-  private getStateDetailsObservable(slugName: string) {
-    // if (!slugName) {
-    //   console.error('Sate name is required.');
-    //   return;
-    // }
-    return this.dashboardService.getStateDetails(slugName);
-  }
-
 
   // Ulb selected in city search drop down.
   onUlbSelected(ulbObj: IULB) {

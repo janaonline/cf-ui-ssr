@@ -14,6 +14,10 @@ export const serverRoutes: ServerRoute[] = [
     // },
   },
   {
+    path: 'municipal-data/state/:slug',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender
   }
