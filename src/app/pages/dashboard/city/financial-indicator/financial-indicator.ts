@@ -84,7 +84,8 @@ export class FinancialIndicator {
   isChartDownloading = signal<boolean>(false);
 
   chartsData = signal<ChartConfig[]>([]);
-  output = signal<resStruct | undefined>(undefined);
+  // output = signal<resStruct | undefined>(undefined);
+  output = signal<ChartResStruct | undefined>(undefined);
 
   compareUlbsFromPopup!: IULB[] | undefined;
   compareTypeFromPopup!: string;

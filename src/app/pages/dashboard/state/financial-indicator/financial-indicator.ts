@@ -466,22 +466,64 @@ export class FinancialIndicator {
 
         console.log("Labels:", labels);
         console.log("Data:", values);
-        this.chartDatas = [{
-          chartId: 'populationChart',
-          chartType: 'barChart',
-          labels,
-          datasets: [
-            {
-              type: 'bar',
-              label: '',
-              data: values,
-              backgroundColor: '#1b4965',
-              barThickness: 50,
+        // this.chartDatas = [{
+        //   chartId: 'populationChart',
+        //   chartType: 'barChart',
+        //   labels,
+        //   datasets: [
+        //     {
+        //       type: 'bar',
+        //       label: 'This is ulb data',
+        //       data: values,
+        //       backgroundColor: '#1b4965',
+        //       barThickness: 50,
+        //       borderRadius: 5
+        //     }],
+        //   options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+        // }];
 
-              // borderRadius: 5
-            }],
-          options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'ULBs', 'Amount in ₹ Cr')
-        }];
+        this.chartDatas = [
+          {
+            chartId: 'populationChart',
+            chartType: 'barChart',
+            labels,
+            datasets: [
+              {
+                type: 'bar',
+                label: 'This is ulb data',
+                data: values,
+                backgroundColor: '#1b4965',
+                barThickness: 50,
+                borderRadius: 5
+              }],
+            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+          },
+          {
+            chartId: 'scatterChart0',
+            chartType: 'scatterChart',
+            datasets: [
+              {
+                label: 'Sample Scatter',
+                data: [
+                  { x: 10, y: 20 },
+                  { x: 20, y: 100 },
+                  { x: 35, y: 110 },
+                  { x: 45, y: 120 },
+                  { x: 55, y: 130 },
+                  { x: 65, y: 140 },
+                  { x: 75, y: 150 },
+                  { x: 85, y: 160 },
+                  { x: 95, y: 170 },
+                  { x: 105, y: 180 },
+                  { x: 115, y: 190 },
+                  { x: 125, y: 120 },
+                  { x: 220, y: 310 }
+                ],
+                backgroundColor: 'rgba(255, 0, 55, 0.5)',
+              },
+            ],
+            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+          }];
         this.chartsData.set(this.chartDatas);
       },
       error: (error: Error) => {
@@ -489,6 +531,8 @@ export class FinancialIndicator {
       }
     });
   }
+
+
   private getChartData(): void {
     this.getPopulationChart();
     // this.chartsData.set(this.chartDatas);    // this.isChartLoading.set(true);
@@ -582,7 +626,7 @@ export class FinancialIndicator {
   // Helper: Add additional options to the API res - Bar chart.
   private buildBarChartConfigurations(chartData: ChartResStruct): ChartConfig[] {
     // Set chart output state
-    this.output.set(chartData);
+    // this.output.set(chartData);
     // console.log('chart data', chartData)
 
     // Initialize chart config object
@@ -628,8 +672,8 @@ export class FinancialIndicator {
 
   // Helper: Add additional options to the API res - Gauge chart.
   private buildGaugeChartConfigurations(res: ChartResStruct): ChartConfig[] {
-    this.chartsData.set([]);
-    this.output.set(res);
+    // this.chartsData.set([]);
+    // this.output.set(res);
 
     const config: ChartConfig[] = res.data.map((chart, idx) => {
       return {
