@@ -1,30 +1,29 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal, untracked, viewChild } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
-import { ButtonObj, LineItemType, IFinancialIndicatorInfo, IFinancialIndicatorsChart, CalcType, IFinancialIndicatorRes } from '../../../../core/models/interfaces';
+import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorRes, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
-import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
-import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
-import { CompareByDialog } from '../../city/financial-indicator/compare-by-dialog/compare-by-dialog';
-import { buttons, subButtons, compraeByOptions, accordions, IndicatorDetails } from '../../city/financial-indicator/constants';
-import { resStruct } from '../../city/financial-indicator/temp';
-import { DashboardService } from '../../dashboard-service';
-import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { MaterialModule } from '../../../../material.module';
+import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
+import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
+import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { IState } from '../../../../core/models/state/state';
+import { CompareByDialog } from '../../city/financial-indicator/compare-by-dialog/compare-by-dialog';
+import { buttons, compraeByOptions, IndicatorDetails, subButtons } from '../../city/financial-indicator/constants';
+import { resStruct } from '../../city/financial-indicator/temp';
+import { DashboardService } from '../../dashboard-service';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-financial-indicator',
   imports: [NoDataFound,
     Charts,
-    MatAccordion,
     MaterialModule,
     TabButtons,
     PreLoader,],
@@ -41,11 +40,11 @@ export class FinancialIndicator {
   readonly buttons: ButtonObj[] = buttons;
   readonly subButtons = subButtons;
   readonly compraeByOptions = compraeByOptions;
-  readonly accordions = accordions;
+  // readonly accordions = accordions;
 
   // readonly ulbIdSignal = input.required<string>();
-  readonly stateIdSignal = input.required<string>();
-  readonly stateDetails = input.required<IState>();
+  readonly stateIdSignal = signal('');
+  readonly stateDetails = input.required<any>();
   // readonly ulbName = input.required<string>();
   // readonly ulbType = input.required<string>();
 
@@ -53,7 +52,7 @@ export class FinancialIndicator {
   subButton = signal<string>('');
 
   myForm!: FormGroup;
-  years = input.required<string[]>();
+  years = signal<string[]>([]);
 
   infoMsg = signal<IFinancialIndicatorInfo>({ msg: '', text: 'success' });
   isChartDataAvailable = signal<boolean>(true);
@@ -80,7 +79,10 @@ export class FinancialIndicator {
   ) { }
 
   ngOnInit() {
-    this.myForm = this.fb.group({ year: [this.years()[0]] });
+    this.stateIdSignal.set(this.stateDetails().state._id);
+    this.years.set(this.stateDetails().yearsList);
+
+    this.myForm = this.fb.group({ year: [this.years()[1]] });
     this.isLoading.set(false);
 
     this.myForm.get('year')?.valueChanges
@@ -166,10 +168,330 @@ export class FinancialIndicator {
     // if (compType === 'ulbs') return 'Selected ULB(s)'
     // return this.getLabelByKey(compraeByOptions(this.ulbType()), compType);
   }
+  // chartDat: ChartResStruct = {
 
+  //   chartType: 'barChart',
+  //   labels: ['2020-21', '2021-22', '2022-23'],
+  //   legendColors: [],
+  //   axes: { x: 'Years', y: 'Amt in ₹ Cr' },
+  //   data: [
+  //     {
+  //       type: 'line',
+  //       label: 'Y-o-Y Growth',
+  //       data: [2937, 3524, 3883],
+  //       backgroundColor: ['#f43f5e'],
+  //     },
+  //     {
+  //       type: 'bar',
+  //       label: 'ULB Name',
+  //       data: [2937, 3524, 3883],
+  //       backgroundColor: ["#62b6cb"],
+  //     },
+  //     {
+  //       type: 'bar',
+  //       label: 'National Avg',
+  //       data: [1576, 1946, 3037],
+  //       backgroundColor: ["#1b4965"],
+  //     },
+  //     // {
+  //     //     type: 'bar',
+  //     //     label: 'National Avg',
+  //     //     data: [1576, 1946, 3037],
+  //     //     backgroundColor: ["#bee9e8"],
+  //     // },
+  //   ]
+  // }
   // Create chart.
+  chartDatas: ChartConfig[] = [
+    {
+      "chartId": "barChart_0",
+      "chartType": "barChart",
+      "labels": [
+        "2020-21",
+        "2021-22",
+        "2022-23"
+      ],
+      "datasets": [
+        // {
+        //   "type": "line",
+        //   "label": "Y-o-Y Growth",
+        //   "data": [
+        //     2937,
+        //     3524,
+        //     3883
+        //   ],
+        //   "borderColor": "#f43f5e",
+        //   "pointBackgroundColor": "#f43f5e",
+        //   "borderWidth": 2,
+        //   "fill": false,
+        //   "tension": 0.3
+        // },
+        {
+          "type": "bar",
+          "label": "Greater Hyderabad Municipal Corporation",
+          "data": [
+            2937,
+            3524,
+            3883
+          ],
+          "backgroundColor": "#62b6cb",
+          "borderRadius": 5
+        },
+        // {
+        //   "type": "bar",
+        //   "label": "State Avg",
+        //   "data": [
+        //     1576,
+        //     1946,
+        //     3883
+        //   ],
+        //   "backgroundColor": "#1b4965",
+        //   "borderRadius": 5
+        // }
+      ],
+      "options": {
+        "responsive": true,
+        "maintainAspectRatio": false,
+        "font": {
+          "family": "Montserrat",
+          "size": 11
+        },
+        "interaction": {
+          "mode": "index",
+          "intersect": false
+        },
+        "plugins": {
+          "customDataLabel": {
+            "enabled": false,
+            "format": ""
+          },
+          "legend": {
+            "labels": {
+              "font": {
+                "family": "Montserrat",
+                "size": 12
+              }
+            }
+          },
+          "tooltip": {
+            "titleFont": {
+              "family": "Montserrat"
+            },
+            "bodyFont": {
+              "family": "Montserrat"
+            }
+          }
+        },
+        "layout": {
+          "padding": 5
+        },
+        "scales": {
+          "x": {
+            "axis": "x",
+            "display": true,
+            "ticks": {
+              "font": {
+                "family": "Montserrat"
+              },
+              "minRotation": 0,
+              "maxRotation": 50,
+              "mirror": false,
+              "textStrokeWidth": 0,
+              "textStrokeColor": "",
+              "padding": 3,
+              "display": true,
+              "autoSkip": true,
+              "autoSkipPadding": 3,
+              "labelOffset": 0,
+              // "minor": {},
+              "major": {},
+              "align": "center",
+              "crossAlign": "near",
+              "showLabelBackdrop": false,
+              "backdropColor": "rgba(255, 255, 255, 0.75)",
+              "backdropPadding": 2,
+              "color": "#666"
+            },
+            "title": {
+              "display": true,
+              "text": "Years",
+              "font": {
+                "family": "Montserrat",
+                "size": 11,
+                "weight": "bold"
+              },
+              "color": "#374151",
+              "padding": {
+                "top": 4,
+                "bottom": 4
+              }
+            },
+            "type": "category",
+            "offset": true,
+            "grid": {
+              "offset": true,
+              "display": true,
+              "lineWidth": 1,
+              "drawOnChartArea": true,
+              "drawTicks": true,
+              "tickLength": 8,
+              "color": "rgba(0,0,0,0.1)"
+            },
+            "reverse": false,
+            // "beginAtZero": false,
+            "bounds": "ticks",
+            "clip": true,
+            // "grace": 0,
+            "border": {
+              "display": true,
+              "dash": [],
+              "dashOffset": 0,
+              "width": 1,
+              "color": "rgba(0,0,0,0.1)"
+            },
+            // "id": "x",
+            "position": "bottom"
+          },
+          "y": {
+            "axis": "y",
+            "display": true,
+            "ticks": {
+              "font": {
+                "family": "Montserrat"
+              },
+              "minRotation": 0,
+              "maxRotation": 50,
+              "mirror": false,
+              "textStrokeWidth": 0,
+              "textStrokeColor": "",
+              "padding": 3,
+              "display": true,
+              "autoSkip": true,
+              "autoSkipPadding": 3,
+              "labelOffset": 0,
+              // "minor": {},
+              "major": {},
+              "align": "center",
+              "crossAlign": "near",
+              "showLabelBackdrop": false,
+              "backdropColor": "rgba(255, 255, 255, 0.75)",
+              "backdropPadding": 2,
+              "color": "#666"
+            },
+            "title": {
+              "display": true,
+              "text": "Amt in ₹ Cr",
+              "font": {
+                "family": "Montserrat",
+                "size": 11,
+                "weight": "bold"
+              },
+              "color": "#374151",
+              "padding": {
+                "top": 4,
+                "bottom": 4
+              }
+            },
+            "type": "linear",
+            "beginAtZero": true,
+            "offset": false,
+            "reverse": false,
+            "bounds": "ticks",
+            "clip": true,
+            "grace": 0,
+            "grid": {
+              "display": true,
+              "lineWidth": 1,
+              "drawOnChartArea": true,
+              "drawTicks": true,
+              "tickLength": 8,
+              "offset": false,
+              "color": "rgba(0,0,0,0.1)"
+            },
+            "border": {
+              "display": true,
+              "dash": [],
+              "dashOffset": 0,
+              "width": 1,
+              "color": "rgba(0,0,0,0.1)"
+            },
+            // "id": "y",
+            "position": "left"
+          }
+        }
+      }
+    }
+  ];
+  chartData = signal<ChartConfig>({
+    chartId: 'bar0',
+    chartType: 'barChart',
+    labels: ['2020-21', '2021-22', '2022-23'],
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        },
+        // title: {
+        //   display: true,
+        //   text: 'Total Expenditure'
+        // }
+      }
+    },
+    datasets: [
+      {
+        label: 'Capital Expenditure',
+        data: [30, 50, 20],
+        backgroundColor: '#42A5F5'
+      }
+    ]
+  });
+  getPopulationChart() {
+    const params = {
+      stateId: this.stateIdSignal(),
+      year: this.getYear(),
+      // ulbId: this.stateDetails().state.ulbId || ''
+    };
+    this.dashboardService.getStatePopulation(params).subscribe({
+      next: (res) => {
+        console.log('Population Chart Data:', res);
+        const { labels, values } = res.data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
+          // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
+          const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
+          acc.labels.push(ulbName);
+          acc.values.push(sumCr);
+          return acc;
+        }, { labels: [], values: [] });
+
+        console.log("Labels:", labels);
+        console.log("Data:", values);
+        this.chartDatas = [{
+          chartId: 'populationChart',
+          chartType: 'barChart',
+          labels,
+          datasets: [
+            {
+              type: 'bar',
+              label: '',
+              data: values,
+              backgroundColor: '#1b4965',
+              barThickness: 50,
+
+              // borderRadius: 5
+            }],
+          options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'ULBs', 'Amount in ₹ Cr')
+        }];
+        this.chartsData.set(this.chartDatas);
+      },
+      error: (error: Error) => {
+        console.error('Failed to get population chart data', error);
+      }
+    });
+  }
   private getChartData(): void {
-    this.isChartLoading.set(true);
+    this.getPopulationChart();
+    // this.chartsData.set(this.chartDatas);    // this.isChartLoading.set(true);
 
     // Create body/ payload structure.
     const body = this.createBodyStructure();

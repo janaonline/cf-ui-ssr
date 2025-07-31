@@ -88,80 +88,29 @@ export class DashboardService {
   // Get state details.
   getStateDetails(params: { slug: string; year: string }): Observable<ExploreSectionResponse> {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}dashboard/state/details`, { params });
-
-    // const res: ExploreSectionResponse = {
-    //   lastModifiedAt: '',
-    //   popCat: '',
-    //   state: {
-    //     _id: '5dcf9d7216a06aed41c748dd',
-    //     name: 'Andhra Pradesh',
-    //     slug: 'andhra-pradesh',
-    //     censusCode: '',
-    //     code: 'AP',
-    //     regionalName: '',
-    //     totalUlbs: 123,
-    //   },
-    //   ulbId: '',
-    //   ulbName: '',
-    //   gridDetails: [
-    //     {
-    //       sequence: 1,
-    //       label: 'Population',
-    //       value: '14 Million',
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 2,
-    //       label: 'Urban Area',
-    //       value: '4989 Sq km',
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 3,
-    //       label: 'Urban Population Density',
-    //       value: '2,719.77/ Sq km',
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 4,
-    //       label: 'Urban Local Bodies(ULBs)',
-    //       value: 123,
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 5,
-    //       label: 'ULBs part of Urban Agglomorations',
-    //       value: 2,
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 6,
-    //       label: 'Municipal Corporations*',
-    //       value: 17,
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 7,
-    //       label: 'Municipality*',
-    //       value: 80,
-    //       info: '',
-    //       src: '',
-    //     },
-    //     {
-    //       sequence: 8,
-    //       label: 'Town Panchayat*',
-    //       value: 26,
-    //       info: '',
-    //       src: '',
-    //     },
-    //   ]
-    // };
-    // return of(res);
   }
+  // Get state details.
+  getStateGroupPopulation(params: { stateId: string; year: string }): Observable<ExploreSectionResponse> {
+    return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-ulbs-grouped-by-population`, { params });
+  }
+  getStatePopulation(payload: { stateId: string; year: string }): Observable<any> {
+    // https://staging.cityfinance.in/api/v1/state-revenue-tabs?tabType=TotalRevenue&financialYear=2021-22&stateId=5dcf9d7316a06aed41c748ec&sortBy=top&chartType=bar&apiEndPoint=state-revenue-tabs&apiMethod=get&activeButton=Total%20Revenue
+    const params = {
+      tabType: 'TotalRevenue',
+      financialYear: payload.year,
+      stateId: payload.stateId,
+      sortBy: 'top',
+      chartType: 'bar',
+      apiEndPoint: 'state-revenue-tabs',
+      apiMethod: 'get',
+      activeButton: 'Total Revenue'
+    }
+    return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
+  }
+  getStateRevenue(body: { stateId: string; year: string }): Observable<{ sucess: boolean, data: any }> {
+    const payload = { "state": body.stateId, "financialYear": body.year, "headOfAccount": "Revenue", "filterName": "revenue", "isPerCapita": "", "compareType": "", "compareCategory": "", "ulb": [], "chartType": "scatter", "apiEndPoint": "state-revenue", "apiMethod": "post", "stateServiceLabel": false, "sortBy": "", "chartTitle": "Total Revenue of all ULBs in Madhya Pradesh vs State " };
+    return this.http.post<any>(`${environment.api.url}state-revenue`, payload);
+  }
+
+
 }

@@ -147,7 +147,7 @@ export class State implements OnInit {
       // next: (res: ExploreSectionResponse) => {
       next: (res: any) => {
         this.stateDetails.set(res.data);
-        console.log(this.stateDetails())
+        // console.log(this.stateDetails())
       },
       error: (error: Error) => {
         this.isLoading.set(false);

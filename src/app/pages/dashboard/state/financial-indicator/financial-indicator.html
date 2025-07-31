@@ -41,7 +41,7 @@
             <mat-spinner></mat-spinner>
         </div>
         }
-        <div class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2" id="chartContainer">
+        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="chartContainer">
             <p class="">
                 {{stateDetails().name}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
             </p>
@@ -131,55 +131,7 @@
       } -->
 
         </div>
-        <!-- Rigth side: Fyi -->
-        <div class="col-sm-12 col-lg-4 rounded accordion-padding">
-            @if(isChartLoading()) {
-            <app-pre-loader></app-pre-loader>
-            } @else {
-            @if(infoMsg() && infoMsg().msg) {
-            <div [ngClass]="'alert alert-' + infoMsg().text + ' d-flex align-items-start p-2'"
-                style="font-size: 0.65rem;" role="alert">
-                <i [ngClass]="'bi bi-circle-fill ' + 'text- ' + infoMsg().text + 'custom-font-size-7'"></i>
-                &nbsp;{{ infoMsg().msg }}
-            </div>
-            }}
 
-            <!-- Accordion -->
-            <!-- TODO: Clean the code -->
-            <div class="accordion">
-                <ng-container *ngIf="subButtons[currentSelectedButtonKey()] as currentSubButton">
-                    <ng-container *ngIf="currentSubButton[subButton()] as indicator">
-                        <ng-container *ngIf="isIndicatorDetails(indicator)">
-                            <mat-accordion class="mat-custom-style">
-                                @for (acc of accordions; track acc.key+$index) {
-                                @if(indicator[acc.key].length) {
-                                <mat-expansion-panel class="mb-3">
-                                    <mat-expansion-panel-header>
-                                        <mat-panel-title class="custom-font-size-6 fw-bold">
-                                            {{ acc.label }}
-                                        </mat-panel-title>
-                                    </mat-expansion-panel-header>
-
-                                    @for (item of indicator[acc.key]; track item.type+$index) {
-                                    @if (item.type === 'text') {
-                                    <p>{{ item.content }}</p>
-                                    } @else if (item.type === 'hyperlink') {
-                                    <p>
-                                        <a [href]="item.link" target="_blank" rel="noopener">{{
-                                            item.content
-                                            }}</a>
-                                    </p>
-                                    } @else if (item.type === 'img') {
-                                    <img [src]="item.link" [alt]="item.content" style="max-width: 100%" />
-                                    } }
-                                </mat-expansion-panel>
-                                } }
-                            </mat-accordion>
-                        </ng-container>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </div>
     </div>
     } } }
 </section>

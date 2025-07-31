@@ -86,9 +86,8 @@
 
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
         <mat-tab label="Financial Indicators" [disabled]="false">
-            @if (loadedTabs[0] && this.stateIdSignal() && this.ledgerYears().length) {
-            <app-financial-indicator [years]="ledgerYears()" [stateIdSignal]="stateIdSignal()"
-                [stateDetails]="stateDetails()">
+            @if (loadedTabs[0] && stateDetails().state._id && stateDetails().yearsList.length) {
+            <app-financial-indicator [stateDetails]="stateDetails()">
             </app-financial-indicator>
             }
         </mat-tab>
