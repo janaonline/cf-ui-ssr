@@ -18,7 +18,7 @@ import { ChartConfig } from '../../../../shared/components/charts/chart-interfac
 })
 export class FinancialPerformance {
   readonly buttons: ButtonObj[] = [
-    { key: 'keyratios', label: 'Key Ratios' },
+    { key: 'overview', label: 'Overview' },
     { key: 'revenue', label: 'Revenue' },
     { key: 'expenditure', label: 'Expenditure' },
     { key: 'debtassets', label: 'Debt and Assets' }
@@ -29,7 +29,7 @@ export class FinancialPerformance {
   readonly ulbName = input.required<string>();
   readonly ulbType = input.required<string>();
 
-  currentSelectedButtonKey = signal<string>('keyratios');
+  currentSelectedButtonKey = signal<string>('overview');
 
   chartData = signal<ChartConfig>({
     chartId: 'bar0',
@@ -62,6 +62,12 @@ export class FinancialPerformance {
   onSelectedButtonChange(btnKey: string) {
     this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
     this.currentSelectedButtonKey.set(btnKey);
+  }
+
+
+  isTooltipVisible = signal<boolean>(false);
+  toggleTooltip() {
+    this.isTooltipVisible.set(!this.isTooltipVisible());
   }
 
 }
