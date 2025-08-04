@@ -1,3 +1,22 @@
+* {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
+  font-size: 0.95rem;
+}
+
+.mat-tree.cdk-tree {
+  background-color: white !important;
+}
+
+.onHover:hover {
+  background-color: #f8f9fa;
+}
+
+.selected {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
 .takeActionBtn {
   all: unset;
   display: inline-block;
@@ -54,4 +73,10 @@
 }
 .chart-container {
   min-height: 300px;
+}
+
+.takeActionBtn {
+  position: absolute;
+  right: 24px;
+  top: -51px;
 }

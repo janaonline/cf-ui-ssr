@@ -2,28 +2,165 @@ import { Component, computed, input, signal } from '@angular/core';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { TreeTable } from './tree-table/tree-table';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import html2canvas from 'html2canvas';
 import { CommonModule } from '@angular/common';
+import { CdkTree } from '@angular/cdk/tree';
+import { ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
+
+interface DataNode {
+  name: string;
+  info?: string;
+  yearData?: string[];
+  yearGrowth?: string[];
+  children?: DataNode[];
+  className: string;
+  isHeader?: boolean
+  selected?: boolean
+}
+
+const Financial_Performance_DATA: DataNode[] = [
+  {
+    name: 'Indicators',
+    yearData: ['2020-21', '2021-22', '2022-23'],
+    className: 'text-center fw-bold ',
+    isHeader: true,
+  },
+  {
+    name: 'Total Expenditure to Total Revenue (%)',
+    yearData: ['99,999', '99,999', '99,999',],
+    yearGrowth: ['', '89', '-90',],
+    selected: true,
+    info: 'Total Expenditure to Total Revenue (%)',
+    children: [
+      {
+        name: 'Total Expenditure to Total Revenue (%)',
+        yearData: ['78', '56', '88',],
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55%', '87%', '89%'],
+        className: 'ps-5 '
+      },
+    ],
+    className: 'fw-bold',
+  },
+  {
+    name: 'Grants to Total Revenue (%)',
+    info: 'Total Expenditure to Total Revenue (%)',
+    yearData: ['90%', '45%', '67%',],
+    children: [
+      {
+        name: 'Total Expenditure to Total Revenue (%)',
+        yearData: ['78%', '56%', '88%',],
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55', '87', '89',],
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+    ],
+    className: '',
+  },
+  {
+    name: 'Own Source Revenue to Total Expenditure (%)',
+    yearData: ['78', '44', '90',],
+    info: 'Total Expenditure to Total Revenue (%)',
+    children: [
+      {
+        name: 'Total Expenditure to Total Revenue (%)',
+        yearData: ['78', '56', '88',],
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55', '87', '89',],
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+    ],
+    className: '',
+  },
+  {
+    name: 'Own Source Revenue to Total Expenditure (%)',
+    yearData: ['78', '44', '90',],
+    info: 'Total Expenditure to Total Revenue (%)',
+    children: [
+      {
+        name: 'Total Expenditure to Total Revenue (%)',
+        yearData: ['78', '56', '88',],
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55', '87', '89',],
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
+      },
+    ],
+    className: '',
+  },
+
+];
 
 @Component({
   selector: 'app-financial-performance',
   imports: [
     TabButtons,
-    TreeTable,
     Charts,
     CommonModule,
-
+    MatTreeModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './financial-performance.html',
   styleUrl: './financial-performance.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialPerformance {
+  getGrowthClass(value: string) {
+    let className = 'text-danger';
+    if (!isNaN(+value) && +value > 0) className = 'text-success';
+
+    return `${className} fw-bold custom-font-size-6`;
+  }
+  @ViewChild(CdkTree) tree!: CdkTree<any>;
+  // dataSource = Financial_Performance_DATA;
+  public dataSource = Financial_Performance_DATA;
+  public treeControl: any;  // Set your tree control here
+
+  ngOnInit(): void {
+    if (this.dataSource && this.dataSource.length > 0) {
+      this.dataSource[1].selected = true;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // After the view is initialized, expand the first node with children
+    if (this.treeControl && this.dataSource[1].children) {
+      this.treeControl.expand(this.dataSource[1]);
+    }
+  }
+  childrenAccessor = (node: DataNode) => node.children ?? [];
+
+  hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
+
   onDownload() {
     throw new Error('Method not implemented.');
   }
+
   buttons: ButtonObj[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'revenue', label: 'Revenue' },
@@ -82,52 +219,6 @@ export class FinancialPerformance {
     this.currentSelectedButtonKey.set(btnKey);
   }
 
-  // takeAction(selectedIcon: string) {
-  //   // this.isChartDownloading.set(true);
-
-  //   if (selectedIcon === 'Download') {
-  //     setTimeout(() => {
-  //       const chartElement = document.getElementById('chartContainer');
-  //       if (!chartElement) return;
-
-  //       // const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
-  //       // const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
-  //       const imgName = 'chart.png';
-  //       const chartContainer = document.getElementById('chartContainer');
-  //       const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
-
-  //       // Hide elements
-  //       elementsToHide?.forEach(el => {
-  //         (el as HTMLElement).style.visibility = 'hidden';
-  //       });
-
-  //       if (!chartContainer) return;
-
-  //       html2canvas(chartContainer).then(canvas => {
-  //         // Re-show hidden elements
-  //         elementsToHide?.forEach(el => {
-  //           (el as HTMLElement).style.visibility = 'visible';
-  //         });
-
-  //         // Save the image
-  //         const link = document.createElement('a');
-  //         link.href = canvas.toDataURL('image/png');
-  //         link.download = imgName;
-  //         link.click();
-
-  //         // this.isChartDownloading.set(false);
-  //       }).catch(err => {
-  //         // Restore elements in case of error
-  //         elementsToHide?.forEach(el => {
-  //           (el as HTMLElement).style.visibility = 'visible';
-  //         });
-  //         console.error('Error capturing chart:', err);
-  //         // this.isChartDownloading.set(false);
-  //       });
-  //     }, 0);
-
-  //   }
-  // }
 
   takeAction(selectedIcon: string) {
     if (selectedIcon === 'Download') {
@@ -144,7 +235,7 @@ export class FinancialPerformance {
         const cfLogo = document.createElement('div');
         cfLogo.className = 'cfLogo-place';
         cfLogo.style.position = 'absolute';
-        cfLogo.style.bottom = '10px';
+        cfLogo.style.bottom = '0px';
         cfLogo.style.right = '10px';
         cfLogo.style.zIndex = '1000';
 
@@ -166,7 +257,7 @@ export class FinancialPerformance {
               (el as HTMLElement).style.visibility = 'visible';
             });
 
-            // Remove watermark divs
+            // Remove logo divs
             const tempElements = chartContainer.querySelectorAll('.cfLogo-place');
             tempElements.forEach(el => el.remove());
 
