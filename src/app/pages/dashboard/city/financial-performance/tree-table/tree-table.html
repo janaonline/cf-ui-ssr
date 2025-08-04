@@ -2,8 +2,13 @@
 
 <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
-        [cdkTreeNodeTypeaheadLabel]="node.name" [class]="'border-bottom ' + 'onHover'"
-        [class.bg-table-header]="node.isHeader" [class.selected]="tree.isExpanded(node)">
+        [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
+          'border-bottom': true,
+          'onHover': true,
+          'bg-table-header': node.isHeader,
+          'selected': tree.isExpanded(node) || node.selected,
+           'click': node.children && node.children.length > 0
+        }" [class.node.classname]="node.selected">
         @if (node.children && node.children.length > 0) {
         <button class="p-0 m-0" matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
             <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
@@ -25,7 +30,13 @@
             <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
                 @for(year of node.yearData; track $index) {
                 <div [class]="'text-end w-100 px-2 '+ node.className"
-                    [class.selected]="tree.isExpanded(node) && !node.isHeader ">{{year}}
+                    [class.selected]="tree.isExpanded(node) && !node.isHeader">{{year}}
+                    @if (node.yearGrowth?.[$index]) {
+                    <br><span [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                        ({{ node.yearGrowth?.[$index] }}%)
+                        <!-- (<i class="bi bi-arrow-down-short"></i>{{ node.yearGrowth?.[$index] }}%) -->
+                    </span>
+                    }
                 </div>
                 <!-- {{year}} -->
                 }

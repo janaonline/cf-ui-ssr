@@ -1,13 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
 
 interface DataNode {
   name: string;
   info?: string;
   yearData?: string[];
+  yearGrowth?: string[];
   children?: DataNode[];
   className: string;
   isHeader?: boolean;
@@ -23,6 +25,7 @@ const Financial_Performance_DATA: DataNode[] = [
   {
     name: 'Total Expenditure to Total Revenue (%)',
     yearData: ['99,999', '99,999', '99,999',],
+    yearGrowth: ['', '89', '-90',],
     info: 'Total Expenditure to Total Revenue (%)',
     children: [
       {
@@ -105,12 +108,19 @@ const Financial_Performance_DATA: DataNode[] = [
 
 @Component({
   selector: 'app-tree-table',
-  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule, CommonModule],
   templateUrl: './tree-table.html',
   styleUrl: './tree-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeTable {
+
+  getGrowthClass(value: string) {
+    let className = 'text-danger';
+    if (!isNaN(+value) && +value > 0) className = 'text-success';
+
+    return `${className} fw-bold custom-font-size-6`;
+  }
 
   dataSource = Financial_Performance_DATA;
   childrenAccessor = (node: DataNode) => node.children ?? [];
