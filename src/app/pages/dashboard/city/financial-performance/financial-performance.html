@@ -12,26 +12,75 @@
     <!-- Show .content class only if isTooltipVisible is true -->
     <div class="row justify-content-between my-4 position-relative " [class.content]="isTooltipVisible()">
         <div class="d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2">
-            <app-tree-table></app-tree-table>
+            <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
+                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
+                    [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
+          'border-bottom': true,
+          'onHover': true,
+          'bg-table-header': node.isHeader,
+          'selected': tree.isExpanded(node) || node.selected,
+           'click': node.children && node.children.length > 0
+        }" [class.node.classname]="node.selected">
+                    @if (node.children && node.children.length > 0) {
+                    <button class="p-0 m-0" matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                        <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
+                    </button>
+                    }
+                    @else if (node.isHeader) {
+                    <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
+                    }
+
+                    <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
+                        <div [class.selected]="tree.isExpanded(node) && !node.isHeader " [class]=" node.className "
+                            style=" width:
+                300px;">
+                            {{node.name}}
+                            <!-- @if (node.info) {
+                <i class="bi bi-info-circle" matTooltip="{{node.info}}" matTooltipPosition="right"></i>
+                } -->
+                        </div>
+
+                        <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
+                            @for(year of node.yearData; track $index) {
+                            <div [class]="'text-end w-100 px-2 '+ node.className"
+                                [class.selected]="tree.isExpanded(node) && !node.isHeader">{{year}}
+                                @if (node.yearGrowth?.[$index]) {
+                                <br><span [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                                    ({{ node.yearGrowth?.[$index] }}%)
+                                    <!-- (<i class="bi bi-arrow-down-short"></i>{{ node.yearGrowth?.[$index] }}%) -->
+                                </span>
+                                }
+                            </div>
+                            <!-- {{year}} -->
+                            }
+                        </div>
+                    </div>
+                </mat-tree-node>
+            </mat-tree>
         </div>
-        <div class="d-flex flex-column col-sm-12 col-lg-4 p-3 mb-2 mt-3 position-relative rounded border">
-            <h6 class=" fw-bolder text-center mb-3">Total Expenditure</h6>
-            <!-- <div class="tooltip-container"> -->
-            <button class="btn info-btn border-0" (click)="toggleTooltip()">
-                <i class="bi bi-info-circle custom-font-size-6"></i>
-                <i class="bi bi-download custom-font-size-6"></i>
+        <div class="d-flex flex-column col-sm-12 col-lg-4 mb-2 mt-3 position-relative">
+            @for (item of items; track $index) {
+            <button class="takeActionBtn" role="button" (click)="takeAction(item.label)">
+                <i [class]="item.icon + ' custom-font-size-6'"></i>{{ item.label }}
             </button>
-            <div style="min-height: 300px;">
-                <app-charts [chartConfig]="chartData()"></app-charts>
-            </div>
-            <div class="d-flex justify-content-end mt-3">
-                <button class="takeActionBtn" role="button">
-                    Download
+            }
+            <div id="chartContainer" class="position-relative p-3 border">
+                <h6 class=" fw-bolder text-center mb-3">Total Expenditure</h6>
+                <!-- <div class="tooltip-container"> -->
+                <button class="btn info-btn border-0 hide-while-download" (click)="toggleTooltip()">
+                    <i class="bi bi-info-circle custom-font-size-6"></i>
                 </button>
+                <div style="min-height: 300px; height: 300px;">
+                    <app-charts [chartConfig]="chartData()"></app-charts>
+                </div>
+                <div class="custom-font-size-6 mt-2 mb-4 py-1"><span class="fw-bold">Source:</span> Audited financial
+                    statements
+                    of FY
+                    2019-20, FY 2020-21,
+                    unaudited statements of FY 2021-22, City Finance</div>
             </div>
         </div>
     </div>
-
 
     <!-- Tooltip -->
     @if (isTooltipVisible()) {
@@ -43,7 +92,8 @@
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor voluptatem animi
             explicabo.
         </p>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi ad nemo, voluptatibus possimus ex autem fuga,
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi ad nemo, voluptatibus possimus ex autem
+            fuga,
             enim porro dolor veniam, sed repellendus.
         </p>
 
