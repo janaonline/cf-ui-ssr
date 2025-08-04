@@ -1,9 +1,9 @@
 <section class="container">
     <!-- Main Buttons -->
-    <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    <app-tab-buttons [buttons]="readonlyButtons()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
     </app-tab-buttons>
     <div class="mb-4">
-        <h6 class="fw-bolder">{{ ulbName() }} {{ selectedButton?.label }} </h6>
+        <h6 class="fw-bolder">{{ ulbName() }}{{ulbPopulation()}} {{ selectedButton?.label }} </h6>
         <p>Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City
             Finance
         </p>
@@ -19,13 +19,14 @@
             <!-- <div class="tooltip-container"> -->
             <button class="btn info-btn border-0" (click)="toggleTooltip()">
                 <i class="bi bi-info-circle custom-font-size-6"></i>
+                <i class="bi bi-download custom-font-size-6"></i>
             </button>
             <div style="min-height: 300px;">
                 <app-charts [chartConfig]="chartData()"></app-charts>
             </div>
             <div class="d-flex justify-content-end mt-3">
                 <button class="takeActionBtn" role="button">
-                    <i class="bi bi-download custom-font-size-6"></i>Download
+                    Download
                 </button>
             </div>
         </div>
