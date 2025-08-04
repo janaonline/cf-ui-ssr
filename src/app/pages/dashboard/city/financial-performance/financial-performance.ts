@@ -1,10 +1,11 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { TreeTable } from './tree-table/tree-table';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import html2canvas from 'html2canvas';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-financial-performance',
@@ -12,13 +13,18 @@ import html2canvas from 'html2canvas';
     TabButtons,
     TreeTable,
     Charts,
+    CommonModule,
+
   ],
   templateUrl: './financial-performance.html',
   styleUrl: './financial-performance.scss',
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialPerformance {
-  readonly buttons: ButtonObj[] = [
+  onDownload() {
+    throw new Error('Method not implemented.');
+  }
+  buttons: ButtonObj[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'revenue', label: 'Revenue' },
     { key: 'expenditure', label: 'Expenditure' },
@@ -29,12 +35,13 @@ export class FinancialPerformance {
     { icon: 'bi bi-download', label: 'Download' },
   ];
 
-  readonly ulbIdSignal = input.required<string>();
-  readonly ulbName = input.required<string>();
-  readonly ulbType = input.required<string>();
 
+
+  ulbIdSignal = input.required<string>();
+  ulbName = input.required<string>();
+  ulbType = input.required<string>();
+  ulbPopulation = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
-
   chartData = signal<ChartConfig>({
     chartId: 'bar0',
     chartType: 'barChart',
@@ -61,6 +68,13 @@ export class FinancialPerformance {
     ]
   });
   selectedButton: ButtonObj | null = null;
+  readonlyButtons = computed<ButtonObj[]>(() => {
+    return this.ulbPopulation() == '4M+'
+      ? this.buttons
+      : this.buttons.filter(btn =>
+        ['revenue', 'expenditure'].includes(btn.key)
+      );
+  });
 
   // Main Button Change Handler
   onSelectedButtonChange(btnKey: string) {
@@ -173,6 +187,7 @@ export class FinancialPerformance {
       }, 0);
     }
   }
+
 
 
   isTooltipVisible = signal<boolean>(false);

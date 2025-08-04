@@ -1,16 +1,20 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
+import { CdkTree } from '@angular/cdk/tree';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
 
 interface DataNode {
   name: string;
   info?: string;
   yearData?: string[];
+  yearGrowth?: string[];
   children?: DataNode[];
   className: string;
-  isHeader?: boolean;
+  isHeader?: boolean
+  selected?: boolean
 }
 
 const Financial_Performance_DATA: DataNode[] = [
@@ -23,6 +27,8 @@ const Financial_Performance_DATA: DataNode[] = [
   {
     name: 'Total Expenditure to Total Revenue (%)',
     yearData: ['99,999', '99,999', '99,999',],
+    yearGrowth: ['', '89', '-90',],
+    selected: true,
     info: 'Total Expenditure to Total Revenue (%)',
     children: [
       {
@@ -33,20 +39,20 @@ const Financial_Performance_DATA: DataNode[] = [
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
-        yearData: ['55', '87', '89'],
+        yearData: ['55%', '87%', '89%'],
         className: 'ps-5 '
       },
     ],
-    className: '',
+    className: 'fw-bold',
   },
   {
     name: 'Grants to Total Revenue (%)',
     info: 'Total Expenditure to Total Revenue (%)',
-    yearData: ['90', '45', '67',],
+    yearData: ['90%', '45%', '67%',],
     children: [
       {
         name: 'Total Expenditure to Total Revenue (%)',
-        yearData: ['78', '56', '88',],
+        yearData: ['78%', '56%', '88%',],
         info: 'Total Expenditure to Total Revenue (%)',
         className: 'ps-5 '
       },
@@ -105,14 +111,37 @@ const Financial_Performance_DATA: DataNode[] = [
 
 @Component({
   selector: 'app-tree-table',
-  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule, CommonModule],
   templateUrl: './tree-table.html',
   styleUrl: './tree-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class TreeTable {
 
-  dataSource = Financial_Performance_DATA;
+  getGrowthClass(value: string) {
+    let className = 'text-danger';
+    if (!isNaN(+value) && +value > 0) className = 'text-success';
+
+    return `${className} fw-bold custom-font-size-6`;
+  }
+  @ViewChild(CdkTree) tree!: CdkTree<any>;
+  // dataSource = Financial_Performance_DATA;
+  public dataSource = Financial_Performance_DATA;
+  public treeControl: any;  // Set your tree control here
+
+  ngOnInit(): void {
+    if (this.dataSource && this.dataSource.length > 0) {
+      this.dataSource[1].selected = true;
+
+    }
+  }
+  ngAfterViewInit(): void {
+    // After the view is initialized, expand the first node with children
+    if (this.treeControl && this.dataSource[1].children) {
+      this.treeControl.expand(this.dataSource[1]);
+    }
+  }
   childrenAccessor = (node: DataNode) => node.children ?? [];
 
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
