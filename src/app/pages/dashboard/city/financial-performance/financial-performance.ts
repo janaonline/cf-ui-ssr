@@ -133,45 +133,13 @@ export class FinancialPerformance {
   myForm!: FormGroup;
   years = signal<string[]>(['2020-21', '2021-22', '2022-23']);
   source: string = 'Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City Finance';
-
-  constructor(
-    private fb: FormBuilder,
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) { }
-
-  getGrowthClass(value: string) {
-    let className = 'text-danger';
-    if (!isNaN(+value) && +value > 0) className = 'text-success';
-
-    return `${className} fw-bold custom-font-size-6`;
-  }
-  @ViewChild(CdkTree) tree!: CdkTree<any>;
-  // dataSource = Financial_Performance_DATA;
-  public dataSource = Financial_Performance_DATA;
-  public treeControl: any;  // Set your tree control here
-
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    this.myForm = this.fb.group({ year: [this.years()[0]] });
-  }
-
-  childrenAccessor = (node: DataNode) => node.children ?? [];
-  hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
-
-  onDownload() {
-    throw new Error('Method not implemented.');
-  }
-
+  isTooltipVisible = signal<boolean>(false);
   buttons: ButtonObj[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'revenue', label: 'Revenue' },
     { key: 'expenditure', label: 'Expenditure' },
     { key: 'debtassets', label: 'Debt and Assets' }
   ];
-
-
-
   ulbIdSignal = input.required<string>();
   ulbName = input.required<string>();
   ulbType = input.required<string>();
@@ -201,13 +169,45 @@ export class FinancialPerformance {
       );
   });
 
+  constructor(
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) { }
+
+  @ViewChild(CdkTree) tree!: CdkTree<any>;
+  // dataSource = Financial_Performance_DATA;
+  public dataSource = Financial_Performance_DATA;
+  public treeControl: any;  // Set your tree control here
+
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.myForm = this.fb.group({ year: [this.years()[0]] });
+  }
+
+  childrenAccessor = (node: DataNode) => node.children ?? [];
+  hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
+
   // Main Button Change Handler
   onSelectedButtonChange(btnKey: string) {
     this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
     this.currentSelectedButtonKey.set(btnKey);
   }
 
+  // Helper: Add class name.
+  getGrowthClass(value: string) {
+    let className = 'text-danger';
+    if (!isNaN(+value) && +value > 0) className = 'text-success';
 
+    return `${className} fw-bold custom-font-size-6`;
+  }
+
+  // Helper: Add class name.
+  addBoldWithBg(node: DataNode) {
+    return this.tree?.isExpanded(node) && this.hasChild(0, node) && !node.isHeader
+  }
+
+  // Download chart as img.
   downloadImg(selectedIndicator: string = 'CityPageChart') {
     let isChartDownloading = true;
 
@@ -252,10 +252,7 @@ export class FinancialPerformance {
     }, 0);
   }
 
-
-
-
-  isTooltipVisible = signal<boolean>(false);
+  // Hide/ Remove tooltip.
   toggleTooltip() {
     this.isTooltipVisible.set(!this.isTooltipVisible());
   }
