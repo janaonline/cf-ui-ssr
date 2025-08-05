@@ -1,33 +1,47 @@
-<div class="table-header">
-    <button matIconButton disabled></button>
-    <div class="column name">Indicators</div>
-    @for(year of years; track $index) {
-    <div class="column year">{{year}}</div>
-    }
-</div>
-<mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+<!-- <div class="mat-tree-container"> -->
 
-    <!-- This is the tree node template for leaf nodes -->
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-        <!-- use a disabled button to provide padding for tree leaf -->
-        <!-- <button matIconButton disabled></button> -->
-        <div class="column name bg-light p-3 m-1">{{node.name}}</div>
-        @for(year of node.yearData; track $index) {
-        <div class="column year">{{year}}</div>
-        }
-    </mat-tree-node>
-    <!-- This is the tree node template for expandable nodes -->
+<mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
-        [cdkTreeNodeTypeaheadLabel]="node.name">
-        <!-- <div class="table-row"> -->
-        <button matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
-            <i class="bi bi-chevron-down" [class]="tree.isExpanded(node) ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+        [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
+          'border-bottom': true,
+          'onHover': true,
+          'bg-table-header': node.isHeader,
+          'selected': tree.isExpanded(node) || node.selected,
+           'click': node.children && node.children.length > 0
+        }" [class.node.classname]="node.selected">
+        @if (node.children && node.children.length > 0) {
+        <button class="p-0 m-0" matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+            <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
         </button>
-        <div class="column name bg-light p-3 m-1">{{node.name}} <span class="info"><i class="bi bi-info-circle"
-                    matTooltip="{{node.info}}" matTooltipPosition="right" style="cursor: pointer;"></i></span></div>
-        @for(year of node.yearData; track $index) {
-        <div class="column year m-1">{{year}}</div>
         }
-        <!-- </div> -->
+        @else if (node.isHeader) {
+        <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
+        }
+
+        <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
+            <div [class.selected]="tree.isExpanded(node) && !node.isHeader " [class]=" node.className " style=" width:
+                300px;">
+                {{node.name}}
+                <!-- @if (node.info) {
+                <i class="bi bi-info-circle" matTooltip="{{node.info}}" matTooltipPosition="right"></i>
+                } -->
+            </div>
+
+            <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
+                @for(year of node.yearData; track $index) {
+                <div [class]="'text-end w-100 px-2 '+ node.className"
+                    [class.selected]="tree.isExpanded(node) && !node.isHeader">{{year}}
+                    @if (node.yearGrowth?.[$index]) {
+                    <br><span [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                        ({{ node.yearGrowth?.[$index] }}%)
+                        <!-- (<i class="bi bi-arrow-down-short"></i>{{ node.yearGrowth?.[$index] }}%) -->
+                    </span>
+                    }
+                </div>
+                <!-- {{year}} -->
+                }
+            </div>
+        </div>
     </mat-tree-node>
 </mat-tree>
+<!-- </div> -->

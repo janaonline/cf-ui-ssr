@@ -1,46 +1,69 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatIconModule } from '@angular/material/icon';
+import { CdkTree } from '@angular/cdk/tree';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
 
 interface DataNode {
   name: string;
   info?: string;
   yearData?: string[];
+  yearGrowth?: string[];
   children?: DataNode[];
+  className: string;
+  isHeader?: boolean
+  selected?: boolean
 }
 
 const Financial_Performance_DATA: DataNode[] = [
   {
+    name: 'Indicators',
+    yearData: ['2020-21', '2021-22', '2022-23'],
+    className: 'text-center fw-bold ',
+    isHeader: true,
+  },
+  {
     name: 'Total Expenditure to Total Revenue (%)',
-    yearData: ['56', '98', '78',],
+    yearData: ['99,999', '99,999', '99,999',],
+    yearGrowth: ['', '89', '-90',],
+    selected: true,
     info: 'Total Expenditure to Total Revenue (%)',
     children: [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
-      { name: 'Own Source revenue to Total Revenue (%)', yearData: ['55', '87', '89',] },
+      {
+        name: 'Own Source revenue to Total Revenue (%)',
+        yearData: ['55%', '87%', '89%'],
+        className: 'ps-5 '
+      },
     ],
+    className: 'fw-bold',
   },
   {
     name: 'Grants to Total Revenue (%)',
     info: 'Total Expenditure to Total Revenue (%)',
-    yearData: ['90', '45', '67',],
+    yearData: ['90%', '45%', '67%',],
     children: [
       {
         name: 'Total Expenditure to Total Revenue (%)',
-        yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        yearData: ['78%', '56%', '88%',],
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
   {
     name: 'Own Source Revenue to Total Expenditure (%)',
@@ -50,14 +73,17 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
   {
     name: 'Own Source Revenue to Total Expenditure (%)',
@@ -67,14 +93,17 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)'
+        info: 'Total Expenditure to Total Revenue (%)',
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)'
+        info: 'Own Source revenue to Total Revenue (%)',
+        className: 'ps-5 '
       },
     ],
+    className: '',
   },
 
 ];
@@ -82,16 +111,37 @@ const Financial_Performance_DATA: DataNode[] = [
 
 @Component({
   selector: 'app-tree-table',
-  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatTreeModule, MatButtonModule, MatIconModule, MatTooltipModule, CommonModule],
   templateUrl: './tree-table.html',
   styleUrl: './tree-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class TreeTable {
 
-  dataSource = Financial_Performance_DATA;
-  years = ['2021-22', '2022-23', '2021-22'];
+  getGrowthClass(value: string) {
+    let className = 'text-danger';
+    if (!isNaN(+value) && +value > 0) className = 'text-success';
 
+    return `${className} fw-bold custom-font-size-6`;
+  }
+  @ViewChild(CdkTree) tree!: CdkTree<any>;
+  // dataSource = Financial_Performance_DATA;
+  public dataSource = Financial_Performance_DATA;
+  public treeControl: any;  // Set your tree control here
+
+  ngOnInit(): void {
+    if (this.dataSource && this.dataSource.length > 0) {
+      this.dataSource[1].selected = true;
+
+    }
+  }
+  ngAfterViewInit(): void {
+    // After the view is initialized, expand the first node with children
+    if (this.treeControl && this.dataSource[1].children) {
+      this.treeControl.expand(this.dataSource[1]);
+    }
+  }
   childrenAccessor = (node: DataNode) => node.children ?? [];
 
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;

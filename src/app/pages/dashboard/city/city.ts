@@ -85,6 +85,7 @@ export class City {
   errorMessage = signal('');
 
   cityDetails = signal<any>({});
+
   moneyInfoRes = signal<IMoneyInfoRes | null>(null);
   ledgerYears = signal<string[]>([]);
   slbYears = signal<string[]>([]);
@@ -113,7 +114,6 @@ export class City {
           this.loadData(citySlugName);
         } else if (!citySlugName) this.isLoading.set(false);
       });
-
   }
 
   setSeo() {
@@ -194,7 +194,6 @@ export class City {
           this.cityDetails.set(res);
           this.ulbIdSignal.set(res.ulbId);
           this.setSeo();
-          // console.log(res);
         },
         error: (error: Error) => {
           console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
