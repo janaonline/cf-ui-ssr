@@ -1,16 +1,17 @@
-import { Component, computed, input, signal } from '@angular/core';
-import { ButtonObj } from '../../../../core/models/interfaces';
-import { Charts } from '../../../../shared/components/charts/charts';
-import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
-import html2canvas from 'html2canvas';
-import { CommonModule } from '@angular/common';
 import { CdkTree } from '@angular/cdk/tree';
-import { ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, Inject, input, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
+import html2canvas from 'html2canvas';
+import { ButtonObj } from '../../../../core/models/interfaces';
+import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
+import { Charts } from '../../../../shared/components/charts/charts';
+import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
+import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 
 interface DataNode {
   name: string;
@@ -20,7 +21,6 @@ interface DataNode {
   children?: DataNode[];
   className: string;
   isHeader?: boolean
-  selected?: boolean
 }
 
 const Financial_Performance_DATA: DataNode[] = [
@@ -34,7 +34,6 @@ const Financial_Performance_DATA: DataNode[] = [
     name: 'Total Expenditure to Total Revenue (%)',
     yearData: ['99,999', '99,999', '99,999',],
     yearGrowth: ['', '89', '-90',],
-    selected: true,
     info: 'Total Expenditure to Total Revenue (%)',
     children: [
       {
@@ -45,20 +44,20 @@ const Financial_Performance_DATA: DataNode[] = [
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
-        yearData: ['55%', '87%', '89%'],
+        yearData: ['55', '87', '89'],
         className: 'ps-5 '
       },
     ],
-    className: 'fw-bold',
+    className: '',
   },
   {
     name: 'Grants to Total Revenue (%)',
     info: 'Total Expenditure to Total Revenue (%)',
-    yearData: ['90%', '45%', '67%',],
+    yearData: ['90', '45', '67',],
     children: [
       {
         name: 'Total Expenditure to Total Revenue (%)',
-        yearData: ['78%', '56%', '88%',],
+        yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
         className: 'ps-5 '
       },
@@ -123,13 +122,23 @@ const Financial_Performance_DATA: DataNode[] = [
     MatTreeModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './financial-performance.html',
   styleUrl: './financial-performance.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialPerformance {
+  myForm!: FormGroup;
+  years = signal<string[]>(['2020-21', '2021-22', '2022-23']);
+  source: string = 'Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City Finance';
+
+  constructor(
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) { }
+
   getGrowthClass(value: string) {
     let className = 'text-danger';
     if (!isNaN(+value) && +value > 0) className = 'text-success';
@@ -142,19 +151,12 @@ export class FinancialPerformance {
   public treeControl: any;  // Set your tree control here
 
   ngOnInit(): void {
-    if (this.dataSource && this.dataSource.length > 0) {
-      this.dataSource[1].selected = true;
-    }
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.myForm = this.fb.group({ year: [this.years()[0]] });
   }
 
-  ngAfterViewInit(): void {
-    // After the view is initialized, expand the first node with children
-    if (this.treeControl && this.dataSource[1].children) {
-      this.treeControl.expand(this.dataSource[1]);
-    }
-  }
   childrenAccessor = (node: DataNode) => node.children ?? [];
-
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
 
   onDownload() {
@@ -168,10 +170,6 @@ export class FinancialPerformance {
     { key: 'debtassets', label: 'Debt and Assets' }
   ];
 
-  readonly items = [
-    { icon: 'bi bi-download', label: 'Download' },
-  ];
-
 
 
   ulbIdSignal = input.required<string>();
@@ -183,26 +181,16 @@ export class FinancialPerformance {
     chartId: 'bar0',
     chartType: 'barChart',
     labels: ['2020-21', '2021-22', '2022-23'],
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-        },
-        // title: {
-        //   display: true,
-        //   text: 'Total Expenditure'
-        // }
-      }
-    },
     datasets: [
       {
         label: 'Capital Expenditure',
         data: [30, 50, 20],
-        backgroundColor: '#42A5F5'
+        backgroundColor: '#62b6cb',
+        borderRadius: 5,
+        barThickness: 50,
       }
-    ]
+    ],
+    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
   });
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
@@ -220,64 +208,50 @@ export class FinancialPerformance {
   }
 
 
-  takeAction(selectedIcon: string) {
-    if (selectedIcon === 'Download') {
+  downloadImg(selectedIndicator: string = 'CityPageChart') {
+    let isChartDownloading = true;
+
+    setTimeout(() => {
+      const chartContainer = document.getElementById('chartContainer');
+      if (!chartContainer) return;
+
+      // Create the outer div
+      const cfLogo = document.createElement('div');
+      cfLogo.className = 'cfLogo text-end';
+
+      // Inject the inner HTML
+      cfLogo.innerHTML = `
+      <span class="fw-bold custom-font-size-6 text-shadow-custom text-info">city</span>
+      <span class="fw-bold custom-font-size-6 text-shadow-custom text-cfSecondary">finance.in</span>
+    `;
+
+      // Append to chart container
+      chartContainer.appendChild(cfLogo);
+
+      // Wait briefly to render new DOM changes
       setTimeout(() => {
-        const chartContainer = document.getElementById('chartContainer');
-        if (!chartContainer) return;
-
-        const elementsToHide = chartContainer.querySelectorAll('.hide-while-download');
-        elementsToHide.forEach(el => {
-          (el as HTMLElement).style.visibility = 'hidden';
-        });
-
-        // Create the outer div
-        const cfLogo = document.createElement('div');
-        cfLogo.className = 'cfLogo-place';
-        cfLogo.style.position = 'absolute';
-        cfLogo.style.bottom = '0px';
-        cfLogo.style.right = '10px';
-        cfLogo.style.zIndex = '1000';
-
-        // Inject the inner HTML
-        cfLogo.innerHTML = `
-          <span class="fw-bold fs-3 text-shadow-custom text-info">city</span>
-          <span class="fw-bold fs-3 text-shadow-custom text-cfSecondary">finance.in</span>
-        `;
-
-        // Append to chart container
-        chartContainer.appendChild(cfLogo);
-
-
-        // Wait briefly to render new DOM changes
-        setTimeout(() => {
-          html2canvas(chartContainer).then(canvas => {
-            // Restore visibility
-            elementsToHide.forEach(el => {
-              (el as HTMLElement).style.visibility = 'visible';
-            });
-
+        html2canvas(chartContainer)
+          .then(canvas => {
             // Remove logo divs
-            const tempElements = chartContainer.querySelectorAll('.cfLogo-place');
-            tempElements.forEach(el => el.remove());
+            chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
 
             // Download the image
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
-            link.download = 'chart.png';
+            link.download = `${selectedIndicator}.png`;
             link.click();
-          }).catch(err => {
-            // Restore in case of error
-            elementsToHide.forEach(el => {
-              (el as HTMLElement).style.visibility = 'visible';
-            });
-            chartContainer.querySelectorAll('.cfLogo-place').forEach(el => el.remove());
+          })
+          .catch(err => {
+            chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
             console.error('Error capturing chart:', err);
+          })
+          .finally(() => {
+            isChartDownloading = false;
           });
-        }, 100); // Wait a bit to let DOM update
-      }, 0);
-    }
+      }, 100);
+    }, 0);
   }
+
 
 
 

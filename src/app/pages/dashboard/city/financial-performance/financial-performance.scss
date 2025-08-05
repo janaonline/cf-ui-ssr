@@ -17,22 +17,6 @@
   font-weight: bold;
 }
 
-.takeActionBtn {
-  all: unset;
-  display: inline-block;
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  color: var(--clr-secondary);
-  cursor: pointer;
-  font-size: 0.813rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .content {
   opacity: 0.5;
   transition: opacity 0.3s;
@@ -66,17 +50,6 @@
   top: 20px;
 }
 
-.info-btn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
 .chart-container {
   min-height: 300px;
-}
-
-.takeActionBtn {
-  position: absolute;
-  right: 24px;
-  top: -51px;
 }
