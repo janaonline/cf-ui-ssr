@@ -40,12 +40,12 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: 'ps-5 '
+        className: '',
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89'],
-        className: 'ps-5 '
+        className: '',
       },
     ],
     className: '',
@@ -59,13 +59,13 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: 'ps-5 '
+        className: ''
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
         info: 'Own Source revenue to Total Revenue (%)',
-        className: 'ps-5 '
+        className: ''
       },
     ],
     className: '',
@@ -79,13 +79,13 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: 'ps-5 '
+        className: ''
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
         info: 'Own Source revenue to Total Revenue (%)',
-        className: 'ps-5 '
+        className: ''
       },
     ],
     className: '',
@@ -94,20 +94,6 @@ const Financial_Performance_DATA: DataNode[] = [
     name: 'Own Source Revenue to Total Expenditure (%)',
     yearData: ['78', '44', '90',],
     info: 'Total Expenditure to Total Revenue (%)',
-    children: [
-      {
-        name: 'Total Expenditure to Total Revenue (%)',
-        yearData: ['78', '56', '88',],
-        info: 'Total Expenditure to Total Revenue (%)',
-        className: 'ps-5 '
-      },
-      {
-        name: 'Own Source revenue to Total Revenue (%)',
-        yearData: ['55', '87', '89',],
-        info: 'Own Source revenue to Total Revenue (%)',
-        className: 'ps-5 '
-      },
-    ],
     className: '',
   },
 
