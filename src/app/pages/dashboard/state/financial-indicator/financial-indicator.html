@@ -96,11 +96,40 @@
                 <div class="row" style="height: 500px;">
                     <div class="col-12">
                         @if(scatterChart().datasets.length !== 0) {
-                        <!-- {{scatterChart().labels| json}} -->
                         <app-charts [chartConfig]="scatterChart()"></app-charts>
                         }
                     </div>
                 </div>
+
+                <div class="row tablerow">
+                    <div class="col-12 col-sm-12">
+                        <p class="py-4">
+                            Distribution of ULBs in {{stateDetails().name}} according to Population
+                            category
+                        </p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody class="main">
+                                    <tr class="rowClass">
+                                        <td>ULB Population Category</td>
+                                        <td class="text-center customTableData"
+                                            *ngFor="let key of objectKeys(stateUlbsPopulation())">
+                                            {{ key }}
+                                        </td>
+                                    </tr>
+                                    <tr class="rowClass">
+                                        <td>Number of ULBs</td>
+                                        <td class="text-center customTableData"
+                                            *ngFor="let key of objectKeys(stateUlbsPopulation())">
+                                            {{ stateUlbsPopulation()[key] }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row" style="height: 500px;">
                     <div class="col-12">
                         @if(barChart().datasets.length !== 0) {
@@ -126,14 +155,6 @@
                 to enhance readability</i>
             }
             }
-
-            <!-- @for (chartData of chartsData; track $index) {
-      <div class="overflow-x-auto flex-grow-1">
-        <div class="w-100 h-100 chart-container">
-          <app-charts [chartConfig]="chartData"></app-charts>
-        </div>
-      </div>
-      } -->
 
         </div>
 

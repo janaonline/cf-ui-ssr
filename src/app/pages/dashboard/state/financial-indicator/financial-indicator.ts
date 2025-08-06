@@ -86,6 +86,9 @@ export class FinancialIndicator {
     datasets: [],
     options: {}
   });
+  stateUlbsPopulation = signal<any>({});
+
+  objectKeys = Object.keys;
 
 
 
@@ -196,7 +199,8 @@ export class FinancialIndicator {
       acc.values.push(sumCr);
       return acc;
     }, { labels: [], values: [] });
-
+    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr');
+    options.plugins!.legend!.display = false;
     let config: ChartConfig = {
       chartId: 'populationChart',
       chartType: 'barChart',
@@ -210,14 +214,15 @@ export class FinancialIndicator {
           barThickness: 50,
           // borderRadius: 5
         }],
-      options: {
-        plugins: {
-          legend: {
-            display: false
-          }
-        }
+      options
+      // options: {
+      //   plugins: {
+      //     legend: {
+      //       display: false
+      //     }
+      //   }
 
-      }
+      // }
       // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
     };
     this.barChart.set(config);
@@ -228,22 +233,28 @@ export class FinancialIndicator {
     // console.log('Revenue Chart Data:', res);
     // console.log('Scatter Data:', scatterData);
     // this.chartDatas[1].datasets = scatterData;
+    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)');
+    options.plugins!.legend!.labels!.usePointStyle = true;
+    options.plugins!.legend!.labels!.padding = 20;
+
     let config: ChartConfig = {
       chartId: 'scatterChart0',
       chartType: 'scatterChart',
       datasets: scatterData,
-      options: {
-        plugins: {
-          legend: {
-            labels: {
-              padding: 20,
-              color: "#000000",
-              usePointStyle: true,
-              // pointStyle: 'circle'
-            },
-          },
-        }
-      }
+      // options: {
+      //   plugins: {
+      //     legend: {
+      //       position: 'bottom',
+      //       labels: {
+      //         padding: 20,
+      //         color: "#000000",
+      //         usePointStyle: true,
+      //         // pointStyle: 'circle'
+      //       },
+      //     },
+      //   }
+      // }
+      options
       // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
     }
     this.scatterChart.set(config);
@@ -282,6 +293,7 @@ export class FinancialIndicator {
   private getChartData(): void {
     this.getPopulationChart();
     this.getRevenueChart();
+    this.getStateGroupPopulation();
     return;
     // this.chartsData.set(this.chartDatas);    // this.isChartLoading.set(true);
 
@@ -291,6 +303,28 @@ export class FinancialIndicator {
 
   }
 
+  getStateGroupPopulation() {
+    const params = {
+      stateId: this.stateIdSignal(),
+      year: this.getYear(),
+    };
+    this.dashboardService.getStateGroupPopulation(params).subscribe({
+      next: (res: any) => {
+        console.log('State Group Population Data:', res);
+        if (res["data"]?.length) {
+          // const tableData = {
+          //   tableHeading: Object.keys(res["data"][0]),
+          //   tableDataSource: res["data"][0]
+          // }
+          this.stateUlbsPopulation.set(res["data"][0]);
+        }
+        // this.stateUlbsPopulation.set(res.data);
+      },
+      error: (error: Error) => {
+        console.error('Failed to get state group population data', error);
+      }
+    });
+  }
   // Helper: Consolidate all the data - payload/ body for the API.
   private createBodyStructure(): IFinancialIndicatorsChart {
     const { compareType = 'state', calcType = this.getcalcType(), compareUlbs = [], compareUlbsObj } = this.dialogResult ?? {};
