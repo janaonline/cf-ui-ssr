@@ -61,7 +61,6 @@ export class FinancialIndicator {
   isChartLoading = signal<boolean>(false);
   isChartDownloading = signal<boolean>(false);
 
-  chartsData = signal<ChartConfig[]>([]);
   output = signal<resStruct | undefined>(undefined);
 
   compareUlbsFromPopup!: IULB[] | undefined;
@@ -69,9 +68,26 @@ export class FinancialIndicator {
   dialogResult!: IFinancialIndicatorsChart;
   readonly dialog = inject(MatDialog);
 
-  accordion = viewChild.required(MatAccordion);
+  // accordion = viewChild.required(MatAccordion);
 
   private destroy$ = new Subject<void>();
+
+  barChart = signal<ChartConfig>({
+    chartId: 'barChart0',
+    chartType: 'barChart',
+    labels: [],
+    datasets: [],
+    options: {}
+  });
+  scatterChart = signal<ChartConfig>({
+    chartId: 'scatterChart0',
+    chartType: 'scatterChart',
+    labels: [],
+    datasets: [],
+    options: {}
+  });
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -92,52 +108,6 @@ export class FinancialIndicator {
       .subscribe({
         next: () => this.getChartData()
       })
-  }
-
-  initChartData(): void {
-    this.chartDatas = [
-      {
-        chartId: 'populationChart',
-        chartType: 'barChart',
-        labels: [],
-        datasets: [
-          {
-            type: 'bar',
-            label: 'This is ulb data',
-            data: [],
-            backgroundColor: '#1b4965',
-            barThickness: 50,
-            // borderRadius: 5
-          }],
-        options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
-      },
-      {
-        chartId: 'scatterChart0',
-        chartType: 'scatterChart',
-        datasets: [
-          // {
-          //   label: 'Sample Scatter',
-          //   data: [
-          //     { x: 10, y: 20 },
-          //     { x: 20, y: 100 },
-          //     { x: 35, y: 110 },
-          //     { x: 45, y: 120 },
-          //     { x: 55, y: 130 },
-          //     { x: 65, y: 140 },
-          //     { x: 75, y: 150 },
-          //     { x: 85, y: 160 },
-          //     { x: 95, y: 170 },
-          //     { x: 105, y: 180 },
-          //     { x: 115, y: 190 },
-          //     { x: 125, y: 120 },
-          //     { x: 220, y: 310 }
-          //   ],
-          //   backgroundColor: 'rgba(255, 0, 55, 0.5)',
-          // },
-        ],
-        options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
-      }
-    ];
   }
 
   readonly canFetchChart = computed(() => {
@@ -216,286 +186,68 @@ export class FinancialIndicator {
     // if (compType === 'ulbs') return 'Selected ULB(s)'
     // return this.getLabelByKey(compraeByOptions(this.ulbType()), compType);
   }
-  // chartDat: ChartResStruct = {
 
-  //   chartType: 'barChart',
-  //   labels: ['2020-21', '2021-22', '2022-23'],
-  //   legendColors: [],
-  //   axes: { x: 'Years', y: 'Amt in ₹ Cr' },
-  //   data: [
-  //     {
-  //       type: 'line',
-  //       label: 'Y-o-Y Growth',
-  //       data: [2937, 3524, 3883],
-  //       backgroundColor: ['#f43f5e'],
-  //     },
-  //     {
-  //       type: 'bar',
-  //       label: 'ULB Name',
-  //       data: [2937, 3524, 3883],
-  //       backgroundColor: ["#62b6cb"],
-  //     },
-  //     {
-  //       type: 'bar',
-  //       label: 'National Avg',
-  //       data: [1576, 1946, 3037],
-  //       backgroundColor: ["#1b4965"],
-  //     },
-  //     // {
-  //     //     type: 'bar',
-  //     //     label: 'National Avg',
-  //     //     data: [1576, 1946, 3037],
-  //     //     backgroundColor: ["#bee9e8"],
-  //     // },
-  //   ]
-  // }
-  // Create chart.
-  chartDatas: ChartConfig[] = [
-    {
-      "chartId": "barChart_0",
-      "chartType": "barChart",
-      "labels": [
-        "2020-21",
-        "2021-22",
-        "2022-23"
-      ],
-      "datasets": [
-        // {
-        //   "type": "line",
-        //   "label": "Y-o-Y Growth",
-        //   "data": [
-        //     2937,
-        //     3524,
-        //     3883
-        //   ],
-        //   "borderColor": "#f43f5e",
-        //   "pointBackgroundColor": "#f43f5e",
-        //   "borderWidth": 2,
-        //   "fill": false,
-        //   "tension": 0.3
-        // },
+  updateBarChartData(data: any): void {
+
+    const { labels, values } = data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
+      // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
+      const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
+      acc.labels.push(ulbName);
+      acc.values.push(sumCr);
+      return acc;
+    }, { labels: [], values: [] });
+
+    let config: ChartConfig = {
+      chartId: 'populationChart',
+      chartType: 'barChart',
+      labels,
+      datasets: [
         {
-          "type": "bar",
-          "label": "Greater Hyderabad Municipal Corporation",
-          "data": [
-            2937,
-            3524,
-            3883
-          ],
-          "backgroundColor": "#62b6cb",
-          "borderRadius": 5
-        },
-        // {
-        //   "type": "bar",
-        //   "label": "State Avg",
-        //   "data": [
-        //     1576,
-        //     1946,
-        //     3883
-        //   ],
-        //   "backgroundColor": "#1b4965",
-        //   "borderRadius": 5
-        // }
-      ],
-      "options": {
-        "responsive": true,
-        "maintainAspectRatio": false,
-        "font": {
-          "family": "Montserrat",
-          "size": 11
-        },
-        "interaction": {
-          "mode": "index",
-          "intersect": false
-        },
-        "plugins": {
-          "customDataLabel": {
-            "enabled": false,
-            "format": ""
-          },
-          "legend": {
-            "labels": {
-              "font": {
-                "family": "Montserrat",
-                "size": 12
-              }
-            }
-          },
-          "tooltip": {
-            "titleFont": {
-              "family": "Montserrat"
-            },
-            "bodyFont": {
-              "family": "Montserrat"
-            }
-          }
-        },
-        "layout": {
-          "padding": 5
-        },
-        "scales": {
-          "x": {
-            "axis": "x",
-            "display": true,
-            "ticks": {
-              "font": {
-                "family": "Montserrat"
-              },
-              "minRotation": 0,
-              "maxRotation": 50,
-              "mirror": false,
-              "textStrokeWidth": 0,
-              "textStrokeColor": "",
-              "padding": 3,
-              "display": true,
-              "autoSkip": true,
-              "autoSkipPadding": 3,
-              "labelOffset": 0,
-              // "minor": {},
-              "major": {},
-              "align": "center",
-              "crossAlign": "near",
-              "showLabelBackdrop": false,
-              "backdropColor": "rgba(255, 255, 255, 0.75)",
-              "backdropPadding": 2,
-              "color": "#666"
-            },
-            "title": {
-              "display": true,
-              "text": "Years",
-              "font": {
-                "family": "Montserrat",
-                "size": 11,
-                "weight": "bold"
-              },
-              "color": "#374151",
-              "padding": {
-                "top": 4,
-                "bottom": 4
-              }
-            },
-            "type": "category",
-            "offset": true,
-            "grid": {
-              "offset": true,
-              "display": true,
-              "lineWidth": 1,
-              "drawOnChartArea": true,
-              "drawTicks": true,
-              "tickLength": 8,
-              "color": "rgba(0,0,0,0.1)"
-            },
-            "reverse": false,
-            // "beginAtZero": false,
-            "bounds": "ticks",
-            "clip": true,
-            // "grace": 0,
-            "border": {
-              "display": true,
-              "dash": [],
-              "dashOffset": 0,
-              "width": 1,
-              "color": "rgba(0,0,0,0.1)"
-            },
-            // "id": "x",
-            "position": "bottom"
-          },
-          "y": {
-            "axis": "y",
-            "display": true,
-            "ticks": {
-              "font": {
-                "family": "Montserrat"
-              },
-              "minRotation": 0,
-              "maxRotation": 50,
-              "mirror": false,
-              "textStrokeWidth": 0,
-              "textStrokeColor": "",
-              "padding": 3,
-              "display": true,
-              "autoSkip": true,
-              "autoSkipPadding": 3,
-              "labelOffset": 0,
-              // "minor": {},
-              "major": {},
-              "align": "center",
-              "crossAlign": "near",
-              "showLabelBackdrop": false,
-              "backdropColor": "rgba(255, 255, 255, 0.75)",
-              "backdropPadding": 2,
-              "color": "#666"
-            },
-            "title": {
-              "display": true,
-              "text": "Amt in ₹ Cr",
-              "font": {
-                "family": "Montserrat",
-                "size": 11,
-                "weight": "bold"
-              },
-              "color": "#374151",
-              "padding": {
-                "top": 4,
-                "bottom": 4
-              }
-            },
-            "type": "linear",
-            "beginAtZero": true,
-            "offset": false,
-            "reverse": false,
-            "bounds": "ticks",
-            "clip": true,
-            "grace": 0,
-            "grid": {
-              "display": true,
-              "lineWidth": 1,
-              "drawOnChartArea": true,
-              "drawTicks": true,
-              "tickLength": 8,
-              "offset": false,
-              "color": "rgba(0,0,0,0.1)"
-            },
-            "border": {
-              "display": true,
-              "dash": [],
-              "dashOffset": 0,
-              "width": 1,
-              "color": "rgba(0,0,0,0.1)"
-            },
-            // "id": "y",
-            "position": "left"
+          type: 'bar',
+          label: 'CR',
+          data: values,
+          backgroundColor: '#1E44AD',
+          barThickness: 50,
+          // borderRadius: 5
+        }],
+      options: {
+        plugins: {
+          legend: {
+            display: false
           }
         }
-      }
-    }
-  ];
-  chartData = signal<ChartConfig>({
-    chartId: 'bar0',
-    chartType: 'barChart',
-    labels: ['2020-21', '2021-22', '2022-23'],
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-        },
-        // title: {
-        //   display: true,
-        //   text: 'Total Expenditure'
-        // }
-      }
-    },
-    datasets: [
-      {
-        label: 'Capital Expenditure',
-        data: [30, 50, 20],
-        backgroundColor: '#42A5F5'
-      }
-    ]
-  });
 
+      }
+      // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+    };
+    this.barChart.set(config);
+  }
+
+  updateScatterChartData(data: any): void {
+    const scatterData = this.chartService.setScatterData(data);
+    // console.log('Revenue Chart Data:', res);
+    // console.log('Scatter Data:', scatterData);
+    // this.chartDatas[1].datasets = scatterData;
+    let config: ChartConfig = {
+      chartId: 'scatterChart0',
+      chartType: 'scatterChart',
+      datasets: scatterData,
+      options: {
+        plugins: {
+          legend: {
+            labels: {
+              padding: 20,
+              color: "#000000",
+              usePointStyle: true,
+              // pointStyle: 'circle'
+            },
+          },
+        }
+      }
+      // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
+    }
+    this.scatterChart.set(config);
+  }
   getPopulationChart() {
     const params = {
       stateId: this.stateIdSignal(),
@@ -504,61 +256,7 @@ export class FinancialIndicator {
     };
     this.dashboardService.getStatePopulation(params).subscribe({
       next: (res) => {
-        console.log('Population Chart Data:', res);
-        const { labels, values } = res.data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
-          // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
-          const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
-          acc.labels.push(ulbName);
-          acc.values.push(sumCr);
-          return acc;
-        }, { labels: [], values: [] });
-
-        this.chartDatas[0].labels = labels;
-        this.chartDatas[0].datasets[0].data = values;
-        // this.chartDatas = [
-        //   {
-        //     chartId: 'populationChart',
-        //     chartType: 'barChart',
-        //     labels,
-        //     datasets: [
-        //       {
-        //         type: 'bar',
-        //         label: 'This is ulb data',
-        //         data: values,
-        //         backgroundColor: '#1b4965',
-        //         barThickness: 50,
-        //         // borderRadius: 5
-        //       }],
-        //     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
-        //   },
-        //   {
-        //     chartId: 'scatterChart0',
-        //     chartType: 'scatterChart',
-        //     datasets: [
-        //       {
-        //         label: 'Sample Scatter',
-        //         data: [
-        //           { x: 10, y: 20 },
-        //           { x: 20, y: 100 },
-        //           { x: 35, y: 110 },
-        //           { x: 45, y: 120 },
-        //           { x: 55, y: 130 },
-        //           { x: 65, y: 140 },
-        //           { x: 75, y: 150 },
-        //           { x: 85, y: 160 },
-        //           { x: 95, y: 170 },
-        //           { x: 105, y: 180 },
-        //           { x: 115, y: 190 },
-        //           { x: 125, y: 120 },
-        //           { x: 220, y: 310 }
-        //         ],
-        //         backgroundColor: 'rgba(255, 0, 55, 0.5)',
-        //       },
-        //     ],
-        //     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
-        //   }
-        // ];
-        this.chartsData.set(this.chartDatas);
+        this.updateBarChartData(res.data);
       },
       error: (error: Error) => {
         console.error('Failed to get population chart data', error);
@@ -573,24 +271,7 @@ export class FinancialIndicator {
     };
     this.dashboardService.getStateRevenue(params).subscribe({
       next: (res) => {
-        const scatterData = this.chartService.setScatterData(res.data);
-        // console.log('Revenue Chart Data:', res);
-        console.log('Scatter Data:', scatterData);
-        this.chartDatas[1].datasets = scatterData;
-        this.chartsData.set(this.chartDatas);
-        // console.log('Updated Chart Data:', this.chartDatas[1].datasets);
-        console.log('this.chartData():', this.chartData());
-        // const { labels, values } = res.data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
-        //   // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
-        //   const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
-        //   acc.labels.push(ulbName);
-        //   acc.values.push(sumCr);
-        //   return acc;
-        // }, { labels: [], values: [] });
-
-        // console.log("Labels:", labels);
-        // console.log("Data:", values);
-
+        this.updateScatterChartData(res.data);
       },
       error: (error: Error) => {
         console.error('Failed to get population chart data', error);
@@ -598,9 +279,7 @@ export class FinancialIndicator {
     });
   }
 
-
   private getChartData(): void {
-    this.initChartData();
     this.getPopulationChart();
     this.getRevenueChart();
     return;
@@ -610,41 +289,6 @@ export class FinancialIndicator {
     const body = this.createBodyStructure();
     // console.log("body: ", body)
 
-    // Don't call API if year is unavailable.
-    if (body.years.length > 0) {
-
-      this.dashboardService.getFinancialIndicatorsChartData(body)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (apiRes: IFinancialIndicatorRes) => {
-            // console.log(apiRes)
-            const res = apiRes.data;
-
-            // Check if data is available.
-            if (!apiRes.success) { this.isChartDataAvailable.set(false) }
-            else {
-              this.infoMsg.set(apiRes.data.info);
-
-              this.isChartDataAvailable.set(true);
-              if (res.chartType === 'barChart') {
-                const structureData = this.buildBarChartConfigurations(res);
-                this.chartsData.set(structureData);
-              }
-              else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
-                const structureData = this.buildGaugeChartConfigurations(res);
-                this.chartsData.set(structureData);
-              }
-            }
-
-            this.isChartLoading.set(false);
-          },
-          error: () => {
-            console.error('Failed to create chart.');
-            this.isChartLoading.set(false);
-          },
-        })
-
-    }
   }
 
   // Helper: Consolidate all the data - payload/ body for the API.
@@ -690,78 +334,6 @@ export class FinancialIndicator {
     }
 
     return years;
-  }
-
-  // Helper: Add additional options to the API res - Bar chart.
-  private buildBarChartConfigurations(chartData: ChartResStruct): ChartConfig[] {
-    // Set chart output state
-    // this.output.set(chartData);
-    // console.log('chart data', chartData)
-
-    // Initialize chart config object
-    const config: ChartConfig = {
-      chartId: `${chartData.chartType}_0`,
-      chartType: chartData.chartType,
-      labels: chartData.labels,
-      datasets: [],
-      options: baseChartOptions(DEFAULT_FONT_FAMILY, true, chartData.axes?.x, chartData.axes?.y),
-    };
-
-    // Populate datasets based on type
-    for (const chart of chartData.data) {
-      const barThickness = chart.data.length < 3 ? { barThickness: 60 } : {}
-
-      const dataset: any = {
-        type: chart.type,
-        label: chart.label,
-        data: chart.data,
-      };
-
-      if (chart.type === 'line') {
-        Object.assign(dataset, {
-          borderColor: chart.backgroundColor?.[0],
-          pointBackgroundColor: chart.backgroundColor?.[0],
-          borderWidth: 2,
-          fill: false,
-          tension: 0.3,
-        });
-      } else {
-        Object.assign(dataset, {
-          backgroundColor: chart.backgroundColor?.[0],
-          borderRadius: 5,
-          ...barThickness
-        });
-      }
-
-      config.datasets.push(dataset);
-    }
-
-    return [config];
-  }
-
-  // Helper: Add additional options to the API res - Gauge chart.
-  private buildGaugeChartConfigurations(res: ChartResStruct): ChartConfig[] {
-    // this.chartsData.set([]);
-    // this.output.set(res);
-
-    const config: ChartConfig[] = res.data.map((chart, idx) => {
-      return {
-        chartId: `${res.chartType}_${idx}`,
-        chartType: `${res.chartType}`,
-        datasets: [
-          {
-            label: chart.label,
-            data: chart.data,
-            backgroundColor: res.legendColors,
-            borderRadius: 3,
-            borderWidth: 1,
-          },
-        ],
-        options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', '', true, '%'),
-      }
-    })
-
-    return config;
   }
 
   // Open compare by dialog 

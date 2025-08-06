@@ -78,8 +78,8 @@
                 <div
                     class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
                     @for (item of items; track $index) {
-                    <button class="takeActionBtn" role="button" (click)="takeAction(item.label)">
-                        <i [class]="item.icon + ' custom-font-size-6'"></i>{{ item.label }}
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label)">
+                        <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
                     </button>
                     }
                 </div>
@@ -93,16 +93,21 @@
             @else {
             <!-- Chart -->
             <div class="">
-                @for (chartData of chartsData(); track $index) {
                 <div class="row" style="height: 500px;">
-                    @if(chartData.chartType ==='gaugeChart') {
-                    <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
-                    }
-                    <div class="col-12" [ngClass]="chartData.chartType">
-                        <app-charts [chartConfig]="chartData"></app-charts>
+                    <div class="col-12">
+                        @if(scatterChart().datasets.length !== 0) {
+                        <!-- {{scatterChart().labels| json}} -->
+                        <app-charts [chartConfig]="scatterChart()"></app-charts>
+                        }
                     </div>
                 </div>
-                }
+                <div class="row" style="height: 500px;">
+                    <div class="col-12">
+                        @if(barChart().datasets.length !== 0) {
+                        <app-charts [chartConfig]="barChart()"></app-charts>
+                        }
+                    </div>
+                </div>
             </div>
 
             <!-- Legends for pie, doughnut, gauge chart. -->
