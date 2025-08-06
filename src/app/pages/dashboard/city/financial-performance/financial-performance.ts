@@ -40,7 +40,7 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: '',
+        className: 'ps-5 ',
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
@@ -59,13 +59,13 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: ''
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
         info: 'Own Source revenue to Total Revenue (%)',
-        className: ''
+        className: 'ps-5 '
       },
     ],
     className: '',
@@ -79,13 +79,13 @@ const Financial_Performance_DATA: DataNode[] = [
         name: 'Total Expenditure to Total Revenue (%)',
         yearData: ['78', '56', '88',],
         info: 'Total Expenditure to Total Revenue (%)',
-        className: ''
+        className: 'ps-5 '
       },
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89',],
         info: 'Own Source revenue to Total Revenue (%)',
-        className: ''
+        className: 'ps-5 '
       },
     ],
     className: '',
