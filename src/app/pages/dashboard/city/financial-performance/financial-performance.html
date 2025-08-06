@@ -39,7 +39,7 @@
 
                     <!-- expand icon -->
                     @if (hasChild(0, node)) {
-                    <button class="p-0 m-0" matIconButton matTreeNodeToggle [matTreeNodeToggleRecursive]="false"
+                    <button class="p-0 m-0" (click)="buttonClicked(node)" matIconButton
                         [attr.aria-label]="'Toggle ' + node.name">
                         <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
                     </button>
@@ -55,12 +55,13 @@
 
                         <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
                             @for(year of node.yearData; track $index) {
-                            <div [class]="'text-end w-100 px-2 '+ node.className"
+                            <div [class]="'text-end w-100 px-2 d-flex flex-column justify-content-center '+ node.className"
                                 [class.selected]="addBoldWithBg(node)">{{year}}
                                 @if (node.yearGrowth?.[$index]) {
-                                <br><span [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                                <br>
+                                <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
                                     ({{ node.yearGrowth?.[$index] }}%)
-                                </span>
+                                </div>
                                 }
                             </div>
                             }

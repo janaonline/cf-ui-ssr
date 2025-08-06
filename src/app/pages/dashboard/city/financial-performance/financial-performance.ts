@@ -1,6 +1,6 @@
 import { CdkTree } from '@angular/cdk/tree';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, Inject, input, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Inject, input, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -171,6 +171,7 @@ export class FinancialPerformance {
 
   constructor(
     private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
@@ -193,6 +194,20 @@ export class FinancialPerformance {
     this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
     this.currentSelectedButtonKey.set(btnKey);
   }
+
+  // Collapse all nodes and expand only the selected one
+  buttonClicked(node: DataNode) {
+    if (!this.tree) return;
+
+    this.tree.collapseAll();
+    this.cdRef.detectChanges();
+
+    // defer to next event loop
+    setTimeout(() => {
+      this.tree.expand(node);
+    }, 0);
+  }
+
 
   // Helper: Add class name.
   getGrowthClass(value: string) {
