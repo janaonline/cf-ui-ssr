@@ -19,6 +19,7 @@ import { buttons, compraeByOptions, IndicatorDetails, subButtons } from '../../c
 import { resStruct } from '../../city/financial-indicator/temp';
 import { DashboardService } from '../../dashboard-service';
 import { state } from '@angular/animations';
+import { ChartService } from './chart-service';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -57,7 +58,7 @@ export class FinancialIndicator {
   infoMsg = signal<IFinancialIndicatorInfo>({ msg: '', text: 'success' });
   isChartDataAvailable = signal<boolean>(true);
   isLoading = signal<boolean>(true);
-  isChartLoading = signal<boolean>(true);
+  isChartLoading = signal<boolean>(false);
   isChartDownloading = signal<boolean>(false);
 
   chartsData = signal<ChartConfig[]>([]);
@@ -75,6 +76,7 @@ export class FinancialIndicator {
   constructor(
     private fb: FormBuilder,
     private dashboardService: DashboardService,
+    private chartService: ChartService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
@@ -90,6 +92,52 @@ export class FinancialIndicator {
       .subscribe({
         next: () => this.getChartData()
       })
+  }
+
+  initChartData(): void {
+    this.chartDatas = [
+      {
+        chartId: 'populationChart',
+        chartType: 'barChart',
+        labels: [],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'This is ulb data',
+            data: [],
+            backgroundColor: '#1b4965',
+            barThickness: 50,
+            // borderRadius: 5
+          }],
+        options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+      },
+      {
+        chartId: 'scatterChart0',
+        chartType: 'scatterChart',
+        datasets: [
+          // {
+          //   label: 'Sample Scatter',
+          //   data: [
+          //     { x: 10, y: 20 },
+          //     { x: 20, y: 100 },
+          //     { x: 35, y: 110 },
+          //     { x: 45, y: 120 },
+          //     { x: 55, y: 130 },
+          //     { x: 65, y: 140 },
+          //     { x: 75, y: 150 },
+          //     { x: 85, y: 160 },
+          //     { x: 95, y: 170 },
+          //     { x: 105, y: 180 },
+          //     { x: 115, y: 190 },
+          //     { x: 125, y: 120 },
+          //     { x: 220, y: 310 }
+          //   ],
+          //   backgroundColor: 'rgba(255, 0, 55, 0.5)',
+          // },
+        ],
+        options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
+      }
+    ];
   }
 
   readonly canFetchChart = computed(() => {
@@ -447,6 +495,7 @@ export class FinancialIndicator {
       }
     ]
   });
+
   getPopulationChart() {
     const params = {
       stateId: this.stateIdSignal(),
@@ -464,67 +513,84 @@ export class FinancialIndicator {
           return acc;
         }, { labels: [], values: [] });
 
-        console.log("Labels:", labels);
-        console.log("Data:", values);
-        // this.chartDatas = [{
-        //   chartId: 'populationChart',
-        //   chartType: 'barChart',
-        //   labels,
-        //   datasets: [
-        //     {
-        //       type: 'bar',
-        //       label: 'This is ulb data',
-        //       data: values,
-        //       backgroundColor: '#1b4965',
-        //       barThickness: 50,
-        //       borderRadius: 5
-        //     }],
-        //   options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
-        // }];
-
-        this.chartDatas = [
-          {
-            chartId: 'populationChart',
-            chartType: 'barChart',
-            labels,
-            datasets: [
-              {
-                type: 'bar',
-                label: 'This is ulb data',
-                data: values,
-                backgroundColor: '#1b4965',
-                barThickness: 50,
-                borderRadius: 5
-              }],
-            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
-          },
-          {
-            chartId: 'scatterChart0',
-            chartType: 'scatterChart',
-            datasets: [
-              {
-                label: 'Sample Scatter',
-                data: [
-                  { x: 10, y: 20 },
-                  { x: 20, y: 100 },
-                  { x: 35, y: 110 },
-                  { x: 45, y: 120 },
-                  { x: 55, y: 130 },
-                  { x: 65, y: 140 },
-                  { x: 75, y: 150 },
-                  { x: 85, y: 160 },
-                  { x: 95, y: 170 },
-                  { x: 105, y: 180 },
-                  { x: 115, y: 190 },
-                  { x: 125, y: 120 },
-                  { x: 220, y: 310 }
-                ],
-                backgroundColor: 'rgba(255, 0, 55, 0.5)',
-              },
-            ],
-            options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
-          }];
+        this.chartDatas[0].labels = labels;
+        this.chartDatas[0].datasets[0].data = values;
+        // this.chartDatas = [
+        //   {
+        //     chartId: 'populationChart',
+        //     chartType: 'barChart',
+        //     labels,
+        //     datasets: [
+        //       {
+        //         type: 'bar',
+        //         label: 'This is ulb data',
+        //         data: values,
+        //         backgroundColor: '#1b4965',
+        //         barThickness: 50,
+        //         // borderRadius: 5
+        //       }],
+        //     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
+        //   },
+        //   {
+        //     chartId: 'scatterChart0',
+        //     chartType: 'scatterChart',
+        //     datasets: [
+        //       {
+        //         label: 'Sample Scatter',
+        //         data: [
+        //           { x: 10, y: 20 },
+        //           { x: 20, y: 100 },
+        //           { x: 35, y: 110 },
+        //           { x: 45, y: 120 },
+        //           { x: 55, y: 130 },
+        //           { x: 65, y: 140 },
+        //           { x: 75, y: 150 },
+        //           { x: 85, y: 160 },
+        //           { x: 95, y: 170 },
+        //           { x: 105, y: 180 },
+        //           { x: 115, y: 190 },
+        //           { x: 125, y: 120 },
+        //           { x: 220, y: 310 }
+        //         ],
+        //         backgroundColor: 'rgba(255, 0, 55, 0.5)',
+        //       },
+        //     ],
+        //     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
+        //   }
+        // ];
         this.chartsData.set(this.chartDatas);
+      },
+      error: (error: Error) => {
+        console.error('Failed to get population chart data', error);
+      }
+    });
+  }
+  getRevenueChart() {
+    const params = {
+      stateId: this.stateIdSignal(),
+      year: this.getYear(),
+      // ulbId: this.stateDetails().state.ulbId || ''
+    };
+    this.dashboardService.getStateRevenue(params).subscribe({
+      next: (res) => {
+        const scatterData = this.chartService.setScatterData(res.data);
+        // console.log('Revenue Chart Data:', res);
+        console.log('Scatter Data:', scatterData);
+        this.chartDatas[1].datasets = scatterData;
+        this.chartsData.set(this.chartDatas);
+        // console.log('Updated Chart Data:', this.chartDatas[1].datasets);
+        console.log('this.chartData():', this.chartData());
+        // const { labels, values } = res.data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
+        //   // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
+        //   const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
+        //   acc.labels.push(ulbName);
+        //   acc.values.push(sumCr);
+        //   return acc;
+        // }, { labels: [], values: [] });
+
+        // console.log("Labels:", labels);
+        // console.log("Data:", values);
+
       },
       error: (error: Error) => {
         console.error('Failed to get population chart data', error);
@@ -534,7 +600,10 @@ export class FinancialIndicator {
 
 
   private getChartData(): void {
+    this.initChartData();
     this.getPopulationChart();
+    this.getRevenueChart();
+    return;
     // this.chartsData.set(this.chartDatas);    // this.isChartLoading.set(true);
 
     // Create body/ payload structure.

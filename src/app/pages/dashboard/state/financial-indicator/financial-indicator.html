@@ -92,13 +92,13 @@
             }
             @else {
             <!-- Chart -->
-            <div class="d-flex flex-wrap justify-content-center gap-1">
+            <div class="">
                 @for (chartData of chartsData(); track $index) {
-                <div [ngClass]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
+                <div class="row" style="height: 500px;">
                     @if(chartData.chartType ==='gaugeChart') {
                     <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
                     }
-                    <div class="" [ngClass]="chartData.chartType">
+                    <div class="col-12" [ngClass]="chartData.chartType">
                         <app-charts [chartConfig]="chartData"></app-charts>
                     </div>
                 </div>
