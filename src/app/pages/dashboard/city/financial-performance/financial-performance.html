@@ -29,8 +29,8 @@
         <!-- Table -->
         <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
             <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
-                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
-                    [matTreeNodeToggleRecursive]="false" [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
+                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                    [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
                       'border-bottom': true,
                       'onHover': true,
                       'bg-table-header': node.isHeader,
