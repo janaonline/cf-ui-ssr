@@ -45,7 +45,7 @@ const Financial_Performance_DATA: DataNode[] = [
       {
         name: 'Own Source revenue to Total Revenue (%)',
         yearData: ['55', '87', '89'],
-        className: '',
+        className: 'ps-5 ',
       },
     ],
     className: '',
