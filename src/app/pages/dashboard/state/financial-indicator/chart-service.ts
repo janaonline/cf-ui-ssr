@@ -94,7 +94,8 @@ export class ChartService {
       //   : // ? el2.value.toFixed(2)
       //   this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? convertToCr(el2.amount) : el2.amount;
       if (!this.stateServiceLabel) {
-        obj.y = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'].includes(this.ActiveButton) ? convertToCr(el2.amount) : el2.amount;
+        // obj.y = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'].includes(this.ActiveButton) ? convertToCr(el2.amount) : el2.amount;
+        obj.y = convertToCr(el2.amount);
       } else {
         obj.y = Math.round(el2.value);
       }
@@ -116,7 +117,8 @@ export class ChartService {
 
     let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
     this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
-    let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? convertToCr(this.stateAvgVal) : this.stateAvgVal;
+    // let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? convertToCr(this.stateAvgVal) : this.stateAvgVal;
+    let stateData = convertToCr(this.stateAvgVal);
     this.scatterData.forEach((el: any) => {
       if (el.label == "Town Panchayat") {
         this.setXYData(tp_data, el);

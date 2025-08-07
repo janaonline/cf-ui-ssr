@@ -83,11 +83,11 @@
 
 <section class="container matTabGroup">
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
-
+    @if(dashboardTabData() && dashboardTabData().length !== 0) {
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
         <mat-tab label="Financial Indicators" [disabled]="false">
             @if (loadedTabs[0] && stateDetails() && stateDetails()?.state?._id && stateDetails()?.yearsList?.length) {
-            <app-financial-indicator [stateDetails]="stateDetails()">
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabData()[0]">
             </app-financial-indicator>
             }
         </mat-tab>
@@ -100,4 +100,5 @@
             Borrowings & Credit Rating
         </mat-tab>
     </mat-tab-group>
+    }
 </section>

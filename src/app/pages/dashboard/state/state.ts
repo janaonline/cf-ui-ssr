@@ -92,6 +92,7 @@ export class State implements OnInit {
   });
 
   private destroy$ = new Subject<void>();
+  dashboardTabData = signal<any>({});
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -100,6 +101,7 @@ export class State implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.getDashboardTabData();
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -136,6 +138,20 @@ export class State implements OnInit {
       "name": "City Finance",
       "url": `https://cityfinance.in/dashboard/slb`
     });
+  }
+
+  getDashboardTabData() {
+    this.dashboardService
+      .getDashboardTabData("619cc1016abe7f5b80e45c6b")
+      .subscribe({
+        next: (res: any) => {
+          console.log(res, "dashboardTabData");
+          this.dashboardTabData.set(res["data"]);
+        }, error: (error: any) => {
+          console.log(error);
+        }
+      }
+      );
   }
 
   // Fetch data.

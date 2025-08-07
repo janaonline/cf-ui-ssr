@@ -93,23 +93,48 @@ export class DashboardService {
   getStateGroupPopulation(params: { stateId: string; year: string }): Observable<ExploreSectionResponse> {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-ulbs-grouped-by-population`, { params });
   }
-  getStatePopulation(payload: { stateId: string; year: string }): Observable<any> {
+  getStatePopulation(params: {
+    stateId: string;
+    financialYear: any;
+    activeButton: string;
+    tabType: string;
+    // chartType: string;
+  }): Observable<any> {
     // https://staging.cityfinance.in/api/v1/state-revenue-tabs?tabType=TotalRevenue&financialYear=2021-22&stateId=5dcf9d7316a06aed41c748ec&sortBy=top&chartType=bar&apiEndPoint=state-revenue-tabs&apiMethod=get&activeButton=Total%20Revenue
-    const params = {
-      tabType: 'TotalRevenue',
-      financialYear: payload.year,
-      stateId: payload.stateId,
-      sortBy: 'top',
-      chartType: 'bar',
-      apiEndPoint: 'state-revenue-tabs',
-      apiMethod: 'get',
-      activeButton: 'Total Revenue'
-    }
+    // const params = {
+    //   tabType: 'TotalRevenue',
+    //   financialYear: payload.year,
+    //   stateId: payload.stateId,
+    //   sortBy: 'top',
+    //   chartType: 'bar',
+    //   apiEndPoint: 'state-revenue-tabs',
+    //   apiMethod: 'get',
+    //   activeButton: 'Total Revenue'
+    // }
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
   }
-  getStateRevenue(body: { stateId: string; year: string }): Observable<{ sucess: boolean, data: any }> {
-    const payload = { "state": body.stateId, "financialYear": body.year, "headOfAccount": "Revenue", "filterName": "revenue", "isPerCapita": "", "compareType": "", "compareCategory": "", "ulb": [], "chartType": "scatter", "apiEndPoint": "state-revenue", "apiMethod": "post", "stateServiceLabel": false, "sortBy": "", "chartTitle": "Total Revenue of all ULBs in Madhya Pradesh vs State " };
+  getStateRevenue(body: { stateId: string; year: string, headOfAccount: string; filterName: string }): Observable<{ sucess: boolean, data: any }> {
+    const payload = {
+      'state': body.stateId,
+      'financialYear': body.year,
+      'headOfAccount': body.headOfAccount, //'Revenue',
+      'filterName': body.filterName, //'revenue',
+      'isPerCapita': '',
+      'compareType': '',
+      'compareCategory': '', 'ulb': [],
+      'chartType': 'scatter',
+      // 'apiEndPoint': 'state-revenue',
+      // 'apiMethod': 'post', 'stateServiceLabel': false,
+      // 'sortBy': '',
+      'chartTitle': 'Total Revenue of all ULBs in Madhya Pradesh vs State '
+    };
     return this.http.post<any>(`${environment.api.url}state-revenue`, payload);
+  }
+
+  getDashboardTabData(dashboardId: string): Observable<any> {
+    return this.http.get(
+      `${environment.api.url}dashboardHeaders/${dashboardId}`
+    );
   }
 
 

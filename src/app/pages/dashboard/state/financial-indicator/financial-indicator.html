@@ -15,7 +15,7 @@
         <!-- Overlay to block interaction -->
         <div class="custom-spinner-overlay"></div>
         }
-
+        @if(dashboardTabData()) {
         <!-- Main Buttons -->
         <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
         </app-tab-buttons>
@@ -27,6 +27,7 @@
         <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
             (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
         </app-tab-buttons>
+        }
     </div>
 
 
@@ -40,11 +41,11 @@
             <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
             <mat-spinner></mat-spinner>
         </div>
-        }
+        } @else {
         <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="chartContainer">
-            <p class="">
+            <!-- <p class="">
                 {{stateDetails().name}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
-            </p>
+            </p> -->
 
             <div class="row justify-content-between align-items-center">
                 <!-- Filters -->
@@ -140,7 +141,7 @@
             </div>
 
             <!-- Legends for pie, doughnut, gauge chart. -->
-            @if (output()?.legendColors?.length){
+            <!-- @if (output()?.legendColors?.length){
             <div class="d-flex flex-wrap mt-3 py-1 gap-2">
                 @for (label of output()?.labels; track $index) {
                 <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
@@ -153,11 +154,11 @@
             <i class="custom-font-size-7 m-0 text-end text-secondary">Line items contributing less than 1% have been
                 excluded
                 to enhance readability</i>
-            }
+            } -->
             }
 
         </div>
-
+        }
     </div>
     } } }
 </section>
