@@ -1,14 +1,13 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal, untracked, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
-import { Subject, takeUntil } from 'rxjs';
-import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorRes, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
+import { forkJoin, Subject, takeUntil } from 'rxjs';
+import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { MaterialModule } from '../../../../material.module';
-import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
+import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
@@ -16,11 +15,9 @@ import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { CompareByDialog } from '../../city/financial-indicator/compare-by-dialog/compare-by-dialog';
 import { compraeByOptions, IndicatorDetails } from '../../city/financial-indicator/constants';
-import { resStruct } from '../../city/financial-indicator/temp';
 import { DashboardService } from '../../dashboard-service';
-import { state } from '@angular/animations';
 import { ChartService } from './chart-service';
-import { buttons, stateDashboardSubTabsList, subButtons } from './constant';
+import { stateDashboardSubTabsList } from './constant';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -39,22 +36,16 @@ export class FinancialIndicator {
     // { icon: 'bi bi-arrow-clockwise', label: 'Reset' },
     { icon: 'bi bi-download', label: 'Download' },
   ];
-  // readonly buttons: ButtonObj[] = buttons;
-  // subButtons = subButtons;
-  buttons: ButtonObj[] = buttons;
-  subButtons: { [key: string]: { text: string, buttons: ButtonObj[] } } = subButtons;
+  buttons: any[] = [];
   readonly compraeByOptions = compraeByOptions;
-  // readonly accordions = accordions;
 
-  // readonly ulbIdSignal = input.required<string>();
   readonly stateIdSignal = signal('');
   readonly stateDetails = input.required<any>();
-  // readonly ulbName = input.required<string>();
-  // readonly ulbType = input.required<string>();
   readonly dashboardTabData = input.required<any>();
 
   currentSelectedButtonKey = signal<string>('Revenue');
-  subButton = signal<string>('Revenue');
+  subButton = signal<string>('');
+  currentSelectedButton: any = signal<any>({});
 
   myForm!: FormGroup;
   years = signal<string[]>([]);
@@ -65,14 +56,10 @@ export class FinancialIndicator {
   isChartLoading = signal<boolean>(false);
   isChartDownloading = signal<boolean>(false);
 
-  // output = signal<resStruct | undefined>(undefined);
-
   compareUlbsFromPopup!: IULB[] | undefined;
   compareTypeFromPopup!: string;
   dialogResult!: IFinancialIndicatorsChart;
   readonly dialog = inject(MatDialog);
-
-  // accordion = viewChild.required(MatAccordion);
 
   private destroy$ = new Subject<void>();
 
@@ -105,10 +92,12 @@ export class FinancialIndicator {
   ) { }
 
   ngOnInit() {
-    // console.log('dashboardTabData:', this.dashboardTabData());
+    console.log('dashboardTabData:', this.dashboardTabData());
+    this.getCurrentBtn();
     // this.setButtons();
     // console.log('Buttons:', this.buttons);
     // console.log('Sub Buttons:', this.subButtons);
+    // this.subButtons = this.dashboardTabData()[0].subButtons;
     this.stateIdSignal.set(this.stateDetails().state._id);
     this.years.set(this.stateDetails().yearsList);
 
@@ -120,65 +109,41 @@ export class FinancialIndicator {
       .subscribe({
         next: () => this.getChartData()
       })
-  }
+    this.getStateGroupPopulation();
 
-  setButtons() {
-    if (!this.dashboardTabData()) {
-      return;
-    }
-    const btns = this.dashboardTabData().subHeaders;
-    btns.forEach((btn: any) => {
-      this.buttons.push({
-        key: btn.name,
-        label: btn.name
-      });
-      this.subButtons[btn.name] = {
-        text: btn.mainContent[0].about,
-        buttons: btn.mainContent[0].btnLabels.map((subBtn: string) => ({ key: subBtn, label: subBtn }))
-      };
-    });
-    // this.getChartData();
   }
-
 
   readonly canFetchChart = computed(() => {
-    // console.log(!!this.ulbIdSignal(), !!this.years().length, !!this.currentSelectedButtonKey(), !!this.subButton(), !isPlatformBrowser(this.platformId))
     return !!this.stateIdSignal() &&
       !!this.years().length &&
       !!this.subButton();
   });
 
-  readonly ulbIdChangeEffect = effect(() => {
+  lastSubButtonValue: string | null = null;
+  readonly stateIdChangeEffect = effect(() => {
     if (!isPlatformBrowser(this.platformId)) return;
     const canFetch = this.canFetchChart();
-    console.log("canFetchChart:", canFetch);
+    // console.log("canFetchChart:", canFetch);
 
-    if (canFetch) this.getChartData();
+    if (canFetch && this.subButton() !== this.lastSubButtonValue) {
+      // console.log("Fetching for subButton:", this.subButton());
+      this.lastSubButtonValue = this.subButton();
+      this.getChartData();
+    }
   })
-
-  // ngAfterViewInit() {
-  //   effect(() => {
-  //     if (!isPlatformBrowser(this.platformId)) return;
-
-  //     const canFetch = this.canFetchChart();
-  //     console.log("canFetchChart:", canFetch);
-
-  //     if (canFetch) this.getChartData();
-  //   });
-  // }
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
-    // console.log('Button key sent from child to parent:', key);
     this.currentSelectedButtonKey.set(key as LineItemType);
-    // this.getChartData();
+    this.getCurrentBtn();
+  }
+  getCurrentBtn() {
+    this.currentSelectedButton.set(this.dashboardTabData().find((btn: any) => btn.key === this.currentSelectedButtonKey()));
   }
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
-    // console.log('Sub button key sent from child to parent:', key);
     this.subButton.set(key);
-    // this.getChartData();
   }
 
   // Type Guard Function
@@ -270,72 +235,54 @@ export class FinancialIndicator {
 
   updateScatterChartData(data: any): void {
     const scatterData = this.chartService.setScatterData(data);
-    // console.log('Revenue Chart Data:', res);
-    // console.log('Scatter Data:', scatterData);
-    // this.chartDatas[1].datasets = scatterData;
     const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)');
     options.plugins!.legend!.labels!.usePointStyle = true;
     options.plugins!.legend!.labels!.padding = 20;
+    options.plugins!.legend!.position = 'bottom';
 
     let config: ChartConfig = {
       chartId: 'scatterChart0',
       chartType: 'scatterChart',
       datasets: scatterData,
-      // options: {
-      //   plugins: {
-      //     legend: {
-      //       position: 'bottom',
-      //       labels: {
-      //         padding: 20,
-      //         color: "#000000",
-      //         usePointStyle: true,
-      //         // pointStyle: 'circle'
-      //       },
-      //     },
-      //   }
-      // }
       options
       // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
     }
     this.scatterChart.set(config);
   }
   getTabType() {
-    const defaultOption = {
-      yAxisLabel: "Count",
-      countAccessKey: "count",
-      chartAnimation: "defaultBarChartOptions",
-    };
     let findTabType = this.activeButtonList.find((tabName: any) => tabName.name == this.subButton());
     return findTabType ? findTabType.code : '';
   }
+
+
+  getFilterName() {
+    let newName = this.subButton().toLocaleLowerCase();
+    let filterName = 'revenue';
+
+    if (newName?.includes("mix")) {
+      filterName = newName;
+    } else if (newName?.includes("revenue") && !newName?.includes("own")) {
+      filterName = "revenue";
+    } else if (newName?.includes("own") && newName?.includes("revenue")) {
+      filterName = newName;
+    } else {
+      filterName = newName;
+    }
+    return filterName;
+  }
+
+  //  changeActiveBtn(i) {
+
+  // }
   getPopulationChart() {
-    const params = {
-      stateId: this.stateIdSignal(),
-      year: this.getYear(),
-      // ulbId: this.stateDetails().state.ulbId || ''
-    };
     const payload = {
-      tabType: this.getTabType(),//tabType ? tabType?.code : "",
+      tabType: this.getTabType(),
       financialYear: this.getYear(),
       stateId: this.stateIdSignal(),
-      // sortBy: 'top',
-      // chartType: "bar",
-      // apiEndPoint: "state-revenue-tabs",
-      // apiMethod: "get",
+      sortBy: 'top',
       activeButton: this.subButton(),
-      // chartTitle: "",
     }
-    this.dashboardService.getStatePopulation(payload).subscribe({
-      next: (res) => {
-        setTimeout(() => {
-          this.updateBarChartData(res.data);
-        }, 100);
-        // this.updateBarChartData(res.data);
-      },
-      error: (error: Error) => {
-        console.error('Failed to get population chart data', error);
-      }
-    });
+    return this.dashboardService.getStatePopulation(payload);
   }
   getRevenueChart() {
     this.isChartLoading.set(true);
@@ -343,57 +290,38 @@ export class FinancialIndicator {
       stateId: this.stateIdSignal(),
       year: this.getYear(),
       headOfAccount: this.currentSelectedButtonKey(),
-      filterName: this.subButton().toLowerCase(),
-      // ulbId: this.stateDetails().state.ulbId || ''
+      filterName: this.getFilterName(),
     };
-    this.dashboardService.getStateRevenue(params).subscribe({
-      next: (res) => {
-        setTimeout(() => {
-          this.updateScatterChartData(res.data);
-        }, 100);
+    return this.dashboardService.getStateRevenue(params);
+  }
+  getChartData(): void {
+    this.isChartLoading.set(true);
+
+    forkJoin({
+      revenue: this.getRevenueChart(),
+      population: this.getPopulationChart()
+    }).subscribe({
+      next: ({ revenue, population }) => {
         this.isChartLoading.set(false);
+        this.updateScatterChartData(revenue.data);
+        this.updateBarChartData(population.data);
       },
-      error: (error: Error) => {
+      error: (err) => {
         this.isChartLoading.set(false);
-        console.error('Failed to get population chart data', error);
+        console.error(err);
       }
     });
-  }
-
-  private getChartData(): void {
-    this.getPopulationChart();
-    this.getRevenueChart();
-    this.getStateGroupPopulation();
-    return;
-    // this.chartsData.set(this.chartDatas);    // this.isChartLoading.set(true);
-
-    // Create body/ payload structure.
-    // const body = this.createBodyStructure();
-    // console.log("body: ", body)
-
   }
 
   getStateGroupPopulation() {
     const params = {
       stateId: this.stateIdSignal(),
-      year: this.getYear(),
-      activeButton: this.currentSelectedButtonKey(),
-      tabType: this.subButton(),
-      chartType: 'bar',
     };
     this.dashboardService.getStateGroupPopulation(params).subscribe({
       next: (res: any) => {
-        // console.log('State Group Population Data:', res);
         if (res["data"]?.length) {
-          // const tableData = {
-          //   tableHeading: Object.keys(res["data"][0]),
-          //   tableDataSource: res["data"][0]
-          // }
-          setTimeout(() => {
-            this.stateUlbsPopulation.set(res["data"][0]);
-          }, 100);
+          this.stateUlbsPopulation.set(res["data"][0]);
         }
-        // this.stateUlbsPopulation.set(res.data);
       },
       error: (error: Error) => {
         console.error('Failed to get state group population data', error);
@@ -473,7 +401,8 @@ export class FinancialIndicator {
         if (!chartElement) return;
 
         const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
-        const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
+        // const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
+        const subBtn = this.getLabelByKey(this.currentSelectedButton().subButtons.buttons, this.subButton());
         const imgName = `${mainBtn}_${subBtn}.png`;
         const chartContainer = document.getElementById('chartContainer');
         const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
@@ -514,6 +443,6 @@ export class FinancialIndicator {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    // this.ulbIdChangeEffect.destroy()
+    this.stateIdChangeEffect.destroy();
   }
 }

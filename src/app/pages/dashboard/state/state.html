@@ -83,17 +83,20 @@
 
 <section class="container matTabGroup">
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
-    @if(dashboardTabData() && dashboardTabData().length !== 0) {
+    @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
         <mat-tab label="Financial Indicators" [disabled]="false">
-            @if (loadedTabs[0] && stateDetails() && stateDetails()?.state?._id && stateDetails()?.yearsList?.length) {
-            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabData()[0]">
+            @if (loadedTabs[0]) {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons">
             </app-financial-indicator>
             }
         </mat-tab>
 
         <mat-tab label="Service Level Benchmark" [disabled]="false">
-            Service Level Benchmark
+            @if (loadedTabs[1]) {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons">
+            </app-financial-indicator>
+            }
         </mat-tab>
 
         <mat-tab label="Borrowings & Credit Rating" [disabled]="false">

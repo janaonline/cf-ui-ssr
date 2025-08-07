@@ -90,7 +90,7 @@ export class DashboardService {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}dashboard/state/details`, { params });
   }
   // Get state details.
-  getStateGroupPopulation(params: { stateId: string; year: string }): Observable<ExploreSectionResponse> {
+  getStateGroupPopulation(params: { stateId: string; }): Observable<ExploreSectionResponse> {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-ulbs-grouped-by-population`, { params });
   }
   getStatePopulation(params: {
@@ -113,7 +113,7 @@ export class DashboardService {
     // }
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
   }
-  getStateRevenue(body: { stateId: string; year: string, headOfAccount: string; filterName: string }): Observable<{ sucess: boolean, data: any }> {
+  getStateRevenue(body: { stateId: string; year: string, headOfAccount: string; filterName: string }, stateServiceLabel = ''): Observable<{ sucess: boolean, data: any }> {
     const payload = {
       'state': body.stateId,
       'financialYear': body.year,
@@ -128,7 +128,8 @@ export class DashboardService {
       // 'sortBy': '',
       'chartTitle': 'Total Revenue of all ULBs in Madhya Pradesh vs State '
     };
-    return this.http.post<any>(`${environment.api.url}state-revenue`, payload);
+    let apiEndPoint = stateServiceLabel ? "state-slb" : "state-revenue";
+    return this.http.post<any>(`${environment.api.url + apiEndPoint}`, payload);
   }
 
   getDashboardTabData(dashboardId: string): Observable<any> {

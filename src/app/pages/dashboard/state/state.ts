@@ -92,7 +92,9 @@ export class State implements OnInit {
   });
 
   private destroy$ = new Subject<void>();
-  dashboardTabData = signal<any>({});
+  dashboardTabs = signal<any>({});
+  buttons: any;
+  tabs: any[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -145,8 +147,7 @@ export class State implements OnInit {
       .getDashboardTabData("619cc1016abe7f5b80e45c6b")
       .subscribe({
         next: (res: any) => {
-          console.log(res, "dashboardTabData");
-          this.dashboardTabData.set(res["data"]);
+          this.setButtons(res["data"]);
         }, error: (error: any) => {
           console.log(error);
         }
@@ -154,6 +155,33 @@ export class State implements OnInit {
       );
   }
 
+  setButtons(data: any) {
+    const tabs: any[] = [];
+    data.forEach((tab: any) => {
+      const buttons: any[] = [];
+
+      const subHeaders = tab.subHeaders;
+      if (subHeaders && subHeaders.length > 0) {
+        subHeaders.forEach((btn: any) => {
+          let subButtons: any = {};
+          subButtons = {
+            text: btn.mainContent[0].about,
+            buttons: btn.mainContent[0].btnLabels.map((subBtn: string) => ({ key: subBtn, label: subBtn }))
+          };
+          buttons.push({
+            key: btn.name,
+            label: btn.name,
+            subButtons
+          });
+        });
+      }
+      tabs.push({
+        name: tab.name,
+        buttons: buttons,
+      });
+    });
+    this.dashboardTabs.set(tabs);
+  }
   // Fetch data.
   loadData(slugName: string) {
     this.isLoading.set(true);
