@@ -12,7 +12,12 @@ import { ChartConfig } from '../../../../shared/components/charts/chart-interfac
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { ChartConfiguration, ChartDataset } from 'chart.js';
 
+interface CustomChartDataset extends ChartDataset<'bar', number[]> {
+
+  stack?: string;
+}
 interface DataNode {
   name: string;
   info?: string;
@@ -142,10 +147,33 @@ export class FinancialPerformance {
         backgroundColor: '#62b6cb',
         borderRadius: 5,
         barThickness: 50,
+        stack: 'stack1',
+      },
+      {
+        label: 'Revenue Expenditure',
+        data: [10, 20, 15],
+        backgroundColor: '#8ecae6',
+        borderRadius: 5,
+        barThickness: 50,
+        stack: 'stack1',
       }
     ],
-    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+    options: {
+      ...baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true,
+        },
+      },
+    }
   });
+  //     }
+  //   ],
+  //   options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+  // });
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
     return this.ulbPopulation() == '4M+'
@@ -184,11 +212,11 @@ export class FinancialPerformance {
   // Collapse all nodes and expand only the selected one
   buttonClicked(node: DataNode) {
     if (!this.tree) return;
-
+    console.log(node, 'this is node')
     this.tree.collapseAll();
     this.cdRef.detectChanges();
 
-    // defer to next event loop
+    // refer to next event loop
     setTimeout(() => {
       this.tree.expand(node);
     }, 0);
@@ -205,7 +233,8 @@ export class FinancialPerformance {
 
   // Helper: Add class name.
   addBoldWithBg(node: DataNode) {
-    return this.tree?.isExpanded(node) && this.hasChild(0, node) && !node.isHeader
+    // return this.tree?.isExpanded(node) || this.hasChild(0, node) && !node.isHeader
+    return this.tree?.isExpanded(node) && !node.isHeader
   }
 
   // Download chart as img.

@@ -30,7 +30,8 @@
         <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
             <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
                 <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
-                    [cdkTreeNodeTypeaheadLabel]="node.name" class="ps-0 border-bottom onHover" [ngClass]="{
+                    (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
+                    class="ps-0 border-bottom onHover" [ngClass]="{
                       'bg-table-header': node.isHeader,
                       'selected': addBoldWithBg(node),
                     }">
