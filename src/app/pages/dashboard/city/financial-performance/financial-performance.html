@@ -101,6 +101,23 @@
         </span>{{source}}
     </div>
 
+    <div class="faq-container row justify-content-between align-items-start">
+        <h3 class="fw-bold  p-2 my-4 text-center">Frequently Asked Questions</h3>
+
+        <div class="faq-item" *ngFor="let faq of faqs; let i = index">
+            <button class="faq-question" (click)="toggle(i)">
+                {{ faq.question }}
+                <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
+            </button>
+            <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
+                <p>{{ faq.answer }}</p>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <!-- Tooltip -->
     @if (isTooltipVisible()) {
     <div class="tooltip">

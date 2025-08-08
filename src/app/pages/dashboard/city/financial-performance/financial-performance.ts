@@ -287,4 +287,24 @@ export class FinancialPerformance {
     this.isTooltipVisible.set(!this.isTooltipVisible());
   }
 
+  faqs = [
+    {
+      question: 'What’s included incityfinance?',
+      answer: 'cityfinance Pro includes video walkthroughs, detailed explanations, and multiple versions of problems to help you deeply understand data structures and algorithms.'
+    },
+    {
+      question: 'Are there any refunds?',
+      answer: 'Yes, cityfinance offers a 30-day money-back guarantee. If you’re not satisfied, you can request a refund within 30 days of purchase.'
+    },
+    {
+      question: 'Do I get lifetime access?',
+      answer: 'Yes! Once you purchasecityfinance, you have lifetime access to all content and future updates.'
+    }
+  ];
+
+  expandedIndex: number | null = null;
+
+  toggle(index: number): void {
+    this.expandedIndex = this.expandedIndex === index ? null : index;
+  }
 }

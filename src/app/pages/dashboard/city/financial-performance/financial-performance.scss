@@ -53,3 +53,33 @@
 .chart-container {
   min-height: 300px;
 }
+
+.faq-container {
+  max-width: 700px;
+  margin: 4rem auto;
+}
+
+.faq-question {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.faq-icon {
+  position: absolute;
+  right: 1.5rem;
+  top: 0.2rem;
+  font-size: 2.2rem;
+  color: #333;
+  transition: transform 0.3s ease;
+}
+.faq-answer {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 1rem;
+}
