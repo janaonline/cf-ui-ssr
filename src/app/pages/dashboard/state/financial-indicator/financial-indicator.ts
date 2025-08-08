@@ -1,5 +1,5 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, effect, inject, Inject, Input, input, PLATFORM_ID, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
@@ -42,6 +42,8 @@ export class FinancialIndicator {
   readonly stateIdSignal = signal('');
   readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
+  readonly tabName = input.required<any>();
+  // @Input() tabName = 'Financial Indicators';
 
   currentSelectedButtonKey = signal<string>('Revenue');
   subButton = signal<string>('');
@@ -93,6 +95,7 @@ export class FinancialIndicator {
 
   ngOnInit() {
     console.log('dashboardTabData:', this.dashboardTabData());
+    console.log('tabName:', this.tabName());
     this.getCurrentBtn();
     // this.setButtons();
     // console.log('Buttons:', this.buttons);
@@ -116,7 +119,8 @@ export class FinancialIndicator {
   readonly canFetchChart = computed(() => {
     return !!this.stateIdSignal() &&
       !!this.years().length &&
-      !!this.subButton();
+      !!this.subButton() &&
+      !!this.currentSelectedButtonKey()
   });
 
   lastSubButtonValue: string | null = null;
@@ -136,6 +140,9 @@ export class FinancialIndicator {
   onSelectedButtonChange(key: string): void {
     this.currentSelectedButtonKey.set(key as LineItemType);
     this.getCurrentBtn();
+    if (this.tabName() === 'Service Level Benchmark') {
+      this.getChartData();
+    }
   }
   getCurrentBtn() {
     this.currentSelectedButton.set(this.dashboardTabData().find((btn: any) => btn.key === this.currentSelectedButtonKey()));
@@ -287,12 +294,18 @@ export class FinancialIndicator {
   getRevenueChart() {
     this.isChartLoading.set(true);
     const params = {
-      stateId: this.stateIdSignal(),
-      year: this.getYear(),
+      state: this.stateIdSignal(),
+      financialYear: this.getYear(),
       headOfAccount: this.currentSelectedButtonKey(),
       filterName: this.getFilterName(),
+      'chartType': 'scatter',
+      'isPerCapita': '',
+      'compareType': '',
+      'compareCategory': '', 'ulb': [],
     };
-    return this.dashboardService.getStateRevenue(params);
+    const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
+    // const apiEndpoint = 'state-revenue';
+    return this.dashboardService.getStateRevenue(params, apiEndpoint);
   }
   getChartData(): void {
     this.isChartLoading.set(true);

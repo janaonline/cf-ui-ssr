@@ -113,22 +113,7 @@ export class DashboardService {
     // }
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
   }
-  getStateRevenue(body: { stateId: string; year: string, headOfAccount: string; filterName: string }, stateServiceLabel = ''): Observable<{ sucess: boolean, data: any }> {
-    const payload = {
-      'state': body.stateId,
-      'financialYear': body.year,
-      'headOfAccount': body.headOfAccount, //'Revenue',
-      'filterName': body.filterName, //'revenue',
-      'isPerCapita': '',
-      'compareType': '',
-      'compareCategory': '', 'ulb': [],
-      'chartType': 'scatter',
-      // 'apiEndPoint': 'state-revenue',
-      // 'apiMethod': 'post', 'stateServiceLabel': false,
-      // 'sortBy': '',
-      'chartTitle': 'Total Revenue of all ULBs in Madhya Pradesh vs State '
-    };
-    let apiEndPoint = stateServiceLabel ? "state-slb" : "state-revenue";
+  getStateRevenue(payload: { state: string; financialYear: string, headOfAccount: string; filterName: string }, apiEndPoint = 'state-revenue'): Observable<{ sucess: boolean, data: any }> {
     return this.http.post<any>(`${environment.api.url + apiEndPoint}`, payload);
   }
 
@@ -136,6 +121,10 @@ export class DashboardService {
     return this.http.get(
       `${environment.api.url}dashboardHeaders/${dashboardId}`
     );
+  }
+
+  getDataAvailable(payload: any): Observable<any> {
+    return this.http.post(`${environment.api.url}data-available`, payload);
   }
 
 

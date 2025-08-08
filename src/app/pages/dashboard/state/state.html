@@ -87,14 +87,16 @@
     <mat-tab-group (selectedIndexChange)="onTabChange($event)">
         <mat-tab label="Financial Indicators" [disabled]="false">
             @if (loadedTabs[0]) {
-            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons">
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
+                [tabName]="'Financial Indicators'">
             </app-financial-indicator>
             }
         </mat-tab>
 
         <mat-tab label="Service Level Benchmark" [disabled]="false">
             @if (loadedTabs[1]) {
-            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons">
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
+                [tabName]="'Service Level Benchmark'">
             </app-financial-indicator>
             }
         </mat-tab>

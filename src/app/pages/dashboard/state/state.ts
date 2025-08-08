@@ -37,6 +37,7 @@ export class State implements OnInit {
   slugName = signal<string>('');
   stateIdSignal = signal('');
   stateDetails = signal<any>({});
+  dataAvailable = signal<any>({});
 
 
   gridData: ExploresectionTable[] = [];
@@ -180,6 +181,7 @@ export class State implements OnInit {
         buttons: buttons,
       });
     });
+    console.log("Tabs: ", tabs);
     this.dashboardTabs.set(tabs);
   }
   // Fetch data.
@@ -201,6 +203,22 @@ export class State implements OnInit {
         this.isLoading.set(false);
       }
     })
+  }
+
+  getDataAvailable() {
+    // this.isMoneyInfoLoading.set(true);
+    const payload = { "financialYear": this.selectedLedgerYear(), "stateId": this.stateDetails().stateId };
+    this.dashboardService.getDataAvailable(payload).subscribe({
+      next: (res: any) => {
+        this.dataAvailable.set(res);
+      },
+      error: (error: Error) => {
+        console.error('Failed to get data availability');
+      },
+      complete: () => {
+        // this.isMoneyInfoLoading.set(false);
+      }
+    });
   }
 
   // Ulb selected in city search drop down.
