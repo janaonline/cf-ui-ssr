@@ -102,7 +102,9 @@
         </mat-tab>
 
         <mat-tab label="Borrowings & Credit Rating" [disabled]="false">
-            Borrowings & Credit Rating
+            <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
+                [tabName]="'Borrowings & Credit Rating'">
+            </app-borrowing-credit-rating>
         </mat-tab>
     </mat-tab-group>
     }

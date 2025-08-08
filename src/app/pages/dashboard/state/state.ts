@@ -2,8 +2,9 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ExploreSectionResponse, ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
+import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { CitySearch } from "../../../shared/components/city-search/city-search";
@@ -12,14 +13,15 @@ import { InfoCards } from "../../../shared/components/info-cards/info-cards";
 import { Map } from "../../../shared/components/map/map";
 import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
 import { StateSearch } from "../../../shared/components/state-search/state-search";
-import { single, Subject, takeUntil } from 'rxjs';
 import { DashboardService } from '../dashboard-service';
+import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
 import { FinancialIndicator } from './financial-indicator/financial-indicator';
-import { IState } from '../../../core/models/state/state';
 
 @Component({
   selector: 'app-state',
-  imports: [PreLoader, GridView, StateSearch, CitySearch, Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator],
+  imports: [
+    PreLoader, GridView, StateSearch, CitySearch,
+    Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator, BorrowingCreditRating],
   templateUrl: './state.html',
   styleUrl: './state.scss'
 })

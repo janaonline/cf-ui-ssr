@@ -1,0 +1,15 @@
+<section class="container">
+    @if(dashboardTabData()) {
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="dashboardTabData()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+
+    <!-- Info about line item -->
+    <!-- <p>{{ currentSelectedButton().subButtons.text }}</p> -->
+
+    <!-- Sub Buttons -->
+    <!-- <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
+            (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
+        </app-tab-buttons> -->
+    }
+</section>
