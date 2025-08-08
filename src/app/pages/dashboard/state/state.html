@@ -60,6 +60,42 @@
         @if (this.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else {
+
+        <div class="chart-wrapper rounded border shadow-sm py-4 px-3">
+            <div class="row">
+                <h6 class="fw-bold">Standardized Data Availability</h6>
+                <p class="col-sm-12 col-md-8 pt-3">Of the financial statements submitted by the ULBs, 95%
+                    have been changed to a comparable, standardized, and digitized format for the year 2021-22.
+                    Digitization of data is in progress for several ULBs including Chamarajanagar City Municipal
+                    Council, Bantval Town Municipal Council, Hole Narsipur Town Municipal Council, Pavagada Town
+                    Municipal Council, Chiknayakanhalli Municipality. For more details, download the complete set of
+                    ULBs for which the data is available for the year 2021-22.
+                </p>
+
+                <div class="charts-container col-sm-12 col-md-4">
+                    @for (item of chartData; track $index) {
+                    <div class="chart-wrapper rounded border">
+                        <div class="chart-container">
+                            <app-charts [chartConfig]="item"></app-charts>
+                        </div>
+                        <div class="chart-title">
+                            <p class="m-0 p-0">
+                                {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+                            </p>
+                            <p class="m-0 p-0 custom-font-size-7 text-center">
+                                {{ item.additionalInfo?.indicatorName }}
+                            </p>
+                            <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
+                            <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            <button class="btn btn-sm btn-outline-cfPrimary my-3"><i class="bi bi-download"></i>&nbsp;Download
+                Data</button>
+        </div>
+
         <app-info-cards [items]="stateDetails().financialData.result"></app-info-cards>
         }
 

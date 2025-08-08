@@ -7,6 +7,9 @@ import { environment } from '../../../../environments/environment';
 import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
 import { IULB } from '../../../core/models/ulb';
 import { SeoService } from '../../../core/services/seo/seo.service';
+import { ChartConfig } from '../../../shared/components/charts/chart-interfaces';
+import { Charts } from "../../../shared/components/charts/charts";
+import { gaugeChartOptions } from '../../../shared/components/charts/constants';
 import { CitySearch } from "../../../shared/components/city-search/city-search";
 import { GridView } from "../../../shared/components/grid-view/grid-view";
 import { InfoCards } from "../../../shared/components/info-cards/info-cards";
@@ -21,7 +24,7 @@ import { FinancialIndicator } from './financial-indicator/financial-indicator';
   selector: 'app-state',
   imports: [
     PreLoader, GridView, StateSearch, CitySearch,
-    Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator, BorrowingCreditRating],
+    Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator, BorrowingCreditRating, Charts],
   templateUrl: './state.html',
   styleUrl: './state.scss'
 })
@@ -98,6 +101,30 @@ export class State implements OnInit {
   dashboardTabs = signal<any>({});
   buttons: any;
   tabs: any[] = [];
+
+  chartData: ChartConfig[] = [
+    {
+      "chartId": "slb0",
+      "chartType": "gaugeChart",
+      "labels": [""],
+      "datasets": [
+        {
+          "label": "Data available",
+          "data": [135, 20],
+          "backgroundColor": ["#1b4965", "#e9ecef"],
+          "borderWidth": 1,
+          "borderRadius": 5
+        }
+      ],
+      "options": gaugeChartOptions,
+      "additionalInfo": {
+        "value": 95,
+        "indicatorName": "Data Standardized (2021-22)",
+        "nationalAvg": 0,
+        "unit": "%"
+      }
+    }
+  ];
 
   constructor(
     private activatedRoute: ActivatedRoute,
