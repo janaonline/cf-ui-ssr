@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
@@ -23,7 +23,7 @@ import { FinancialIndicator } from './financial-indicator/financial-indicator';
 @Component({
   selector: 'app-state',
   imports: [
-    PreLoader, GridView, StateSearch, CitySearch,
+    PreLoader, GridView, StateSearch, CitySearch, RouterModule,
     Map, InfoCards, MatTabsModule, DatePipe, FinancialIndicator, BorrowingCreditRating, Charts],
   templateUrl: './state.html',
   styleUrl: './state.scss'
