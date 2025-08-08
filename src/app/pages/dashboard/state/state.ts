@@ -176,8 +176,8 @@ export class State implements OnInit {
     this.dashboardService
       .getDashboardTabData("619cc1016abe7f5b80e45c6b")
       .subscribe({
-        next: (res: any) => {
-          this.setButtons(res["data"]);
+        next: (tabs: any) => {
+          this.dashboardTabs.set(tabs);
         }, error: (error: any) => {
           console.log(error);
         }
@@ -185,34 +185,6 @@ export class State implements OnInit {
       );
   }
 
-  setButtons(data: any) {
-    const tabs: any[] = [];
-    data.forEach((tab: any) => {
-      const buttons: any[] = [];
-
-      const subHeaders = tab.subHeaders;
-      if (subHeaders && subHeaders.length > 0) {
-        subHeaders.forEach((btn: any) => {
-          let subButtons: any = {};
-          subButtons = {
-            text: btn.mainContent[0].about,
-            buttons: btn.mainContent[0].btnLabels.map((subBtn: string) => ({ key: subBtn, label: subBtn }))
-          };
-          buttons.push({
-            key: btn.name,
-            label: btn.name,
-            subButtons
-          });
-        });
-      }
-      tabs.push({
-        name: tab.name,
-        buttons: buttons,
-      });
-    });
-    console.log("Tabs: ", tabs);
-    this.dashboardTabs.set(tabs);
-  }
   // Fetch data.
   loadData(slugName: string) {
     this.isLoading.set(true);

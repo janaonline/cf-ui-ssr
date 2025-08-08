@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ICreditRatingData } from '../../core/models/creditRating/creditRatingResponse';
 import {
@@ -86,6 +86,28 @@ export class DashboardService {
   }
 
   // Get state details.
+  getHomeData(): Observable<any> {
+    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`).pipe(
+      map((response: any) => {
+        const data = response.data;
+        const result: { key: string; label: string; value: number }[] = [];
+
+        for (const key in data) {
+          if (Array.isArray(data[key])) continue;
+
+          result.push({
+            key,
+            label: key,
+            value: data[key].toLocaleString('en-IN')
+          });
+        }
+
+        return result;
+      })
+    );
+  }
+
+  // Get state details.
   getStateDetails(params: { slug: string; year: string }): Observable<ExploreSectionResponse> {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}dashboard/state/details`, { params });
   }
@@ -118,9 +140,39 @@ export class DashboardService {
   }
 
   getDashboardTabData(dashboardId: string): Observable<any> {
-    return this.http.get(
-      `${environment.api.url}dashboardHeaders/${dashboardId}`
-    );
+    return this.http.get(`${environment.api.url}dashboardHeaders/${dashboardId}`)
+      .pipe(
+        map((response: any) => {
+          return this.formatTabs(response.data)
+        })
+      );
+  }
+
+  formatTabs(data: any) {
+    const tabs: any[] = [];
+    data.sort((a: any, b: any) => a.position - b.position).forEach((tab: any) => {
+      const buttons: any[] = [];
+      const subHeaders = tab.subHeaders;
+      if (subHeaders && subHeaders.length > 0) {
+        subHeaders.forEach((btn: any) => {
+          let subButtons: any = {};
+          subButtons = {
+            text: btn.mainContent[0].about,
+            buttons: btn.mainContent[0].btnLabels.map((subBtn: string) => ({ key: subBtn, label: subBtn }))
+          };
+          buttons.push({
+            key: btn.name,
+            label: btn.name,
+            subButtons
+          });
+        });
+      }
+      tabs.push({
+        name: tab.name,
+        buttons: buttons,
+      });
+    });
+    return tabs;
   }
 
   getDataAvailable(payload: any): Observable<any> {
