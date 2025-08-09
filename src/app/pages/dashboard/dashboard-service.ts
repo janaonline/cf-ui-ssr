@@ -61,6 +61,11 @@ export class DashboardService {
       `/assets/files/credit-rating-new.json`
     );
   }
+  getCreditRatings() {
+    return this.http.get<ICreditRatingData[]>(
+      `/assets/files/credit-rating.json`
+    );
+  }
 
   // Get 28 Slbs data.
   fetchCitySlbChartData(
@@ -87,24 +92,25 @@ export class DashboardService {
 
   // Get state details.
   getHomeData(): Observable<any> {
-    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`).pipe(
-      map((response: any) => {
-        const data = response.data;
-        const result: { key: string; label: string; value: number }[] = [];
+    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
+    // .pipe(
+    //   map((response: any) => {
+    //     const data = response.data;
+    //     const result: { key: string; label: string; value: number }[] = [];
 
-        for (const key in data) {
-          if (Array.isArray(data[key])) continue;
+    //     for (const key in data) {
+    //       if (Array.isArray(data[key])) continue;
 
-          result.push({
-            key,
-            label: key,
-            value: data[key].toLocaleString('en-IN')
-          });
-        }
+    //       result.push({
+    //         key,
+    //         label: key,
+    //         value: data[key].toLocaleString('en-IN')
+    //       });
+    //     }
 
-        return result;
-      })
-    );
+    //     return result;
+    //   })
+    // );
   }
 
   // Get state details.

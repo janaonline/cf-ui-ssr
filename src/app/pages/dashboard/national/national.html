@@ -3,7 +3,7 @@
         <!-- Grid data + Map  -->
         <div class="row my-3">
             <!-- Left section -->
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-12 col-md-12">
                 <h1 class="fw-bold my-3 fs-2">National Performance</h1>
                 <p class="my-3">
                     Summary of key national-level demographics and municipal (urban) indicators
@@ -13,7 +13,8 @@
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
-                <app-grid-view [gridData]="gridData()"></app-grid-view>
+                <!-- <app-grid-view [gridData]="gridData().dataIndicators"></app-grid-view> -->
+                <app-grid-view [gridData]="gridDataFomat.dataIndicators"></app-grid-view>
 
                 }
             </div>
