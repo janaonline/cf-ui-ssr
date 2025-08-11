@@ -32,9 +32,8 @@
                     (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
                     class="ps-0 border-bottom onHover" [ngClass]="{
                       'bg-table-header': node.isHeader,
-                      'selected': addBoldWithBg(node),
+                      'selected': node.isSelected,
                     }">
-
                     <!-- expand icon -->
                     @if (hasChild(0, node)) {
                     <button class="p-0 m-0" (click)="buttonClicked(node)" matIconButton
@@ -47,14 +46,14 @@
                     }
 
                     <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
-                        <div [class.selected]="addBoldWithBg(node) " [class]=" node.className " style=" width: 300px;">
+                        <div [class.selected]="node.isSelected" [class]=" node.className " style=" width: 300px;">
                             {{node.name}}
                         </div>
 
                         <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
                             @for(year of node.yearData; track $index) {
                             <div [class]="'text-end w-100 px-2 d-flex flex-column justify-content-center '"
-                                [class.selected]="addBoldWithBg(node)">{{year}}
+                                [class.selected]="node.isSelected">{{year}}
                                 @if (node.yearGrowth?.[$index]) {
                                 <br>
                                 <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
@@ -108,7 +107,7 @@
     </div>
 
     <div class="faq-container row justify-content-between align-items-start">
-        <h3 class="fw-bold  p-2 my-4 text-center">Frequently Asked Questions</h3>
+        <h3 class="fw-bold  p-2 my-4 text-center faq">Frequently Asked Questions</h3>
 
         <div class="faq-item" *ngFor="let faq of faqs; let i = index">
             <button class="faq-question" (click)="toggle(i)">

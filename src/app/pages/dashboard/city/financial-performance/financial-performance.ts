@@ -27,6 +27,7 @@ interface DataNode {
   children?: DataNode[];
   className: string;
   isHeader?: boolean
+  isSelected?: boolean;
 }
 
 const Financial_Performance_DATA: DataNode[] =
@@ -240,6 +241,8 @@ export class FinancialPerformance {
 
   // Collapse all nodes and expand only the selected one
   buttonClicked(node: DataNode) {
+    this.dataSource().forEach(n => n.isSelected = false);
+    node.isSelected = true;
     if (!this.tree) return;
     // console.log(node, 'this is node')
     // this.chartData().datasets = [];
@@ -374,8 +377,12 @@ export class FinancialPerformance {
       next: (data) => {
         this.marketData = data;
         console.log(this.marketData, 'this is market data') // Store the response data
-        this.dataSource.set(data.response.data);  // Ensure this.dataSource is available and matches the expected structure
+        const dataSource = data.response.data;
+        // dataSource[1].isSelected = true;
+
+        this.dataSource.set(dataSource);  // Ensure this.dataSource is available and matches the expected structure
         console.log(this.dataSource(), 'datasource')
+        this.buttonClicked(dataSource[1]);
         this.yearArr = this.dataSource()[0];
         this.intro = this.marketData.response.intro
         this.source = this.marketData.source;  // Ensure this.marketData.intro exists

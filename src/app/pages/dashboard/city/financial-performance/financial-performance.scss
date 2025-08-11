@@ -59,6 +59,10 @@
   margin: 4rem auto;
 }
 
+.faq {
+  font-size: 30px;
+}
+
 .faq-question {
   position: relative;
   width: 100%;
@@ -73,8 +77,8 @@
 .faq-icon {
   position: absolute;
   right: 1.5rem;
-  top: 0.2rem;
-  font-size: 2.2rem;
+  top: 10px;
+  font-size: 2rem;
   color: #333;
   transition: transform 0.3s ease;
 }
@@ -82,4 +86,8 @@
   overflow: hidden;
   transition: max-height 0.3s ease;
   padding: 0 1rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid #ddd;
 }
