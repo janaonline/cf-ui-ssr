@@ -1,0 +1,46 @@
+<div class="container">
+    <div class="row">
+        <p class="fw-bolder">CRISIL Credit Rating Summary</p>
+        @if(!noDataFound) {
+        <div class="d-flex flex-wrap">
+            <!-- {{ratingGrades | json}} -->
+            @for ( grade of ratingGrades; track $index) {
+            <div>
+                @if(absCreditInfo.ratings[grade] !== 0) {
+                <div class="text-center p-2 m-3" style="box-shadow: 0px 1px 2px #c4c4c4; cursor: pointer; width: 100px"
+                    (click)="openModal(grade, $index)" [class.active]="selectedIndex === $index">
+                    <div class="rating">
+                        {{ grade }}
+                    </div>
+                    <div class="citiesCount">
+                        {{ absCreditInfo.ratings[grade] }}
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        } @else {
+        <div>
+            <img src="./assets/images/sad.svg" height="82px" width="89px" />
+            <div style="color: #1e44ad; font-size: 22px; font-weight: 600">
+                No Data Found for chosen options
+            </div>
+            <p style="color: #6e7281; font-size: 16px">
+                <!-- {{ notFoundMessage }} -->
+            </p>
+        </div>
+        }
+    </div>
+    <div class="row">
+        @for (data of dialogData; track $index) {
+        <div class="text-center p-2 m-3" style="width: 28%; box-shadow: 0px 1px 2px #c4c4c4">
+            <div class="newCard">State: {{ data?.state }}</div>
+            <div class="newCard">ULB: {{ data?.ulb }}</div>
+
+            <div class="newCard">Agency: {{ data?.agency }}</div>
+            <div class="newCard">Status: {{ data?.status }}</div>
+        </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,653 @@
+.municipal-bonds {
+    font-size: 1vw;
+    margin-bottom: 3%;
+
+    @media (min-width: 1500px) {
+        font-size: 1vw;
+    }
+
+    @media (min-width: 1300px) and (max-width: 1500px) {
+        font-size: 1.2vw;
+    }
+
+    @media (min-width: 1080px) and (max-width: 1300px) {
+        font-size: 1.2vw;
+    }
+
+    @media (max-width: 768px) {
+        padding: 0;
+    }
+
+    // min-width: 80vw !important;
+    // width: fit-content;
+    // max-width: 92vw !important;
+
+    ::ng-deep {
+        .c-btn {
+            font-size: 12px;
+        }
+
+        .dropdown-list {
+            font-size: 12px;
+        }
+    }
+
+    .searchButton {
+        border: none;
+        padding: 7px;
+        width: auto;
+        font-size: 1em;
+        border-radius: 5px;
+        background-color: #e67e15;
+        border: 1px solid #e67e15;
+        color: #ffffff;
+        cursor: pointer;
+    }
+
+    .mat-select {
+        border-color: black;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #ffffff;
+        color: #000;
+    }
+
+    #tableHeadings {
+        thead {
+            th {
+                font-size: 17px;
+                text-align: left;
+
+                @media screen and (max-width: 468px) {
+                    font-size: 2.8em;
+                }
+            }
+        }
+    }
+
+    accordion {
+        width: fit-content;
+    }
+
+    accordion-group {
+        width: fit-content;
+        min-width: 100%;
+        font-size: 1em;
+
+        ::ng-deep {
+            .panel-title {
+                font-size: 1em !important;
+
+                @media screen and (max-width: 468px) {
+                    font-size: 3.4em !important;
+                }
+            }
+        }
+
+        h4,
+        .panel-title {
+            padding-left: 9px;
+            font-weight: 600;
+            padding-top: 9px;
+            font-size: 17px;
+        }
+    }
+
+    .accordion-body-table {
+        font-size: 14px;
+
+        @media screen and (max-width: 551px) {
+            font-size: 2.8em;
+        }
+    }
+
+    .page-title {
+        font-size: 1.5em;
+
+        @media screen and (max-width: 800px) and (min-width: 560px) {
+            font-size: 14px;
+        }
+    }
+
+    // pagination-controls {
+    //   // font-size: 12px;
+    //   // @media screen and (max-width:468px){
+    //   //   font-size: 3.8em;
+    //   // }
+    // }
+
+    .btn {
+        font-size: 12px;
+
+        @media screen and (max-width: 468px) {
+            font-size: 1.2em;
+        }
+    }
+
+    .heading {
+        background-color: #444;
+        color: #fff;
+
+        // td {
+        //   // font-weight: bold;
+        // }
+    }
+
+    .common-container {
+        padding-bottom: 0px;
+    }
+
+    .page-title {
+        margin-top: 0px;
+    }
+
+    .fixed-header {
+        // max-height: calc(100vh - 330px);
+        // overflow: auto;
+        height: fit-content;
+    }
+
+    table {
+        min-width: 100%;
+
+        th {
+            background-color: #eff2f9;
+            color: black;
+            padding: 9px;
+            // font-size: 14px;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 7px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+
+    tr {
+        border: 0;
+        // display: block;
+    }
+
+    .solid {
+        border: 1px solid #d9d8d8;
+        border-radius: 4px;
+        padding-left: 7px;
+    }
+
+    .scrolling table {
+        table-layout: inherit;
+        // *margin-left: -20%;
+        /*ie7*/
+    }
+
+    .scrolling td,
+    th {
+        vertical-align: top;
+        padding: 10px;
+    }
+
+    .scrolling th {
+        position: absolute;
+        // *position: relative;
+        /*ie7*/
+        left: 0;
+        width: 20%;
+        // height: 100%;
+    }
+
+    .outer {
+        position: relative;
+    }
+
+    .inner {
+        overflow-x: auto;
+        overflow-y: visible;
+        // margin-left: 120px;
+    }
+
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+        padding: 8px;
+    }
+
+    .selectClass {
+        width: 76%;
+    }
+
+    .cityWidth {
+        min-width: 329px !important;
+    }
+
+    // .cityMinWidth{
+    //   min-width: 344px;
+    // }
+    .stateULBName>* {
+        background: rgb(175, 175, 175);
+        color: white;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        text-align: center;
+    }
+
+    .stateULBName {
+        padding-right: 0px;
+        max-width: 214px;
+    }
+
+    ::ng-deep .mat-form-field-wrapper {
+        margin: 0px !important;
+    }
+
+    angular2-multiselect {
+        display: inline-block;
+    }
+
+    .filterForm {
+        display: inline-flex;
+        align-items: center;
+        padding-left: 0px;
+        padding-bottom: 0.1%;
+        width: 51vw;
+        min-width: fit-content;
+    }
+
+    ::ng-deep .c-btn {
+        min-height: 38px !important;
+    }
+
+    .somepadding {
+        padding: 10px 5px;
+    }
+
+    th,
+    td {
+        // min-width: 284px;
+        max-width: 15px;
+
+        @media screen and (max-width: 551px) {
+            min-width: 120px;
+            max-width: 120px;
+        }
+    }
+
+    .municipal-bond {
+        overflow-x: hidden;
+        margin-bottom: 1%;
+        min-width: 100%;
+    }
+
+    accordion {
+        display: block;
+        min-width: 100%;
+    }
+
+    ::ng-deep .dropdown-list {
+        min-width: 250px !important;
+    }
+
+    .filterForm {
+        font-size: 1vw;
+
+        @media screen and (max-width: 468px) {
+            font-size: 3vw !important;
+        }
+    }
+
+    ::ng-deep {
+        .pure-checkbox input[type="checkbox"]+label:before {
+            border: 1px solid #a9a9a9 !important;
+        }
+
+        .c-remove {
+            display: none !important;
+        }
+
+        .ngx-pagination {
+            margin-bottom: 0px;
+
+            @media screen and (max-width: 1024px) {
+                padding: 0px;
+            }
+        }
+
+        .ngx-pagination .current {
+            background: #3e5db1 !important;
+        }
+    }
+}
+
+@media (min-width: 512px) {
+    .filterContainer {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.pagination-top {
+    float: right;
+    right: 0px;
+
+    @media (max-width: 512px) {
+        position: absolute;
+    }
+
+    @media screen and (max-width: 1000px) and (min-width: 560px) {
+        top: -35px;
+    }
+
+    @media screen and (max-width: 551px) {
+        position: relative;
+    }
+}
+
+.state-dropdown {
+    width: 66%;
+    margin-right: 2%;
+}
+
+.ulbDropdown {
+    width: 90%;
+    margin-right: 2%;
+}
+
+.dropdown-year {
+    width: 48%;
+    margin-right: 2%;
+}
+
+@media (max-width: 558px) {
+    .state-dropdown.state-dropdown.state-dropdown {
+        width: 28% !important;
+        margin-right: 2%;
+    }
+
+    .ulbDropdown {
+        width: 40% !important;
+    }
+
+    .dropdown-year {
+        width: 26%;
+        // margin-top: 4%;
+    }
+}
+
+.drop-down-bond {
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 10px 0px;
+
+    @media screen and (max-width: 551px) {
+        position: relative;
+        flex-wrap: wrap;
+        margin: 20px 0px;
+    }
+}
+
+.bond-btn-top {
+    margin: 10px 0px;
+
+    @media screen and (max-width: 768px) {
+        position: relative;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 551px) {
+    .pagination-top pagination-controls {
+        float: right;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .dropdown-year {
+        width: 143%;
+        margin-left: -50%;
+        margin-top: 25%;
+    }
+
+    .customAccordion {
+        width: 100% !important;
+        overflow-x: auto;
+    }
+
+    th {
+        font-size: medium;
+    }
+
+    .filter-title {
+        margin-top: 2%;
+    }
+
+    .filterPosition {
+        justify-content: flex-start !important;
+        font-size: small;
+        margin: 2%;
+        padding-left: 20%;
+    }
+
+    .filter-section {
+        height: 237px !important;
+    }
+}
+
+// ::ng-deep .dropdown-year {
+//   @media screen and (max-width: 551px) {
+//     .list-area {
+//       transform: translateX(-50%);
+//     }
+//   }
+// }
+
+.municipal-bond table {
+    position: relative;
+}
+
+// .municipal-bond table th{
+//   position: sticky;
+// }
+// .municipal-bond table th:first-child{
+//   left: 0;
+//   z-index: 1;
+// }
+.accordion-body-table {
+    position: relative;
+}
+
+.accordion-body-table tbody tr td {
+    position: sticky;
+}
+
+.accordion-body-table tbody tr td:first-child {
+    left: 0;
+    z-index: 1;
+}
+
+@media screen and (max-width: 1024px) {}
+
+.pagination-bottom,
+.pagination-top {
+    font-size: 14px !important;
+}
+
+@media screen and (max-width: 551px) {
+    .pagination-top pagination-controls {
+        margin: 10px 0px !important;
+    }
+
+    .table-mf-header {
+        max-height: 80vh;
+        overflow: scroll;
+    }
+
+    .table-mf-header .table-mf {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        top: 0;
+    }
+}
+
+// 551 media screen end
+
+// ng-star-inserted
+
+.table {
+    //   border-collapse: separate;
+    border-spacing: 0 20px;
+    // border:1px solid black;
+}
+
+.customTr {
+    width: 1px;
+    height: 4px;
+}
+
+.border-left {
+    border-left: none;
+}
+
+table>tr {
+    border-radius: 10px !important;
+}
+
+tr {
+    border: 1px solid #d9d8d8;
+}
+
+.border-spacing {
+    border: 1px solid #d9d8d8 !important;
+    margin: 10px;
+}
+
+.customTableRow {
+    background: #f8faff 0% 0% no-repeat padding-box;
+    border-radius: 0px 0px 4px 4px;
+    // opacity: 0.72;
+    padding: 10px;
+    padding-left: 15px;
+}
+
+.dropdownYear {
+    text-align: end;
+    margin-left: 20px;
+}
+
+.descpt {
+    margin-left: -13px;
+    font-weight: 600;
+}
+
+.topTableSummary {
+    // background: var(--unnamed-color-e9ecf7) 0% 0% no-repeat padding-box;
+    background: #e9ecf7 0% 0% no-repeat padding-box !important;
+    border-radius: 4px 4px 0px 0px;
+    // opacity: 0.71;
+    width: 19%;
+    color: 0f1f40;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #e9ecf7;
+    color: #0f1f40;
+}
+
+th {
+    width: 150px;
+    text-align: left;
+    border: 1px solid #e9ecf7;
+    background: #e9ecf7 0% 0% no-repeat padding-box;
+    border-radius: 4px 4px 0px 0px;
+    color: #0f1f40;
+    height: 40px;
+    padding-left: 20px;
+    letter-spacing: 0.5px;
+}
+
+td {
+    // width: 150px;
+    padding: 5px;
+    height: 35px;
+    border-radius: 4px 4px 0px 0px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    color: #0f1f40;
+    padding-left: 20px;
+}
+
+.border-all {
+    border: 1px solid lightgray !important;
+}
+
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0 5px;
+}
+
+.border-top-bottom {
+    border-top: 1px solid #d3d3d3;
+    border-bottom: 1px solid #d3d3d3;
+}
+
+.border-left {
+    border-left: 1px solid #d3d3d3;
+}
+
+.border-right {
+    border-right: 1px solid #d3d3d3;
+}
+
+.sort-icon {
+    margin-left: 5px;
+    color: #80899b;
+    vertical-align: middle;
+}
+
+// filter part
+.filter-section {
+    height: 137px;
+    background: #f7f7f7 0% 0% no-repeat padding-box;
+    border-radius: 10px;
+    padding: 1%;
+}
+
+.filter-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #0f1f40;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.reset-btn {
+    background: #fff 0% 0% no-repeat padding-box;
+    border: 1px solid #e67e15;
+    border-radius: 6px;
+    font-size: 15px;
+    letter-spacing: 0px;
+    color: #e67e15;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px 0 10px;
+}
+
+.reset-btn:hover {
+    background-color: #e67e15;
+    color: #fff;
+    transition: 0.5s;
+}
+
+.searchButton:hover {
+    background-color: #fff !important;
+    color: #e67e15 !important;
+    transition: 0.5s;
+}

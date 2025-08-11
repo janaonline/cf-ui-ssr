@@ -33,7 +33,7 @@ export class State implements OnInit {
 
   isLoading = signal(false);
   isMoneyInfoLoading = signal(false);
-  loadedTabs: boolean[] = [true, false, false, false];
+  loadedTabs: boolean[] = [false, false, true];
   showMap = signal(true);
 
   ledgerYears = signal<string[]>([]);

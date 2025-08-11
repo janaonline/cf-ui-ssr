@@ -118,10 +118,15 @@
 </section>
 
 <section class="container matTabGroup">
+    <div class="alert alert-info text-center mt-5" role="alert">
+        <i class="bi bi-bell"></i>
+        NEW ON CITY FINANCE: 10,000+ budget documents of 2,000 cities(FY 2020-2024) are now available for
+        download. <a routerLink="/resources-dashboard/data-sets/income_statement">Click here to access files.</a>
+    </div>
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
     @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
-    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
-        <mat-tab label="Financial Indicators" [disabled]="false">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="2">
+        <mat-tab label="Financial Indicators">
             @if (loadedTabs[0]) {
             <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
                 [tabName]="'Financial Indicators'">
@@ -129,7 +134,7 @@
             }
         </mat-tab>
 
-        <mat-tab label="Service Level Benchmark" [disabled]="false">
+        <mat-tab label="Service Level Benchmark">
             @if (loadedTabs[1]) {
             <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
                 [tabName]="'Service Level Benchmark'">
@@ -137,10 +142,12 @@
             }
         </mat-tab>
 
-        <mat-tab label="Borrowings & Credit Rating" [disabled]="false">
+        <mat-tab label="Borrowings & Credit Rating">
+            @if (loadedTabs[2]) {
             <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
                 [tabName]="'Borrowings & Credit Rating'">
             </app-borrowing-credit-rating>
+            }
         </mat-tab>
     </mat-tab-group>
     }

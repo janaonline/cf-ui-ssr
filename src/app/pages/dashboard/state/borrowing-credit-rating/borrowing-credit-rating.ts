@@ -12,10 +12,11 @@ import { CommonService } from '../../../../core/services/common.service';
 import { GeographicalService } from '../../../../core/services/geographical/geographical.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IBondIssuer } from './models/bondIssuerResponse';
+import { CreditRating } from './credit-rating/credit-rating';
 
 @Component({
   selector: 'app-borrowing-credit-rating',
-  imports: [TabButtons],
+  imports: [TabButtons, CreditRating],
   templateUrl: './borrowing-credit-rating.html',
   styleUrl: './borrowing-credit-rating.scss'
 })
@@ -26,7 +27,7 @@ export class BorrowingCreditRating {
   readonly dashboardTabData = input.required<any>();
   readonly tabName = input.required<any>();
 
-  currentSelectedButtonKey = signal<string>('Revenue');
+  currentSelectedButtonKey = signal<string>('Credit Rating');
   subButton = signal<string>('');
   currentSelectedButton: any = signal<any>({});
 
@@ -142,33 +143,76 @@ export class BorrowingCreditRating {
     // private _excelService: ExcelService,
     private authService: AuthService,
     // private diaglog: MatDialog,
-    private router: Router,
+    // private router: Router,
     private _activatedRoute: ActivatedRoute,
     protected _commonService: CommonService,
     protected _geoService: GeographicalService,
     private snackbar: MatSnackBar
   ) {
     this.loadMapGeoJson();
+    // this.stateIdSignal.set(this.stateDetails()?.state?._id);
+    // this.years.set(this.stateDetails().yearsList);
+    // this.stateId = this.stateIdSignal();
     this._activatedRoute.queryParams.subscribe((params) => {
       console.log("queryParams==>", params);
-      this.queryParams = params;
-      this.cityId = params['cityId'];
-      this.stateId = params['stateId'];
-      this.initializeForm();
-      this.initializeFormListeners();
-      this._bondService
-        .getBondIssuer()
-        .subscribe((res) => this.onGettingBondIssuerSuccess(res));
-      this._bondService
-        .getBondIssuerItem()
-        .subscribe((res) => this.onGettingBondIssuerItemSuccess(res));
-      this._bondService
-        .getULBS()
-        .subscribe((res) => this.onGettingULBResponseSuccess(res));
+
     });
     this.createUlbNameMap();
   }
 
+  ngOnInit() {
+    console.log("this.stateDetails()?.state?._id", this.stateDetails()?.state?._id);
+
+    this.stateIdSignal.set(this.stateDetails()?.state?._id);
+    // this.years.set(this.stateDetails().yearsList);
+    this.stateId = this.stateIdSignal();
+
+    let selectedUlb: any = this.ulbList[this.cityId]?.name;
+    console.log("selectedUlb", selectedUlb);
+
+    this.initializeForm();
+    this.initializeFormListeners();
+    this._bondService
+      .getBondIssuer()
+      .subscribe((res) => this.onGettingBondIssuerSuccess(res));
+    this._bondService
+      .getBondIssuerItem()
+      .subscribe((res) => this.onGettingBondIssuerItemSuccess(res));
+    this._bondService
+      .getULBS()
+      .subscribe((res) => this.onGettingULBResponseSuccess(res));
+
+    this.bondParam.ulbs.push(selectedUlb);
+    // setTimeout(() => {
+    //   console.log("bondParam", this.bondParam);
+    //   this._bondService
+    //     .getBondIssuerItem(this.bondParam)
+    //     .subscribe((res) => this.onGettingBondIssuerItemSuccess(res));
+    // }, 100);
+    this.emptyArray();
+    console.log("valueeeeeeee" + this.value);
+    if (this.value == "city") {
+      this.city = true;
+      this.state = false;
+    }
+    if (this.value == "state") {
+      this.state = true;
+      this.city = false;
+    }
+    console.log(this.filterForm);
+  }
+
+  // ngOnInit() {
+  //   console.log('dashboardTabData:', this.dashboardTabData());
+  //   console.log('tabName:', this.tabName());
+  //   this.getCurrentBtn();
+  //   // this.setButtons();
+  //   // console.log('Buttons:', this.buttons);
+  //   // console.log('Sub Buttons:', this.subButtons);
+  //   // this.subButtons = this.dashboardTabData()[0].subButtons;
+  //   this.stateIdSignal.set(this.stateDetails().state._id);
+  //   this.years.set(this.stateDetails().yearsList);
+  // }
   StatesJSONForMapCreation: any;
   loadMapGeoJson() {
     const prmsArr = [];
@@ -176,8 +220,8 @@ export class BorrowingCreditRating {
     const prms1 = this._geoService.loadConvertedIndiaGeoData().toPromise();
     prmsArr.push(prms1);
 
-    prms1.then((data) => (this.StatesJSONForMapCreation = data));
-    console.log("StatesJSONForMapCreation", this.StatesJSONForMapCreation);
+    // prms1.then((data) => (this.StatesJSONForMapCreation = data));
+    // console.log("StatesJSONForMapCreation", this.StatesJSONForMapCreation);
 
     return Promise.all(prmsArr).then((value) => {
       console.log("value", value);
@@ -310,7 +354,7 @@ export class BorrowingCreditRating {
     this.bondIssuerItemData = datas.data;
     if (this.cityId) { this.bondIssuerItemData = datas.data.filter((e: any) => e.ulbId === this.cityId); }
 
-    if (this.queryParams['stateId']) {
+    if (this.stateIdSignal()) {
       this.filterdData = this.bondIssuerItemData.filter(
         (elem: any) => elem.state == this.stateId
       );
@@ -453,7 +497,7 @@ export class BorrowingCreditRating {
       (a: any, b: any) => b.year - a.year
     );
     this.totalDataSource = this.tableDataSource;
-    console.log(this.tableDataSource, "tableDataSource");
+    console.log(this.tableDataSource, "tableDataSource ----123------");
   }
 
   clearAllValue() {
@@ -623,29 +667,7 @@ export class BorrowingCreditRating {
     ulbs: [],
   };
 
-  ngOnInit() {
-    let selectedUlb: any = this.ulbList[this.cityId]?.name;
-    console.log("selectedUlb", selectedUlb);
 
-    this.bondParam.ulbs.push(selectedUlb);
-    // setTimeout(() => {
-    //   console.log("bondParam", this.bondParam);
-    //   this._bondService
-    //     .getBondIssuerItem(this.bondParam)
-    //     .subscribe((res) => this.onGettingBondIssuerItemSuccess(res));
-    // }, 100);
-    this.emptyArray();
-    console.log("valueeeeeeee" + this.value);
-    if (this.value == "city") {
-      this.city = true;
-      this.state = false;
-    }
-    if (this.value == "state") {
-      this.state = true;
-      this.city = false;
-    }
-    console.log(this.filterForm);
-  }
   issueLength: any = 4;
   issueSize: number = 0;
   bidReceivedAmount: any = "";
@@ -674,7 +696,7 @@ export class BorrowingCreditRating {
     },
   ];
 
-  tableDataSource = [
+  tableDataSource: any = [
     // {
     //   municipality: "Ahmadnagar",
     //   ulbType: "Municipality",
