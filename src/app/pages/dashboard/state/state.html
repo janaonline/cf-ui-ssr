@@ -124,6 +124,11 @@
         download. <a routerLink="/resources-dashboard/data-sets/income_statement">Click here to access files.</a>
     </div>
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+    <div class="d-flex justify-content-center">
+        <div class="px-4 dataAvailabiltyTab">
+            {{ stateDetails().state.name }} Data Availability - {{ percentValue.toFixed(2) }}% ({{ selectedValue }})
+        </div>
+    </div>
     @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
     <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="2">
         <mat-tab label="Financial Indicators">

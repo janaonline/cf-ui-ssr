@@ -44,6 +44,9 @@ export class State implements OnInit {
   stateDetails = signal<any>({});
   dataAvailable = signal<any>({});
 
+  percentValue = 0;
+  selectedValue: string = '';
+
 
   gridData: ExploresectionTable[] = [];
   moneyInfoRes = signal<IMoneyInfoRes>({
