@@ -2,85 +2,126 @@
     <!-- Main Buttons -->
     <app-tab-buttons [buttons]="readonlyButtons()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
     </app-tab-buttons>
-    <div class="mb-4">
-        <h6 class="fw-bolder">{{ ulbName() }}{{ulbPopulation()}} {{ selectedButton?.label }} </h6>
-        <p>Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City
-            Finance
-        </p>
+
+    <div class="border rounded bg-light p-4 my-4 row justify-content-between align-items-start">
+        <div class="col-sm-12 col-md-8">
+            <p class="mb-2 p-0 fw-bold">{{ ulbName() }}'s {{ selectedButton?.label }} </p>
+            <p class="m-0 p-0">{{intro}} </p>
+        </div>
+
+        <!-- Filter: Years Dropdown -->
+        <form [formGroup]="myForm" class="col-sm-12 col-md-4">
+            <label for="years" class="d-block fw-bold mb-2">Financial years</label>
+            <select id="years" formControlName="year" class="form-select w-100">
+                @for (year of years(); track year) {
+                <option [value]="year">{{ year }}</option>
+                }
+            </select>
+        </form>
     </div>
 
     <!-- Show .content class only if isTooltipVisible is true -->
-    <div class="row justify-content-between my-4 position-relative " [class.content]="isTooltipVisible()">
-        <div class="d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2">
-            <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor" class="border rounded">
-                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
-                    [cdkTreeNodeTypeaheadLabel]="node.name" [ngClass]="{
-          'border-bottom': true,
-          'onHover': true,
-          'bg-table-header': node.isHeader,
-          'selected': tree.isExpanded(node) || node.selected,
-           'click': node.children && node.children.length > 0
-        }" [class.node.classname]="node.selected">
-                    @if (node.children && node.children.length > 0) {
-                    <button class="p-0 m-0" matIconButton matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+    <div class="row justify-content-between align-items-start position-relative " [class.content]="isTooltipVisible()">
+
+        <!-- Table -->
+        <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
+            <!-- {{dataSource().length}} -->
+            @if(dataSource().length > 0){
+            <mat-tree #tree [dataSource]="dataSource()" [childrenAccessor]="childrenAccessor" class="border rounded">
+                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                    (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
+                    class="ps-0 border-bottom onHover" [ngClass]="{
+                      'bg-table-header': node.isHeader,
+                      'selected': node.isSelected,
+                    }">
+                    <!-- expand icon -->
+                    @if (hasChild(0, node)) {
+                    <button class="p-0 m-0" (click)="buttonClicked(node)" matIconButton
+                        [attr.aria-label]="'Toggle ' + node.name">
                         <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
                     </button>
                     }
-                    @else if (node.isHeader) {
+                    @else {
                     <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
                     }
 
                     <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
-                        <div [class.selected]="tree.isExpanded(node) && !node.isHeader " [class]=" node.className "
-                            style=" width:
-                300px;">
+                        <div [class.selected]="node.isSelected" [class]=" node.className " style=" width: 300px;">
                             {{node.name}}
-                            <!-- @if (node.info) {
-                <i class="bi bi-info-circle" matTooltip="{{node.info}}" matTooltipPosition="right"></i>
-                } -->
                         </div>
 
                         <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
                             @for(year of node.yearData; track $index) {
-                            <div [class]="'text-end w-100 px-2 '+ node.className"
-                                [class.selected]="tree.isExpanded(node) && !node.isHeader">{{year}}
+                            <div [class]="'text-end w-100 px-2 d-flex flex-column justify-content-center '"
+                                [class.selected]="node.isSelected">{{year}}
                                 @if (node.yearGrowth?.[$index]) {
-                                <br><span [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                                <br>
+                                <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
                                     ({{ node.yearGrowth?.[$index] }}%)
-                                    <!-- (<i class="bi bi-arrow-down-short"></i>{{ node.yearGrowth?.[$index] }}%) -->
-                                </span>
+                                </div>
                                 }
                             </div>
-                            <!-- {{year}} -->
                             }
                         </div>
                     </div>
                 </mat-tree-node>
             </mat-tree>
-        </div>
-        <div class="d-flex flex-column col-sm-12 col-lg-4 mb-2 mt-3 position-relative">
-            @for (item of items; track $index) {
-            <button class="takeActionBtn" role="button" (click)="takeAction(item.label)">
-                <i [class]="item.icon + ' custom-font-size-6'"></i>{{ item.label }}
-            </button>
             }
-            <div id="chartContainer" class="position-relative p-3 border">
-                <h6 class=" fw-bolder text-center mb-3">Total Expenditure</h6>
-                <!-- <div class="tooltip-container"> -->
-                <button class="btn info-btn border-0 hide-while-download" (click)="toggleTooltip()">
-                    <i class="bi bi-info-circle custom-font-size-6"></i>
-                </button>
-                <div style="min-height: 300px; height: 300px;">
-                    <app-charts [chartConfig]="chartData()"></app-charts>
+
+        </div>
+
+        <!-- Chart -->
+        <div class="d-flex flex-column col-sm-12 col-lg-4 mb-2 mt-3 pe-0 position-relative">
+            <div id="chartContainer" class="p-3 bg-light rounded border">
+                <!-- Chart title -->
+                <div class="d-flex">
+                    <div class="flex-grow-1 text-center">
+                        <span class="fw-bold text-center mb-3 custom-font-size-6">
+                            {{this.graphPayload()[0]?.label}}
+                        </span>
+                        <i class="bi bi-info-circle custom-font-size-6" matTooltip="Click to view"
+                            (click)="toggleTooltip()">
+                        </i>
+                    </div>
+
+                    <button class="btn btn-close border-0 p-0" role="button" (click)="downloadImg('Total_Expenditure')">
+                        <i class="bi bi-download p-0" matTooltip="Download Chart"></i>
+                    </button>
                 </div>
-                <div class="custom-font-size-6 mt-2 mb-4 py-1"><span class="fw-bold">Source:</span> Audited financial
-                    statements
-                    of FY
-                    2019-20, FY 2020-21,
-                    unaudited statements of FY 2021-22, City Finance</div>
+
+                <!-- Chart -->
+                <div style="height: 300px; height: 300px;">
+                    <!-- {{this.graphPayload().length}}
+                    {{this.chartData()|json}} -->
+                    @if(this.graphPayload().length>0){
+                    <app-charts [chartConfig]="chartData()"></app-charts>
+                    }
+
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="custom-font-size-7 mb-4 text-secondary text-end"><span class="fw-bold">Source:
+        </span>{{source}}
+    </div>
+
+    <div class="faq-container row justify-content-between align-items-start">
+        <h3 class="fw-bold  p-2 my-4 text-center faq">Frequently Asked Questions</h3>
+
+        <div class="faq-item" *ngFor="let faq of faqs; let i = index">
+            <button class="faq-question" (click)="toggle(i)">
+                {{ faq.question }}
+                <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
+            </button>
+            <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
+                <p>{{ faq.answer }}</p>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <!-- Tooltip -->
     @if (isTooltipVisible()) {

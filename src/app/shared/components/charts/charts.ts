@@ -1,13 +1,17 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   ElementRef,
+  Inject,
   input,
   OnDestroy,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
+import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -17,30 +21,39 @@ Chart.register(...registerables);
   styleUrl: './charts.scss',
 })
 export class Charts implements AfterViewInit, OnDestroy {
+
   @ViewChild('chartCanvas', { static: false })
   chartCanvas!: ElementRef<HTMLCanvasElement>;
 
   chartConfig = input.required<ChartConfig>();
   chartInstance: Chart | undefined;
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,) {
 
-  // ngOnInit(): void {
-  // console.log('Chart called: ', this.chartConfig());
-  // }
+  }
+  ngOnInit(): void {
+
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.createChart();
     }, 100);
   }
-
+  readonly chartChangeEffect = effect(() => {
+    if (!isPlatformBrowser(this.platformId)) return;
+    // const canFetch = this.canFetchChart();
+    // console.log("canFetchChart:", canFetch);
+    this.createChart()
+    // if (canFetch) this.getChartData();
+  })
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
-
+    console.log('Chart called: ', this.chartConfig());
     if (!this.chartCanvas) {
-      console.error(
-        'Canvas element not found for chart:',
-        this.chartConfig().chartId
-      );
+      // console.error(
+      //   'Canvas element not found for chart:',
+      //   this.chartConfig().chartId
+      // );
       return;
     }
 
@@ -156,6 +169,7 @@ export class Charts implements AfterViewInit, OnDestroy {
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
+    this.chartChangeEffect.destroy();
   }
 }
 

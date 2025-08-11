@@ -85,4 +85,21 @@ export class DashboardService {
   getFinancialIndicatorsChartData(body: IFinancialIndicatorsChart): Observable<IFinancialIndicatorRes> {
     return this.http.post<IFinancialIndicatorRes>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
+
+  getMarketDashboardIndicators(ulbId: string, keyType: string, years: string[]): Observable<any> {
+    // Construct HttpParams dynamically
+    let params = new HttpParams();
+    if (keyType) {
+      params = params.set('keyType', keyType);
+    }
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    if (years && years.length > 0) {
+      years.forEach(year => {
+        params = params.append('years[]', year); // Append 'years[]' multiple times
+      });
+    }
+    return this.http.get(`${environment.api.url}/ledger/getCityDasboardIndicators`, { params })
+  }
 }

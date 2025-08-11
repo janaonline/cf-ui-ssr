@@ -17,6 +17,7 @@ export interface ChartDataSet {
   type?: 'bar' | 'line'; // For mixed charts
   label: string;
   data: (number | null)[];
+  stack?: string;
   backgroundColor?: string | string[];
   borderColor?: string;
   borderWidth?: number;
