@@ -37,7 +37,7 @@ export class State implements OnInit {
   showMap = signal(true);
 
   ledgerYears = signal<string[]>([]);
-  selectedLedgerYear = signal<string>('');
+  selectedLedgerYear = signal<string>('2021-22');
 
   slugName = signal<string>('');
   stateIdSignal = signal('');
@@ -46,6 +46,7 @@ export class State implements OnInit {
 
   percentValue = 0;
   selectedValue: string = '';
+  selectedTabIndex = 0;
 
 
   gridData: ExploresectionTable[] = [];
@@ -142,7 +143,7 @@ export class State implements OnInit {
       .subscribe((params) => {
         console.log(params)
         const slugName = params.get('slug') || '';
-        this.selectedLedgerYear.set('');
+        // this.selectedLedgerYear.set('');
 
         console.log(this.slugName(), slugName)
 
@@ -192,11 +193,13 @@ export class State implements OnInit {
   loadData(slugName: string) {
     this.isLoading.set(true);
     // Check transfer state.
-    const params = { slug: slugName, year: this.selectedLedgerYear() || '2021-22' };
+    const params = { slug: slugName, year: this.selectedLedgerYear() };
     this.dashboardService.getStateDetails(params).subscribe({
       // next: (res: ExploreSectionResponse) => {
       next: (res: any) => {
         this.stateDetails.set(res.data);
+        this.getDataAvailable();
+
         // console.log(this.stateDetails())
       },
       error: (error: Error) => {
@@ -211,10 +214,14 @@ export class State implements OnInit {
 
   getDataAvailable() {
     // this.isMoneyInfoLoading.set(true);
-    const payload = { "financialYear": this.selectedLedgerYear(), "stateId": this.stateDetails().stateId };
+    const payload = { "financialYear": this.selectedLedgerYear(), "stateId": this.stateDetails().state._id };
     this.dashboardService.getDataAvailable(payload).subscribe({
       next: (res: any) => {
-        this.dataAvailable.set(res);
+        this.dataAvailable.set(res.data?.percent);
+        if (this.chartData[0].additionalInfo) {
+          this.chartData[0].additionalInfo.value = Math.round(res.data?.percent);
+          this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
+        }
       },
       error: (error: Error) => {
         console.error('Failed to get data availability');

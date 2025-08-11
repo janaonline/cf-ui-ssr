@@ -104,7 +104,7 @@
             style="font-size: 0.75rem">
             Last updated on:
             {{ moneyInfoRes().lastModifiedAt | date : "mediumDate" }}; Source:
-            financial statements for the year
+            financial statements for the year {{selectedLedgerYear()}}
             <!-- <select class="form-select form-select-sm w-auto d-inline-block" [value]="selectedLedgerYear()"
                 (change)="onMoneyInfoYearChange($event)" id="years">
                 @for (year of ledgerYears(); track $index) {
@@ -126,13 +126,14 @@
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
     <div class="d-flex justify-content-center">
         <div class="px-4 dataAvailabiltyTab">
-            {{ stateDetails().state.name }} Data Availability - {{ percentValue.toFixed(2) }}% ({{ selectedValue }})
+            {{ stateDetails().state.name }} Data Availability - {{ dataAvailable().toFixed(2) }}% ({{
+            selectedLedgerYear() }})
         </div>
     </div>
     @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
-    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="2">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
         <mat-tab label="Financial Indicators">
-            @if (loadedTabs[0]) {
+            @if (selectedTabIndex === 0) {
             <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
                 [tabName]="'Financial Indicators'">
             </app-financial-indicator>
@@ -140,7 +141,7 @@
         </mat-tab>
 
         <mat-tab label="Service Level Benchmark">
-            @if (loadedTabs[1]) {
+            @if (selectedTabIndex === 1) {
             <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
                 [tabName]="'Service Level Benchmark'">
             </app-financial-indicator>
@@ -148,7 +149,7 @@
         </mat-tab>
 
         <mat-tab label="Borrowings & Credit Rating">
-            @if (loadedTabs[2]) {
+            @if (selectedTabIndex === 2) {
             <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
                 [tabName]="'Borrowings & Credit Rating'">
             </app-borrowing-credit-rating>
