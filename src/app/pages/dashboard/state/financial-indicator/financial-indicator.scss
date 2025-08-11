@@ -91,3 +91,19 @@ td {
         margin-top: 10px;
     }
 }
+
+
+.rankingButton {
+    border: 1px solid #9299b2;
+    color: #8b92a8;
+    border-radius: 6px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.activeButton {
+    border: 1px solid #f2991f;
+    color: #e57504;
+    background-color: #fff1e3;
+    box-shadow: 0px 2px 8px #fadaad;
+}

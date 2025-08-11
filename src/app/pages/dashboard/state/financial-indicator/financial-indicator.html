@@ -86,14 +86,15 @@
                 </div>
             </div>
 
-            @if (isChartLoading()) {
-            <app-pre-loader></app-pre-loader>
-            <app-pre-loader></app-pre-loader>
-            <app-pre-loader></app-pre-loader>
-            }
-            @else {
+
             <!-- Chart -->
             <div class="">
+                @if (isChartLoading()) {
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                }
+                @else {
                 <div class="row" style="height: 500px;">
                     <div class="col-12">
                         @if(scatterChart().datasets.length !== 0) {
@@ -101,7 +102,7 @@
                         }
                     </div>
                 </div>
-
+                }
                 <div class="row tablerow">
                     <div class="col-12 col-sm-12">
                         <p class="py-4">
@@ -132,7 +133,28 @@
                         </div>
                     </div>
                 </div>
-
+                @if(tabName() !== 'Service Level Benchmark') {
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 mt-5 mb-5 d-flex">
+                            Cities
+                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'top' }"
+                                (click)="getPopulationChart()">
+                                Top 10
+                            </button>
+                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'bottom' }"
+                                (click)="getPopulationChart('bottom')">
+                                Bottom 10
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @if (isBarChartLoading()) {
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                }
+                @else {
                 <div class="row" style="height: 500px;">
                     <div class="col-12">
                         @if(barChart().datasets.length !== 0) {
@@ -140,6 +162,8 @@
                         }
                     </div>
                 </div>
+                }
+                }
             </div>
 
             <!-- Legends for pie, doughnut, gauge chart. -->
@@ -157,7 +181,7 @@
                 excluded
                 to enhance readability</i>
             } -->
-            }
+
 
         </div>
         }

@@ -42,7 +42,7 @@ export class State implements OnInit {
   slugName = signal<string>('');
   stateIdSignal = signal('');
   stateDetails = signal<any>({});
-  dataAvailable = signal<any>({});
+  dataAvailable = signal<any>(0);
 
   percentValue = 0;
   selectedValue: string = '';
@@ -231,7 +231,9 @@ export class State implements OnInit {
       }
     });
   }
-
+  onStateSelection(state: any) {
+    console.log('state', state);
+  }
   // Ulb selected in city search drop down.
   onUlbSelected(ulbObj: IULB) {
     console.log("ULB selected from drop down: ", ulbObj)

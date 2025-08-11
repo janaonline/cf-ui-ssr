@@ -13,7 +13,7 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/compon
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { CompareByDialog } from '../../city/financial-indicator/compare-by-dialog/compare-by-dialog';
+import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { compraeByOptions, IndicatorDetails } from '../../city/financial-indicator/constants';
 import { DashboardService } from '../../dashboard-service';
 import { ChartService } from './chart-service';
@@ -43,6 +43,7 @@ export class FinancialIndicator {
   readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
   readonly tabName = input.required<any>();
+  readonly selectedLedgerYear = input.required<string>();
   // @Input() tabName = 'Financial Indicators';
 
   currentSelectedButtonKey = signal<string>('Revenue');
@@ -85,6 +86,8 @@ export class FinancialIndicator {
   // dashboardTabData: any = {};
 
   activeButtonList: any = stateDashboardSubTabsList;
+  isBarChartLoading = signal(false);
+  sortBy: string = 'top';
 
   constructor(
     private fb: FormBuilder,
@@ -281,15 +284,25 @@ export class FinancialIndicator {
   //  changeActiveBtn(i) {
 
   // }
-  getPopulationChart() {
+  getPopulationChart(sortBy = 'top') {
+    this.sortBy = sortBy;
+    this.isBarChartLoading.set(true);
     const payload = {
       tabType: this.getTabType(),
       financialYear: this.getYear(),
       stateId: this.stateIdSignal(),
-      sortBy: 'top',
+      sortBy,
       activeButton: this.subButton(),
     }
-    return this.dashboardService.getStatePopulation(payload);
+    return this.dashboardService.getStatePopulation(payload).subscribe({
+      next: (res) => {
+        this.updateBarChartData(res.data);
+        this.isBarChartLoading.set(false);
+      }, error: (err) => {
+        this.isBarChartLoading.set(false);
+        console.error(err);
+      }
+    });
   }
   getRevenueChart() {
     this.isChartLoading.set(true);
@@ -301,29 +314,42 @@ export class FinancialIndicator {
       'chartType': 'scatter',
       'isPerCapita': '',
       'compareType': '',
-      'compareCategory': '', 'ulb': [],
+      'compareCategory': '',
+      ulb: this.dialogResult?.compareUlbs || []
+      // 'ulb': this.dialogResult.ulbId,
     };
+    // console.log('this.dialogResult', this.dialogResult)
     const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
     // const apiEndpoint = 'state-revenue';
-    return this.dashboardService.getStateRevenue(params, apiEndpoint);
-  }
-  getChartData(): void {
-    this.isChartLoading.set(true);
-
-    forkJoin({
-      revenue: this.getRevenueChart(),
-      population: this.getPopulationChart()
-    }).subscribe({
-      next: ({ revenue, population }) => {
+    return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
+      next: (res) => {
+        this.updateScatterChartData(res.data);
         this.isChartLoading.set(false);
-        this.updateScatterChartData(revenue.data);
-        this.updateBarChartData(population.data);
-      },
-      error: (err) => {
+      }, error: (err) => {
         this.isChartLoading.set(false);
         console.error(err);
       }
     });
+  }
+  getChartData(): void {
+    this.getRevenueChart();
+    if (this.tabName() !== 'Service Level Benchmark') {
+      this.getPopulationChart();
+    }
+    // forkJoin({
+    //   revenue: this.getRevenueChart(),
+    //   population: this.getPopulationChart()
+    // }).subscribe({
+    //   next: ({ revenue, population }) => {
+    //     this.isChartLoading.set(false);
+    //     this.updateScatterChartData(revenue.data);
+    //     this.updateBarChartData(population.data);
+    //   },
+    //   error: (err) => {
+    //     this.isChartLoading.set(false);
+    //     console.error(err);
+    //   }
+    // });
   }
 
   getStateGroupPopulation() {
@@ -394,13 +420,14 @@ export class FinancialIndicator {
       width: '700px',
       maxWidth: '70vw',
       // data: { ulbType: this.ulbType(), compareUlbsFromParent: this.compareUlbsFromPopup, compareType: this.compareTypeFromPopup }
-      data: { ulbType: '', compareUlbsFromParent: this.compareUlbsFromPopup, compareType: this.compareTypeFromPopup }
+      data: { ulbType: '', stateId: this.stateDetails().state._id }
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         this.dialogResult = result;
+
         if (result) this.getChartData();
       });
   }
