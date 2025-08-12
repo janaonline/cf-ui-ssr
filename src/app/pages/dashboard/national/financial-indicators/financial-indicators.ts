@@ -29,4 +29,8 @@ export class FinancialIndicators {
     this.currentSelectedButtonKey.set(key as LineItemType);
   }
 
+  ngOnInit() {
+    console.log(this.dashboardTabData(), 'dashboardTabData')
+  }
+
 }

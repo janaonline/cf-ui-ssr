@@ -50,7 +50,7 @@
 <section class="container matTabGroup">
     <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
     @if(dashboardTabs() && dashboardTabs().length !== 0) {
-    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="1">
         @for (tab of dashboardTabs(); track tab) {
         <mat-tab [label]="tab.name">
             @if(tab.name === 'Data Availability') {
@@ -58,10 +58,10 @@
             } @else if (tab.name === 'Resources') {
             <app-resources></app-resources>
             } @else {
-            <!-- <app-financial-indicators [dashboardTabData]="tab.data" [tabName]="tab.name"></app-financial-indicators> -->
+            <app-financial-indicators [dashboardTabData]="tab" [tabName]="tab.name"></app-financial-indicators>
             }
 
-            {{tab | json}}
+            <!-- {{tab | json}} -->
         </mat-tab>
         }
     </mat-tab-group>
