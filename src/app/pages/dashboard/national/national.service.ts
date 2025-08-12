@@ -30,6 +30,18 @@ export class NationalService {
       environment.api.url + `national-dashboard/${endPoint}`, { params }
     );
   }
+  getNationalData(params: any, endPoint: string) {
+    // const httpParams = {
+    //   financialYear: params.financialYear,
+    //   formType: params.formType,
+    //   stateId: params.stateId,
+    //   type: params.type,
+    //   csv: params.csv
+    // };
+    return this.http.get(
+      environment.api.url + endPoint, { params }
+    );
+  }
 
   getNationalRevenueMixData(RevenueMixInput: any, endPoint: string) {
     return this.http.get(

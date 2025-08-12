@@ -4,18 +4,20 @@ import { TabButtons } from "../../../../shared/components/tab-buttons/tab-button
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { StateSearch } from "../../../../shared/components/state-search/state-search";
 import { IState } from '../../../../core/models/state/state';
+import { NationalService } from '../national.service';
+import { NationalChart } from "../national-chart/national-chart";
 
 @Component({
   selector: 'app-national-table',
-  imports: [MatTableModule, TabButtons, StateSearch],
+  imports: [MatTableModule, TabButtons, StateSearch, NationalChart],
   templateUrl: './national-table.html',
   styleUrl: './national-table.scss'
 })
 export class NationalTable {
-  @Input() headers!: any[];
-  @Input() tableData: any;
-  @Input() dataSource!: any[];
-  @Input() displayedColumns!: any[];
+  headers: any[] = [];
+  tableData: any;
+  dataSource: any[] = [];
+  displayedColumns: any[] = [];
 
   selectedStateName = signal<string>('');
   selectedStateCode = signal<string>('');
@@ -32,12 +34,48 @@ export class NationalTable {
     { label: 'ULB Type', key: 'ulbType' },
   ]);
 
+  constructor(private nationalService: NationalService) { }
+
+
   ngOnInit() {
-    this.dataSource = this.tableData.rows;
-    this.headers = this.tableData.columns;
-    this.displayedColumns = this.tableData.columns.map((ele: any) => ele.key);
+    // if (this.tableData) {
+    //   this.dataSource = this.tableData.rows;
+    //   this.headers = this.tableData.columns;
+    //   this.displayedColumns = this.tableData.columns.map((ele: any) => ele.key);
+    // }
+
+    this.getNationalData();
+
   }
 
+  getNationalData() {
+    const params = {
+      financialYear: '2021-22',
+      // formType: 'Annual',
+      // stateId: '',
+      // type: 'Revenue',
+      // csv: false
+    }
+    // /dashboard/national/data-availability?financialYear=2021-22&stateId=&population=true&ulbType=
+    const apiEndpoint = 'dashboard/national/data-availability'
+    this.nationalService.getNationalData(params, apiEndpoint)
+      .subscribe(
+        {
+          next: (res: any) => {
+            console.log("res", res);
+            this.tableData = res.data;
+            this.setTable();
+          },
+          error: () => { },
+          complete: () => { }
+        });
+  }
+
+  setTable() {
+    this.dataSource = this.tableData.rows;
+    this.headers = this.tableData.columns;
+    this.displayedColumns = this.tableData.columns?.map((ele: any) => ele.key);
+  }
   // Year changed from Drop down.
   public onYearChange($event: Event): void {
     const yearSelected = ($event.target as HTMLSelectElement).value;

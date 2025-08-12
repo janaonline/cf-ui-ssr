@@ -22,7 +22,9 @@
         </div>
     </div>
 </div>
-
+@if('MIx'.includes('Mix')) {
+<app-national-chart></app-national-chart>
+} @else {
 @if (dataSource.length && headers.length && displayedColumns.length) {
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">
 
@@ -37,4 +39,5 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+}
 }
