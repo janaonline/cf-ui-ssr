@@ -161,17 +161,8 @@ export class MapService {
     if (!isPlatformBrowser(this.platformId) || !this.map || !this.L)
       return null;
 
-    let color = this.cfSecondary;
     return this.L.geoJSON(geoJsonData, {
-      style: (feature) => {
-        if (!feature || !stateColorCode) return this.defaultStateLayerStyle(color);
-
-        const stateFeatureCode = feature.properties.ST_CODE;
-        if (stateColorCode && stateFeatureCode in stateColorCode) {
-          color = stateColorCode[stateFeatureCode].shade;
-        }
-        return this.defaultStateLayerStyle(color)
-      },
+      style: (feature) => this.getStateLayerStyle(feature, stateColorCode),
       onEachFeature: (feature, layer) => {
         const stateName = feature.properties.ST_NM;
         const stateFeatureCode = feature.properties.ST_CODE;
@@ -202,13 +193,26 @@ export class MapService {
           },
           mouseout: () => {
             if (layer instanceof this.L.Path && !stateCode) {
-              layer.setStyle(this.defaultStateLayerStyle(color));
+              layer.setStyle(this.getStateLayerStyle(feature, stateColorCode));
             }
           },
         });
       },
     }).addTo(this.map);
   }
+
+  // Get state color.
+  private getStateLayerStyle(feature: any, stateColorCode: StateDataByCode, fallbackColor = this.cfSecondary): any {
+    if (!feature || !stateColorCode) {
+      return this.defaultStateLayerStyle(fallbackColor);
+    }
+
+    const stateFeatureCode = feature.properties?.ST_CODE;
+    const color = stateColorCode[stateFeatureCode]?.shade || fallbackColor;
+
+    return this.defaultStateLayerStyle(color);
+  }
+
 
   /**
    * Flies the map to the bounds of a given GeoJSON layer.
