@@ -7,10 +7,12 @@ import { IState } from '../../../../core/models/state/state';
 import { NationalService } from '../national.service';
 import { NationalChart } from "../national-chart/national-chart";
 import { isPlatformBrowser } from '@angular/common';
+import { PreLoader } from "../../../../shared/components/pre-loader/pre-loader";
+import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
 
 @Component({
   selector: 'app-national-table',
-  imports: [MatTableModule, TabButtons, StateSearch, NationalChart],
+  imports: [MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound],
   templateUrl: './national-table.html',
   styleUrl: './national-table.scss'
 })
@@ -19,6 +21,9 @@ export class NationalTable {
   tableData: any;
   dataSource: any[] = [];
   displayedColumns: any[] = [];
+
+  isLoadingData = signal<boolean>(false);
+
 
   selectedStateName = signal<string>('');
   selectedStateCode = signal<string>('');
@@ -55,9 +60,9 @@ export class NationalTable {
     });
   }
 
-  readonly stateIdChangeEffect = effect(() => {
+  // readonly stateIdChangeEffect = effect(() => {
 
-  })
+  // })
 
 
   ngOnInit() {
@@ -90,12 +95,12 @@ export class NationalTable {
     return lineItem;
   }
   getNationalData() {
+    this.isLoadingData.set(true);
     const params = {
       financialYear: this.selectedLedgerYear(),
       formType: this.selectedType(),
       type: this.getType(),
       stateId: this.selectedStateId(),
-      // type: 'Revenue',
       // csv: false
     }
     // /dashboard/national/data-availability?financialYear=2021-22&stateId=&population=true&ulbType=
@@ -115,10 +120,11 @@ export class NationalTable {
               this.tableData = res.data;
               this.setTable();
             }
-
+            this.isLoadingData.set(false);
           },
-          error: () => { },
-          complete: () => { }
+          error: () => {
+            this.isLoadingData.set(false);
+          }
         });
   }
 
@@ -154,11 +160,11 @@ export class NationalTable {
   }
 
   // Helper: Update signal values with latest state data.
-  private setStateData(code: string = '', _id: string = '', name: string = ''): void {
-    this.selectedStateCode.set(code);
-    this.selectedStateName.set(name);
-    this.selectedStateId.set(_id);
-  }
+  // private setStateData(code: string = '', _id: string = '', name: string = ''): void {
+  //   this.selectedStateCode.set(code);
+  //   this.selectedStateName.set(name);
+  //   this.selectedStateId.set(_id);
+  // }
 
   resetFilter() {
     console.log("resetFilter called")

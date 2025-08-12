@@ -54,6 +54,9 @@ export class NationalService {
       `national-dashboard/${endPoint}?financialYear=${RevenueMixInput?.financialYear}&formType=${RevenueMixInput?.formType}&stateId=${RevenueMixInput?.stateId}&type=${RevenueMixInput?.type} `
     );
   }
+  getResource() {
+    return this.http.get(environment.api.url + `resource/all`);
+  }
 
   DownloadNationalTableData(downloadInput: any, endPoint: string) {
     return this.http.get(

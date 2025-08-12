@@ -59,8 +59,7 @@
             } @else if (tab.name === 'Resources') {
             <app-resources></app-resources>
             } @else {
-            <app-financial-indicators [dashboardTabData]="tab" [tabName]="tab.name"
-                [ledgerYears]="ledgerYears()"></app-financial-indicators>
+            <app-financial-indicators [dashboardTabData]="tab" [ledgerYears]="ledgerYears()"></app-financial-indicators>
             }
             }
             <!-- {{tab | json}} -->

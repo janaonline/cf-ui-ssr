@@ -23,6 +23,11 @@
         </div>
     </div>
 </div>
+@if (isLoadingData()) {
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+} @else {
 @if('MIx'.includes('Mix')) {
 <app-national-chart></app-national-chart>
 } @else {
@@ -40,5 +45,8 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+} @else {
+<app-no-data-found></app-no-data-found>
+}
 }
 }
