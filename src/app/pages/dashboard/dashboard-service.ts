@@ -102,4 +102,26 @@ export class DashboardService {
     }
     return this.http.get(`${environment.api.url}/ledger/getCityDasboardIndicators`, { params })
   }
+  getYearsDynamic(ulbId: string): Observable<any> {
+    let params = new HttpParams();
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    return this.http.get(`${environment.api.url}/ledger/getYearsDynamic`, { params })
+
+  }
+  getFaqs(ulbId: string, year: string, state: string): Observable<any> {
+    let params = new HttpParams();
+    if (state) {
+      params = params.set('state', state);
+    }
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    if (year) {
+      params = params.set('year', year);
+    }
+
+    return this.http.get(`${environment.api.url}/ledger/getFaqs`, { params })
+  }
 }

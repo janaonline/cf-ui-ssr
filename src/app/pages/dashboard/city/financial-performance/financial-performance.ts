@@ -29,7 +29,6 @@ interface DataNode {
   isHeader?: boolean
   isSelected?: boolean;
 }
-
 const Financial_Performance_DATA: DataNode[] =
   [
     {
@@ -126,7 +125,7 @@ const Financial_Performance_DATA: DataNode[] =
 export class FinancialPerformance {
   myForm!: FormGroup;
   intro: string = '';
-  years = signal<string[]>(['2020-21', '2021-22', '2022-23']);
+  years = signal<string[]>([]);
   source: string = '';
   // source: string = 'Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City Finance';
   isTooltipVisible = signal<boolean>(false);
@@ -141,6 +140,7 @@ export class FinancialPerformance {
   ulbType = input.required<string>();
   graphPayload = signal<any[]>([]);
   ulbPopulation = input.required<string>();
+  stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
 
   chartData = signal<ChartConfig>({
@@ -182,75 +182,104 @@ export class FinancialPerformance {
     //   ],
     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
   });
-
+  faqs = signal<any[]>([]);
+  // faqs: any = [
+  //   {
+  //     question: 'What’s included incityfinance?',
+  //     answer: 'cityfinance Pro includes video walkthroughs, detailed explanations, and multiple versions of problems to help you deeply understand data structures and algorithms.'
+  //   },
+  //   {
+  //     question: 'Are there any refunds?',
+  //     answer: 'Yes, cityfinance offers a 30-day money-back guarantee. If you’re not satisfied, you can request a refund within 30 days of purchase.'
+  //   },
+  //   {
+  //     question: 'Do I get lifetime access?',
+  //     answer: 'Yes! Once you purchasecityfinance, you have lifetime access to all content and future updates.'
+  //   }
+  // ];
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
-    return this.ulbPopulation() == '4M+'
-      ? this.buttons
-      : this.buttons.filter(btn =>
-        ['revenue', 'expenditure'].includes(btn.key)
-      );
+    return this.buttons
   });
+  // readonlyButtons = computed<ButtonObj[]>(() => {
+  //   return this.ulbPopulation() == '4M+'
+  //     ? this.buttons
+  //     : this.buttons.filter(btn =>
+  //       ['revenue', 'expenditure'].includes(btn.key)
+  //     );
+  // });
   marketData: any;
   errorMessage: any;
-  yearArr: any;
+  // yearArr: any;
+  yearsArrDyna: any;
+  titleTabs = signal<string>('overview');
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private _dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) { }
+  ) {
+    this.myForm = this.fb.group({
+      year: ['']  // Default value, will be updated after API call
+    });
+  }
 
   @ViewChild(CdkTree) tree!: CdkTree<any>;
   // dataSource = Financial_Performance_DATA;
   dataSource = signal<any[]>([]);
+  infoData = signal<string>('');
   public treeControl: any;  // Set your tree control here
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.getYearsDynamic(this.ulbIdSignal());
+    this.myForm.get('year')?.valueChanges.subscribe((selectedYear: string) => {
+      console.log('Year selected:', selectedYear);
+      // this.getYearsDynamic(this.ulbIdSignal());
+      this.onYearChanged(selectedYear); // Call the process whenever the year changes
+      this.getFaqs(this.ulbIdSignal(), selectedYear, this.stateName())
+    });
+  }
+  private onYearChanged(selectedYear: string) {
+    // Your custom logic to re-run when the year changes
+    console.log('Re-running process for year:', selectedYear);
 
-    // console.log('test1', this.platformId)
-    // console.log('test3', this.graphPayload())
+    // Get the previous years array based on the selected year
+    this.yearsArrDyna = this.getYearsArray(selectedYear);
+    console.log('Generated years array:', this.yearsArrDyna);
 
-    this.myForm = this.fb.group({ year: [this.years()[0]] });
+    // You can now trigger whatever process you want to happen with the selected year.
+    this.onSelectedButtonChange('overview');
+  }
 
-    // Define year array, ulbId and keyType
-    const years = ['2022-23', '2021-22', '2020-21'];
-    const ulbId = this.ulbIdSignal();  // Unique identifier for ULB
-    const keyType = 'revenue';  // Key type to fetch specific data
-
-    // Call the getIndicators method
-    this.getIndicators(years, ulbId, keyType);
-
-    // if(this.dataSource().length>0){
-    //   this.buttonClicked(node)
-    // }
+  private getYearsArray(selectedYear: string): string[] {
+    const currentYearNum = parseInt(selectedYear.split('-')[0]);
+    return [
+      `${currentYearNum - 2}-${(currentYearNum - 2 + 1).toString().slice(-2)}`,
+      `${currentYearNum - 1}-${(currentYearNum - 1 + 1).toString().slice(-2)}`,
+      `${currentYearNum}-${(currentYearNum + 1).toString().slice(-2)}`
+    ];
   }
 
   childrenAccessor = (node: DataNode) => node.children ?? [];
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
 
-  // Main Button Change Handler
-  onSelectedButtonChange(btnKey: string) {
-    this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
-    console.log(this.selectedButton, 'this is selected button')
-    this.currentSelectedButtonKey.set(btnKey);
-    this.getIndicators(this.years(), this.ulbIdSignal(), this.selectedButton?.key ?? '')
-    // console.log(btnKey)
-  }
+
 
   // Collapse all nodes and expand only the selected one
   buttonClicked(node: DataNode) {
+    console.log(node, 'by default')
+    // if(!node.children && node.children.length>0) {
+
+    // }
     this.dataSource().forEach(n => n.isSelected = false);
+    this.infoData.set(node.info ?? 'N/A')
     node.isSelected = true;
     if (!this.tree) return;
-    // console.log(node, 'this is node')
-    // this.chartData().datasets = [];
     const datasets: any[] = [];
     if (node.children && node.children.length > 0) {
 
       node.children.forEach((child: any) => {
-        console.log('inside')
         // Prepare the dataset for each child
         datasets.push({
           label: child.name,
@@ -291,8 +320,7 @@ export class FinancialPerformance {
           borderRadius: 5,
           barThickness: 50,
         },
-      ]);
-      // console.log(this.graphPayload()[0].label, '')
+      ])
       // Update chartData with new datasets
       this.chartData.update(() => ({
         ...this.chartData(),
@@ -305,8 +333,6 @@ export class FinancialPerformance {
     if (this.tree.isExpanded(node)) {
       return;
     }
-    // console.log(this.graphPayload(), 'this is nodeeeee');
-    // console.log(this.chartData(), 'thhid ');
     this.tree.collapseAll();
     this.cdRef.detectChanges();
 
@@ -371,25 +397,85 @@ export class FinancialPerformance {
     return this.tree?.isExpanded(node) && !node.isHeader
   }
 
-  private getIndicators(years: string[], ulbId: string, keyType: string): void {
+  private getYearsDynamic(ulbId: string) {
     if (!isPlatformBrowser(this.platformId)) return;
-    // Call the service method with appropriate parameters
-    this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
+    this._dashboardService.getYearsDynamic(ulbId).subscribe({
       next: (data) => {
-        this.marketData = data;
-        console.log(this.marketData, 'this is market data') // Store the response data
-        const dataSource = data.response.data;
-        // dataSource[1].isSelected = true;
-
-        this.dataSource.set(dataSource);  // Ensure this.dataSource is available and matches the expected structure
-        console.log(this.dataSource(), 'datasource')
-        this.buttonClicked(dataSource[1]);
-        this.yearArr = this.dataSource()[0];
-        this.intro = this.marketData.response.intro
-        this.source = this.marketData.source;  // Ensure this.marketData.intro exists
+        this.years.set(data.years);
+        this.myForm.setValue({ year: this.years()[0] });
+        const currentYearNum = parseInt(this.years()[0].split('-')[0]);
+        this.yearsArrDyna = [
+          `${currentYearNum - 2}-${(currentYearNum - 2 + 1).toString().slice(-2)}`,
+          `${currentYearNum - 1}-${(currentYearNum - 1 + 1).toString().slice(-2)}`,
+          `${currentYearNum}-${(currentYearNum + 1).toString().slice(-2)}`
+        ];
+        this.onSelectedButtonChange('overview');
+        // console.log(this.years(), 'this is yeee')
       },
       error: (err) => {
-        this.errorMessage = err.message;  // Handle any errors
+        this.errorMessage = err.message;
+      }
+    })
+  }
+  private getFaqs(ulbId: string, year: string, state: string) {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this._dashboardService.getFaqs(ulbId, year, state).subscribe({
+      next: (data) => {
+        console.log(data, 'this iss faq')
+        this.faqs.set(data?.faqs);        // this.myForm.setValue({ year: this.years()[0] });
+        // const currentYearNum = parseInt(this.years()[0].split('-')[0]);
+        // this.yearsArrDyna = [
+        //   `${currentYearNum - 2}-${(currentYearNum - 2 + 1).toString().slice(-2)}`,
+        //   `${currentYearNum - 1}-${(currentYearNum - 1 + 1).toString().slice(-2)}`,
+        //   `${currentYearNum}-${(currentYearNum + 1).toString().slice(-2)}`
+        // ];
+        // this.onSelectedButtonChange('overview');
+        // // console.log(this.years(), 'this is yeee')
+      },
+      error: (err) => {
+        this.errorMessage = err.message;
+      }
+    })
+  }
+  // Main Button Change Handler
+  onSelectedButtonChange(btnKey: string) {
+    this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
+    this.currentSelectedButtonKey.set(btnKey);
+    this.getIndicators(this.yearsArrDyna, this.ulbIdSignal(), this.selectedButton?.key ?? '')
+    if (this.selectedButton) {
+      switch (btnKey) {
+        case "overview": {
+          return this.titleTabs.set('key ratios')
+        }
+        case "revenue": {
+          return this.titleTabs.set('revenue overview')
+        }
+        case "expenditure": {
+          return this.titleTabs.set('expenditure breakdown')
+        }
+        case "debt": {
+          return this.titleTabs.set('debt and assets')
+        }
+      }
+    }
+  }
+  private getIndicators(years: string[], ulbId: string, keyType: string): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
+      next: (data) => {
+        this.marketData = data
+        // console.log(data.response.data[0].yearData, 'this is bmw')
+        const dataSource = data.response.data;
+        this.dataSource.set(dataSource);
+        // console.log(this.dataSource(), 'this is daaaa')
+        this.buttonClicked(dataSource[1]);
+
+        // this.yearArr = this.dataSource()[0];
+        this.intro = this.marketData.response.intro
+        this.source = this.marketData.source;
+      },
+      error: (err) => {
+        this.errorMessage = err.message;
       }
     });
   }
@@ -446,20 +532,7 @@ export class FinancialPerformance {
     this.isTooltipVisible.set(!this.isTooltipVisible());
   }
 
-  faqs = [
-    {
-      question: 'What’s included incityfinance?',
-      answer: 'cityfinance Pro includes video walkthroughs, detailed explanations, and multiple versions of problems to help you deeply understand data structures and algorithms.'
-    },
-    {
-      question: 'Are there any refunds?',
-      answer: 'Yes, cityfinance offers a 30-day money-back guarantee. If you’re not satisfied, you can request a refund within 30 days of purchase.'
-    },
-    {
-      question: 'Do I get lifetime access?',
-      answer: 'Yes! Once you purchasecityfinance, you have lifetime access to all content and future updates.'
-    }
-  ];
+
 
   expandedIndex: number | null = null;
 
