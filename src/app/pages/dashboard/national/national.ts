@@ -57,7 +57,7 @@ export class National implements OnInit {
   ];
 
   ledgerYears = signal<string[]>([]);
-  selectedLedgerYear = signal<string>('2021-22');
+  selectedLedgerYear = signal<string>('');
 
   private destroy$ = new Subject<void>();
 
@@ -76,6 +76,10 @@ export class National implements OnInit {
   ngOnInit() {
     this.setSeo();
     this.fetchCreditRatingsData();
+    this.getLedgerYears();
+  }
+
+  private loadData() {
     this.getMoneyInfo();
     this.fetchExploreSectionData();
   }
@@ -99,6 +103,17 @@ export class National implements OnInit {
       "name": "City Finance",
       "url": `https://cityfinance.in/dashboard/national/61e150439ed0e8575c881028`
 
+    });
+  }
+
+  private getLedgerYears() {
+    return this._commonService.getLedgerYears().subscribe({
+      next: (res) => {
+        this.ledgerYears.set(res.ledgerYears);
+        this.selectedLedgerYear.set(this.ledgerYears()[0]);
+      },
+      error: () => console.error('Failed to get years'),
+      complete: () => this.loadData()
     });
   }
 
@@ -239,15 +254,23 @@ export class National implements OnInit {
     this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
   }
 
-  getMoneyInfo() {
-    this.dashboardService.getMoneyInfo(this.selectedLedgerYear()).subscribe({
-      next: (res: any) => {
-        this.moneyInfo.set(res.result);
-      },
-      error: (error: Error) => {
-        console.error('Failed to get money info');
-      }
-    });
+  // Drop down selection.
+  public onMoneyInfoYearChange($event: Event): void {
+    const yearSelected = ($event.target as HTMLSelectElement).value;
+    if (this.selectedLedgerYear() !== yearSelected) {
+      this.selectedLedgerYear.set(yearSelected);
+      this.getMoneyInfo();
+    }
+  }
+
+  // Money info cards.
+  private getMoneyInfo() {
+    if (this.selectedLedgerYear()) {
+      this.dashboardService.getMoneyInfo(this.selectedLedgerYear()).subscribe({
+        next: (res: any) => this.moneyInfo.set(res.result),
+        error: () => console.error('Failed to get money info'),
+      });
+    }
   }
 
 

@@ -13,9 +13,9 @@
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
-                <!-- <app-grid-view [gridData]="gridData().dataIndicators"></app-grid-view> -->
-                <!-- <app-grid-view [gridData]="gridDataFomat.dataIndicators"></app-grid-view> -->
+                @if(this.selectedLedgerYear()) {
                 <app-grid-view [gridData]="exploreData().gridDetails"></app-grid-view>
+                }
                 }
             </div>
         </div>
@@ -25,8 +25,9 @@
         @if (this.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else {
-
+        @if(this.selectedLedgerYear()) {
         <app-info-cards [items]="moneyInfo()"></app-info-cards>
+        }
         }
 
         <!-- Last modified date -->
@@ -34,7 +35,14 @@
             style="font-size: 0.75rem">
             Last updated on:
             {{ exploreData().lastModifiedAt | date : "mediumDate" }}; Source:
-            financial statements for the year {{ selectedLedgerYear() }}
+            financial statements for the year <select class="form-select form-select-sm w-auto d-inline-block"
+                [value]="selectedLedgerYear()" (change)="onMoneyInfoYearChange($event)" id="years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select>
         </p>
     </div>
 </section>
