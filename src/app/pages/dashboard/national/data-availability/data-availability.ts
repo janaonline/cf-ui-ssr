@@ -5,6 +5,7 @@ import { IState } from '../../../../core/models/state/state';
 import { Map } from "../../../../shared/components/map/map";
 import { StateSearch } from "../../../../shared/components/state-search/state-search";
 import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
+import { NationalTable } from "../national-table/national-table";
 
 
 export interface PeriodicElement {
@@ -30,22 +31,18 @@ const RES = {
       {
         "key": "populationCategory",
         "display_name": "Population Category",
-        "className": " text-center "
       },
       {
         "key": "numberOfULBs",
         "display_name": "Number Of ULBs",
-        "className": " text-end "
       },
       {
         "key": "ulbsWithData",
         "display_name": "ULBs With Data",
-        "className": " text-end "
       },
       {
         "key": "DataAvailPercentage",
         "display_name": "Data Availability Percentage",
-        "className": " text-end "
       }
     ],
     "rows": [
@@ -94,7 +91,7 @@ const RES = {
 
 @Component({
   selector: 'app-data-availability',
-  imports: [Map, StateSearch, TabButtons, MatTableModule],
+  imports: [Map, StateSearch, TabButtons, MatTableModule, NationalTable],
   templateUrl: './data-availability.html',
   styleUrl: './data-availability.scss'
 })
@@ -115,6 +112,157 @@ export class DataAvailability {
   headers = this.RES.data.columns;
   displayedColumns: string[] = this.RES.data.columns.map(ele => ele.key);
   dataSource = this.RES.data.rows;
+
+  mapData = {
+    "success": true,
+    "data": [
+      {
+        "_id": "Bihar",
+        "stateId": "5dcf9d7216a06aed41c748e0",
+        "code": "BR",
+        "percentage": 93
+      },
+      {
+        "_id": "Tripura",
+        "stateId": "5dcf9d7516a06aed41c748fc",
+        "code": "TR",
+        "percentage": 70
+      },
+      {
+        "_id": "Uttar Pradesh",
+        "stateId": "5dcf9d7516a06aed41c748fe",
+        "code": "UP",
+        "percentage": 84
+      },
+      {
+        "_id": "Tamil Nadu",
+        "stateId": "5dcf9d7516a06aed41c748fa",
+        "code": "TN",
+        "percentage": 83
+      },
+      {
+        "_id": "Rajasthan",
+        "stateId": "5dcf9d7516a06aed41c748f8",
+        "code": "RJ",
+        "percentage": 51
+      },
+      {
+        "_id": "Odisha",
+        "stateId": "5dcf9d7416a06aed41c748f5",
+        "code": "OD",
+        "percentage": 93
+      },
+      {
+        "_id": "Madhya Pradesh",
+        "stateId": "5dcf9d7416a06aed41c748ef",
+        "code": "MP",
+        "percentage": 94
+      },
+      {
+        "_id": "Gujarat",
+        "stateId": "5dcf9d7316a06aed41c748e7",
+        "code": "GJ",
+        "percentage": 92
+      },
+      {
+        "_id": "Mizoram",
+        "stateId": "5dcf9d7416a06aed41c748f3",
+        "code": "MZ",
+        "percentage": 50
+      },
+      {
+        "_id": "Kerala",
+        "stateId": "5dcf9d7316a06aed41c748ed",
+        "code": "KL",
+        "percentage": 96
+      },
+      {
+        "_id": "Andhra Pradesh",
+        "stateId": "5dcf9d7216a06aed41c748dd",
+        "code": "AP",
+        "percentage": 91
+      },
+      {
+        "_id": "Haryana",
+        "stateId": "5dcf9d7316a06aed41c748e8",
+        "code": "HR",
+        "percentage": 13
+      },
+      {
+        "_id": "Himachal Pradesh",
+        "stateId": "5dcf9d7316a06aed41c748e9",
+        "code": "HP",
+        "percentage": 42
+      },
+      {
+        "_id": "Sikkim",
+        "stateId": "5dcf9d7516a06aed41c748f9",
+        "code": "SK",
+        "percentage": 29
+      },
+      {
+        "_id": "Uttarakhand",
+        "stateId": "5dcf9d7516a06aed41c748fd",
+        "code": "UK",
+        "percentage": 83
+      },
+      {
+        "_id": "Telangana",
+        "stateId": "5dcf9d7516a06aed41c748fb",
+        "code": "TS",
+        "percentage": 74
+      },
+      {
+        "_id": "West Bengal",
+        "stateId": "5dcf9d7616a06aed41c748ff",
+        "code": "WB",
+        "percentage": 64
+      },
+      {
+        "_id": "Assam",
+        "stateId": "5dcf9d7216a06aed41c748df",
+        "code": "AS",
+        "percentage": 89
+      },
+      {
+        "_id": "Maharashtra",
+        "stateId": "5dcf9d7416a06aed41c748f0",
+        "code": "MH",
+        "percentage": 74
+      },
+      {
+        "_id": "Meghalaya",
+        "stateId": "5dcf9d7416a06aed41c748f2",
+        "code": "ML",
+        "percentage": 14
+      },
+      {
+        "_id": "Punjab",
+        "stateId": "5dcf9d7516a06aed41c748f7",
+        "code": "PB",
+        "percentage": 54
+      },
+      {
+        "_id": "Jharkhand",
+        "stateId": "5dcf9d7316a06aed41c748eb",
+        "code": "JH",
+        "percentage": 98
+      },
+      {
+        "_id": "Chhattisgarh",
+        "stateId": "5dcf9d7216a06aed41c748e2",
+        "code": "CG",
+        "percentage": 100
+      },
+      {
+        "_id": "Karnataka",
+        "stateId": "5dcf9d7316a06aed41c748ec",
+        "code": "KA",
+        "percentage": 95
+      }
+    ],
+    "fromCache": true
+  }
 
 
   // When state is selected from drop down.
