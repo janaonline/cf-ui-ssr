@@ -79,14 +79,12 @@
                         <span class="fw-bold text-center mb-3 custom-font-size-6">
                             {{this.graphPayload()[0]?.label}}
                         </span>
-                        <!-- <i class="bi bi-info-circle custom-font-size-6" matTooltip="Click to view"
-                            (click)="toggleTooltip()">
-                        </i> -->
-                        <img src="https://cdn-icons-png.flaticon.com/128/157/157933.png" alt="" style="width: 4.5%;"
-                            (click)="toggleTooltip()">
+
+                        <i class="bi bi-info-circle custom-font-size-6 hide-while-download" matTooltip="Click to view"></i> 
                     </div>
 
-                    <button class="btn btn-close border-0 p-0" role="button" (click)="downloadImg('Total_Expenditure')">
+                    <button class="btn btn-close border-0 p-0 hide-while-download" role="button"
+                        (click)="downloadImg('Total_Expenditure')">
                         <i class="bi bi-download p-0" matTooltip="Download Chart"></i>
                     </button>
                 </div>

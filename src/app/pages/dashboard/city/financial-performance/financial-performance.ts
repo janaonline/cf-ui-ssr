@@ -299,6 +299,7 @@ export class FinancialPerformance {
         stack: 'stack1', // Ensure stacking
       });
 
+
       // Update the graph payload with the new datasets
       this.graphPayload.set(datasets);
 
@@ -492,12 +493,14 @@ export class FinancialPerformance {
 
       // Inject the inner HTML
       cfLogo.innerHTML = `
-      <span class="fw-bold custom-font-size-6 text-shadow-custom text-info">city</span>
-      <span class="fw-bold custom-font-size-6 text-shadow-custom text-cfSecondary">finance.in</span>
+      <span class="fw-bold custom-font-size-6 text-shadow-custom text-info">city</span><span class="fw-bold custom-font-size-6 text-shadow-custom text-cfSecondary">finance.in</span>
     `;
 
       // Append to chart container
       chartContainer.appendChild(cfLogo);
+
+      const elementsToHide = chartContainer.querySelectorAll('.hide-while-download');
+      elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'hidden');
 
       // Wait briefly to render new DOM changes
       setTimeout(() => {
@@ -505,7 +508,7 @@ export class FinancialPerformance {
           .then(canvas => {
             // Remove logo divs
             chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
-
+            elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'visible');
             // Download the image
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
@@ -514,6 +517,7 @@ export class FinancialPerformance {
           })
           .catch(err => {
             chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
+            elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'visible');
             console.error('Error capturing chart:', err);
           })
           .finally(() => {
