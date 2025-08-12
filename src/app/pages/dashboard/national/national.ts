@@ -1,17 +1,22 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { DatePipe, isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
+import { CreditRatingMap, ICreditRatingData } from '../../../core/models/creditRating/creditRatingResponse';
+import { ExploreSectionResponse, ExploresectionTable } from '../../../core/models/interfaces';
+import { AssetsService } from '../../../core/services/assets/assets.service';
+import { CommonService } from '../../../core/services/common.service';
 import { SeoService } from '../../../core/services/seo/seo.service';
-import { CitySearch } from '../../../shared/components/city-search/city-search';
 import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { InfoCards } from '../../../shared/components/info-cards/info-cards';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
-import { StateSearch } from '../../../shared/components/state-search/state-search';
 import { DashboardService } from '../dashboard-service';
-import { FinancialIndicator } from '../state/financial-indicator/financial-indicator';
-import { ICreditRatingData } from '../../../core/models/creditRating/creditRatingResponse';
-//import { environment } from '../../../../environments/environment';
+
+const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
+const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
+
+
 @Component({
   selector: 'app-national',
   imports: [
@@ -26,104 +31,55 @@ import { ICreditRatingData } from '../../../core/models/creditRating/creditRatin
 })
 export class National implements OnInit {
   isLoading = signal(false);
+  loadedTabs: boolean[] = [true, false, false, false];
+  moneyInfo = signal<any[]>([]);
+  exploreData = signal<{
+    gridDetails: ExploresectionTable[];
+    lastModifiedAt: string | null;
+  }>({ gridDetails: [], lastModifiedAt: null });
+
+  creditRating = signal<CreditRatingMap>({});
+  totalCreditRating: number = 0;
+  cr_above_BBB_minus: number = 0;
+  private readonly ELIGIBLE_RATINGS = [
+    'A',
+    'A+',
+    'AA',
+    'AA+',
+    'AA-',
+    'AAA',
+    'AAA+',
+    'AAA-',
+    'A-',
+    'BBB',
+    'BBB+',
+    'BBB-',
+  ];
 
   ledgerYears = signal<string[]>([]);
   selectedLedgerYear = signal<string>('2021-22');
+
+  private destroy$ = new Subject<void>();
+
   dashboardTabs = signal<any[]>([]);
-  details = signal<any>({});
-  gridData = signal<any>({});
-  moneyInfo = signal<any[]>([]);
-  lastModifiedAt = '2024-12-03T14:10:45.247Z';
-  loadedTabs: boolean[] = [true, false, false, false];
-  creditRatingData: any;
-  gridDataFomat: any = {
-    showMap: false,
-    name: "National Performance",
-    desc: "Summary of key national-level demographics and municipal (urban) indicators",
-    dataIndicators: [
-      {
-        value: "",
-        label: "ULBs With Financial Data",
-        key: "coveredUlbCount",
-      },
-      {
-        value: "",
-        label: "Financial Statements ",
-        // key: "Municipal_Corporation",
-        key: "financialStatements",
-      },
-      {
-        value: 223,
-        label: "ULBs Credit Rating Reports",
-        key: "ULBCreditRating",
-      },
-      {
-        value: 95,
-        label: "ULBs With Investment Grade Rating",
-        key: "UlbsWithBBB",
-      },
-      {
-        value: 22,
-        label: "ULBs With Rating A & Above",
-        key: "ulbsWithA",
-      },
-      {
-        value: "",
-        label: "",
-        key: "totalMunicipalBonds",
-      },
-    ],
-    footer: `Data shown is from audited/provisional financial statements for FY 20-21
-  and data was last updated on 21st August 2021`,
-  };
-  creditRatingList!: ICreditRatingData[];
-  creditRating: any;
-  creditRatingAboveBBB_Minus: any;
-  creditRatingAboveA: any;
-  absCreditInfo: any = {
-    title: "",
-    ulbs: 0,
-    creditRatingUlbs: 0,
-    ratings: {
-      "AAA+": 0,
-      AAA: 0,
-      "AAA-": 0,
-      "AA+": 0,
-      AA: 0,
-      "AA-": 0,
-      "A+": 0,
-      A: 0,
-      "A-": 0,
-      "BBB+": 0,
-      BBB: 0,
-      "BBB-": 0,
-      BB: 0,
-      "BB+": 0,
-      "BB-": 0,
-      "B+": 0,
-      B: 0,
-      "B-": 0,
-      "C+": 0,
-      C: 0,
-      "C-": 0,
-      "D+": 0,
-      D: 0,
-      "D-": 0,
-    },
-  };
+
 
   constructor(
+    private _commonService: CommonService,
     private dashboardService: DashboardService,
     private seoService: SeoService,
+    private assetService: AssetsService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private transferState: TransferState
   ) { }
 
   ngOnInit() {
     this.setSeo();
-    this.getHomeData();
-    this.getCreditRatingsData();
-    this.getDashboardTabData();
+    this.fetchCreditRatingsData();
     this.getMoneyInfo();
+    this.fetchExploreSectionData();
   }
+
   setSeo() {
     this.seoService.updateTitle('Municipal Financial Data of Indian Cities | City Finance ');
 
@@ -146,126 +102,141 @@ export class National implements OnInit {
     });
   }
 
-  // Fetch data.
-  getHomeData() {
+  // TODO: Reuse code/ add service - dashboard-map-section.ts
+  // Explore section data - State + National.
+  private fetchExploreSectionData(): void {
     this.isLoading.set(true);
-    // Check transfer state.
-    // const params = { slug: slugName, year: this.selectedLedgerYear() || '2021-22' };
-    this.dashboardService.getHomeData().subscribe({
-      // next: (res: ExploreSectionResponse) => {
-      next: (res: any) => {
-        this.gridDataFomat.dataIndicators.forEach((indicator: any) => {
-          if (res.data[indicator.key]) {
-            indicator.value = res.data[indicator.key].toLocaleString('en-IN');
-          }
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(GRID_DATA_KEY)
+    ) {
+      this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
+      this.transferState.remove(GRID_DATA_KEY);
+      this.isLoading.set(false);
+    } else {
+      this._commonService
+        .getExploreSectionData()
+        .subscribe({
+          next: (res: ExploreSectionResponse) => {
+            this.exploreData.set(res);
+          },
+          error: (error: any) =>
+            console.error('Error in loading explore section data: ', error),
+          complete: () => {
+            // Combine all the data - grid section (National and state filter)
+            this.exploreData().gridDetails = [
+              ...this.exploreData().gridDetails,
+              {
+                sequence: 3,
+                label: 'ULBs Credit Rating Reports',
+                value: `${this.totalCreditRating}`,
+                info: '',
+                src: '',
+              },
+              {
+                sequence: 4,
+                label: 'ULBs With Investment Grade Rating',
+                value: `${this.cr_above_BBB_minus}`,
+                info: '',
+                src: '',
+              },
+              // {
+              //   sequence: 6,
+              //   label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
+              //     } Cr With Details`,
+              //   value: `${this.bondIssuances().totalMunicipalBonds}`,
+              //   info: '',
+              //   src: '',
+              // },
+            ];
+
+            this.exploreData().gridDetails.sort(
+              (a, b) => a.sequence - b.sequence
+            );
+
+            this.isLoading.set(false);
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(GRID_DATA_KEY, this.exploreData());
+            }
+          },
         });
-        this.gridData.set(this.gridDataFomat);
-
-      },
-      error: (error: Error) => {
-        this.isLoading.set(false);
-        console.error('Failed to get state details');
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      }
-    })
+    }
   }
 
-  // Fetch credit rating data from service
-  private getCreditRatingsData(): void {
-    // console.log('Fetching credit rating data...', abc);
+  // Get credit rating data - Card 3, 4.
+  private fetchCreditRatingsData(): void {
     this.isLoading.set(true);
-    this.dashboardService.getCreditRatings().subscribe({
-      next: (res) => {
-        // this.creditRatingData = res || [];
-        this.computeStatesTotalRatings(res)
-      },
-      error: (err) => {
-        console.error('Failed to fetch credit rating data', err);
-        this.creditRatingData = [];
-      },
-      complete: () => {
-        // this.processCreditRatingData();
-        this.isLoading.set(false);
-      },
-    });
+
+    if (
+      isPlatformBrowser(this.platformId) &&
+      this.transferState.hasKey(CREDIT_RATINGS_KEY)
+    ) {
+      const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
+      this.creditRating.set(data);
+      this.transferState.remove(CREDIT_RATINGS_KEY);
+      this.isLoading.set(false);
+    } else {
+      this.assetService
+        .fetchCreditRatingReport()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res: ICreditRatingData[]) => {
+            const computedData = this.computeRatings(res);
+            this.creditRating.set(computedData);
+
+            if (isPlatformServer(this.platformId)) {
+              this.transferState.set(CREDIT_RATINGS_KEY, computedData);
+            }
+
+            this.isLoading.set(false);
+          },
+          error: (error: any) => {
+            console.error('Error fetching credit rating report:', error);
+            this.isLoading.set(false);
+          },
+          complete: () => this.updateRatingSummary(),
+        });
+    }
   }
 
-  //  private fetchCreditRatingTotalCount() {
-  //   this.assetService
-  //     .fetchCreditRatingReport()
-  //     .subscribe((res) => this.computeStatesTotalRatings(res));
-  // }
-  private computeStatesTotalRatings(res: ICreditRatingData[]) {
-    this.creditRatingList = res;
+  // Helper: Compute total, creditRatingAboveBBB_Minus count.
+  private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
+    const computedData: CreditRatingMap = {
+      India: { total: 0, creditRatingAboveBBB_Minus: 0 },
+    };
 
-    const computedData: any = { total: 0, India: 0 };
-    res.forEach((data) => {
-      if (computedData[data.state] || computedData[data.state] === 0) {
-        computedData[data.state] += 1;
-      } else {
-        computedData[data.state] = 1;
+    for (const data of res) {
+      const stateName = data.state;
+      const rating = data.creditrating;
+
+      if (!computedData[stateName]) {
+        computedData[stateName] = { total: 0, creditRatingAboveBBB_Minus: 0 };
       }
-      computedData.total += 1;
-      computedData["India"] += 1;
-    });
 
-    this.creditRating = computedData;
-    this.gridDataFomat.dataIndicators.map((elem: any) => {
-      if (elem.key == "ULBCreditRating") {
-        elem.value = computedData?.total.toString();
+      computedData[stateName]['total'] += 1;
+      computedData['India']['total'] += 1;
+
+      if (this.ELIGIBLE_RATINGS.includes(rating)) {
+        computedData[stateName]['creditRatingAboveBBB_Minus'] += 1;
+        computedData['India']['creditRatingAboveBBB_Minus'] += 1;
       }
-    });
-    this.showCreditInfoByState();
-  }
-
-  showCreditInfoByState() {
-    const ulbList = [];
-
-    for (let i = 0; i < this.creditRatingList?.length; i++) {
-      const ulb = this.creditRatingList[i];
-      ulbList.push(ulb["ulb"]);
-      const rating = ulb.creditrating?.trim();
-      this.calculateRatings(this.absCreditInfo, rating);
     }
 
-    this.creditRatingAboveA =
-      this.absCreditInfo["ratings"]["A"] +
-      this.absCreditInfo["ratings"]["A+"] +
-      this.absCreditInfo["ratings"]["AA"] +
-      this.absCreditInfo["ratings"]["AA+"] +
-      this.absCreditInfo["ratings"]["AA-"] +
-      this.absCreditInfo["ratings"]["AAA"] +
-      this.absCreditInfo["ratings"]["AAA+"] +
-      this.absCreditInfo["ratings"]["AAA-"];
-
-    this.creditRatingAboveBBB_Minus =
-      this.creditRatingAboveA +
-      this.absCreditInfo["ratings"]["A-"] +
-      this.absCreditInfo["ratings"]["BBB"] +
-      this.absCreditInfo["ratings"]["BBB+"] +
-      this.absCreditInfo["ratings"]["BBB-"];
-
-    this.absCreditInfo["title"] = "India";
-    this.absCreditInfo["ulbs"] = ulbList;
-
-    this.gridDataFomat.dataIndicators.map((elem: any) => {
-      if (elem.key == "ulbsWithA") {
-        elem.value = this.creditRatingAboveA;
-      } else if (elem.key == "UlbsWithBBB") {
-        elem.value = this.creditRatingAboveBBB_Minus;
-      }
-    });
-
-    console.log(' this.gridDataFomat.dataIndicators', this.gridDataFomat.dataIndicators);
+    return computedData;
   }
-  calculateRatings(dataObject: any, ratingValue: any) {
-    if (!dataObject && !dataObject["ratings"] && !dataObject["ratings"][ratingValue]) {
-      dataObject["ratings"][ratingValue] = 0;
-    }
-    dataObject["ratings"][ratingValue] = dataObject["ratings"][ratingValue] + 1;
-    dataObject["creditRatingUlbs"] = dataObject["creditRatingUlbs"] + 1;
+
+  // Helper: Update credit ratings summary.
+  private updateRatingSummary(): void {
+    // const selected = this.selectedStateNameSignal() || 'India';
+    const ratingData = this.creditRating()['India'] || {
+      total: 0,
+      creditRatingAboveBBB_Minus: 0,
+    };
+
+    this.totalCreditRating = ratingData['total'];
+    this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
   }
 
   getMoneyInfo() {
@@ -298,4 +269,9 @@ export class National implements OnInit {
     this.loadedTabs[idx] = true;
   }
 
+  // Unsubscribe.
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
