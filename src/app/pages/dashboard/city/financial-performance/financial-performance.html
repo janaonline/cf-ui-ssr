@@ -5,7 +5,7 @@
 
     <div class="border rounded bg-light p-4 my-4 row justify-content-between align-items-start">
         <div class="col-sm-12 col-md-8">
-            <p class="mb-2 p-0 fw-bold">{{ ulbName() }}'s {{ selectedButton?.label }} </p>
+            <p class="mb-2 p-0 fw-bold">{{ ulbName() }}'s {{ titleTabs() }} </p>
             <p class="m-0 p-0">{{intro}} </p>
         </div>
 
@@ -79,9 +79,11 @@
                         <span class="fw-bold text-center mb-3 custom-font-size-6">
                             {{this.graphPayload()[0]?.label}}
                         </span>
-                        <i class="bi bi-info-circle custom-font-size-6" matTooltip="Click to view"
+                        <!-- <i class="bi bi-info-circle custom-font-size-6" matTooltip="Click to view"
                             (click)="toggleTooltip()">
-                        </i>
+                        </i> -->
+                        <img src="https://cdn-icons-png.flaticon.com/128/157/157933.png" alt="" style="width: 4.5%;"
+                            (click)="toggleTooltip()">
                     </div>
 
                     <button class="btn btn-close border-0 p-0" role="button" (click)="downloadImg('Total_Expenditure')">
@@ -107,11 +109,11 @@
     </div>
 
     <div class="row justify-content-between align-items-start m-3 p-3">
-        <h3 class="fw-bold  p-2 my-4 text-center faq">Frequently Asked Questions</h3>
+        <h2 class="fw-bold  p-2 my-4 text-center faq">Frequently Asked Questions</h2>
 
         <div class="faq-item" *ngFor="let faq of faqs(); let i = index">
             <button class="faq-question" (click)="toggle(i)">
-                {{ faq.question }}
+                <h3>{{ faq.question }}</h3>
                 <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
             </button>
             <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
@@ -126,20 +128,12 @@
     <!-- Tooltip -->
     @if (isTooltipVisible()) {
     <div class="tooltip">
-        <button class="tooltip-close-btn btn close-btn border-0" (click)="toggleTooltip()"><i
-                class="bi bi-x-lg"></i></button>
+        <button class="tooltip-close-btn btn close-btn border-0" (click)="toggleTooltip()">
+            <i class="bi bi-x-lg"></i>
 
-        <p class="fw-bold mb-0">What is Total Debt?</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor voluptatem animi
-            explicabo.
-        </p>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi ad nemo, voluptatibus possimus ex autem
-            fuga,
-            enim porro dolor veniam, sed repellendus.
-        </p>
+        </button>
 
-        <p class="fw-bold mb-0">How is it calculated?</p>
-        <p>Lorem = ipsum + dolor </p>
+        <p>{{this.infoData()}}</p>
 
     </div>
     }

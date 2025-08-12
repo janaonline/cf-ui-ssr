@@ -199,16 +199,20 @@ export class FinancialPerformance {
   // ];
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
-    return this.ulbPopulation() == '4M+'
-      ? this.buttons
-      : this.buttons.filter(btn =>
-        ['revenue', 'expenditure'].includes(btn.key)
-      );
+    return this.buttons
   });
+  // readonlyButtons = computed<ButtonObj[]>(() => {
+  //   return this.ulbPopulation() == '4M+'
+  //     ? this.buttons
+  //     : this.buttons.filter(btn =>
+  //       ['revenue', 'expenditure'].includes(btn.key)
+  //     );
+  // });
   marketData: any;
   errorMessage: any;
   // yearArr: any;
   yearsArrDyna: any;
+  titleTabs = signal<string>('overview');
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
@@ -223,6 +227,7 @@ export class FinancialPerformance {
   @ViewChild(CdkTree) tree!: CdkTree<any>;
   // dataSource = Financial_Performance_DATA;
   dataSource = signal<any[]>([]);
+  infoData = signal<string>('');
   public treeControl: any;  // Set your tree control here
 
   ngOnInit(): void {
@@ -263,8 +268,12 @@ export class FinancialPerformance {
 
   // Collapse all nodes and expand only the selected one
   buttonClicked(node: DataNode) {
-    console.log('by default')
+    console.log(node, 'by default')
+    // if(!node.children && node.children.length>0) {
+
+    // }
     this.dataSource().forEach(n => n.isSelected = false);
+    this.infoData.set(node.info ?? 'N/A')
     node.isSelected = true;
     if (!this.tree) return;
     const datasets: any[] = [];
@@ -432,16 +441,34 @@ export class FinancialPerformance {
     this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
     this.currentSelectedButtonKey.set(btnKey);
     this.getIndicators(this.yearsArrDyna, this.ulbIdSignal(), this.selectedButton?.key ?? '')
+    if (this.selectedButton) {
+      switch (btnKey) {
+        case "overview": {
+          return this.titleTabs.set('key ratios')
+        }
+        case "revenue": {
+          return this.titleTabs.set('revenue overview')
+        }
+        case "expenditure": {
+          return this.titleTabs.set('expenditure breakdown')
+        }
+        case "debt": {
+          return this.titleTabs.set('debt and assets')
+        }
+      }
+    }
   }
   private getIndicators(years: string[], ulbId: string, keyType: string): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
       next: (data) => {
         this.marketData = data
+        // console.log(data.response.data[0].yearData, 'this is bmw')
         const dataSource = data.response.data;
         this.dataSource.set(dataSource);
-        console.log(this.dataSource(), 'this is daaaa')
+        // console.log(this.dataSource(), 'this is daaaa')
         this.buttonClicked(dataSource[1]);
+
         // this.yearArr = this.dataSource()[0];
         this.intro = this.marketData.response.intro
         this.source = this.marketData.source;
