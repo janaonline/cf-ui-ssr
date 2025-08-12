@@ -167,7 +167,6 @@ export class MapService {
         if (!feature || !stateColorCode) return this.defaultStateLayerStyle(color);
 
         if (stateColorCode && feature.properties.ST_CODE in stateColorCode) {
-          console.log("test")
           color = stateColorCode[feature.properties.ST_CODE].shade;
         }
         return this.defaultStateLayerStyle(color)
