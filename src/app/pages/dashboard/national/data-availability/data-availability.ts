@@ -98,7 +98,7 @@ const RES = {
 
 @Component({
   selector: 'app-data-availability',
-  imports: [Map, StateSearch, TabButtons, MatTableModule, NationalTable],
+  imports: [Map, MatTableModule, NationalTable],
   templateUrl: './data-availability.html',
   styleUrl: './data-availability.scss'
 })

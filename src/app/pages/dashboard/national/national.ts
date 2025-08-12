@@ -15,6 +15,7 @@ import { DashboardService } from '../dashboard-service';
 import { DataAvailability } from "./data-availability/data-availability";
 import { FinancialIndicators } from "./financial-indicators/financial-indicators";
 import { Resources } from "./resources/resources";
+import { NationalService } from './national.service';
 
 const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
@@ -37,6 +38,7 @@ const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
   styleUrl: './national.scss'
 })
 export class National implements OnInit {
+  selectedIndex = 0;
   isLoading = signal(false);
   loadedTabs: boolean[] = [true, false, false, false];
   moneyInfo = signal<any[]>([]);
@@ -77,7 +79,8 @@ export class National implements OnInit {
     private seoService: SeoService,
     private assetService: AssetsService,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState
+    private transferState: TransferState,
+    private nationalService: NationalService
   ) { }
 
   ngOnInit() {
@@ -280,6 +283,7 @@ export class National implements OnInit {
       .subscribe({
         next: (tabs: any) => {
           this.dashboardTabs.set(tabs);
+          this.nationalService.selectedTabName.set(this.dashboardTabs()[0].name);
         },
         error: (error: any) => console.log(error)
       }
@@ -288,6 +292,7 @@ export class National implements OnInit {
 
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
+    this.nationalService.selectedTabName.set(this.dashboardTabs()[idx].name);
   }
 
   // Unsubscribe.

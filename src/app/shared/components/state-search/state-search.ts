@@ -67,7 +67,7 @@ export class StateSearch implements OnInit, OnDestroy {
     if (!this.isStateReadonly()) {
       this.loadStatesAndFilter();
     }
-    console.log('this.stateName()', this.stateName())
+    // console.log('this.stateName()', this.stateName())
     this.patchStateName(this.stateName());
   }
 

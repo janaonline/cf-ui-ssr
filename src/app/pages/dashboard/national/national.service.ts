@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { environment } from "../../../../environments/environment";
 
 interface NationalInput {
@@ -14,6 +14,11 @@ interface NationalInput {
   providedIn: "root",
 })
 export class NationalService {
+
+  selectedButtonKey: any = signal<string>('');
+  selectedLedgerYear = signal<string>('');
+  selectedTabName = signal<string>('');
+
   constructor(private http: HttpClient) { }
 
   getNationalRevenueData(nationalInput: NationalInput, endPoint: string) {

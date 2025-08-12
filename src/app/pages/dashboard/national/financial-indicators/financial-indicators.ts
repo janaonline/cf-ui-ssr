@@ -13,85 +13,12 @@ import { NationalTable } from "../national-table/national-table";
 })
 export class FinancialIndicators {
 
-
-  selectedStateName = signal<string>('');
-  selectedStateCode = signal<string>('');
-  selectedStateId = signal<string>('');
-
   selectedLedgerYear = signal<string>('');
   readonly ledgerYears = input.required<string[]>();
-  RES = {
-    "success": true,
-    "data": {
-      "columns": [
-        {
-          "key": "populationCategory",
-          "display_name": "Population Category",
-        },
-        {
-          "key": "numberOfULBs",
-          "display_name": "Number Of ULBs",
-        },
-        {
-          "key": "ulbsWithData",
-          "display_name": "ULBs With Data",
-        },
-        {
-          "key": "DataAvailPercentage",
-          "display_name": "Data Availability Percentage",
-        }
-      ],
-      "rows": [
-        // {},
-        {
-          "populationCategory": "4M+",
-          "numberOfULBs": 8,
-          "ulbsWithData": 7,
-          "DataAvailPercentage": "88 %"
-        },
-        {
-          "populationCategory": "1M-4M",
-          "numberOfULBs": 37,
-          "ulbsWithData": 35,
-          "DataAvailPercentage": "95 %"
-        },
-        {
-          "populationCategory": "500K-1M",
-          "numberOfULBs": 46,
-          "ulbsWithData": 41,
-          "DataAvailPercentage": "89 %"
-        },
-        {
-          "populationCategory": "100K-500K",
-          "numberOfULBs": 382,
-          "ulbsWithData": 326,
-          "DataAvailPercentage": "85 %"
-        },
-        {
-          "populationCategory": "<100K",
-          "numberOfULBs": 4445,
-          "ulbsWithData": 3395,
-          "DataAvailPercentage": "76 %"
-        },
-        {
-          "populationCategory": "All ULBs",
-          "numberOfULBs": 4918,
-          "ulbsWithData": 3804,
-          "DataAvailPercentage": "77 %"
-        }
-      ]
-    },
-    "dataAvailability": 77,
-    "fromCache": true
-  };
-  tableData: any = this.RES.data;
-
 
   readonly stateIdSignal = signal('');
   // readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
-  readonly tabName = input.required<any>();
-  // readonly selectedLedgerYear = input.required<string>();
 
   currentSelectedButtonKey = signal<string>('Revenue');
   currentSelectedButton: any = signal<any>({});
@@ -103,29 +30,30 @@ export class FinancialIndicators {
   }
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
-    this.currentSelectedButtonKey.set(key as LineItemType);
+    // this.currentSelectedButtonKey.set(key as LineItemType);
+    this.nationalService.selectedButtonKey.set(key);
   }
 
   ngOnInit() {
-    console.log(this.dashboardTabData(), 'dashboardTabData')
+    // console.log(this.dashboardTabData(), 'dashboardTabData')
   }
 
-  getFinancialData() {
-    const params = {
-      financialYear: '2021-22',
-      formType: 'Annual',
-      stateId: '',
-      type: 'Revenue',
-      csv: false
-    }
-    this.nationalService.getNationalRevenueData(params, this.currentSelectedButtonKey())
-      .subscribe(
-        {
-          next: (res) => { },
-          error: () => { },
-          complete: () => { }
-        });
-  }
+  // getFinancialData() {
+  //   const params = {
+  //     financialYear: '2021-22',
+  //     formType: 'Annual',
+  //     stateId: '',
+  //     type: 'Revenue',
+  //     csv: false
+  //   }
+  //   this.nationalService.getNationalRevenueData(params, this.currentSelectedButtonKey())
+  //     .subscribe(
+  //       {
+  //         next: (res) => { },
+  //         error: () => { },
+  //         complete: () => { }
+  //       });
+  // }
 
   //  tableLoader: boolean = false;
   // getNationalTableData(endPoint) {

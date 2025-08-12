@@ -1,6 +1,7 @@
 <div class="row container mx-auto p-0">
     <div class="p-0" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
-        <app-tab-buttons [buttons]="buttons()"></app-tab-buttons>
+        <app-tab-buttons [buttons]="buttons()" (selectedButtonKeyChange)="onSelectedType($event)">
+        </app-tab-buttons>
     </div>
     <div class="border rounded bg-light p-3" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
         <div class="d-flex gap-2 justify-content-between align-items-center my-2">
