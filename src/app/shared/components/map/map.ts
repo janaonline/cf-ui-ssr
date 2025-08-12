@@ -17,7 +17,7 @@ import * as L from 'leaflet';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { UserUtility } from '../../../core/util/user/user';
-import { MapConfig, ResettableMap, StateGeoJson } from './interfaces';
+import { MapConfig, ResettableMap, StateDataByCode, StateGeoJson } from './interfaces';
 import { MapService } from './map.service';
 
 @Component({
@@ -32,6 +32,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   @Input() stateCode!: string;
   @Input() ulbId!: string;
   @Input() showUlbs: boolean = true;
+  @Input() stateColorCode!: StateDataByCode;
   @Output() ulbObjChange = new EventEmitter<IULB>();
   @Output() slugNameChange = new EventEmitter<string>();
   @Output() stateCodeChange = new EventEmitter<string>();
@@ -189,7 +190,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
           this.stateLayer = this.mapService.addGeoJsonLayer(
             stateGeoJson,
-            this.stateCode
+            this.stateCode,
+            this.stateColorCode
           );
 
           if (this.stateCode && features.length && this.stateLayer) {

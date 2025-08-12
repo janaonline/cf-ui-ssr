@@ -53,3 +53,14 @@ export interface ULBStateData {
 export interface LeafletHTMLElement extends HTMLElement {
   _leaflet_id?: number;
 }
+
+interface StateInfo {
+  _id: string;
+  stateId: string;
+  percentage: string;
+  shade: string;
+}
+
+export interface StateDataByCode {
+  [stateCode: string]: StateInfo;
+}

@@ -5,8 +5,7 @@ import type * as Leaflet from 'leaflet';
 import { Observable, Subject } from 'rxjs'; // Import throwError
 import { environment } from '../../../../environments/environment';
 import { IULB } from '../../../core/models/ulb';
-import { IStateLayerStyle } from '../../../core/util/map/models/mapCreationConfig';
-import { MapConfig, StateGeoJson, ULBStateData } from './interfaces';
+import { MapConfig, StateDataByCode, StateGeoJson, ULBStateData } from './interfaces';
 
 interface LeafletHTMLElement extends HTMLElement {
   _leaflet_id?: number;
@@ -28,12 +27,14 @@ export class MapService {
   private L!: typeof Leaflet;
   private leafletLoaded = false;
 
-  private defaultStateLayerStyle: IStateLayerStyle = {
-    fillColor: this.cfSecondary,
-    weight: 1,
-    opacity: 0.8,
-    color: 'lightgrey',
-    fillOpacity: 1,
+  private defaultStateLayerStyle = (fillColor: string = this.cfSecondary) => {
+    return {
+      fillColor,
+      weight: 1,
+      opacity: 0.8,
+      color: 'lightgrey',
+      fillOpacity: 1,
+    }
   };
 
   private blueIcon!: Leaflet.Icon;
@@ -154,13 +155,23 @@ export class MapService {
    */
   addGeoJsonLayer(
     geoJsonData: StateGeoJson,
-    stateCode: string
+    stateCode: string,
+    stateColorCode: StateDataByCode,
   ): Leaflet.GeoJSON | null {
     if (!isPlatformBrowser(this.platformId) || !this.map || !this.L)
       return null;
 
+    let color = this.cfSecondary;
     return this.L.geoJSON(geoJsonData, {
-      style: this.defaultStateLayerStyle,
+      style: (feature) => {
+        if (!feature || !stateColorCode) return this.defaultStateLayerStyle(color);
+
+        if (stateColorCode && feature.properties.ST_CODE in stateColorCode) {
+          console.log("test")
+          color = stateColorCode[feature.properties.ST_CODE].shade;
+        }
+        return this.defaultStateLayerStyle(color)
+      },
       onEachFeature: (feature, layer) => {
         const stateName = feature.properties.ST_NM;
         const stateFeatureCode = feature.properties.ST_CODE;
@@ -191,7 +202,7 @@ export class MapService {
           },
           mouseout: () => {
             if (layer instanceof this.L.Path && !stateCode) {
-              layer.setStyle(this.defaultStateLayerStyle);
+              layer.setStyle(this.defaultStateLayerStyle(color));
             }
           },
         });

@@ -3,10 +3,11 @@
     <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
         <div class="position-relative" style="min-height: 500px">
             <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
-            <!-- @if (showMap()) { -->
+            @if (showMap()) {
             <app-map #map [showUlbs]="false" [stateCode]="selectedStateCode()"
-                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''"></app-map>
-            <!-- } -->
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''"
+                [stateColorCode]="mapData.data"></app-map>
+            }
         </div>
         <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
         @if (selectedStateCode()) {
@@ -19,7 +20,7 @@
     <!-- Data section -->
     <div class="col-sm-12 col-md-6">
         <div class="border rounded bg-light p-3">
-            <p class="fw-bold"> {{selectedStateName()}} Data Availability - {{RES.dataAvailability}}%</p>
+            <p class="fw-bold"> {{selectedStateName()}} Data Availability - {{tableData.dataAvailability}}%</p>
             <div class="d-flex gap-2 justify-content-between align-items-center my-2">
                 <app-state-search [stateName]="selectedStateName()" [stateId]="selectedStateId()"
                     (onStateChange)="onStateSelection($event)">

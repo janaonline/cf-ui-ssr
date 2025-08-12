@@ -108,162 +108,64 @@ export class DataAvailability {
     { label: 'Population Category', key: 'popCat' },
     { label: 'ULB Type', key: 'ulbType' },
   ]);
-  RES = RES;
-  headers = this.RES.data.columns;
-  displayedColumns: string[] = this.RES.data.columns.map(ele => ele.key);
-  dataSource = this.RES.data.rows;
+  tableData = RES;
+  headers!: any[];
+  displayedColumns!: string[];
+  dataSource!: any[];
 
-  mapData = {
-    "success": true,
-    "data": [
-      {
-        "_id": "Bihar",
-        "stateId": "5dcf9d7216a06aed41c748e0",
-        "code": "BR",
-        "percentage": 93
-      },
-      {
-        "_id": "Tripura",
-        "stateId": "5dcf9d7516a06aed41c748fc",
-        "code": "TR",
-        "percentage": 70
-      },
-      {
-        "_id": "Uttar Pradesh",
-        "stateId": "5dcf9d7516a06aed41c748fe",
-        "code": "UP",
-        "percentage": 84
-      },
-      {
-        "_id": "Tamil Nadu",
-        "stateId": "5dcf9d7516a06aed41c748fa",
-        "code": "TN",
-        "percentage": 83
-      },
-      {
-        "_id": "Rajasthan",
-        "stateId": "5dcf9d7516a06aed41c748f8",
-        "code": "RJ",
-        "percentage": 51
-      },
-      {
-        "_id": "Odisha",
-        "stateId": "5dcf9d7416a06aed41c748f5",
-        "code": "OD",
-        "percentage": 93
-      },
-      {
-        "_id": "Madhya Pradesh",
-        "stateId": "5dcf9d7416a06aed41c748ef",
-        "code": "MP",
-        "percentage": 94
-      },
-      {
-        "_id": "Gujarat",
-        "stateId": "5dcf9d7316a06aed41c748e7",
-        "code": "GJ",
-        "percentage": 92
-      },
-      {
-        "_id": "Mizoram",
-        "stateId": "5dcf9d7416a06aed41c748f3",
-        "code": "MZ",
-        "percentage": 50
-      },
-      {
-        "_id": "Kerala",
-        "stateId": "5dcf9d7316a06aed41c748ed",
-        "code": "KL",
-        "percentage": 96
-      },
-      {
-        "_id": "Andhra Pradesh",
-        "stateId": "5dcf9d7216a06aed41c748dd",
-        "code": "AP",
-        "percentage": 91
-      },
-      {
-        "_id": "Haryana",
-        "stateId": "5dcf9d7316a06aed41c748e8",
-        "code": "HR",
-        "percentage": 13
-      },
-      {
-        "_id": "Himachal Pradesh",
-        "stateId": "5dcf9d7316a06aed41c748e9",
-        "code": "HP",
-        "percentage": 42
-      },
-      {
-        "_id": "Sikkim",
-        "stateId": "5dcf9d7516a06aed41c748f9",
-        "code": "SK",
-        "percentage": 29
-      },
-      {
-        "_id": "Uttarakhand",
-        "stateId": "5dcf9d7516a06aed41c748fd",
-        "code": "UK",
-        "percentage": 83
-      },
-      {
-        "_id": "Telangana",
-        "stateId": "5dcf9d7516a06aed41c748fb",
-        "code": "TS",
-        "percentage": 74
-      },
-      {
-        "_id": "West Bengal",
-        "stateId": "5dcf9d7616a06aed41c748ff",
-        "code": "WB",
-        "percentage": 64
-      },
-      {
-        "_id": "Assam",
-        "stateId": "5dcf9d7216a06aed41c748df",
-        "code": "AS",
-        "percentage": 89
-      },
-      {
-        "_id": "Maharashtra",
-        "stateId": "5dcf9d7416a06aed41c748f0",
-        "code": "MH",
-        "percentage": 74
-      },
-      {
-        "_id": "Meghalaya",
-        "stateId": "5dcf9d7416a06aed41c748f2",
-        "code": "ML",
-        "percentage": 14
-      },
-      {
-        "_id": "Punjab",
-        "stateId": "5dcf9d7516a06aed41c748f7",
-        "code": "PB",
-        "percentage": 54
-      },
-      {
-        "_id": "Jharkhand",
-        "stateId": "5dcf9d7316a06aed41c748eb",
-        "code": "JH",
-        "percentage": 98
-      },
-      {
-        "_id": "Chhattisgarh",
-        "stateId": "5dcf9d7216a06aed41c748e2",
-        "code": "CG",
-        "percentage": 100
-      },
-      {
-        "_id": "Karnataka",
-        "stateId": "5dcf9d7316a06aed41c748ec",
-        "code": "KA",
-        "percentage": 95
-      }
-    ],
-    "fromCache": true
+  showMap = signal<boolean>(false);
+  mapData!: any;
+
+  ngOnInit() {
+    this.fetchTableData();
+    this.fetchMapData();
   }
 
+  private fetchTableData() {
+    this.tableData = RES;
+    this.headers = this.tableData.data.columns;
+    this.displayedColumns = this.tableData.data.columns.map(ele => ele.key);
+    this.dataSource = this.tableData.data.rows;
+  }
+
+  private fetchMapData() {
+    this.showMap.set(false);
+
+
+    setTimeout(() => {
+      this.mapData = {
+        "success": true,
+        "data": {
+          BR: { _id: "Bihar", stateId: "5dcf9d7216a06aed41c748e0", percentage: 93, shade: "#2c448c" },
+          TR: { _id: "Tripura", stateId: "5dcf9d7516a06aed41c748fc", percentage: 70, shade: "#3e5db1" },
+          UP: { _id: "Uttar Pradesh", stateId: "5dcf9d7516a06aed41c748fe", percentage: 84, shade: "#2c448c" },
+          TN: { _id: "Tamil Nadu", stateId: "5dcf9d7516a06aed41c748fa", percentage: 83, shade: "#2c448c" },
+          RJ: { _id: "Rajasthan", stateId: "5dcf9d7516a06aed41c748f8", percentage: 51, shade: "#7a91d1" },
+          OD: { _id: "Odisha", stateId: "5dcf9d7416a06aed41c748f5", percentage: 93, shade: "#2c448c" },
+          MP: { _id: "Madhya Pradesh", stateId: "5dcf9d7416a06aed41c748ef", percentage: 94, shade: "#2c448c" },
+          GJ: { _id: "Gujarat", stateId: "5dcf9d7316a06aed41c748e7", percentage: 92, shade: "#2c448c" },
+          MZ: { _id: "Mizoram", stateId: "5dcf9d7416a06aed41c748f3", percentage: 50, shade: "#7a91d1" },
+          KL: { _id: "Kerala", stateId: "5dcf9d7316a06aed41c748ed", percentage: 96, shade: "#2c448c" },
+          AP: { _id: "Andhra Pradesh", stateId: "5dcf9d7216a06aed41c748dd", percentage: 91, shade: "#2c448c" },
+          HR: { _id: "Haryana", stateId: "5dcf9d7316a06aed41c748e8", percentage: 13, shade: "#c3cdee" },
+          HP: { _id: "Himachal Pradesh", stateId: "5dcf9d7316a06aed41c748e9", percentage: 42, shade: "#7a91d1" },
+          SK: { _id: "Sikkim", stateId: "5dcf9d7516a06aed41c748f9", percentage: 29, shade: "#7a91d1" },
+          UK: { _id: "Uttarakhand", stateId: "5dcf9d7516a06aed41c748fd", percentage: 83, shade: "#2c448c" },
+          TS: { _id: "Telangana", stateId: "5dcf9d7516a06aed41c748fb", percentage: 74, shade: "#3e5db1" },
+          WB: { _id: "West Bengal", stateId: "5dcf9d7616a06aed41c748ff", percentage: 64, shade: "#3e5db1" },
+          AS: { _id: "Assam", stateId: "5dcf9d7216a06aed41c748df", percentage: 89, shade: "#2c448c" },
+          MH: { _id: "Maharashtra", stateId: "5dcf9d7416a06aed41c748f0", percentage: 74, shade: "#3e5db1" },
+          ML: { _id: "Meghalaya", stateId: "5dcf9d7416a06aed41c748f2", percentage: 14, shade: "#c3cdee" },
+          PB: { _id: "Punjab", stateId: "5dcf9d7516a06aed41c748f7", percentage: 54, shade: "#7a91d1" },
+          JH: { _id: "Jharkhand", stateId: "5dcf9d7316a06aed41c748eb", percentage: 98, shade: "#2c448c" },
+          CG: { _id: "Chhattisgarh", stateId: "5dcf9d7216a06aed41c748e2", percentage: 100, shade: "#2c448c" },
+          KA: { _id: "Karnataka", stateId: "5dcf9d7316a06aed41c748ec", percentage: 95, shade: "#2c448c" }
+        },
+        "fromCache": true
+      }
+      this.showMap.set(true);
+    }, 10);
+  }
 
   // When state is selected from drop down.
   onStateSelection = (stateObj: IState) => {
