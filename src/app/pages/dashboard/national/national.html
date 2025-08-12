@@ -13,9 +13,9 @@
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
-                <!-- <app-grid-view [gridData]="gridData().dataIndicators"></app-grid-view> -->
-                <app-grid-view [gridData]="gridDataFomat.dataIndicators"></app-grid-view>
-
+                @if(this.selectedLedgerYear()) {
+                <app-grid-view [gridData]="exploreData().gridDetails"></app-grid-view>
+                }
                 }
             </div>
         </div>
@@ -25,16 +25,24 @@
         @if (this.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else {
-
+        @if(this.selectedLedgerYear()) {
         <app-info-cards [items]="moneyInfo()"></app-info-cards>
+        }
         }
 
         <!-- Last modified date -->
         <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
             style="font-size: 0.75rem">
             Last updated on:
-            {{ lastModifiedAt | date : "mediumDate" }}; Source:
-            financial statements for the year {{ selectedLedgerYear() }}
+            {{ exploreData().lastModifiedAt | date : "mediumDate" }}; Source:
+            financial statements for the year <select class="form-select form-select-sm w-auto d-inline-block"
+                [value]="selectedLedgerYear()" (change)="onMoneyInfoYearChange($event)" id="years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select>
         </p>
     </div>
 </section>
@@ -46,23 +54,6 @@
         @for (tab of dashboardTabs(); track tab) {
         <mat-tab [label]="tab.name">{{tab.name}}</mat-tab>
         }
-        <!-- <mat-tab label="Financial Indicators" [disabled]="false">
-            @if (loadedTabs[0]) {
-            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
-                [tabName]="'Financial Indicators'">
-            </app-financial-indicator>
-            }
-        </mat-tab>
-
-        <mat-tab label="Service Level Benchmark" [disabled]="false">
-            @if (loadedTabs[1]) {
-            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
-                [tabName]="'Service Level Benchmark'">
-            </app-financial-indicator>
-            }
-        </mat-tab> -->
-
-
     </mat-tab-group>
     }
 </section>
