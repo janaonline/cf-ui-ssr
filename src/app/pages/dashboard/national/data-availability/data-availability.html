@@ -5,8 +5,7 @@
             <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
             @if (showMap()) {
             <app-map #map [showUlbs]="false" [stateCode]="selectedStateCode()"
-                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''"
-                [stateColorCode]="mapData.data"></app-map>
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData"></app-map>
             }
         </div>
         <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->

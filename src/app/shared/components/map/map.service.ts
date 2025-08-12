@@ -166,8 +166,9 @@ export class MapService {
       style: (feature) => {
         if (!feature || !stateColorCode) return this.defaultStateLayerStyle(color);
 
-        if (stateColorCode && feature.properties.ST_CODE in stateColorCode) {
-          color = stateColorCode[feature.properties.ST_CODE].shade;
+        const stateFeatureCode = feature.properties.ST_CODE;
+        if (stateColorCode && stateFeatureCode in stateColorCode) {
+          color = stateColorCode[stateFeatureCode].shade;
         }
         return this.defaultStateLayerStyle(color)
       },

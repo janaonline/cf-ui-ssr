@@ -57,7 +57,7 @@ export interface LeafletHTMLElement extends HTMLElement {
 interface StateInfo {
   _id: string;
   stateId: string;
-  percentage: string;
+  percentage: number;
   shade: string;
 }
 
