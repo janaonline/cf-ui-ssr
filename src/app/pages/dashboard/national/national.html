@@ -58,7 +58,7 @@
             } @else if (tab.name === 'Resources') {
             <app-resources></app-resources>
             } @else {
-            <app-financial-indicators></app-financial-indicators>
+            <!-- <app-financial-indicators [dashboardTabData]="tab.data" [tabName]="tab.name"></app-financial-indicators> -->
             }
 
             {{tab | json}}

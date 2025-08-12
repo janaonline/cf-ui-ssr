@@ -172,7 +172,7 @@ export class State implements OnInit {
 
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "Dataset",
       "name": "City Finance",
       "url": `https://cityfinance.in/dashboard/slb`
     });

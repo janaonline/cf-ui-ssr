@@ -135,16 +135,16 @@
             }
         </mat-tab>
 
-        <mat-tab label="Service Level Benchmark">
+        <!-- <mat-tab label="Service Level Benchmark">
             @if (selectedTabIndex === 1) {
             <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
                 [tabName]="'Service Level Benchmark'" [selectedLedgerYear]="selectedLedgerYear()">
             </app-financial-indicator>
             }
-        </mat-tab>
+        </mat-tab> -->
 
         <mat-tab label="Borrowings & Credit Rating">
-            @if (selectedTabIndex === 2) {
+            @if (selectedTabIndex === 1) {
             <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
                 [tabName]="'Borrowings & Credit Rating'">
             </app-borrowing-credit-rating>
