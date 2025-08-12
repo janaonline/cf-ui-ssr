@@ -36,7 +36,7 @@
             Last updated on:
             {{ exploreData().lastModifiedAt | date : "mediumDate" }}; Source:
             financial statements for the year <select class="form-select form-select-sm w-auto d-inline-block"
-                [value]="selectedLedgerYear()" (change)="onMoneyInfoYearChange($event)" id="years">
+                [value]="selectedLedgerYear()" (change)="onMoneyInfoYearChange($event)" id="national_years">
                 @for (year of ledgerYears(); track $index) {
                 <option [value]="year" [selected]="year === selectedLedgerYear()">
                     {{ year }}
@@ -53,8 +53,8 @@
     <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="1">
         @for (tab of dashboardTabs(); track tab) {
         <mat-tab [label]="tab.name">
-            @if(tab.name === 'Data Availability') {
-            <app-data-availability></app-data-availability>
+            @if(tab.name === 'Data Availability' && ledgerYears().length) {
+            <app-data-availability [ledgerYears]="ledgerYears()"></app-data-availability>
             } @else if (tab.name === 'Resources') {
             <app-resources></app-resources>
             } @else {

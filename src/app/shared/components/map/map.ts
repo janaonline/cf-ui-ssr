@@ -31,6 +31,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // Note: Ensure the map component is initialized only after the parent component has fully loaded and rendered.
   @Input() stateCode!: string;
   @Input() ulbId!: string;
+  @Input() showUlbs: boolean = true;
   @Output() ulbObjChange = new EventEmitter<IULB>();
   @Output() slugNameChange = new EventEmitter<string>();
   @Output() stateCodeChange = new EventEmitter<string>();
@@ -194,13 +195,15 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
           if (this.stateCode && features.length && this.stateLayer) {
             this.mapService.flyToStateBounds(this.stateLayer, [0, 0], 1.5, 0.5);
             // this.loadCityCoordinates();
-            this.getUlbsObservable(this.stateCode).subscribe({
-              next: (res) => {
-                this.ulbsList = res['data'][this.stateCode]['ulbs'];
-                this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
-              },
-              error: () => console.error('Failed to get data'),
-            });
+            if (this.showUlbs) {
+              this.getUlbsObservable(this.stateCode).subscribe({
+                next: (res) => {
+                  this.ulbsList = res['data'][this.stateCode]['ulbs'];
+                  this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
+                },
+                error: () => console.error('Failed to get data'),
+              });
+            }
           } else {
             this.mapService.map?.setView(
               this.mapConfig.initialView,

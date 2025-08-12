@@ -1,4 +1,62 @@
-<section class="container row">
-    <div class="col-sm-12 col-md-6">test</div>
-    <div class="col-sm-12 col-md-6">test</div>
+<section class="container row p-0 my-4">
+    <!-- Map section -->
+    <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
+        <div class="position-relative" style="min-height: 500px">
+            <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
+            <!-- @if (showMap()) { -->
+            <app-map #map [showUlbs]="false" [stateCode]="selectedStateCode()"
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''"></app-map>
+            <!-- } -->
+        </div>
+        <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
+        @if (selectedStateCode()) {
+        <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetMap()">
+            Reset Map To India
+        </button>
+        }
+    </div>
+
+    <!-- Data section -->
+    <div class="col-sm-12 col-md-6">
+        <div class="border rounded bg-light p-3">
+            <p class="fw-bold"> {{selectedStateName()}} Data Availability - {{RES.dataAvailability}}%</p>
+            <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+                <app-state-search [stateName]="selectedStateName()" [stateId]="selectedStateId()"
+                    (onStateChange)="onStateSelection($event)">
+                </app-state-search>
+                <select class="form-select form-select-sm w-50" [value]="selectedLedgerYear()"
+                    (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;">
+                    @for (year of ledgerYears(); track $index) {
+                    <option [value]="year" [selected]="year === selectedLedgerYear()">
+                        {{ year }}
+                    </option>
+                    }
+                </select>
+                <div role="button" class="d-flex flex-column align-items-center custom-font-size-6"
+                    (click)="resetFilter()">
+                    <i class="bi bi-arrow-clockwise inline-block"></i>
+                    Reset
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <app-tab-buttons [buttons]="buttons()"></app-tab-buttons>
+
+        <!-- Table -->
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">
+
+            @for (item of headers; track $index) {
+            <ng-container [matColumnDef]=item.key>
+                <th mat-header-cell *matHeaderCellDef class="text-center fw-bold bg-table-header ">{{item.display_name}}
+                </th>
+                <td mat-cell *matCellDef="let element"> {{element[item.key]}} </td>
+            </ng-container>
+            }
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+    </div>
 </section>

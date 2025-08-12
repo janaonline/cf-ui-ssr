@@ -1,4 +1,4 @@
-import { DatePipe, isPlatformBrowser, isPlatformServer, JsonPipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
@@ -29,7 +29,6 @@ const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
     InfoCards,
     MatTabsModule,
     DatePipe,
-    JsonPipe,
     DataAvailability,
     Resources,
     FinancialIndicators
