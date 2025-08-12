@@ -88,6 +88,9 @@ export class FinancialIndicator {
   activeButtonList: any = stateDashboardSubTabsList;
   isBarChartLoading = signal(false);
   sortBy: string = 'top';
+  slbFilters: string[] = [];
+  stateServiceLabel: boolean = false;
+  serviceTab: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -144,8 +147,53 @@ export class FinancialIndicator {
     this.currentSelectedButtonKey.set(key as LineItemType);
     this.getCurrentBtn();
     if (this.tabName() === 'Service Level Benchmark') {
-      this.getChartData();
+      this.stateServiceLabel = true;
+      this.isChartDataAvailable.set(false);
+      this.getServiceDropDown();
     }
+  }
+
+  getSLBBtn() {
+    // this.reset();
+    // if (changes.stateServiceLabel) {
+    //   this.stateFilterDataService.getYearListSLB().subscribe(
+    //     (res) => {
+    //       this.yearList = res["data"];
+    //     },
+    //     (err) => {
+    //       console.log(err.message);
+    //     }
+    //   );
+    // }
+
+    const btn = this.currentSelectedButton().label;
+    // this.createDynamicChartTitle(this.currentActiveTab);
+    if (btn == "Water Supply") {
+      this.serviceTab = "water supply";
+      this.stateServiceLabel = true;
+    } else if (btn == "Waste Water Management") {
+      this.serviceTab = "sanitation";
+      this.stateServiceLabel = true;
+    } else if (btn == "Solid Waste Management") {
+      this.serviceTab = "solid waste";
+      this.stateServiceLabel = true;
+    } else if (btn == "Storm Water Drainage") {
+      this.serviceTab = "storm water";
+    }
+
+    console.log("serviceTab", this.serviceTab?.toLocaleLowerCase(), btn);
+    // this.getDropDownValue();
+    // this.changeActiveBtn(0);
+  }
+  getServiceDropDown() {
+    this.getSLBBtn()
+    this.dashboardService.getServiceDropDown(this.serviceTab).subscribe({
+      next: (res: any) => {
+        this.slbFilters = res.data.names;
+        // this.getChartData();
+        this.getRevenueChart();
+      }
+    });
   }
   getCurrentBtn() {
     this.currentSelectedButton.set(this.dashboardTabData().find((btn: any) => btn.key === this.currentSelectedButtonKey()));
@@ -266,19 +314,23 @@ export class FinancialIndicator {
 
 
   getFilterName() {
-    let newName = this.subButton().toLocaleLowerCase();
-    let filterName = 'revenue';
-
-    if (newName?.includes("mix")) {
-      filterName = newName;
-    } else if (newName?.includes("revenue") && !newName?.includes("own")) {
-      filterName = "revenue";
-    } else if (newName?.includes("own") && newName?.includes("revenue")) {
-      filterName = newName;
+    if (this.stateServiceLabel) {
+      return this.serviceTab;
     } else {
-      filterName = newName;
+      let newName = this.subButton().toLocaleLowerCase();
+      let filterName = 'revenue';
+
+      if (newName?.includes("mix")) {
+        filterName = newName;
+      } else if (newName?.includes("revenue") && !newName?.includes("own")) {
+        filterName = "revenue";
+      } else if (newName?.includes("own") && newName?.includes("revenue")) {
+        filterName = newName;
+      } else {
+        filterName = newName;
+      }
+      return filterName;
     }
-    return filterName;
   }
 
   //  changeActiveBtn(i) {

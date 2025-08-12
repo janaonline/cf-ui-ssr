@@ -67,6 +67,13 @@ export class DashboardService {
     );
   }
 
+  getServiceDropDown(type: string) {
+    return this.http.get(environment.api.url + `state-list-of-indics?type=${type}`);
+  }
+
+  getYearListSLB() {
+    return this.http.get(environment.api.url + `get-FYs-slb`);
+  }
   // Get 28 Slbs data.
   fetchCitySlbChartData(
     type = 'Water Supply',

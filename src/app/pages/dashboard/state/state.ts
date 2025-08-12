@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
@@ -19,6 +19,7 @@ import { StateSearch } from "../../../shared/components/state-search/state-searc
 import { DashboardService } from '../dashboard-service';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
 import { FinancialIndicator } from './financial-indicator/financial-indicator';
+import { IState } from '../../../core/models/state/state';
 
 @Component({
   selector: 'app-state',
@@ -132,6 +133,7 @@ export class State implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private seoService: SeoService,
     private dashboardService: DashboardService,
   ) { }
@@ -231,12 +233,13 @@ export class State implements OnInit {
       }
     });
   }
-  onStateSelection(state: any) {
-    console.log('state', state);
+  onStateSelection(state: IState) {
+    this.router.navigate(['/municipal-data/state', state.slug]);
   }
   // Ulb selected in city search drop down.
   onUlbSelected(ulbObj: IULB) {
-    console.log("ULB selected from drop down: ", ulbObj)
+    // console.log("ULB selected from drop down: ", ulbObj)
+    this.router.navigate(['/municipal-data/city', ulbObj.slug]);
   }
 
   // Ulb selected from map

@@ -4,7 +4,7 @@ import { LineItemType } from '../../../../core/models/interfaces';
 import { IULBResponse, ULB } from './models/ulbsResponse';
 import { ICell, IIExcelInput } from './models/excelFormat';
 import { IBondIssuerItem, IBondIssureItemResponse } from './models/bondIssureItemResponse';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { MunicipalBondsService } from './municipal-bonds.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,10 +13,11 @@ import { GeographicalService } from '../../../../core/services/geographical/geog
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IBondIssuer } from './models/bondIssuerResponse';
 import { CreditRating } from './credit-rating/credit-rating';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-borrowing-credit-rating',
-  imports: [TabButtons, CreditRating],
+  imports: [FormsModule, TabButtons, CreditRating, MatSelectModule],
   templateUrl: './borrowing-credit-rating.html',
   styleUrl: './borrowing-credit-rating.scss'
 })

@@ -2,10 +2,12 @@ import { AsyncPipe } from '@angular/common';
 import {
   Component,
   effect,
+  EventEmitter,
   inject,
   input,
   OnDestroy,
   OnInit,
+  Output,
   signal,
 } from '@angular/core';
 import {
@@ -36,6 +38,9 @@ import { CommonService } from '../../../core/services/common.service';
   styleUrl: './state-search.scss',
 })
 export class StateSearch implements OnInit, OnDestroy {
+
+  @Output() onStateChange = new EventEmitter<IState>();
+
   private fb = inject(FormBuilder);
   private commonService = inject(CommonService);
 
@@ -62,6 +67,8 @@ export class StateSearch implements OnInit, OnDestroy {
     if (!this.isStateReadonly()) {
       this.loadStatesAndFilter();
     }
+    console.log('this.stateName()', this.stateName())
+    this.patchStateName(this.stateName());
   }
 
   // Effect to manage formControl - disabled state/ patch value.
@@ -128,6 +135,7 @@ export class StateSearch implements OnInit, OnDestroy {
 
   // Option selected from child dropdown.
   onStateSelection(state: IState): void {
+    this.onStateChange.emit(state);
     const callback = this.selectState();
     if (callback) {
       callback(state);
