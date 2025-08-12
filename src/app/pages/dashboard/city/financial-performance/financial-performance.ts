@@ -14,6 +14,7 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/compon
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { DashboardService } from '../../dashboard-service';
+const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
 
@@ -139,6 +140,8 @@ export class FinancialPerformance {
   ulbName = input.required<string>();
   ulbType = input.required<string>();
   graphPayload = signal<any[]>([]);
+  // optionsAxis:any
+  optionsAxis = signal<any>('');
   ulbPopulation = input.required<string>();
   stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
@@ -146,57 +149,11 @@ export class FinancialPerformance {
   chartData = signal<ChartConfig>({
     chartId: this.graphPayload()[0]?.label,
     chartType: 'barChart',
-    labels: ['2020-21', '2021-22', '2022-23'],
+    labels: ['test'],
     datasets: this.graphPayload(),
-    // datasets: [
-    //   {
-    //     label: 'Capital Expenditure',
-    //     data: [30, 50, 20],
-    //     backgroundColor: '#62b6cb',
-    //     borderRadius: 5,
-    //     barThickness: 50,
-    //     // stack: 'stack1',
-    //   },
-    //   // {
-    //   //   label: 'Revenue Expenditure',
-    //   //   data: [10, 20, 15],
-    //   //   backgroundColor: '#8ecae6',
-    //   //   borderRadius: 5,
-    //   //   barThickness: 50,
-    //   //   stack: 'stack1',
-    //   // }
-    // ],
-    // options: {
-    //   ...baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
-    //   scales: {
-    //     x: {
-    //       stacked: true,
-    //     },
-    //     y: {
-    //       stacked: true,
-    //     },
-    //   },
-    // }
-    // });
-    //     }
-    //   ],
     options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
   });
   faqs = signal<any[]>([]);
-  // faqs: any = [
-  //   {
-  //     question: 'What’s included incityfinance?',
-  //     answer: 'cityfinance Pro includes video walkthroughs, detailed explanations, and multiple versions of problems to help you deeply understand data structures and algorithms.'
-  //   },
-  //   {
-  //     question: 'Are there any refunds?',
-  //     answer: 'Yes, cityfinance offers a 30-day money-back guarantee. If you’re not satisfied, you can request a refund within 30 days of purchase.'
-  //   },
-  //   {
-  //     question: 'Do I get lifetime access?',
-  //     answer: 'Yes! Once you purchasecityfinance, you have lifetime access to all content and future updates.'
-  //   }
-  // ];
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
     return this.buttons
@@ -233,10 +190,10 @@ export class FinancialPerformance {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.getYearsDynamic(this.ulbIdSignal());
+    this.setChartOptions();
     this.myForm.get('year')?.valueChanges.subscribe((selectedYear: string) => {
-      console.log('Year selected:', selectedYear);
-      // this.getYearsDynamic(this.ulbIdSignal());
       this.onYearChanged(selectedYear); // Call the process whenever the year changes
+      this.titleTabs.set('overview');
       this.getFaqs(this.ulbIdSignal(), selectedYear, this.stateName())
     });
   }
@@ -266,48 +223,44 @@ export class FinancialPerformance {
 
 
 
-  // Collapse all nodes and expand only the selected one
+
   buttonClicked(node: DataNode) {
-    console.log(node, 'by default')
+    // console.log(node, 'by default')
     // if(!node.children && node.children.length>0) {
 
-    // }
     this.dataSource().forEach(n => n.isSelected = false);
     this.infoData.set(node.info ?? 'N/A')
     node.isSelected = true;
     if (!this.tree) return;
     const datasets: any[] = [];
     if (node.children && node.children.length > 0) {
-
-      node.children.forEach((child: any) => {
+      node.children.forEach((child: any, index: number) => {
         // Prepare the dataset for each child
         datasets.push({
           label: child.name,
           data: child.yearData,
-          backgroundColor: '#62b6cb',
+          backgroundColor: GRAPH_COLORS[index],
           borderRadius: 5,
           barThickness: 50,
           stack: 'stack1',
         });
+        // console.log(child, 'this is child')
       });
-      datasets.push({
-        label: node.name,
-        data: node.yearData,
-        backgroundColor: '#62b6cb',
-        borderRadius: 5,
-        barThickness: 50,
-        stack: 'stack1', // Ensure stacking
-      });
+
 
       // Update the graph payload with the new datasets
       this.graphPayload.set(datasets);
 
+      // Add axes label
+      this.setChartOptions();
+
       // Update the chartData with the new datasets and options
       this.chartData.update(() => ({
         ...this.chartData(),
-        chartId: node.name,  // Keep the parent node's label
-        datasets: this.graphPayload(),  // Overwrite datasets
-        // options: this.getChartOptions(), // Options for the stacked bar chart
+        labels: this.yearsArrDyna,
+        chartId: node.name,
+        datasets: this.graphPayload(),
+        options: this.optionsAxis(),
       }));
     }
     else {
@@ -320,12 +273,14 @@ export class FinancialPerformance {
           barThickness: 50,
         },
       ])
+      this.setChartOptions();
       // Update chartData with new datasets
       this.chartData.update(() => ({
         ...this.chartData(),
-        chartId: this.graphPayload()[0].label,           // keep all other properties
+        chartId: this.graphPayload()[0].label,
+        labels: this.yearsArrDyna,
         datasets: this.graphPayload(),  // overwrite datasets
-        options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+        options: this.optionsAxis(),
       }));
     }
 
@@ -342,46 +297,14 @@ export class FinancialPerformance {
 
   }
 
-  // getColorForChild(childName: string): string {
-  //   const colors = {
-  //     // 'Own Source Revenue': '#ff7f0e',
-  //     // 'Assigned Revenue': '#2ca02c',
-  //     // 'Revenue Grants': '#1f77b4',
-  //     // 'Others': '#d62728',
-  //   };
-  //   return colors[childName] || '#62b6cb'; // Default to #62b6cb if not found
-  // }
-
-  // // // Function to return chart options with stacking enabled
-  // getChartOptions() {
-  //   return {
-  //     responsive: true,
-  //     scales: {
-  //       x: {
-  //         stacked: true, // Enable stacking on the x-axis
-  //         title: {
-  //           display: true,
-  //           text: 'Years',
-  //         },
-  //       },
-  //       y: {
-  //         stacked: true, // Enable stacking on the y-axis
-  //         title: {
-  //           display: true,
-  //           text: 'Amt in ₹ Cr',
-  //         },
-  //       },
-  //     },
-  //     plugins: {
-  //       legend: {
-  //         position: 'top',
-  //         labels: {
-  //           usePointStyle: true,
-  //         },
-  //       },
-  //     },
-  //   };
-  // }
+  private setChartOptions() {
+    const label = this.chartData()?.chartId;
+    if (label?.includes('(Cr)')) {
+      this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
+    } else if (label?.includes('(%)')) {
+      this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
+    }
+  }
   // // Helper: Add class name.
   getGrowthClass(value: string) {
     let className = 'text-danger';
@@ -527,9 +450,6 @@ export class FinancialPerformance {
   toggleTooltip() {
     this.isTooltipVisible.set(!this.isTooltipVisible());
   }
-
-
-
   expandedIndex: number | null = null;
 
   toggle(index: number): void {
