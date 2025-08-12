@@ -1,4 +1,4 @@
-import { DatePipe, isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { DatePipe, isPlatformBrowser, isPlatformServer, JsonPipe } from '@angular/common';
 import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
@@ -12,6 +12,9 @@ import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { InfoCards } from '../../../shared/components/info-cards/info-cards';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { DashboardService } from '../dashboard-service';
+import { DataAvailability } from "./data-availability/data-availability";
+import { FinancialIndicators } from "./financial-indicators/financial-indicators";
+import { Resources } from "./resources/resources";
 
 const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
@@ -20,11 +23,16 @@ const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 @Component({
   selector: 'app-national',
   imports: [
-    PreLoader, GridView,
-    //  StateSearch, CitySearch, 
+    PreLoader,
+    GridView,
     RouterModule,
-    InfoCards, MatTabsModule, DatePipe,
-    //  FinancialIndicator,
+    InfoCards,
+    MatTabsModule,
+    DatePipe,
+    JsonPipe,
+    DataAvailability,
+    Resources,
+    FinancialIndicators
   ],
   templateUrl: './national.html',
   styleUrl: './national.scss'
@@ -75,6 +83,7 @@ export class National implements OnInit {
 
   ngOnInit() {
     this.setSeo();
+    this.getDashboardTabData();
     this.fetchCreditRatingsData();
     this.getLedgerYears();
   }
@@ -156,14 +165,6 @@ export class National implements OnInit {
                 info: '',
                 src: '',
               },
-              // {
-              //   sequence: 6,
-              //   label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
-              //     } Cr With Details`,
-              //   value: `${this.bondIssuances().totalMunicipalBonds}`,
-              //   info: '',
-              //   src: '',
-              // },
             ];
 
             this.exploreData().gridDetails.sort(
@@ -273,17 +274,15 @@ export class National implements OnInit {
     }
   }
 
-
-  getDashboardTabData() {
+  // Add tabs dynamically.
+  private getDashboardTabData() {
     this.dashboardService
       .getDashboardTabData('619cc10e6abe7f5b80e45c6d')
       .subscribe({
         next: (tabs: any) => {
-          // this.setButtons(res["data"]);
           this.dashboardTabs.set(tabs);
-        }, error: (error: any) => {
-          console.log(error);
-        }
+        },
+        error: (error: any) => console.log(error)
       }
       );
   }
