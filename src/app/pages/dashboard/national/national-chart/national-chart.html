@@ -10,3 +10,18 @@
     </div>
     }
 </div>
+<div class="legends">
+    <ul style="              display: flex;
+              padding: 0px;
+              align-items: flex-start;
+              flex-wrap: wrap;
+              margin-top: 1rem;
+            ">
+        @for (item of responseData.colourArray; track $index) {
+        <li style="display: flex; align-items: center; padding: 0.6rem">
+            <div style="width: 30px; height: 16px; display: inline-block" [style.background-color]="item.colour"></div>
+            <span class="ps-2">{{ item.lineitem }}</span>
+        </li>
+        }
+    </ul>
+</div>

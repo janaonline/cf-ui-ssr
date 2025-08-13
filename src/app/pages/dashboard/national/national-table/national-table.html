@@ -23,13 +23,26 @@
         </div>
     </div>
 </div>
+
 @if (isLoadingData()) {
 <app-pre-loader></app-pre-loader>
 <app-pre-loader></app-pre-loader>
 <app-pre-loader></app-pre-loader>
 } @else {
-@if('MIx'.includes('Mix')) {
-<app-national-chart></app-national-chart>
+@if(nationalService.selectedButtonKey().includes('Mix')) {
+<app-national-chart class="my-5" [responseData]="responseData" [chartType]="'gaugeChart'"></app-national-chart>
+} @else {
+<!-- View Type -->
+@if (nationalService.selectedTabName() !== 'Data Availability') {
+<div class="text-end mt-4">
+    <mat-button-toggle-group appearance="legacy" name="viewType" aria-label="View Type" [(ngModel)]="viewType">
+        <mat-button-toggle value="table"><i class="bi bi-table"></i> Table</mat-button-toggle>
+        <mat-button-toggle value="graph"><i class="bi bi-bar-chart-fill"></i> Graph</mat-button-toggle>
+    </mat-button-toggle-group>
+</div>
+}
+@if(viewType() === 'graph') {
+<app-national-chart [responseData]="tableData"></app-national-chart>
 } @else {
 @if (dataSource.length && headers.length && displayedColumns.length) {
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">
@@ -47,6 +60,7 @@
 </table>
 } @else {
 <app-no-data-found></app-no-data-found>
+}
 }
 }
 }
