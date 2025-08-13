@@ -1,0 +1,68 @@
+// @use '@angular/material' as mat;
+
+// $custom-typography: mat.define-typography-config($font-family: 'Montserrat, sans-serif'
+//   );
+
+// // Apply the custom typography to your theme
+// $custom-theme: mat.define-light-theme((typography: $custom-typography,
+//       // ... other theme configurations
+//     ));
+
+// @include mat.core($custom-typography); // Include core typography styles
+// @include mat.all-component-themes($custom-theme); // Apply to all Material components
+
+.material-icons {
+  font-family: 'Material Icons' !important;
+}
+
+// Snackbar.
+.snackbar-success {
+  --mat-snack-bar-container-color: #2e7d32;
+}
+
+.snackbar-danger {
+  --mat-snack-bar-container-color: #c62828;
+}
+
+.snackbar-warn {
+  --mat-snack-bar-container-color: #f9a825;
+}
+
+
+// .mdc-button .mdc-button__label {
+//   color: #fff;
+// }
+
+// .mat-mdc-form-field-hint-wrapper,
+// .mat-mdc-form-field-error-wrapper {
+//   padding: 0 5px !important;
+// }
+
+// .mat-mdc-form-field-hint-wrapper {
+//   position: relative !important;
+//   top: -20px !important;
+// }
+
+// Mat tabs.
+.mat-mdc-tab-header {
+  --mat-tab-label-text-font: var(--ff-base);
+  --mat-tab-label-text-size: 14px;
+  --mat-tab-label-text-tracking: 0.0892857143em;
+  --mat-tab-label-text-line-height: 36px;
+  --mat-tab-label-text-weight: 500;
+}
+
+// Mat menu (drop downs)
+.mat-mdc-menu-item-text {
+  --mat-menu-item-label-text-font: var(--ff-base);
+}
+
+// Tool tip.
+.multiline-tooltip {
+  white-space: pre-line;
+}
+
+// Mat form field.
+mat-form-field {
+  width: 100%;
+}

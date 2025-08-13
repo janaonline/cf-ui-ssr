@@ -1,1 +1,155 @@
-<p>state works!</p>
+<section class="bg-light-primary py-3">
+    <div class="container">
+        <!-- Go to state dashbard -->
+        <a [routerLink]="'/municipal-data/national'" class="custom-font-size-7">
+            Go To National Dashboard
+        </a>
+
+        <!-- Grid data + Map  -->
+        @if(stateDetails()?.state?._id) {
+        <div class="row my-3">
+            <!-- Left section -->
+            <div class="col-sm-12 col-md-6">
+                <h1 class="fw-bold my-3 fs-2">{{stateDetails()?.state?.name}}</h1>
+                <p class="my-3">
+                    Summary of key state demographics and municipal (urban) indicators
+                </p>
+                <!-- Grid -->
+                @if (isLoading()) {
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                } @else {
+                <app-grid-view [gridData]="stateDetails().gridData"></app-grid-view>
+                <p class="text-secondary custom-font-size-7">
+                    *To enable standardization of nomenclature across states, we have reclassified all ULBs into one of
+                    the three categories - Municipal Corporation, Municipality or Town Panchayat
+                </p>
+                }
+            </div>
+
+            <!-- Right Section -->
+            <div class="col-sm-12 col-md-6 my-3">
+                <!-- State and ULB search -->
+                <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
+                    <app-state-search [stateName]="stateDetails().state.name" (onStateChange)="onStateSelection($event)"
+                        [stateId]="stateDetails().state._id">
+                    </app-state-search>
+
+                    <app-city-search [cityName]="''" (onUlbSelect)="onUlbSelected($event)"
+                        [stateId]="stateDetails().state._id"></app-city-search>
+                </div>
+
+                <!-- State Map -->
+                <div class="position-relative row" style="min-height: 350px">
+                    @if (showMap() && stateDetails().state.code) {
+                    <app-map #map [stateCode]="stateDetails().state.code" [ulbId]="''"
+                        (ulbObjChange)="selectedUlbObjChange($event)"></app-map>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Money Cards -->
+        <!-- @if (this.isLoading2) { -->
+        @if (this.isLoading()) {
+        <app-pre-loader></app-pre-loader>
+        } @else {
+
+        <div class="chart-wrapper rounded border shadow-sm py-4 px-3">
+            <div class="row">
+                <h6 class="fw-bold">Standardized Data Availability</h6>
+                <p class="col-sm-12 col-md-8 pt-3">Of the financial statements submitted by the ULBs, 95%
+                    have been changed to a comparable, standardized, and digitized format for the year 2021-22.
+                    Digitization of data is in progress for several ULBs including Chamarajanagar City Municipal
+                    Council, Bantval Town Municipal Council, Hole Narsipur Town Municipal Council, Pavagada Town
+                    Municipal Council, Chiknayakanhalli Municipality. For more details, download the complete set of
+                    ULBs for which the data is available for the year {{selectedLedgerYear()}}.
+                </p>
+
+                <div class="charts-container col-sm-12 col-md-4">
+                    @for (item of chartData; track $index) {
+                    <div class="chart-wrapper rounded border">
+                        <div class="chart-container">
+                            <app-charts [chartConfig]="item"></app-charts>
+                        </div>
+                        <div class="chart-title">
+                            <p class="m-0 p-0 fw-bold">
+                                {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+                            </p>
+                            <p class="m-0 p-0 custom-font-size-7 text-center">
+                                {{ item.additionalInfo?.indicatorName }}
+                            </p>
+                            <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
+                            <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            <button class="btn btn-sm btn-outline-cfPrimary my-3"><i class="bi bi-download"></i>&nbsp;Download
+                Data</button>
+        </div>
+
+        <app-info-cards [items]="stateDetails().financialData.result"></app-info-cards>
+        }
+
+        <!-- Last modified date -->
+        <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
+            style="font-size: 0.75rem">
+            Last updated on:
+            {{ moneyInfoRes().lastModifiedAt | date : "mediumDate" }}; Source:
+            financial statements for the year {{selectedLedgerYear()}}
+            <!-- <select class="form-select form-select-sm w-auto d-inline-block" [value]="selectedLedgerYear()"
+                (change)="onMoneyInfoYearChange($event)" id="years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select> -->
+        </p>
+    </div>
+</section>
+
+<section class="container matTabGroup">
+    <div class="alert alert-info text-center mt-5" role="alert">
+        <i class="bi bi-bell"></i>
+        NEW ON CITY FINANCE: 10,000+ budget documents of 2,000 cities(FY 2020-2024) are now available for
+        download. <a [href]="`${v1Url}/resources-dashboard/data-sets/income_statement`">Click here to access files.</a>
+    </div>
+    <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+    <div class="d-flex justify-content-center">
+        <div class="px-4 dataAvailabiltyTab">
+            {{ stateDetails()?.state?.name }} Data Availability - {{ dataAvailable()?.toFixed(2) }}% ({{
+            selectedLedgerYear() }})
+        </div>
+    </div>
+    @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
+        <mat-tab label="Financial Indicators">
+            @if (selectedTabIndex === 0) {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
+                [tabName]="'Financial Indicators'" [selectedLedgerYear]="selectedLedgerYear()">
+            </app-financial-indicator>
+            }
+        </mat-tab>
+
+        <!-- <mat-tab label="Service Level Benchmark">
+            @if (selectedTabIndex === 1) {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
+                [tabName]="'Service Level Benchmark'" [selectedLedgerYear]="selectedLedgerYear()">
+            </app-financial-indicator>
+            }
+        </mat-tab> -->
+
+        <mat-tab label="Borrowings & Credit Rating">
+            @if (selectedTabIndex === 1) {
+            <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
+                [tabName]="'Borrowings & Credit Rating'">
+            </app-borrowing-credit-rating>
+            }
+        </mat-tab>
+    </mat-tab-group>
+    }
+</section>

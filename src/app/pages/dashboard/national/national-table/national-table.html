@@ -1,0 +1,52 @@
+<div class="row container mx-auto p-0">
+    <div class="p-0" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
+        <app-tab-buttons [buttons]="buttons()" (selectedButtonKeyChange)="onSelectedType($event)">
+        </app-tab-buttons>
+    </div>
+    <div class="border rounded bg-light p-3" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
+        <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+            <app-state-search [stateName]="selectedStateName()" [stateId]="selectedStateId()"
+                (onStateChange)="onStateSelection($event)">
+            </app-state-search>
+            <select class="form-select form-select-sm w-50" [value]="selectedLedgerYear()"
+                (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select>
+            <div role="button" class="d-flex flex-column align-items-center custom-font-size-6" (click)="resetFilter()">
+                <i class="bi bi-arrow-clockwise inline-block"></i>
+                Reset
+            </div>
+        </div>
+    </div>
+</div>
+@if (isLoadingData()) {
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+} @else {
+@if('MIx'.includes('Mix')) {
+<app-national-chart></app-national-chart>
+} @else {
+@if (dataSource.length && headers.length && displayedColumns.length) {
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">
+
+    @for (item of headers; track $index) {
+    <ng-container [matColumnDef]=item.key>
+        <th mat-header-cell *matHeaderCellDef class="text-center fw-bold bg-table-header ">{{item.display_name}}
+        </th>
+        <td mat-cell *matCellDef="let element"> {{element[item.key]}} </td>
+    </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+} @else {
+<app-no-data-found></app-no-data-found>
+}
+}
+}

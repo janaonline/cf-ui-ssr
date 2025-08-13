@@ -129,6 +129,15 @@ export class Charts implements AfterViewInit, OnDestroy {
           plugins,
         });
         break;
+      case 'scatterChart':
+        this.chartInstance = new Chart(ctx, {
+          type: 'scatter',
+          data: {
+            datasets: config.datasets, // No labels for scatter
+          },
+          options: config.options,
+        });
+        break;
       default:
         console.warn(`Unknown chart type: ${config.chartType}`);
         break;

@@ -5,14 +5,9 @@
   <app-no-data-found></app-no-data-found>
   } @else {
   <!-- Buttons -->
-  <app-tab-buttons
-    [buttons]="buttons"
-    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
-  ></app-tab-buttons>
+  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
 
-  <div
-    class="border rounded bg-light p-4 my-4 row justify-content-between align-items-center"
-  >
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between align-items-center">
     <p class="col-sm-12 col-md-8">
       This dashboard aims to measure performance of 28 service level indicators
       across 4 key themes against service level benchmarks as prescribed by
@@ -23,31 +18,16 @@
     <div class="col-sm-12 col-md-2">
       <label for="cityName" class="d-block fw-bold mb-2">
         Compare by
-        <i
-          class="bi bi-arrow-clockwise"
-          tabindex="0"
-          role="button"
-          aria-label="Reset search"
-          (click)="resetSearch()"
-          (keyup.enter)="resetSearch()"
-        ></i>
+        <i class="bi bi-arrow-clockwise" tabindex="0" role="button" aria-label="Reset search" (click)="resetSearch()"
+          (keyup.enter)="resetSearch()"></i>
       </label>
-      <app-city-search
-        id="cityName"
-        [selectCity]="onUlbSelected"
-        [cityName]="compareUlbName()"
-      ></app-city-search>
+      <app-city-search id="cityName" [selectCity]="onUlbSelected" [cityName]="compareUlbName()"></app-city-search>
     </div>
 
     <!-- Filter: Years Dropdown -->
     <form [formGroup]="myForm" class="col-sm-12 col-md-2">
       <label for="slbYears" class="d-block fw-bold mb-2">Financial years</label>
-      <select
-        id="slbYears"
-        formControlName="year"
-        class="form-select w-100"
-        style="padding-block: 0.6rem"
-      >
+      <select id="slbYears" formControlName="year" class="form-select w-100" style="padding-block: 0.6rem">
         @for (year of years(); track year) {
         <option [value]="year">{{ year }}</option>
         }
@@ -66,11 +46,8 @@
   <div class="d-flex flex-wrap mt-3 py-1 gap-2">
     @for (item of legendItems; track $index) {
     <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-      <i
-        class="{{ item.icon }} fs-5"
-        [ngStyle]="item.color ? { color: item.color } : {}"
-        [class]="item.icon + ' fs-5'"
-      ></i>
+      <i class="{{ item.icon }} fs-5" [ngStyle]="item.color ? { color: item.color } : {}"
+        [class]="item.icon + ' fs-5'"></i>
       &nbsp;
       {{ item.label }}
     </div>
@@ -79,7 +56,7 @@
   }
 
   <!-- Charts -->
-  <div class="slbs-container">
+  <div class="charts-container">
     @for (item of chartData; track $index) {
     <div class="chart-wrapper bg-light rounded border">
       <div class="chart-container">
@@ -93,10 +70,7 @@
           {{ item.additionalInfo?.indicatorName }}
         </p>
         <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
-        <i
-          class="bi bi-hand-thumbs-up-fill fs-5"
-          [class]="showThumbUp(item)"
-        ></i>
+        <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i>
       </div>
     </div>
     }

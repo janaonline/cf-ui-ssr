@@ -467,14 +467,14 @@ export class DashboardMapSection {
   // View state/ city dashboard.
   public viewDashboard(): void {
     if (this.ulbSlugName()) {
-      this.router.navigateByUrl(`/municipal-data/${this.ulbSlugName()}`);
-    }
-    else {
+      this.router.navigateByUrl(`/municipal-data/city/${this.ulbSlugName()}`);
+    } else {
       // this.router.navigateByUrl(
       //   `/dashboard/state/${this.selectedStateIdSignal()}`,
       // );
-      window.location.href =
-        `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+      // window.location.href =
+      //   `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+      this.router.navigateByUrl(`/municipal-data/state/${this.selectedStateIdSignal()}`);
     }
   }
 

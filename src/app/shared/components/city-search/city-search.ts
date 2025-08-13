@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   effect,
+  EventEmitter,
   inject,
   input,
   OnDestroy,
   OnInit,
+  Output,
   signal,
 } from '@angular/core';
 import {
@@ -39,6 +41,8 @@ import { CommonService } from '../../../core/services/common.service';
   styleUrl: './city-search.scss',
 })
 export class CitySearch implements OnInit, OnDestroy {
+
+  @Output() onUlbSelect = new EventEmitter<IULB>();
   private fb = inject(FormBuilder);
   private commonService = inject(CommonService);
   private destroy$ = new Subject<void>();
@@ -110,6 +114,7 @@ export class CitySearch implements OnInit, OnDestroy {
 
   // Inform parent when option is selected from dropdown.
   onCitySelection(city: IULB): void {
+    this.onUlbSelect.emit(city);
     const callback = this.selectCity();
     if (callback) callback(city);
     // console.log('ULB obj is sent from child to parent: ', city);

@@ -84,7 +84,8 @@ export class FinancialIndicator {
   isChartDownloading = signal<boolean>(false);
 
   chartsData = signal<ChartConfig[]>([]);
-  output = signal<resStruct | undefined>(undefined);
+  // output = signal<resStruct | undefined>(undefined);
+  output = signal<ChartResStruct | undefined>(undefined);
 
   compareUlbsFromPopup!: IULB[] | undefined;
   compareTypeFromPopup!: string;
@@ -216,10 +217,12 @@ export class FinancialIndicator {
               if (res.chartType === 'barChart') {
                 const structureData = this.buildBarChartConfigurations(res);
                 this.chartsData.set(structureData);
+                console.log(this.chartsData())
               }
               else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
                 const structureData = this.buildGaugeChartConfigurations(res);
                 this.chartsData.set(structureData);
+
               }
             }
 
