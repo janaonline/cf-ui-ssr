@@ -217,10 +217,12 @@ export class FinancialIndicator {
               if (res.chartType === 'barChart') {
                 const structureData = this.buildBarChartConfigurations(res);
                 this.chartsData.set(structureData);
+                console.log(this.chartsData())
               }
               else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
                 const structureData = this.buildGaugeChartConfigurations(res);
                 this.chartsData.set(structureData);
+
               }
             }
 

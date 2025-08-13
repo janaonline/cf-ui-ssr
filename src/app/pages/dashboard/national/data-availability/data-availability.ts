@@ -4,9 +4,8 @@ import { ButtonObj } from '../../../../core/models/interfaces';
 import { IState } from '../../../../core/models/state/state';
 import { StateDataByCode } from '../../../../shared/components/map/interfaces';
 import { Map } from "../../../../shared/components/map/map";
-import { StateSearch } from "../../../../shared/components/state-search/state-search";
-import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
 import { NationalTable } from "../national-table/national-table";
+import { NationalChart } from "../national-chart/national-chart";
 
 type StateInput = {
   _id: string;
@@ -98,7 +97,7 @@ const RES = {
 
 @Component({
   selector: 'app-data-availability',
-  imports: [Map, MatTableModule, NationalTable],
+  imports: [Map, MatTableModule, NationalTable, NationalChart],
   templateUrl: './data-availability.html',
   styleUrl: './data-availability.scss'
 })
