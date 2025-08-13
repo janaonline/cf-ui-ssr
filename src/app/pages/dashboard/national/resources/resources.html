@@ -1,22 +1,13 @@
-<div class="container container-cnt">
-    <div class="row">
-        <div class="col-sm-12" style="display: flex;">
-            <div class="row row-cols-1 row-cols-md-4">
-                @for(item of resourceData(); track item) {
-                <a [href]="item?.downloadUrl | toStorageUrl" target="_blank">
-                    <div class="card">
-                        <img [src]="item?.imageUrl | toStorageUrl" class="card-img-top" [alt]="item.label" width="250"
-                            height="200">
-                        <div class="card-body">
-                            <p class="card-text">
-                                {{item?.name}}
-                            </p>
-                        </div>
-                    </div>
-                </a>
-                }
-
-            </div>
+<div class="d-flex flex-wrap my-4">
+    @for (item of resourceData(); track item) {
+    <div ngxSlickItem class="card-body">
+        <div class="card-image">
+            <!-- <img [src]="item.imageUrl" alt="carouselImage" /> -->
+            <img [src]="item?.imageUrl | toStorageUrl" class="card-img-top" [alt]="item.label" width="250" height="200">
         </div>
+        <a class="card-text card-label" [href]="item?.downloadUrl | toStorageUrl" target="_blank">
+            {{ item.name }}
+        </a>
     </div>
+    }
 </div>

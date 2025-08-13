@@ -22,7 +22,7 @@ export class Resources {
     this.nationalService.getResource().subscribe(
       {
         next: (res: any) => {
-          console.log("res", res);
+          // console.log("res", res);
           this.resourceData.set(res.data.data);
         },
         error: () => { },
