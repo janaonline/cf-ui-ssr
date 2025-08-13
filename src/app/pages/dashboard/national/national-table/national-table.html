@@ -62,7 +62,7 @@
     }
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [hidden]="row.ulb_pop_category === 'Average'"></tr>
 </table>
 } @else {
 <app-no-data-found></app-no-data-found>
