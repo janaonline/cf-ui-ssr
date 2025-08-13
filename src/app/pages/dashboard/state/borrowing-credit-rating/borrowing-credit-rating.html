@@ -1,0 +1,81 @@
+<section class="container">
+    @if(dashboardTabData()) {
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="dashboardTabData()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+    }
+</section>
+@if (currentSelectedButtonKey() === 'Borrowing' && tableDataSource.length > 0) {
+
+<p>Below are the details of municipal bond issuances undertaken by the ULB</p>
+<div class="mt-2 mx-2 filter-section d-none">
+    <div class="filter-title">
+        <!-- <span class="material-icons" style="margin-right: 5px">filter_list</span> -->
+        <i class="bi bi-filter"></i>
+        <span>Filter By</span>
+    </div>
+    <div class="row mt-4 d-flex justify-content-evenly filter-container">
+        <div class="col-md-4 col-sm-12 d-flex justify-content-start filterPosition">
+            <mat-select class="selectClass" [(ngModel)]="selectedUlbList" (ngModelChange)="selectMultipleUlb($event)"
+                placeholder="Select City" multiple>
+                <mat-option *ngFor="let item of stateUlbList" [value]="item">
+                    {{ item.name }}
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="col-md-4 col-sm-12 d-flex justify-content-end filterPosition">
+            <mat-select class="selectClass" [(ngModel)]="selectedYears" (ngModelChange)="selectMultipleYear($event)"
+                placeholder="Select Year" multiple>
+                <mat-option *ngFor="let item of yearsList" [value]="item">
+                    {{ item }}
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="col-md-2 col-sm-12 d-flex justify-content-end filterPosition">
+            <button (click)="searchFilter()" class="btn btn-cfPrimary searchButton">
+                Search
+            </button>
+        </div>
+        <div class="col-md-2 col-sm-12 d-flex justify-content-end filterPosition">
+            <button class="btn reset-btn" (click)="clearAllValue()">
+                Clear All &nbsp;<i class="bi bi-x-circle"></i>
+            </button>
+            <!-- Clear All
+          <span class="ml-2 material-icons">highlight_off</span> -->
+        </div>
+    </div>
+</div>
+<div class="mt-4 mx-2">
+    <div class="table-responsive">
+        <table class="custom-table table">
+            <tbody>
+                <tr class="border-none">
+                    @for (heading of tableHeading; track $index) {
+                    <th>
+                        {{ heading?.title }}
+                        <i style="cursor: pointer" class="fa" [class]="heading?.class" aria-hidden="true"
+                            (click)="sortTableData(heading?.keyToAccessValue)"></i>
+                    </th>
+                    }
+                </tr>
+                @for (data of tableDataSource; track $index) {
+                <tr class="border-all">
+                    @for (heading of tableHeading; track $index) {
+                    <td class="border-top-bottom" [class]="{
+                      'border-left': $index == 0,
+                      'border-right': $index == tableHeading.length - 1
+                    }">
+                        {{ data[heading.keyToAccessValue] }}
+                    </td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+}
+@if(currentSelectedButtonKey() === 'Credit Rating' && this.stateDetails()) {
+<app-credit-rating [stateDetails]="this.stateDetails()"></app-credit-rating>
+<!-- <app-credit-rating></app-credit-rating> -->
+}

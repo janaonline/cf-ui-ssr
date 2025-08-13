@@ -1,0 +1,28 @@
+<section class="container row p-0 my-4">
+    <h5 class="fw-bold text-center">Data Availability - {{tableData.dataAvailability}}%</h5>
+
+    <!-- Map section -->
+    <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
+        <div class="position-relative" style="min-height: 500px">
+            <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
+            @if (showMap()) {
+            <app-map #map [showUlbs]="false" [stateCode]="selectedStateCode()"
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData"></app-map>
+            }
+        </div>
+        <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
+        @if (selectedStateCode()) {
+        <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetMap()">
+            Reset Map To India
+        </button>
+        }
+    </div>
+
+    <!-- Data section -->
+    <div class="col-sm-12 col-md-6">
+        <!-- Table -->
+        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false"></app-national-table>
+    </div>
+
+    <app-national-chart></app-national-chart>
+</section>

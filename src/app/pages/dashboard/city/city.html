@@ -8,7 +8,8 @@
     }
 
     <!-- Go to state dashbard -->
-    <a [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`" class="custom-font-size-7">
+    <!-- <a [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`" class="custom-font-size-7"> -->
+    <a [routerLink]="['/municipal-data/state', this.cityDetails()?.state?.slug]" class="custom-font-size-7">
       Go To {{ cityDetails()?.state?.name }} Dashboard
       <!-- Go To {{ selectedStateNameSignal() }} Dashboard -->
     </a>

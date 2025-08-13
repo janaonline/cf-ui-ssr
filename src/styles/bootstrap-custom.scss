@@ -1,0 +1,93 @@
+// Define your font family and body colors
+$font-family-base: 'Montserrat', sans-serif;
+$cfPrimary: hsla(30, 83%, 49%, 1);
+$cfSecondary: hsla(220, 62%, 25%, 1);
+$primary: #0d6efd;
+$secondary: #6c757d;
+$success: #198754;
+$info: #0dcaf0;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #212529;
+
+$custom-theme-colors: (
+    "cfPrimary": $cfPrimary,
+    "cfSecondary": $cfSecondary,
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark
+);
+
+// Import Bootstrap with your overrides
+@use "bootstrap/scss/bootstrap" with ($theme-colors: $custom-theme-colors,
+    $font-family-base: $font-family-base,
+);
+
+// @use "bootstrap-icons/font/bootstrap-icons";
+
+// Define text size map using Bootstrap's namespace
+$text-sizes: (
+    'sm': bootstrap.$font-size-base * 0.75,
+    'rg': bootstrap.$font-size-base,
+    'lg': bootstrap.$font-size-base * 1.25) !default;
+
+@each $size, $value in $text-sizes {
+    body.#{$size} {
+        font-size: $value;
+    }
+
+    .text-#{$size} {
+        font-size: $value;
+        width: 1.25rem;
+        height: 1.25rem;
+        line-height: $value;
+        margin-right: bootstrap.$spacer * 0.25;
+        display: inline-flex;
+        vertical-align: middle;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+// HTML font size adjustments
+html {
+    &.sm {
+        font-size: bootstrap.$font-size-base * 0.8;
+    }
+
+    &.lg {
+        font-size: bootstrap.$font-size-base * 1.3;
+    }
+}
+
+// Background wrapper
+.wrap-bg {
+    background-image: url("/assets/images/homepage_v2/landing-bg.png"
+    );
+background-repeat: no-repeat;
+background-size: cover;
+padding-bottom: bootstrap.$spacer * 15;
+
+@include bootstrap.media-breakpoint-up(sm) {
+    padding-bottom: bootstrap.$spacer * 13;
+}
+}
+
+
+.btn-outline-cfPrimary:hover,
+.btn-outline-cfPrimary:active,
+.btn-outline-cfPrimary:focus {
+    background-color: $cfPrimary !important;
+    color: white !important;
+}
+
+.btn-cfPrimary {
+    color: white !important;
+}

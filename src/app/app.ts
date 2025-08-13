@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { Header } from './shared/components/template/header/header';
-import { Footer } from './shared/components/template/footer/footer';
-import { FeedbackWidget } from './shared/components/feedback-widget/feedback-widget';
-import { LocalStorageService } from './core/services/local-storage.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { GlobalLoaderService } from './core/services/loaders/global-loader.service';
+import { RouterOutlet } from '@angular/router';
 import { GoogleAnalyticsService } from './core/services/google-analytics.service';
+import { GlobalLoaderService } from './core/services/loaders/global-loader.service';
+import { LocalStorageService } from './core/services/local-storage.service';
+import { FeedbackWidget } from './shared/components/feedback-widget/feedback-widget';
+import { Footer } from './shared/components/template/footer/footer';
+import { Header } from './shared/components/template/header/header';
 
 @Component({
   selector: 'app-root',
