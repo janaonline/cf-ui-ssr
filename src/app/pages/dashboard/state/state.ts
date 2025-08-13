@@ -5,7 +5,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExploresectionTable, IMoneyInfoRes } from '../../../core/models/interfaces';
+import { IState } from '../../../core/models/state/state';
 import { IULB } from '../../../core/models/ulb';
+import { CommonService } from '../../../core/services/common.service';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { ChartConfig } from '../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../shared/components/charts/charts";
@@ -19,7 +21,6 @@ import { StateSearch } from "../../../shared/components/state-search/state-searc
 import { DashboardService } from '../dashboard-service';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
 import { FinancialIndicator } from './financial-indicator/financial-indicator';
-import { IState } from '../../../core/models/state/state';
 
 @Component({
   selector: 'app-state',
@@ -33,17 +34,18 @@ export class State implements OnInit {
   readonly v1Url = environment.v1Url;
 
   isLoading = signal(false);
-  isMoneyInfoLoading = signal(false);
+  isMoneyInfoLoading = signal(true);
   loadedTabs: boolean[] = [false, false, true];
   showMap = signal(true);
 
   ledgerYears = signal<string[]>([]);
-  selectedLedgerYear = signal<string>('2021-22');
+  selectedLedgerYear = signal<string>('');
 
   slugName = signal<string>('');
   stateIdSignal = signal('');
   stateDetails = signal<any>({});
-  dataAvailable = signal<any>(0);
+  dataAvailablePerc = signal<any>(0);
+  dataAvailableUlbs = signal<string[]>(['']);
 
   percentValue = 0;
   selectedValue: string = '';
@@ -135,6 +137,7 @@ export class State implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private seoService: SeoService,
+    private _commonService: CommonService,
     private dashboardService: DashboardService,
   ) { }
 
@@ -154,7 +157,6 @@ export class State implements OnInit {
           this.loadData(slugName);
         } else if (!slugName) this.isLoading.set(false);
       });
-    // this.loadData('test');
   }
 
   setSeo() {
@@ -178,61 +180,93 @@ export class State implements OnInit {
     });
   }
 
-  getDashboardTabData() {
+  // Get tabs.
+  private getDashboardTabData() {
     this.dashboardService
       .getDashboardTabData("619cc1016abe7f5b80e45c6b")
       .subscribe({
         next: (tabs: any) => {
-          this.dashboardTabs.set(tabs);
-        }, error: (error: any) => {
-          console.log(error);
-        }
+          this.dashboardTabs.set(tabs)
+        },
+        error: (error: any) => console.log(error)
       }
       );
   }
 
+
   // Fetch data.
   loadData(slugName: string) {
     this.isLoading.set(true);
-    // Check transfer state.
     const params = { slug: slugName, year: this.selectedLedgerYear() };
     this.dashboardService.getStateDetails(params).subscribe({
-      // next: (res: ExploreSectionResponse) => {
-      next: (res: any) => {
-        this.stateDetails.set(res.data);
-        this.getDataAvailable();
-
-        // console.log(this.stateDetails())
-      },
-      error: (error: Error) => {
+      next: (res: any) => this.stateDetails.set(res.data),
+      error: () => {
         this.isLoading.set(false);
         console.error('Failed to get state details');
       },
       complete: () => {
+        this.getLedgerYears();
         this.isLoading.set(false);
       }
     })
   }
 
-  getDataAvailable() {
-    // this.isMoneyInfoLoading.set(true);
+  private getLedgerYears() {
+    const stateCode = this.stateDetails()?.state?.code;
+    if (!stateCode) {
+      console.error("State code not found!");
+      return;
+    }
+    this._commonService.getLedgerYears(stateCode).subscribe({
+      next: (res) => {
+        this.ledgerYears.set(res.ledgerYears);
+        this.selectedLedgerYear.set(this.ledgerYears()[0]);
+      },
+      error: () => console.error("Failed to get ledger years."),
+      complete: () => {
+        this.getMoneyInfo();
+        this.getDataAvailable();
+      }
+
+    })
+  }
+
+  // Money info cards.
+  private getMoneyInfo(yearSelected: string = this.selectedLedgerYear()) {
+    this.isMoneyInfoLoading.set(true);
+    const stateId = this.stateDetails()?.state?._id;
+    if (!stateId) {
+      console.error("State id not found: money info");
+      return;
+    }
+    return this.dashboardService.getMoneyInfo(yearSelected, stateId).subscribe({
+      next: (res) => {
+        this.moneyInfoRes.set(res)
+        this.isMoneyInfoLoading.set(false);
+      },
+      error: () => {
+        console.error("Failed to get money info.");
+        this.isMoneyInfoLoading.set(false);
+      }
+    })
+  }
+
+  // "Standardized Data Availability" section
+  private getDataAvailable() {
     const payload = { "financialYear": this.selectedLedgerYear(), "stateId": this.stateDetails().state._id };
     this.dashboardService.getDataAvailable(payload).subscribe({
       next: (res: any) => {
-        this.dataAvailable.set(res.data?.percent);
+        this.dataAvailablePerc.set(Math.round(res.data?.percent));
+        this.dataAvailableUlbs.set(res.data?.names);
         if (this.chartData[0].additionalInfo) {
-          this.chartData[0].additionalInfo.value = Math.round(res.data?.percent);
+          this.chartData[0].additionalInfo.value = this.dataAvailablePerc();
           this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
         }
       },
-      error: (error: Error) => {
-        console.error('Failed to get data availability');
-      },
-      complete: () => {
-        // this.isMoneyInfoLoading.set(false);
-      }
+      error: () => console.error('Failed to get data availability'),
     });
   }
+
   onStateSelection(state: IState) {
     this.router.navigate(['/municipal-data/state', state.slug]);
   }
@@ -245,6 +279,15 @@ export class State implements OnInit {
   // Ulb selected from map
   selectedUlbObjChange(ulbObj: IULB) {
     console.log("ULB selected from map: ", ulbObj)
+  }
+
+  // Year changed from drop-down.
+  onMoneyInfoYearChange($event: Event) {
+    const yearSelected = ($event.target as HTMLSelectElement).value;
+    if (this.selectedLedgerYear() !== yearSelected) {
+      this.selectedLedgerYear.set(yearSelected);
+      this.getMoneyInfo(yearSelected);
+    }
   }
 
   // On tab changes call the chid components.

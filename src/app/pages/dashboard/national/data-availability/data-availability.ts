@@ -97,7 +97,7 @@ const RES = {
 
 @Component({
   selector: 'app-data-availability',
-  imports: [Map, MatTableModule, NationalTable, NationalChart],
+  imports: [Map, MatTableModule, NationalTable],
   templateUrl: './data-availability.html',
   styleUrl: './data-availability.scss'
 })
@@ -345,6 +345,10 @@ export class DataAvailability {
     console.log("year changed", this.selectedLedgerYear())
   }
 
+  // Download clicked.
+  downloadData() {
+    console.log("Download button clicked - Data availability");
+  }
 
 
   // Reset filters.

@@ -9,18 +9,22 @@ import { NationalChart } from "../national-chart/national-chart";
 import { isPlatformBrowser } from '@angular/common';
 import { PreLoader } from "../../../../shared/components/pre-loader/pre-loader";
 import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
-
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-national-table',
-  imports: [MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound],
+  imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule],
   templateUrl: './national-table.html',
   styleUrl: './national-table.scss'
 })
 export class NationalTable {
   headers: any[] = [];
   tableData: any;
+  responseData: any;
   dataSource: any[] = [];
   displayedColumns: any[] = [];
+  viewType = signal<string>('table');
+  hideViewType = false;
 
   isLoadingData = signal<boolean>(false);
 
@@ -45,7 +49,7 @@ export class NationalTable {
 
   lastSubButtonValue: string | null = null;
 
-  constructor(private nationalService: NationalService,
+  constructor(public nationalService: NationalService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     effect(() => {
@@ -115,7 +119,8 @@ export class NationalTable {
           next: (res: any) => {
             // console.log("res", res);
             if (this.nationalService.selectedButtonKey().includes('Mix')) {
-              this.setMixChart(res.data);
+              this.responseData = res.data;
+              // this.setMixChart(res.data);
             } else {
               this.tableData = res.data;
               this.setTable();
@@ -126,10 +131,6 @@ export class NationalTable {
             this.isLoadingData.set(false);
           }
         });
-  }
-
-  setMixChart(data: any) {
-
   }
 
   setTable() {

@@ -16,6 +16,7 @@ import { DataAvailability } from "./data-availability/data-availability";
 import { FinancialIndicators } from "./financial-indicators/financial-indicators";
 import { Resources } from "./resources/resources";
 import { NationalService } from './national.service';
+import { environment } from '../../../../environments/environment';
 
 const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
@@ -38,6 +39,9 @@ const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
   styleUrl: './national.scss'
 })
 export class National implements OnInit {
+
+  readonly v1Url = environment.v1Url;
+
   selectedIndex = 0;
   isLoading = signal(false);
   loadedTabs: boolean[] = [true, false, false, false];

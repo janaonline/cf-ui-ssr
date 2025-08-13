@@ -38,6 +38,10 @@ export class FinancialIndicators {
     // console.log(this.dashboardTabData(), 'dashboardTabData')
   }
 
+  downloadData() {
+    console.log("Download button clicked - Financial indicators");
+  }
+
   // getFinancialData() {
   //   const params = {
   //     financialYear: '2021-22',
