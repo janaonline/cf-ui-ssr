@@ -86,3 +86,7 @@
 .faq-item {
   border-bottom: 1px solid #ddd;
 }
+.no-pointer {
+  pointer-events: none;
+  cursor: default; /* Optional: change cursor to default */
+}

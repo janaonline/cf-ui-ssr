@@ -31,7 +31,8 @@
                 <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
                     (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
                     class="ps-0 border-bottom onHover" [ngClass]="{
-                      'bg-table-header': node.isHeader,
+                      'bg-table-header ': node.isHeader,
+                      'no-pointer': node.isHeader,
                       'selected': node.isSelected,
                     }">
                     <!-- expand icon -->
@@ -104,8 +105,8 @@
         </div>
     </div>
 
-    <div class="custom-font-size-7 mb-4 text-secondary text-start"><span class="fw-bold">Source:{{source}}
-        </span>
+    <div class="custom-font-size-7 mb-4 text-secondary text-start"><span class="fw-bold">Source:
+        </span> <span class="custom-font-size-5">{{source}}</span>
     </div>
 
     <div class="row justify-content-between align-items-start m-3 p-3">
@@ -113,7 +114,7 @@
 
         <div class="faq-item" *ngFor="let faq of faqs(); let i = index">
             <button class="faq-question" (click)="toggle(i)">
-                <h3>{{ faq.question }}</h3>
+                <h3 class="fw-bold">{{ faq.question }}</h3>
                 <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
             </button>
             <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
