@@ -30,7 +30,13 @@
 <app-pre-loader></app-pre-loader>
 } @else {
 @if(nationalService.selectedButtonKey().includes('Mix')) {
-<app-national-chart class="my-5" [responseData]="responseData" [chartType]="'gaugeChart'"></app-national-chart>
+<div class="mt-5">
+    @if(responseData.colourArray.length) {
+    <app-national-chart [responseData]="responseData" [chartType]="'gaugeChart'"></app-national-chart>
+    } @else {
+    <app-no-data-found></app-no-data-found>
+    }
+</div>
 } @else {
 <!-- View Type -->
 @if (nationalService.selectedTabName() !== 'Data Availability') {

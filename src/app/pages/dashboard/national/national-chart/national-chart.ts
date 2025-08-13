@@ -18,6 +18,7 @@ export class NationalChart {
   revnueChartData: any;
   @Input() responseData: any = {};
   @Input() chartType = 'barChart';
+  gaugechartBGColor = [];
 
   ngOnInit() {
     if (this.chartType === 'barChart') {
@@ -30,36 +31,36 @@ export class NationalChart {
 
   createGaugeChartData() {
     const chartData: any = []
+    this.gaugechartBGColor = this.responseData.colourArray.sort((a: any, b: any) => a.lineitem.localeCompare(b.lineitem)).map((ele: any) => ele.colour);
     const gaugeChart = this.generateGuageData(this.responseData, 'national');
+    gaugeChart.datasets[0].label = 'National';
     chartData.push(gaugeChart);
+
     Object.keys(this.responseData.individual).forEach((ele, i) => {
       const gaugeChart = this.generateGuageData(this.responseData.individual, ele);
       chartData.push(gaugeChart);
     });
-    console.log('chartData---', chartData);
+    // console.log('chartData---', chartData);
     this.chartsData.set(chartData)
-
-
-    // const result = Object.keys(this.responseData.individual).map((ele) => {
-    //   const lines = Object.keys(this.responseData.individual[ele]); // revenue categories
-    //   const data = lines.map((line) => this.responseData.individual[ele][line]); // values
-    //   return { label: ele, data }; // return each category with its values
-    // });
-
   }
 
   generateGuageData(typeData: any, ele: string) {
-    const labels: any[] = Object.keys(typeData[ele]); // revenue categories
+    const labels: any[] = Object.keys(typeData[ele]).sort(([a], [b]) => a.localeCompare(b));
     const data = labels.map((line) => typeData[ele][line]); // 
 
     const gaugeChart = JSON.parse(JSON.stringify(guageChartConfig));
     gaugeChart.chartId = 'chart-' + ele;
     gaugeChart.datasets[0].label = ele;
-    gaugeChart.datasets[0].data = data;
+    gaugeChart.datasets[0].data = this.getPercentageData(data);
     gaugeChart.labels = labels;
     gaugeChart.options.plugins.legend.display = false;
-    gaugeChart.datasets[0].backgroundColor = this.responseData.colourArray.map((ele: any) => ele.colour);
+    gaugeChart.datasets[0].backgroundColor = this.gaugechartBGColor;
     return gaugeChart;
+  }
+
+  getPercentageData(arr: number[]) {
+    const total = arr.reduce((sum, val) => sum + val, 0);
+    return arr.map(val => (Math.round((val / total) * 100)));
   }
 
   creatBarChartData() {

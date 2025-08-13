@@ -142,7 +142,7 @@ export class FinancialIndicator {
     this.getCurrentBtn();
     if (this.tabName() === 'Service Level Benchmark') {
       this.stateServiceLabel = true;
-      this.isChartDataAvailable.set(false);
+      // this.isChartDataAvailable.set(false);
       this.getServiceDropDown();
     }
   }
