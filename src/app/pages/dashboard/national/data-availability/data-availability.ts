@@ -345,6 +345,10 @@ export class DataAvailability {
     console.log("year changed", this.selectedLedgerYear())
   }
 
+  // Download clicked.
+  downloadData() {
+    console.log("Download button clicked - Data availability");
+  }
 
 
   // Reset filters.
