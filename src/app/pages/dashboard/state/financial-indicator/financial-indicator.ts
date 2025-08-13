@@ -1,9 +1,9 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, computed, effect, inject, Inject, Input, input, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
-import { forkJoin, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { MaterialModule } from '../../../../material.module';
@@ -13,10 +13,10 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/compon
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { compraeByOptions, IndicatorDetails } from '../../city/financial-indicator/constants';
 import { DashboardService } from '../../dashboard-service';
 import { ChartService } from './chart-service';
+import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
 
 @Component({
@@ -43,7 +43,7 @@ export class FinancialIndicator {
   readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
   readonly tabName = input.required<any>();
-  readonly selectedLedgerYear = input.required<string>();
+  selectedLedgerYear = signal('');
   // @Input() tabName = 'Financial Indicators';
 
   currentSelectedButtonKey = signal<string>('Revenue');
@@ -51,7 +51,7 @@ export class FinancialIndicator {
   currentSelectedButton: any = signal<any>({});
 
   myForm!: FormGroup;
-  years = signal<string[]>([]);
+  years = input.required<string[]>();
 
   infoMsg = signal<IFinancialIndicatorInfo>({ msg: '', text: 'success' });
   isChartDataAvailable = signal<boolean>(true);
@@ -100,17 +100,11 @@ export class FinancialIndicator {
   ) { }
 
   ngOnInit() {
-    console.log('dashboardTabData:', this.dashboardTabData());
-    console.log('tabName:', this.tabName());
     this.getCurrentBtn();
-    // this.setButtons();
-    // console.log('Buttons:', this.buttons);
-    // console.log('Sub Buttons:', this.subButtons);
-    // this.subButtons = this.dashboardTabData()[0].subButtons;
     this.stateIdSignal.set(this.stateDetails().state._id);
-    this.years.set(this.stateDetails().yearsList);
+    this.selectedLedgerYear.set(this.years()[0])
 
-    this.myForm = this.fb.group({ year: [this.years()[1]] });
+    this.myForm = this.fb.group({ year: [this.years()[0]] });
     this.isLoading.set(false);
 
     this.myForm.get('year')?.valueChanges
