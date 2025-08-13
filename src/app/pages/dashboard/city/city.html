@@ -115,7 +115,7 @@
       }
       <!-- [ulbName]="selectedCityNameSignal()" -->
     </mat-tab>
-    <mat-tab label="Service Level BenchMark" [disabled]="slbYears().length === 0">
+    <mat-tab label="Service Level Benchmark" [disabled]="slbYears().length === 0">
       @if (loadedTabs[3]) {
       <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()"></app-slb>
       }

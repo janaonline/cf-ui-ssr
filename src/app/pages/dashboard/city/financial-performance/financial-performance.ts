@@ -26,6 +26,7 @@ interface DataNode {
   yearData?: string[];
   yearGrowth?: string[];
   children?: DataNode[];
+  graphKey?: string,
   className: string;
   isHeader?: boolean
   isSelected?: boolean;
@@ -145,7 +146,6 @@ export class FinancialPerformance {
   ulbPopulation = input.required<string>();
   stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
-
   chartData = signal<ChartConfig>({
     chartId: this.graphPayload()[0]?.label,
     chartType: 'barChart',
@@ -158,16 +158,8 @@ export class FinancialPerformance {
   readonlyButtons = computed<ButtonObj[]>(() => {
     return this.buttons
   });
-  // readonlyButtons = computed<ButtonObj[]>(() => {
-  //   return this.ulbPopulation() == '4M+'
-  //     ? this.buttons
-  //     : this.buttons.filter(btn =>
-  //       ['revenue', 'expenditure'].includes(btn.key)
-  //     );
-  // });
   marketData: any;
   errorMessage: any;
-  // yearArr: any;
   yearsArrDyna: any;
   titleTabs = signal<string>('overview');
   constructor(
@@ -177,12 +169,11 @@ export class FinancialPerformance {
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.myForm = this.fb.group({
-      year: ['']  // Default value, will be updated after API call
+      year: ['']
     });
   }
 
   @ViewChild(CdkTree) tree!: CdkTree<any>;
-  // dataSource = Financial_Performance_DATA;
   dataSource = signal<any[]>([]);
   infoData = signal<string>('');
   public treeControl: any;  // Set your tree control here
@@ -190,23 +181,14 @@ export class FinancialPerformance {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this.getYearsDynamic(this.ulbIdSignal());
-    this.setChartOptions();
     this.myForm.get('year')?.valueChanges.subscribe((selectedYear: string) => {
-      this.onYearChanged(selectedYear); // Call the process whenever the year changes
-      this.titleTabs.set('overview');
+      this.onYearChanged(selectedYear);
       this.getFaqs(this.ulbIdSignal(), selectedYear, this.stateName())
     });
   }
   private onYearChanged(selectedYear: string) {
-    // Your custom logic to re-run when the year changes
-    console.log('Re-running process for year:', selectedYear);
-
-    // Get the previous years array based on the selected year
     this.yearsArrDyna = this.getYearsArray(selectedYear);
-    console.log('Generated years array:', this.yearsArrDyna);
-
-    // You can now trigger whatever process you want to happen with the selected year.
-    this.onSelectedButtonChange('overview');
+    this.onSelectedButtonChange(this.currentSelectedButtonKey());
   }
 
   private getYearsArray(selectedYear: string): string[] {
@@ -221,13 +203,7 @@ export class FinancialPerformance {
   childrenAccessor = (node: DataNode) => node.children ?? [];
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
 
-
-
-
   buttonClicked(node: DataNode) {
-    // console.log(node, 'by default')
-    // if(!node.children && node.children.length>0) {
-
     this.dataSource().forEach(n => n.isSelected = false);
     this.infoData.set(node.info ?? 'N/A')
     node.isSelected = true;
@@ -235,7 +211,6 @@ export class FinancialPerformance {
     const datasets: any[] = [];
     if (node.children && node.children.length > 0) {
       node.children.forEach((child: any, index: number) => {
-        // Prepare the dataset for each child
         datasets.push({
           label: child.name,
           data: child.yearData,
@@ -244,18 +219,13 @@ export class FinancialPerformance {
           barThickness: 50,
           stack: 'stack1',
         });
-        // console.log(child, 'this is child')
+        if (child.graphKey === 'amount') {
+          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
+        } else if (child.graphKey === 'percentage') {
+          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
+        }
       });
-
-
-
-      // Update the graph payload with the new datasets
       this.graphPayload.set(datasets);
-
-      // Add axes label
-      this.setChartOptions();
-
-      // Update the chartData with the new datasets and options
       this.chartData.update(() => ({
         ...this.chartData(),
         labels: this.yearsArrDyna,
@@ -269,12 +239,16 @@ export class FinancialPerformance {
         {
           label: node.name,
           data: node.yearData,
-          backgroundColor: '#62b6cb',
+          backgroundColor: '#1b4965',
           borderRadius: 5,
           barThickness: 50,
         },
       ])
-      this.setChartOptions();
+      if (node.graphKey === 'amount') {
+        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
+      } else if (node.graphKey === 'percentage') {
+        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
+      }
       // Update chartData with new datasets
       this.chartData.update(() => ({
         ...this.chartData(),
@@ -298,14 +272,6 @@ export class FinancialPerformance {
 
   }
 
-  private setChartOptions() {
-    const label = this.chartData()?.chartId;
-    if (label?.includes('(Cr)')) {
-      this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
-    } else if (label?.includes('(%)')) {
-      this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
-    }
-  }
   // // Helper: Add class name.
   getGrowthClass(value: string) {
     let className = 'text-danger';
@@ -344,16 +310,7 @@ export class FinancialPerformance {
     if (!isPlatformBrowser(this.platformId)) return;
     this._dashboardService.getFaqs(ulbId, year, state).subscribe({
       next: (data) => {
-        console.log(data, 'this iss faq')
-        this.faqs.set(data?.faqs);        // this.myForm.setValue({ year: this.years()[0] });
-        // const currentYearNum = parseInt(this.years()[0].split('-')[0]);
-        // this.yearsArrDyna = [
-        //   `${currentYearNum - 2}-${(currentYearNum - 2 + 1).toString().slice(-2)}`,
-        //   `${currentYearNum - 1}-${(currentYearNum - 1 + 1).toString().slice(-2)}`,
-        //   `${currentYearNum}-${(currentYearNum + 1).toString().slice(-2)}`
-        // ];
-        // this.onSelectedButtonChange('overview');
-        // // console.log(this.years(), 'this is yeee')
+        this.faqs.set(data?.faqs)
       },
       error: (err) => {
         this.errorMessage = err.message;
