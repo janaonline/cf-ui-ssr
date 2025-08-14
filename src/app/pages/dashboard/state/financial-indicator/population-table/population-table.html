@@ -1,0 +1,30 @@
+<div class="row tablerow">
+    <div class="col-12 col-sm-12">
+        <p class="py-4">
+            Distribution of ULBs in {{stateDetails().state.name}} according to Population
+            category
+        </p>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody class="main">
+                    <tr class="rowClass">
+                        <td>ULB Population Category</td>
+                        @for (key of objectKeys(stateUlbsPopulation()); track $index) {
+                        <td class="text-center customTableData">
+                            {{ key }}
+                        </td>
+                        }
+                    </tr>
+                    <tr class="rowClass">
+                        <td>Number of ULBs</td>
+                        @for (key of objectKeys(stateUlbsPopulation()); track $index) {
+                        <td class="text-center customTableData">
+                            {{ stateUlbsPopulation()[key] }}
+                        </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -148,7 +148,7 @@ export class DashboardService {
     // }
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
   }
-  getStateRevenue(payload: { state: string; financialYear: string, headOfAccount: string; filterName: string }, apiEndPoint = 'state-revenue'): Observable<{ sucess: boolean, data: any }> {
+  getStateRevenue(payload: any, apiEndPoint = 'state-revenue'): Observable<{ sucess: boolean, data: any }> {
     return this.http.post<any>(`${environment.api.url + apiEndPoint}`, payload);
   }
 
