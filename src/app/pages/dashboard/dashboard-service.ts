@@ -133,6 +133,7 @@ export class DashboardService {
     financialYear: any;
     activeButton: string;
     tabType: string;
+    csv?: boolean;
     // chartType: string;
   }): Observable<any> {
     // https://staging.cityfinance.in/api/v1/state-revenue-tabs?tabType=TotalRevenue&financialYear=2021-22&stateId=5dcf9d7316a06aed41c748ec&sortBy=top&chartType=bar&apiEndPoint=state-revenue-tabs&apiMethod=get&activeButton=Total%20Revenue
@@ -146,6 +147,11 @@ export class DashboardService {
     //   apiMethod: 'get',
     //   activeButton: 'Total Revenue'
     // }
+
+    if (params && params.csv) {
+      return this.http.get(`${environment.api.url}state-revenue-tabs`, { params, responseType: 'blob' });
+    }
+
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
   }
   getStateRevenue(payload: any, apiEndPoint = 'state-revenue'): Observable<{ sucess: boolean, data: any }> {
@@ -189,7 +195,8 @@ export class DashboardService {
   }
 
   getDataAvailable(payload: any): Observable<any> {
-    return this.http.post(`${environment.api.url}data-available`, payload);
+    if (payload && payload.csv) return this.http.post(`${environment.api.url}data-available`, payload, { responseType: 'blob' });
+    else return this.http.post(`${environment.api.url}data-available`, payload);
   }
 
 

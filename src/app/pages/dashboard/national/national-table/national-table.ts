@@ -1,16 +1,16 @@
-import { Component, effect, Inject, input, Input, PLATFORM_ID, signal } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
-import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
-import { ButtonObj } from '../../../../core/models/interfaces';
-import { StateSearch } from "../../../../shared/components/state-search/state-search";
-import { IState } from '../../../../core/models/state/state';
-import { NationalService } from '../national.service';
-import { NationalChart } from "../national-chart/national-chart";
-import { isPlatformBrowser } from '@angular/common';
-import { PreLoader } from "../../../../shared/components/pre-loader/pre-loader";
-import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { Component, effect, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { ButtonObj } from '../../../../core/models/interfaces';
+import { IState } from '../../../../core/models/state/state';
+import { CommonService } from '../../../../core/services/common.service';
+import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
+import { PreLoader } from "../../../../shared/components/pre-loader/pre-loader";
+import { StateSearch } from "../../../../shared/components/state-search/state-search";
+import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
+import { NationalChart } from "../national-chart/national-chart";
+import { NationalService } from '../national.service';
 @Component({
   selector: 'app-national-table',
   imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule],
@@ -49,8 +49,10 @@ export class NationalTable {
 
   lastSubButtonValue: string | null = null;
 
-  constructor(public nationalService: NationalService,
-    @Inject(PLATFORM_ID) private platformId: Object,
+  constructor(
+    public commonService: CommonService,
+    public nationalService: NationalService,
+    // @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     effect(() => {
       // if (!isPlatformBrowser(this.platformId)) return;
@@ -98,15 +100,24 @@ export class NationalTable {
     }
     return lineItem;
   }
-  getNationalData() {
+  getNationalData(csv: boolean = false) {
     this.isLoadingData.set(true);
-    const params = {
+    let params: {
+      financialYear: string;
+      formType: string;
+      type: string;
+      stateId: string;
+      csv?: boolean;
+    } = {
       financialYear: this.selectedLedgerYear(),
       formType: this.selectedType(),
       type: this.getType(),
       stateId: this.selectedStateId(),
-      // csv: false
     }
+
+    if (csv) params['csv'] = true;
+    else if ('csv' in params) delete params['csv'];
+
     // /dashboard/national/data-availability?financialYear=2021-22&stateId=&population=true&ulbType=
     let apiEndpoint = 'dashboard/national/data-availability'
     if (this.nationalService.selectedTabName() !== 'Data Availability') {
@@ -117,17 +128,22 @@ export class NationalTable {
       .subscribe(
         {
           next: (res: any) => {
-            // console.log("res", res);
-            if (this.nationalService.selectedButtonKey().includes('Mix')) {
-              this.responseData = res.data;
-              // this.setMixChart(res.data);
+            if (csv) {
+              this.commonService.downloadExcel(res);
+              this.isLoadingData.set(false);
             } else {
-              this.tableData = res.data;
-              this.setTable();
+              if (this.nationalService.selectedButtonKey().includes('Mix')) {
+                this.responseData = res.data;
+                // this.setMixChart(res.data);
+              } else {
+                this.tableData = res.data;
+                this.setTable();
+              }
+              this.isLoadingData.set(false);
             }
-            this.isLoadingData.set(false);
           },
-          error: () => {
+          error: (err: Error) => {
+            console.error('API error:', err);
             this.isLoadingData.set(false);
           }
         });
@@ -166,6 +182,10 @@ export class NationalTable {
   //   this.selectedStateName.set(name);
   //   this.selectedStateId.set(_id);
   // }
+
+  downloadData() {
+    this.getNationalData(true);
+  }
 
   resetFilter() {
     console.log("resetFilter called")

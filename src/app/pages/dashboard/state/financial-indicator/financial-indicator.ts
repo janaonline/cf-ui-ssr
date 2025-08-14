@@ -23,6 +23,7 @@ import { PopulationTable } from "./population-table/population-table";
 import { MixChart } from "./mix-chart/mix-chart";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from "@angular/material/select";
+import { CommonService } from '../../../../core/services/common.service';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -107,6 +108,7 @@ export class FinancialIndicator {
 
   constructor(
     private fb: FormBuilder,
+    private commonService: CommonService,
     private dashboardService: DashboardService,
     private chartService: ChartService,
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -360,21 +362,34 @@ export class FinancialIndicator {
     // this.filterName = event.target.value;
     this.getRevenueChart();
   }
-  getPopulationChart(sortBy = 'top') {
+  getPopulationChart(sortBy = 'top', csv: boolean = false) {
     this.sortBy = sortBy;
     this.isBarChartLoading.set(true);
-    const payload = {
-      chartType: 'scatter',
-      tabType: this.getTabType(),
-      financialYear: this.getYear(),
+    const payload: {
+      stateId: string;
+      financialYear: any;
+      activeButton: string;
+      tabType: string;
+      csv?: boolean;
+    } = {
       stateId: this.stateIdSignal(),
-      sortBy,
+      financialYear: this.getYear(),
       activeButton: this.subButton(),
-    }
+      tabType: this.getTabType(),
+    };
+
+    if (csv) payload['csv'] = true;
+    else if ('csv' in payload) delete payload['csv'];
+
     return this.dashboardService.getStatePopulation(payload).subscribe({
       next: (res) => {
-        this.updateBarChartData(res.data);
-        this.isBarChartLoading.set(false);
+        if (csv) {
+          this.commonService.downloadExcel(res, this.currentSelectedButton().label);
+          this.isBarChartLoading.set(false);
+        } else {
+          this.updateBarChartData(res.data);
+          this.isBarChartLoading.set(false);
+        }
       }, error: (err) => {
         this.isBarChartLoading.set(false);
         console.error(err);
@@ -536,6 +551,10 @@ export class FinancialIndicator {
       }, 0);
 
     }
+  }
+
+  downloadData() {
+    this.getPopulationChart('top', true);
   }
 
   ngOnDestroy(): void {
