@@ -1,6 +1,6 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
@@ -21,10 +21,15 @@ import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
 import { PopulationTable } from "./population-table/population-table";
 import { MixChart } from "./mix-chart/mix-chart";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from "@angular/material/select";
 
 @Component({
   selector: 'app-financial-indicator',
-  imports: [NoDataFound, Charts, MaterialModule, TabButtons, PreLoader, CitySearch, PopulationTable, MixChart],
+  imports: [Charts,
+    // MaterialModule,
+    FormsModule, MatFormFieldModule,
+    TabButtons, PreLoader, CitySearch, PopulationTable, MixChart, MatSelectModule],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss'
 })
@@ -92,7 +97,7 @@ export class FinancialIndicator {
   responseData: any;
   compareType = '';
   chartType = 'scatter';
-  compareUlbs = [];
+  compareUlbs: string[] = [];
 
   compareTypeButtons = signal<ButtonObj[]>([
     { label: 'State Average', key: '' },
@@ -157,15 +162,16 @@ export class FinancialIndicator {
   }
 
   onYearChange(event: any) {
-    console.log('event---', event.target.value)
     this.selectedLedgerYear.set(event.target.value);
     this.getChartData();
   }
+
   onUlbSelect(ulbObj: any) {
-    console.log('event---', ulbObj)
     this.ulbIdSignal.set(ulbObj._id);
-    this.getChartData();
+    this.compareUlbs.push(ulbObj._id);
+    this.getRevenueChart();
   }
+
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
     this.currentSelectedButtonKey.set(key as LineItemType);
@@ -207,6 +213,7 @@ export class FinancialIndicator {
     // this.getDropDownValue();
     // this.changeActiveBtn(0);
   }
+
   getServiceDropDown() {
     this.getSLBBtn()
     this.dashboardService.getServiceDropDown(this.serviceTab).subscribe({
@@ -220,6 +227,7 @@ export class FinancialIndicator {
       }
     });
   }
+
   getCurrentBtn() {
     this.currentSelectedButton.set(this.dashboardTabData().find((btn: any) => btn.key === this.currentSelectedButtonKey()));
   }
@@ -249,13 +257,6 @@ export class FinancialIndicator {
     return arr.find(e => e.key === key)?.label;
   }
 
-  // Get selected button(s) label.
-  // buttonType(): string {
-  //   // return this.getLabelByKey(this.buttons, this.currentSelectedButtonKey()) || 'Revenue';
-  //   const subBtnArr = this.subButtons[this.currentSelectedButtonKey()].buttons;
-  //   return this.getLabelByKey(subBtnArr, this.subButton()) || 'Total Revenue';
-  // }
-
   // Return selected year.
   private getYear() {
     // return this.myForm.get('year')?.value;
@@ -272,15 +273,7 @@ export class FinancialIndicator {
     return 'mix';
   }
 
-  // Displayed above graph.
-  getCompType() {
-    const compType = this.dialogResult?.compareType || 'state';
-    // if (compType === 'ulbs') return 'Selected ULB(s)'
-    // return this.getLabelByKey(compraeByOptions(this.ulbType()), compType);
-  }
-
   updateBarChartData(data: any): void {
-
     const { labels, values } = data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
       // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
       const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
@@ -333,11 +326,11 @@ export class FinancialIndicator {
     }
     this.scatterChart.set(config);
   }
+
   getTabType() {
     let findTabType = this.activeButtonList.find((tabName: any) => tabName.name == this.subButton());
     return findTabType ? findTabType.code : '';
   }
-
 
   getFilterName() {
     if (this.stateServiceLabel) {
@@ -433,7 +426,8 @@ export class FinancialIndicator {
       'isPerCapita': '',
       compareType: this.compareType,
       'compareCategory': '',
-      ulb: this.dialogResult?.compareUlbs || []
+      // ulb: this.dialogResult?.compareUlbs || []
+      ulb: this.compareUlbs
       // 'ulb': this.dialogResult.ulbId,
     };
     // console.log('this.dialogResult', this.dialogResult)
@@ -490,8 +484,8 @@ export class FinancialIndicator {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        this.dialogResult = result;
-
+        // this.dialogResult = result;
+        this.compareUlbs = result.compareUlbs;
         if (result) this.getChartData();
       });
   }

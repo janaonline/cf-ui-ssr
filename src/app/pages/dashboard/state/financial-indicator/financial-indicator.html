@@ -1,7 +1,4 @@
 <section class="container my-4">
-    @if (this.years().length === 0) {
-    <app-no-data-found></app-no-data-found>
-    } @else {
     <div class="position-relative">
         @if(dashboardTabData()) {
         <!-- Main Buttons -->
@@ -42,7 +39,8 @@
                         </option>
                         }
                     </select>
-                    <app-city-search (onUlbSelect)="onUlbSelect($event)"></app-city-search>
+                    <app-city-search (onUlbSelect)="onUlbSelect($event)"
+                        [stateId]="stateDetails().state._id"></app-city-search>
                     <div role="button" class="d-flex flex-column align-items-center custom-font-size-6"
                         (click)="resetFilter()">
                         <i class="bi bi-arrow-clockwise inline-block"></i>
@@ -54,12 +52,9 @@
         }
     </div>
 
-    @if(!isChartDataAvailable()) {
-    <app-no-data-found></app-no-data-found>
-    } @else {
     @if(subButton().includes('Mix')) {
     <!-- mix chart section -->
-    <div>
+    <div id="mixChartContainer">
         <div class="p-0 col-md-12">
             <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
             </app-tab-buttons>
@@ -72,18 +67,14 @@
     </div>
     }
     @else {
-    <div class="row justify-content-between my-4 position-relative">
-        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="chartContainer">
-            <!-- <p class="">
-                {{stateDetails().name}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
-            </p> -->
-
+    <div class="row justify-content-between my-4 position-relative" id="scatterChartContainer">
+        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2">
             <div class="row justify-content-between align-items-center">
                 <!-- Filters -->
                 <div class="col-sm-12 col-md-8 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3">
                     @if(!stateServiceLabel) {
                     <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-50"
-                        (click)="openCompareByDialog()">Compare by: {{getCompType()}}</button>
+                        (click)="openCompareByDialog()">Compare by: ULBs</button>
                     }
                 </div>
 
@@ -116,41 +107,37 @@
                 </div>
                 }
                 <app-population-table [stateDetails]="stateDetails()"></app-population-table>
-                <!-- @if(tabName() !== 'Service Level Benchmark') { -->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12 mt-5 mb-5 d-flex">
-                            Cities
-                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'top' }"
-                                (click)="getPopulationChart()">
-                                Top 10
-                            </button>
-                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'bottom' }"
-                                (click)="getPopulationChart('bottom')">
-                                Bottom 10
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                @if (isBarChartLoading()) {
-                <app-pre-loader></app-pre-loader>
-                <app-pre-loader></app-pre-loader>
-                <app-pre-loader></app-pre-loader>
-                }
-                @else {
-                <div class="row" style="height: 500px;">
-                    <div class="col-12">
-                        @if(barChart().datasets.length !== 0) {
-                        <app-charts [chartConfig]="barChart()"></app-charts>
-                        }
-                    </div>
-                </div>
-                }
-                <!-- } -->
             </div>
         </div>
     </div>
     }
-    }
-    }
+    <div class="container" id="barChartContainer">
+        <div class="row">
+            <div class="col-12 mt-5 mb-5 d-flex">
+                Cities
+                <button class="rankingButton" [class]="{ activeButton: sortBy === 'top' }"
+                    (click)="getPopulationChart()">
+                    Top 10
+                </button>
+                <button class="rankingButton" [class]="{ activeButton: sortBy === 'bottom' }"
+                    (click)="getPopulationChart('bottom')">
+                    Bottom 10
+                </button>
+            </div>
+        </div>
+        @if (isBarChartLoading()) {
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        }
+        @else {
+        <div class="row" style="height: 500px;">
+            <div class="col-12">
+                @if(barChart().datasets.length !== 0) {
+                <app-charts [chartConfig]="barChart()"></app-charts>
+                }
+            </div>
+        </div>
+        }
+    </div>
 </section>
