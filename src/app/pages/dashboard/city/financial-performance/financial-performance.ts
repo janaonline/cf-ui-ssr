@@ -14,6 +14,7 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/compon
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { DashboardService } from '../../dashboard-service';
+import Swal from 'sweetalert2';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
@@ -125,6 +126,7 @@ const Financial_Performance_DATA: DataNode[] =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FinancialPerformance {
+
   myForm!: FormGroup;
   intro: string = '';
   years = signal<string[]>([]);
@@ -407,10 +409,17 @@ export class FinancialPerformance {
     }, 0);
   }
 
-  // Hide/ Remove tooltip.
-  toggleTooltip() {
-    this.isTooltipVisible.set(!this.isTooltipVisible());
+
+  // Show info alert.
+  showInfoAlert() {
+    Swal.fire({
+      icon: 'info',
+      text: 'infoData',
+      confirmButtonText: 'Close',
+      confirmButtonColor: '#3085d6'
+    });
   }
+
   expandedIndex: number | null = null;
 
   toggle(index: number): void {

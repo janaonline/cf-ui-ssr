@@ -34,7 +34,7 @@ export const baseChartOptions = (
       enabled: showLabelOnChart,
       format: label
     },
-    legend: { labels: { font: { family: fontFamily, size: 12 } } },
+    legend: { position: 'bottom', align: 'start', labels: { font: { family: fontFamily, size: 12 } } },
     tooltip: {
       titleFont: { family: fontFamily },
       bodyFont: { family: fontFamily },
