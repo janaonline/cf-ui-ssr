@@ -11,20 +11,12 @@ import { Charts } from "../../../../../shared/components/charts/charts";
 })
 export class MixChart {
   colourArray: any = [];
-  chartsData = signal<ChartConfig[]>([])
-  // tableData: any;
-  // revnueChartData: any;
+  chartsData = signal<ChartConfig[]>([]);
   @Input() responseData: any = {};
   @Input() compareType: string = '';
-  // @Input() chartType = 'barChart';
-  // gaugechartBGColor = [];
-
-  constructor() {
-
-  }
 
   ngOnInit() {
-    console.log('this.responseData', this.responseData);
+    // console.log('this.responseData', this.responseData);
     this.configureChartData();
   }
 
@@ -41,15 +33,15 @@ export class MixChart {
       });
     } else {
       this.colourArray = this.generateChartColor(this.responseData);
-      console.log('this.colourArray', this.colourArray);
+      // console.log('this.colourArray', this.colourArray);
       chart = this.createDoughnutChartData(this.responseData, 'state');
       chartData.push(chart);
     }
     this.chartsData.set(chartData)
-    console.log('chartData', chartData);
+    // console.log('chartData', chartData);
   }
   generateChartColor(arr: any) {
-    console.log('arr', arr);
+    // console.log('arr', arr);
     return arr.sort((a: any, b: any) => a._id.localeCompare(b._id)).map((ele: any) => ({ color: ele.colour, lineitem: ele._id }));
   }
   createDoughnutChartData(arr: any, label: string): ChartConfig {
@@ -61,7 +53,9 @@ export class MixChart {
     // labels & data arrays
     const labels = arr.map((item: any) => item._id);
     const colors = arr.map((item: any) => item.colour);
-    const data = arr.map((item: any) => Math.round(Number(((item.amount / total) * 100))));
+    const data = arr.map((item: any) => {
+      return item.amount ? Math.round(Number(((item.amount / total) * 100))) : 0;
+    });
 
     const chart: any = JSON.parse(JSON.stringify(doughnutChartConfig));
     chart.chartId = 'chart-12';

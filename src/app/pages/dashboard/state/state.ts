@@ -146,11 +146,11 @@ export class State implements OnInit {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        console.log(params)
+        // console.log(params)
         const slugName = params.get('slug') || '';
         // this.selectedLedgerYear.set('');
 
-        console.log(this.slugName(), slugName)
+        // console.log(this.slugName(), slugName)
 
         if (slugName && slugName !== this.slugName()) {
           this.slugName.set(slugName);
