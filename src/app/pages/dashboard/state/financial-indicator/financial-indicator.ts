@@ -20,10 +20,11 @@ import { ChartService } from './chart-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
 import { PopulationTable } from "./population-table/population-table";
+import { MixChart } from "./mix-chart/mix-chart";
 
 @Component({
   selector: 'app-financial-indicator',
-  imports: [NoDataFound, Charts, MaterialModule, TabButtons, PreLoader, CitySearch, PopulationTable],
+  imports: [NoDataFound, Charts, MaterialModule, TabButtons, PreLoader, CitySearch, PopulationTable, MixChart],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss'
 })
@@ -79,26 +80,6 @@ export class FinancialIndicator {
     datasets: [],
     options: {}
   });
-  doughnutConfig: any = {
-    "chartId": "doughnut_0",
-    // "chartType": "doughnut",
-    "chartType": "gaugeChart",
-    "labels": [],
-    "datasets": [
-      {
-        "label": "National",
-        "data": [] as number[],
-        // "backgroundColor": ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", "#f43f5e", "#B388FF"],
-        "borderRadius": 3,
-        "borderWidth": 1
-      }
-    ],
-    options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', '', true, '%'),
-  }
-  doughnutChart = signal<ChartConfig>(this.doughnutConfig);
-  // stateUlbsPopulation = signal<any>({});
-
-  // dashboardTabData: any = {};
 
   activeButtonList: any = stateDashboardSubTabsList;
   isBarChartLoading = signal(false);
@@ -107,6 +88,17 @@ export class FinancialIndicator {
   stateServiceLabel: boolean = false;
   serviceTab: string = '';
   filterName: string = '';
+
+  responseData: any;
+  compareType = '';
+  chartType = 'scatter';
+  compareUlbs = [];
+
+  compareTypeButtons = signal<ButtonObj[]>([
+    { label: 'State Average', key: '' },
+    { label: 'Population Category', key: 'popType' },
+    { label: 'ULB Type', key: 'ulbType' },
+  ]);
 
   constructor(
     private fb: FormBuilder,
@@ -425,6 +417,10 @@ export class FinancialIndicator {
       }
     });
   }
+  onSelectCompareType(type: string) {
+    this.compareType = type;
+    this.getRevenueChart();
+  }
   getRevenueChart() {
     this.isChartLoading.set(true);
     const params = {
@@ -433,9 +429,9 @@ export class FinancialIndicator {
       financialYear: this.getYear(),
       headOfAccount: this.currentSelectedButtonKey(),
       filterName: this.getFilterName(),
-      'chartType': 'scatter',
+      chartType: this.chartType, // 'scatter',
       'isPerCapita': '',
-      'compareType': '',
+      compareType: this.compareType,
       'compareCategory': '',
       ulb: this.dialogResult?.compareUlbs || []
       // 'ulb': this.dialogResult.ulbId,
@@ -446,7 +442,8 @@ export class FinancialIndicator {
     return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
       next: (res) => {
         if (this.subButton().includes('Mix')) {
-          this.updateDoughnutChartData(res.data);
+          this.responseData = res.data;
+          // this.updateDoughnutChartData(res.data);
         } else {
           this.updateScatterChartData(res.data);
         }
@@ -457,23 +454,7 @@ export class FinancialIndicator {
       }
     });
   }
-  updateDoughnutChartData(arr: any): void {
-    // total amount
-    const total = arr.reduce((sum: number, item: any) => sum + item.amount, 0);
 
-    // labels & data arrays
-    const labels = arr.map((item: any) => item._id);
-    const colors = arr.map((item: any) => item.colour);
-    const data = arr.map((item: any) => Math.round(Number(((item.amount / total) * 100))));
-
-    this.doughnutConfig.chartId = 'chart-12';
-    this.doughnutConfig.datasets[0].label = this.stateDetails().state.name;
-    this.doughnutConfig.datasets[0].data = data;
-    this.doughnutConfig.labels = labels;
-    // this.doughnutConfig.options.plugins.legend.display = false;
-    this.doughnutConfig.datasets[0].backgroundColor = colors;
-    this.doughnutChart.set(this.doughnutConfig);
-  }
   getChartData(): void {
     this.getRevenueChart();
     if (!this.stateServiceLabel && !this.subButton().includes('Mix')) {
@@ -493,52 +474,6 @@ export class FinancialIndicator {
     //     console.error(err);
     //   }
     // });
-  }
-
-
-  // Helper: Consolidate all the data - payload/ body for the API.
-  // private createBodyStructure(): IFinancialIndicatorsChart {
-  //   const { compareType = 'state', calcType = this.getcalcType(), compareUlbs = [], compareUlbsObj } = this.dialogResult ?? {};
-  //   this.compareUlbsFromPopup = compareUlbsObj;
-  //   this.compareTypeFromPopup = compareType;
-
-  //   // If 'mix' then only one year data has to be fetched.
-  //   const body: IFinancialIndicatorsChart = {
-  //     years: this.getcalcType() === 'mix' ? [this.getYear()] : this.createYearsArr(),
-  //     compareType,
-  //     stateId: this.stateIdSignal(),
-  //     lineItem: untracked(() => this.currentSelectedButtonKey()),
-  //     calcType,
-  //     compareUlbs
-  //   };
-
-  //   return body;
-  // }
-
-  // Helper: Based on current year selected create years array with T, T-2, T-1.
-  private createYearsArr(): string[] {
-    const yearStr: string = this.myForm.get('year')?.value;
-
-    if (!yearStr || !/^\d{4}-\d{2}$/.test(yearStr)) {
-      // console.warn('Invalid year format. Expected format: YYYY-YY');
-      return [];
-    }
-
-    const endYear = parseInt(yearStr.slice(0, 4), 10);
-
-    const minYear = 2015;
-    const years: string[] = [];
-
-    for (let i = 2; i >= 0; i--) {
-      const start = endYear - i;
-      if (start < minYear) {
-        continue;
-      }
-      const end = (start + 1).toString().slice(-2);
-      years.push(`${start}-${end}`);
-    }
-
-    return years;
   }
 
   // Open compare by dialog 

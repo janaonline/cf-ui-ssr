@@ -58,10 +58,17 @@
     <app-no-data-found></app-no-data-found>
     } @else {
     @if(subButton().includes('Mix')) {
-    <app-charts [chartConfig]="doughnutChart()"></app-charts>
-
+    <div class="p-0 col-md-12">
+        <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
+        </app-tab-buttons>
+    </div>
+    @if(this.isChartLoading()) {
+    <app-pre-loader></app-pre-loader>
     } @else {
-
+    <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
+    }
+    }
+    @else {
     <div class="row justify-content-between my-4 position-relative">
         <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="chartContainer">
             <!-- <p class="">

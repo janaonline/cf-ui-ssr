@@ -1,0 +1,22 @@
+<div class="d-flex flex-wrap justify-content-center gap-1">
+    @for (chartData of chartsData(); track $index) {
+    <div [class]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
+        @if(chartData.chartType ==='gaugeChart') {
+        <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
+        }
+        <div [class]="chartData.chartType">
+            <app-charts [chartConfig]="chartData"></app-charts>
+        </div>
+    </div>
+    }
+</div>
+<div class="legends">
+    <ul class="list-unstyled d-flex flex-wrap justify-content-between">
+        @for (item of colourArray; track $index) {
+        <li style="display: flex; align-items: center; padding: 0.6rem">
+            <div style="width: 30px; height: 16px; display: inline-block" [style.background-color]="item.color"></div>
+            <span class="ps-2">{{ item.lineitem }}</span>
+        </li>
+        }
+    </ul>
+</div>
