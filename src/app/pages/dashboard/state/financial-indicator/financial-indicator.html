@@ -1,20 +1,5 @@
 <section class="container my-4">
-    <!-- <app-tree-table></app-tree-table> -->
-    @if (this.years().length === 0) {
-    <app-no-data-found></app-no-data-found>
-    } @else {
-    <!-- Show Loader -->
-    @if(isLoading()) {
-    <app-pre-loader></app-pre-loader>
-    <app-pre-loader></app-pre-loader>
-    <app-pre-loader></app-pre-loader>
-    } @else {
-
     <div class="position-relative">
-        @if (isChartLoading()) {
-        <!-- Overlay to block interaction -->
-        <div class="custom-spinner-overlay"></div>
-        }
         @if(dashboardTabData()) {
         <!-- Main Buttons -->
         <app-tab-buttons [buttons]="dashboardTabData()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
@@ -22,56 +7,75 @@
 
         <!-- Info about line item -->
         <p>{{ currentSelectedButton().subButtons.text }}</p>
-
-        <!-- Sub Buttons -->
-        <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
-            (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
-        </app-tab-buttons>
+        <!-- Filters -->
+        <div class="row container mx-auto p-0">
+            <div class="col-md-7">
+                @if(stateServiceLabel) {
+                <div class="mb-3" style="padding-right: 1rem">
+                    <mat-form-field>
+                        <mat-label>Choose one</mat-label>
+                        <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
+                            <!-- <mat-option>None</mat-option> -->
+                            @for (item of serviceTabList; track item) {
+                            <mat-option [value]="item">{{item}}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                } @else {
+                <!-- Sub Buttons -->
+                <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
+                    (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
+                </app-tab-buttons>
+                }
+            </div>
+            <div class="border rounded bg-light p-3 col-md-5">
+                <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedLedgerYear"
+                        (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;width:100px">
+                        @for (year of years(); track $index) {
+                        <option [value]="year" [selected]="year === selectedLedgerYear()">
+                            {{ year }}
+                        </option>
+                        }
+                    </select>
+                    <app-city-search (onUlbSelect)="onUlbSelect($event)"
+                        [stateId]="stateDetails().state._id"></app-city-search>
+                    <div role="button" class="d-flex flex-column align-items-center custom-font-size-6"
+                        (click)="resetFilter()">
+                        <i class="bi bi-arrow-clockwise inline-block"></i>
+                        Reset
+                    </div>
+                </div>
+            </div>
+        </div>
         }
     </div>
 
-    @if(!isChartDataAvailable()) {
-    <app-no-data-found></app-no-data-found>
-    } @else {
-    <div class="row justify-content-between my-4 position-relative">
-        <!-- Left side: Chart -->
-        @if (isChartDownloading()) {
-        <div class="custom-spinner-overlay position-absolute">
-            <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
-            <mat-spinner></mat-spinner>
+    @if(subButton().includes('Mix')) {
+    <!-- mix chart section -->
+    <div id="mixChartContainer">
+        <div class="p-0 col-md-12">
+            <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
+            </app-tab-buttons>
         </div>
+        @if(this.isChartLoading()) {
+        <app-pre-loader></app-pre-loader>
         } @else {
-        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="chartContainer">
-            <!-- <p class="">
-                {{stateDetails().name}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
-            </p> -->
-
+        <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
+        }
+    </div>
+    }
+    @else {
+    <div class="row justify-content-between my-4 position-relative" id="scatterChartContainer">
+        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2">
             <div class="row justify-content-between align-items-center">
                 <!-- Filters -->
                 <div class="col-sm-12 col-md-8 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3">
-                    <!-- <input class="rounded border px-2 py-2 custom-font-size-6 w-100" id="filterInput"
-            value="State Municipal Corporation Average" #input disabled /> -->
-                    <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-100"
-                        (click)="openCompareByDialog()">Compare by: {{getCompType()}}</button>
-
-                    <!-- Filter: years-->
-                    <form [formGroup]="myForm" class="w-50">
-                        <label for="finanaicalYears" class="d-none fw-bold mb-2">
-                            Financial years
-                        </label>
-                        <select id="finanaicalYears" formControlName="year"
-                            class="text-dark form-select w-100 custom-font-size-6 bg-light"
-                            style="padding-block: 0.6rem">
-                            @for (year of years(); track year) {
-                            <option [value]="year">{{ year }}</option>
-                            }
-                        </select>
-                    </form>
-
-                    <!-- Reset icon -->
-                    <!-- <button class="takeActionBtn" role="button" (click)="takeAction('reset')">
-            <i class="bi bi-arrow-clockwise"></i>Reset
-          </button> -->
+                    @if(!stateServiceLabel) {
+                    <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-50"
+                        (click)="openCompareByDialog()">Compare by: ULBs</button>
+                    }
                 </div>
 
                 <!-- Expand, download, Share/ Embed -->
@@ -102,88 +106,49 @@
                     </div>
                 </div>
                 }
-                <div class="row tablerow">
-                    <div class="col-12 col-sm-12">
-                        <p class="py-4">
-                            Distribution of ULBs in {{stateDetails().name}} according to Population
-                            category
-                        </p>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <tbody class="main">
-                                    <tr class="rowClass">
-                                        <td>ULB Population Category</td>
-                                        @for (key of objectKeys(stateUlbsPopulation()); track $index) {
-                                        <td class="text-center customTableData">
-                                            {{ key }}
-                                        </td>
-                                        }
-                                    </tr>
-                                    <tr class="rowClass">
-                                        <td>Number of ULBs</td>
-                                        @for (key of objectKeys(stateUlbsPopulation()); track $index) {
-                                        <td class="text-center customTableData">
-                                            {{ stateUlbsPopulation()[key] }}
-                                        </td>
-                                        }
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                @if(tabName() !== 'Service Level Benchmark') {
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12 mt-5 mb-5 d-flex">
-                            Cities
-                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'top' }"
-                                (click)="getPopulationChart()">
-                                Top 10
-                            </button>
-                            <button class="rankingButton" [ngClass]="{ activeButton: sortBy === 'bottom' }"
-                                (click)="getPopulationChart('bottom')">
-                                Bottom 10
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                @if (isBarChartLoading()) {
-                <app-pre-loader></app-pre-loader>
-                <app-pre-loader></app-pre-loader>
-                <app-pre-loader></app-pre-loader>
-                }
-                @else {
-                <div class="row" style="height: 500px;">
-                    <div class="col-12">
-                        @if(barChart().datasets.length !== 0) {
-                        <app-charts [chartConfig]="barChart()"></app-charts>
-                        }
-                    </div>
-                </div>
-                }
+                <app-population-table [stateDetails]="stateDetails()"></app-population-table>
+            </div>
+        </div>
+    </div>
+    }
+    <div class="container" id="barChartContainer">
+        <div class="row">
+            <div class="col-12 mt-5 mb-5 d-flex">
+                Cities
+                <button class="rankingButton" [class]="{ activeButton: sortBy === 'top' }"
+                    (click)="getPopulationChart()">
+                    Top 10
+                </button>
+                <button class="rankingButton" [class]="{ activeButton: sortBy === 'bottom' }"
+                    (click)="getPopulationChart('bottom')">
+                    Bottom 10
+                </button>
+            </div>
+        </div>
+        @if (isBarChartLoading()) {
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        }
+        @else {
+        <div class="row" style="height: 500px;">
+            <div class="col-12">
+                @if(barChart().datasets.length !== 0) {
+                <app-charts [chartConfig]="barChart()"></app-charts>
                 }
             </div>
-
-            <!-- Legends for pie, doughnut, gauge chart. -->
-            <!-- @if (output()?.legendColors?.length){
-            <div class="d-flex flex-wrap mt-3 py-1 gap-2">
-                @for (label of output()?.labels; track $index) {
-                <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
-                    <i class="bi bi-circle-fill fs-5" [ngStyle]="{ color: output()?.legendColors?.[$index] }"></i>
-                    &nbsp;
-                    {{ label }}
-                </div>
-                }
-            </div>
-            <i class="custom-font-size-7 m-0 text-end text-secondary">Line items contributing less than 1% have been
-                excluded
-                to enhance readability</i>
-            } -->
-
-
         </div>
         }
     </div>
-    } } }
 </section>
+
+
+
+<div class="my-4 text-center custom-font-size-6">
+    You can also download the source data in excel format
+    <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
+        <i class="bi bi-download"></i>
+        &nbsp;
+        Download Data
+    </button>
+</div>

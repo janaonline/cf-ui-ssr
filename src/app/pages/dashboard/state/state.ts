@@ -146,11 +146,11 @@ export class State implements OnInit {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        console.log(params)
+        // console.log(params)
         const slugName = params.get('slug') || '';
         // this.selectedLedgerYear.set('');
 
-        console.log(this.slugName(), slugName)
+        // console.log(this.slugName(), slugName)
 
         if (slugName && slugName !== this.slugName()) {
           this.slugName.set(slugName);
@@ -252,18 +252,27 @@ export class State implements OnInit {
   }
 
   // "Standardized Data Availability" section
-  private getDataAvailable() {
-    const payload = { "financialYear": this.selectedLedgerYear(), "stateId": this.stateDetails().state._id };
+  private getDataAvailable(csv: boolean = false) {
+    const payload: { financialYear: string; stateId: any; csv?: boolean } = { financialYear: this.selectedLedgerYear(), stateId: this.stateDetails().state._id };
+
+    if (csv) payload.csv = true;
+    else if ('csv' in payload) delete payload.csv;
+
     this.dashboardService.getDataAvailable(payload).subscribe({
       next: (res: any) => {
-        this.dataAvailablePerc.set(Math.round(res.data?.percent));
-        this.dataAvailableUlbs.set(res.data?.names);
-        if (this.chartData[0].additionalInfo) {
-          this.chartData[0].additionalInfo.value = this.dataAvailablePerc();
-          this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
+        if (csv) {
+          console.log('test',)
+          this._commonService.downloadExcel(res, 'DataAvailable');
+        } else {
+          this.dataAvailablePerc.set(Math.round(res.data?.percent));
+          this.dataAvailableUlbs.set(res.data?.names);
+          if (this.chartData[0].additionalInfo) {
+            this.chartData[0].additionalInfo.value = this.dataAvailablePerc();
+            this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
+          }
         }
       },
-      error: () => console.error('Failed to get data availability'),
+      error: (err) => console.error('Failed to get data availability', err),
     });
   }
 
@@ -293,6 +302,12 @@ export class State implements OnInit {
   // On tab changes call the chid components.
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
+  }
+
+  // Downlaod data.
+  downloadData(key: string) {
+    console.log('key = ', key)
+    if (key === 'dataAvailable') this.getDataAvailable(true);
   }
 }
 

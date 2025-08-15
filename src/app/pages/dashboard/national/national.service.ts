@@ -43,6 +43,9 @@ export class NationalService {
     //   type: params.type,
     //   csv: params.csv
     // };
+    if (params && params.csv)
+      return this.http.get(environment.api.url + endPoint, { params, responseType: 'blob' });
+
     return this.http.get(
       environment.api.url + endPoint, { params }
     );
