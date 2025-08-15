@@ -105,6 +105,7 @@ export class FinancialIndicator {
     { label: 'Population Category', key: 'popType' },
     { label: 'ULB Type', key: 'ulbType' },
   ]);
+  isPerCapita: any;
 
   constructor(
     private fb: FormBuilder,
@@ -121,11 +122,10 @@ export class FinancialIndicator {
     }
     this.getCurrentBtn();
     this.stateIdSignal.set(this.stateDetails().state._id);
-    this.selectedLedgerYear.set(this.years()[0])
 
-    this.myForm = this.fb.group({ year: [this.years()[0]] });
+    // this.myForm = this.fb.group({ year: [this.years()[0]] });
 
-    this.selectedLedgerYear.set(this.years()[0]);
+    this.selectedLedgerYear.set(this.years()[1]);
     this.isLoading.set(false);
 
     // this.myForm.get('year')?.valueChanges
@@ -164,7 +164,6 @@ export class FinancialIndicator {
   }
 
   onYearChange(event: any) {
-    this.selectedLedgerYear.set(event.target.value);
     this.getChartData();
   }
 
@@ -259,12 +258,6 @@ export class FinancialIndicator {
     return arr.find(e => e.key === key)?.label;
   }
 
-  // Return selected year.
-  private getYear() {
-    // return this.myForm.get('year')?.value;
-    return this.selectedLedgerYear();
-  }
-
   // Get calcType based on sub button selected.
   private getcalcType(): CalcType {
     const subBtn = this.subButton();
@@ -276,13 +269,45 @@ export class FinancialIndicator {
   }
 
   updateBarChartData(data: any): void {
-    const { labels, values } = data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
-      // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
-      const sumCr = (sum > 0 ? Math.round(sum / 10000000) : "0");
-      acc.labels.push(ulbName);
-      acc.values.push(sumCr);
-      return acc;
-    }, { labels: [], values: [] });
+    let countKey = 'sum';
+
+    switch (this.subButton()) {
+      case 'Capital Expenditure Per Capita':
+        countKey = 'capexPerCapita';
+        break;
+      case 'Revenue Per Capita':
+      case 'Own Revenue per Capita':
+        countKey = 'revenuePerCapita';
+        break;
+      case 'Total Surplus/Deficit':
+        countKey = 'deficitOrSurplus';
+        break;
+    }
+    // const { labels, values } = data.reduce((acc: { labels: any[]; values: any[]; }, { ulbName, sum }: any) => {
+    //   // const sumRs = "INR " + (sum > 0 ? Math.round(sum / 10000000) : "0") + " Cr";
+    //   const sumCr = (sum > 0 ? Math.round(sum / 10000000) : 0);
+    //   acc.labels.push(ulbName);
+    //   acc.values.push(sumCr);
+    //   return acc;
+    // }, { labels: [], values: [] });
+
+    const { labels, values } = data.reduce(
+      (acc: { labels: any[]; values: any[] }, item: any) => {
+        // console.log('item', item, 'countKey', countKey, 'item[countKey]', item[countKey]);
+        const value = item[countKey]; // 🔹 dynamic key
+        let sumCr = Math.round(value); // per capita
+        if (!countKey.includes('PerCapita')) {
+          sumCr = value > 0 ? Math.round(value / 10000000) : 0;
+        }
+        acc.labels.push(item.ulbName);
+        acc.values.push(sumCr);
+        return acc;
+      },
+      { labels: [], values: [] }
+    );
+
+    // console.log('labels', labels);
+    // console.log('values---', values);
     const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr');
     options.plugins!.legend!.display = false;
     let config: ChartConfig = {
@@ -313,7 +338,7 @@ export class FinancialIndicator {
   }
 
   updateScatterChartData(data: any): void {
-    const scatterData = this.chartService.setScatterData(data);
+    const scatterData = this.chartService.setScatterData(data, this.subButton());
     const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)');
     options.plugins!.legend!.labels!.usePointStyle = true;
     options.plugins!.legend!.labels!.padding = 20;
@@ -366,16 +391,18 @@ export class FinancialIndicator {
     this.sortBy = sortBy;
     this.isBarChartLoading.set(true);
     const payload: {
+      chartType: string;
       stateId: string;
       financialYear: any;
       activeButton: string;
       tabType: string;
       csv?: boolean;
     } = {
-      stateId: this.stateIdSignal(),
-      financialYear: this.getYear(),
-      activeButton: this.subButton(),
+      chartType: 'scatter',
       tabType: this.getTabType(),
+      financialYear: this.selectedLedgerYear(),
+      stateId: this.stateIdSignal(),
+      activeButton: this.subButton(),
     };
 
     if (csv) payload['csv'] = true;
@@ -400,7 +427,7 @@ export class FinancialIndicator {
   getSlb(chartType = 'scatter', sortBy = 'top10') {
     const params = {
       stateId: this.stateIdSignal(),
-      financialYear: this.getYear(),
+      financialYear: this.selectedLedgerYear(),
       headOfAccount: this.currentSelectedButtonKey(),
       filterName: this.getFilterName(),
       'chartType': chartType,
@@ -429,22 +456,27 @@ export class FinancialIndicator {
     this.compareType = type;
     this.getRevenueChart();
   }
+  getPerCapita() {
+    this.isPerCapita = this.subButton().toLocaleLowerCase().split(" ").join("").includes('percapita');
+    return this.isPerCapita;
+  }
   getRevenueChart() {
     this.isChartLoading.set(true);
     const params = {
       state: this.stateIdSignal(),
       stateId: this.stateIdSignal(),
-      financialYear: this.getYear(),
+      financialYear: this.selectedLedgerYear(),
       headOfAccount: this.currentSelectedButtonKey(),
       filterName: this.getFilterName(),
       chartType: this.chartType, // 'scatter',
-      'isPerCapita': '',
+      isPerCapita: this.getPerCapita(),
       compareType: this.compareType,
       'compareCategory': '',
       // ulb: this.dialogResult?.compareUlbs || []
       ulb: this.compareUlbs
       // 'ulb': this.dialogResult.ulbId,
     };
+
     // console.log('this.dialogResult', this.dialogResult)
     const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
     // const apiEndpoint = 'state-revenue';
