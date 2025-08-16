@@ -12,7 +12,7 @@
             <div class="col-md-7">
                 @if(stateServiceLabel) {
                 <div class="mb-3" style="padding-right: 1rem">
-                    <mat-form-field>
+                    <mat-form-field appearance="outline">
                         <mat-label>Choose one</mat-label>
                         <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
                             <!-- <mat-option>None</mat-option> -->
@@ -31,6 +31,22 @@
             </div>
             <div class="border rounded bg-light p-3 col-md-5">
                 <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+                    @if(!stateServiceLabel && !this.subButton().includes('Mix')) {
+                    <div class="my-2" [matTooltip]="'Select an option to view average data'">
+                        <select class="form-select text-capitalize" (change)="onChangeCategory($event)"
+                            style="opacity: 0.6; border: 1px solid gray; width: auto">
+                            <option value="none" selected hidden [disabled]="">
+                                Select an Option
+                            </option>
+                            @for (item of categoryAvgArray; track $index) {
+                            <option [value]="item?.value">
+                                {{ item?.title }}
+                            </option>
+                            }
+
+                        </select>
+                    </div>
+                    }
                     <select class="form-select form-select-sm" [(ngModel)]="selectedLedgerYear"
                         (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;width:100px">
                         @for (year of years(); track $index) {
@@ -59,16 +75,20 @@
             <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
             </app-tab-buttons>
         </div>
-        @if(this.isChartLoading()) {
-        <app-pre-loader></app-pre-loader>
-        } @else {
-        <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
-        }
+        <div class="p-3 mb-2 col-md-12 bg-light rounded">
+            <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+            @if(this.isChartLoading()) {
+            <app-pre-loader></app-pre-loader>
+            } @else {
+            <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
+            }
+        </div>
     </div>
     }
     @else {
     <div class="row justify-content-between my-4 position-relative" id="scatterChartContainer">
         <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2">
+            <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
             <div class="row justify-content-between align-items-center">
                 <!-- Filters -->
                 <div class="col-sm-12 col-md-8 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3">
@@ -88,8 +108,6 @@
                     }
                 </div>
             </div>
-
-
             <!-- Chart -->
             <div class="">
                 @if (isChartLoading()) {
@@ -106,9 +124,9 @@
                     </div>
                 </div>
                 }
-                <app-population-table [stateDetails]="stateDetails()"></app-population-table>
             </div>
         </div>
+        <app-population-table [stateDetails]="stateDetails()"></app-population-table>
     </div>
     }
     <div class="container" id="barChartContainer">
@@ -131,8 +149,13 @@
         <app-pre-loader></app-pre-loader>
         }
         @else {
-        <div class="row" style="height: 500px;">
-            <div class="col-12">
+        <div class="row bg-light p-3 rounded" style="height: 500px;">
+            @if(stateServiceLabel) {
+            <p>{{sortBy}} 10 performing ULBs on {{ this.filterName }} in {{ stateDetails().state.name }}</p>
+            } @else {
+            <p>Compare ULBs on various financial indicators .</p>
+            }
+            <div class="col-12 ">
                 @if(barChart().datasets.length !== 0) {
                 <app-charts [chartConfig]="barChart()"></app-charts>
                 }

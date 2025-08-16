@@ -44,9 +44,11 @@ export class ChartService {
         labels: [],
         rev: [],
         label: "Municipality",
-        data: [{ x: 10, y: 20 },
-        { x: 20, y: 100 },
-        { x: 35, y: 110 },],
+        data: [
+          // { x: 10, y: 20 },
+          // { x: 20, y: 100 },
+          // { x: 35, y: 110 },
+        ],
         showLine: false,
         fill: true,
         borderColor: "#1EBFC6",
@@ -120,18 +122,33 @@ export class ChartService {
   }
 
 
-  setScatterData(apiData: any, ActiveButton: string) {
+  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false) {
     this.ActiveButton = ActiveButton;
+    this.stateServiceLabel = stateServiceLabel;
     console.log('this.ActiveButton', this.ActiveButton);
     this.initializeScatterData();
-    let mCorporation = apiData["mCorporation"];
-    let tp_data = apiData["townPanchayat"];
-    let m_data = apiData["municipality"];
+    let m_data, mCorporation, tp_data, stateData;
+    if (this.stateServiceLabel) {
+      // if (apiData && apiData["scatterData"]) {      }
+      m_data = apiData["scatterData"]["m_data"];
+      mCorporation = apiData["scatterData"]["mc_data"];
+      tp_data = apiData["scatterData"]["tp_data"];
+      // stateData = res['data'] && res['data']['scatterData'] && res['data']['scatterData']["stateAvg"][0]["average"];
+      stateData = apiData["scatterData"]["stateAvg"] &&
+        apiData["scatterData"]["stateAvg"][0] &&
+        apiData["scatterData"]["stateAvg"][0]["average"];
+    } else {
+      mCorporation = apiData["mCorporation"];
+      tp_data = apiData["townPanchayat"];
+      m_data = apiData["municipality"];
+      this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
+      // let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
+      stateData = this.convertToCr(this.stateAvgVal);
+    }
+
 
     let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
-    this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
-    // let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
-    let stateData = this.convertToCr(this.stateAvgVal);
+
     this.scatterData.forEach((el: any) => {
       if (el.label == "Town Panchayat") {
         this.setXYData(tp_data, el);
@@ -503,7 +520,7 @@ export class ChartService {
     ];
 
     let maxPopulationCount = Math.max(...populationCountList);
-    return maxPopulationCount / this.thousand;
+    return Math.round(maxPopulationCount / this.thousand);
   }
 }
 

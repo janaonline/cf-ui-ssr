@@ -97,28 +97,28 @@ export class DashboardService {
     return this.http.post<IFinancialIndicatorRes>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
 
-  // Get state details.
-  getHomeData(): Observable<any> {
-    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
-    // .pipe(
-    //   map((response: any) => {
-    //     const data = response.data;
-    //     const result: { key: string; label: string; value: number }[] = [];
+  // // Get state details.
+  // getHomeData(): Observable<any> {
+  //   return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
+  //   // .pipe(
+  //   //   map((response: any) => {
+  //   //     const data = response.data;
+  //   //     const result: { key: string; label: string; value: number }[] = [];
 
-    //     for (const key in data) {
-    //       if (Array.isArray(data[key])) continue;
+  //   //     for (const key in data) {
+  //   //       if (Array.isArray(data[key])) continue;
 
-    //       result.push({
-    //         key,
-    //         label: key,
-    //         value: data[key].toLocaleString('en-IN')
-    //       });
-    //     }
+  //   //       result.push({
+  //   //         key,
+  //   //         label: key,
+  //   //         value: data[key].toLocaleString('en-IN')
+  //   //       });
+  //   //     }
 
-    //     return result;
-    //   })
-    // );
-  }
+  //   //     return result;
+  //   //   })
+  //   // );
+  // }
 
   // Get state details.
   getStateDetails(params: { slug: string; year: string }): Observable<ExploreSectionResponse> {
@@ -128,31 +128,16 @@ export class DashboardService {
   getStateGroupPopulation(params: { stateId: string; }): Observable<ExploreSectionResponse> {
     return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-ulbs-grouped-by-population`, { params });
   }
-  getStatePopulation(params: {
-    stateId: string;
-    financialYear: any;
-    activeButton: string;
-    tabType: string;
-    csv?: boolean;
-    // chartType: string;
-  }): Observable<any> {
-    // https://staging.cityfinance.in/api/v1/state-revenue-tabs?tabType=TotalRevenue&financialYear=2021-22&stateId=5dcf9d7316a06aed41c748ec&sortBy=top&chartType=bar&apiEndPoint=state-revenue-tabs&apiMethod=get&activeButton=Total%20Revenue
-    // const params = {
-    //   tabType: 'TotalRevenue',
-    //   financialYear: payload.year,
-    //   stateId: payload.stateId,
-    //   sortBy: 'top',
-    //   chartType: 'bar',
-    //   apiEndPoint: 'state-revenue-tabs',
-    //   apiMethod: 'get',
-    //   activeButton: 'Total Revenue'
-    // }
+  getSlbPopulation(payload: any): Observable<any> {
+    return this.http.post(`${environment.api.url}state-slb`, payload);
+  }
+  getStatePopulation(params: any): Observable<any> {
+    const options: any = {
+      params,
+      ...(params.csv && { responseType: 'blob' })
+    };
 
-    if (params && params.csv) {
-      return this.http.get(`${environment.api.url}state-revenue-tabs`, { params, responseType: 'blob' });
-    }
-
-    return this.http.get<ExploreSectionResponse>(`${environment.api.url}state-revenue-tabs`, { params });
+    return this.http.get(`${environment.api.url}state-revenue-tabs`, options);
   }
   getStateRevenue(payload: any, apiEndPoint = 'state-revenue'): Observable<{ sucess: boolean, data: any }> {
     return this.http.post<any>(`${environment.api.url + apiEndPoint}`, payload);
