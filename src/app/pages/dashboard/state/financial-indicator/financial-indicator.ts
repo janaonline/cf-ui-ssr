@@ -117,6 +117,8 @@ export class FinancialIndicator {
 
   isPerCapita: any;
   isDataInCrore: boolean = false;
+  isMixBtn = false;
+  code: any;
 
   constructor(
     // private fb: FormBuilder,
@@ -254,6 +256,7 @@ export class FinancialIndicator {
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
+    this.isMixBtn = key.includes('Mix');
     this.subButton.set(key);
   }
 
@@ -327,7 +330,7 @@ export class FinancialIndicator {
 
     // console.log('labels', labels);
     // console.log('values---', values);
-    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr');
+    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', `Amount ${this.isDataInCrore ? '(in Cr.)' : '(in INR)'}`);
     options.plugins!.legend!.display = false;
     let config: ChartConfig = {
       chartId: 'populationChart',
@@ -336,7 +339,7 @@ export class FinancialIndicator {
       datasets: [
         {
           type: 'bar',
-          label: 'CR',
+          label: this.isDataInCrore ? 'CR' : 'INR',
           data: values,
           backgroundColor: '#1E44AD',
           barThickness: 50,
@@ -358,7 +361,8 @@ export class FinancialIndicator {
 
   updateScatterChartData(data: any): void {
     const scatterData = this.chartService.setScatterData(data, this.subButton(), this.stateServiceLabel);
-    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)');
+
+    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
     options.plugins!.legend!.labels!.usePointStyle = true;
     options.plugins!.legend!.labels!.padding = 20;
     options.plugins!.legend!.position = 'bottom';
@@ -413,6 +417,11 @@ export class FinancialIndicator {
     }
     return this.sortBy;
   }
+  onChangeLinteItem(event: any) {
+    this.code = event.target.value;
+    // console.log('this.code', this.code);
+    this.getPopulationChart();
+  }
   getPopulationChart(sortBy = 'top', csv: boolean = false) {
     this.sortBy = sortBy;
     this.isBarChartLoading.set(true);
@@ -425,6 +434,7 @@ export class FinancialIndicator {
       csv?: boolean;
       sortBy: string;
       filterName: string;
+      code?: string;
     } = {
       chartType: 'bar',
       tabType: this.getTabType(),
@@ -433,6 +443,8 @@ export class FinancialIndicator {
       activeButton: this.subButton(),
       sortBy: this.getSortBy(),
       filterName: this.filterName,
+      // code: this.code ? this.code.join(',') : undefined
+      code: this.code
     };
 
     // let p = {
@@ -535,8 +547,10 @@ export class FinancialIndicator {
     // const apiEndpoint = 'state-revenue';
     return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
       next: (res) => {
-        if (this.subButton().includes('Mix')) {
+        if (this.isMixBtn) {
           this.responseData = res.data;
+          this.code = this.responseData[0].code.length ? this.responseData[0].code.join(',') : undefined;
+          this.getPopulationChart();
           // this.updateDoughnutChartData(res.data);
         } else {
           this.updateScatterChartData(res.data);
@@ -684,8 +698,9 @@ export class FinancialIndicator {
   getChartData(): void {
     this.getRevenueChart();
     // if (!this.stateServiceLabel && !this.subButton().includes('Mix')) {
-    this.getPopulationChart();
-    // }
+    if (!this.isMixBtn) {
+      this.getPopulationChart();
+    }
     // forkJoin({
     //   revenue: this.getRevenueChart(),
     //   population: this.getPopulationChart()

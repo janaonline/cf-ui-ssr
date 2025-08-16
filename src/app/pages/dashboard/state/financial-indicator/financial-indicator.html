@@ -31,7 +31,7 @@
             </div>
             <div class="border rounded bg-light p-3 col-md-5">
                 <div class="d-flex gap-2 justify-content-between align-items-center my-2">
-                    @if(!stateServiceLabel && !this.subButton().includes('Mix')) {
+                    @if(!stateServiceLabel && !isMixBtn) {
                     <div class="my-2" [matTooltip]="'Select an option to view average data'">
                         <select class="form-select text-capitalize" (change)="onChangeCategory($event)"
                             style="opacity: 0.6; border: 1px solid gray; width: auto">
@@ -68,7 +68,7 @@
         }
     </div>
 
-    @if(subButton().includes('Mix')) {
+    @if(isMixBtn) {
     <!-- mix chart section -->
     <div id="mixChartContainer">
         <div class="p-0 col-md-12">
@@ -133,6 +133,17 @@
         <div class="row">
             <div class="col-12 mt-5 mb-5 d-flex">
                 Cities
+                @if(isMixBtn) {
+                <div class="mx-2">
+                    <select class="form-select form-select-sm" (change)="onChangeLinteItem($event)">
+                        @for (item of responseData; track $index) {
+                        <option [value]="item?.code">
+                            {{ item?._id }}
+                        </option>
+                        }
+                    </select>
+                </div>
+                }
                 <button class="rankingButton" [class]="{ activeButton: sortBy === 'top' }"
                     (click)="getPopulationChart()">
                     Top 10
