@@ -2,12 +2,15 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  Inject,
   input,
   OnDestroy,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
+import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -27,7 +30,11 @@ export class Charts implements AfterViewInit, OnDestroy {
   // console.log('Chart called: ', this.chartConfig());
   // }
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+
+
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
       this.createChart();
     }, 100);
