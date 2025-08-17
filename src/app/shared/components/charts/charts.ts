@@ -34,7 +34,11 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   }
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+
+
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
       this.createChart();
     }, 100);

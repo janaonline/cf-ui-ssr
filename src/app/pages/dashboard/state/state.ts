@@ -34,6 +34,7 @@ export class State implements OnInit {
   readonly v1Url = environment.v1Url;
 
   isLoading = signal(false);
+  isYearLoading = signal(false);
   isMoneyInfoLoading = signal(true);
   loadedTabs: boolean[] = [false, false, true];
   showMap = signal(true);
@@ -154,9 +155,15 @@ export class State implements OnInit {
 
         if (slugName && slugName !== this.slugName()) {
           this.slugName.set(slugName);
+          this.resetTab();
           this.loadData(slugName);
         } else if (!slugName) this.isLoading.set(false);
       });
+  }
+
+  resetTab() {
+    this.selectedTabIndex = 0;
+    this.stateDetails.set({});
   }
 
   setSeo() {
@@ -199,7 +206,10 @@ export class State implements OnInit {
     this.isLoading.set(true);
     const params = { slug: slugName, year: this.selectedLedgerYear() };
     this.dashboardService.getStateDetails(params).subscribe({
-      next: (res: any) => this.stateDetails.set(res.data),
+      next: (res: any) => {
+        this.stateDetails.set(res.data);
+        this.setSeo();
+      },
       error: () => {
         this.isLoading.set(false);
         console.error('Failed to get state details');
@@ -302,6 +312,24 @@ export class State implements OnInit {
   // On tab changes call the chid components.
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
+    if (idx === 1) {
+      this.getSLBYears();
+    }
+  }
+
+  getSLBYears() {
+    this.isYearLoading.set(true);
+    this.dashboardService.getYearListSLB().subscribe(
+      (res: any) => {
+        this.isYearLoading.set(false);
+        this.ledgerYears.set(res["data"]);
+      },
+      (err) => {
+        console.log(err.message);
+        this.isYearLoading.set(false);
+      }
+    );
+
   }
 
   // Downlaod data.
