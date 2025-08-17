@@ -27,9 +27,6 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   chartConfig = input.required<ChartConfig>();
   chartInstance: Chart | undefined;
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,) {
-
-  }
   ngOnInit(): void {
 
   }
