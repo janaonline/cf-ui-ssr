@@ -26,6 +26,7 @@ export interface ChartDataSet {
   borderRadius?: number;
   tension?: number;
   fill?: boolean;
+  cutout?: string;
   barThickness?: number;
 }
 

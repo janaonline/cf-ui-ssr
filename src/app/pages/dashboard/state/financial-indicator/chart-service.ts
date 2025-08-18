@@ -34,6 +34,7 @@ export class ChartService {
   thousand: number = 1000;
   defaultMaxPopulation: number = 1200;
   chartId = `stateSCharts-${Math.random()}`;
+  compareCategory: string = '';
 
   constructor(private http: HttpClient, private _commonServices: CommonService) {
 
@@ -89,7 +90,7 @@ export class ChartService {
 
   toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
   convertToCr(value: number) {
-    if (this.toCroreBtns.includes(this.ActiveButton)) {
+    if (!this.compareCategory && this.toCroreBtns.includes(this.ActiveButton)) {
       if (value == 0) return 0;
       value /= 10000000;
     }
@@ -122,7 +123,8 @@ export class ChartService {
   }
 
 
-  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false) {
+  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false, compareCategory = '') {
+    this.compareCategory = compareCategory;
     this.ActiveButton = ActiveButton;
     this.stateServiceLabel = stateServiceLabel;
     console.log('this.ActiveButton', this.ActiveButton);

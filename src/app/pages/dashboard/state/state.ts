@@ -119,9 +119,10 @@ export class State implements OnInit {
         {
           "label": "Data available",
           "data": [135, 20],
-          "backgroundColor": ["#1b4965", "#e9ecef"],
+          "backgroundColor": ["rgba(51, 96, 219, 1)", "rgba(218, 226, 253, 1)"],
           "borderWidth": 1,
-          "borderRadius": 5
+          "borderRadius": 5,
+          cutout: '70%',
         }
       ],
       "options": gaugeChartOptions,
