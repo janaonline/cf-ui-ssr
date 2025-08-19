@@ -55,43 +55,48 @@
         @if (this.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else if (selectedLedgerYear()) {
-        <div class="chart-wrapper rounded border shadow-sm py-4 px-3">
-            <div class="row">
+        <div class="row justify-content-center">
+            <div class="col-md-10 rounded border shadow-sm py-4 px-3 mx-auto">
                 <h6 class="fw-bold">Standardized Data Availability</h6>
-                <p class="col-sm-12 col-md-8 pt-3">Of the financial statements submitted by the ULBs,
-                    {{ dataAvailablePerc() }}%
-                    have been changed to a comparable, standardized, and digitized format for the year
-                    {{selectedLedgerYear()}}.
-                    Digitization of data is in progress for several ULBs including {{dataAvailableUlbs().join(' ')}}.
-                    For more details, download the complete set of
-                    ULBs for which the data is available for the year {{selectedLedgerYear()}}.
-                </p>
-
-                <div class="charts-container col-sm-12 col-md-4">
-                    @for (item of chartData; track $index) {
-                    <div class="chart-wrapper rounded border">
-                        <div class="chart-container">
-                            <app-charts [chartConfig]="item"></app-charts>
-                        </div>
-                        <div class="chart-title">
-                            <p class="m-0 p-0 fw-bold">
-                                {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
-                            </p>
-                            <p class="m-0 p-0 custom-font-size-7 text-center">
-                                {{ item.additionalInfo?.indicatorName }}
-                            </p>
-                            <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
-                            <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
-                        </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-8 pt-3">
+                        <p class="text-secondary">Of the financial statements submitted by the ULBs,
+                            {{ dataAvailablePerc() }}%
+                            have been changed to a comparable, standardized, and digitized format for the year
+                            {{selectedLedgerYear()}}.
+                            Digitization of data is in progress for several ULBs including
+                            {{dataAvailableUlbs().join('
+                            ')}}.
+                            For more details, download the complete set of
+                            ULBs for which the data is available for the year {{selectedLedgerYear()}}.
+                        </p>
+                        <button class="btn btn-sm btn-outline-cfPrimary my-3" (click)="downloadData('dataAvailable')"><i
+                                class="bi bi-download"></i>&nbsp;Download
+                            Data</button>
                     </div>
-                    }
+
+                    <div class="charts-container col-sm-12 col-md-4">
+                        @for (item of chartData; track $index) {
+                        <div class="chart-wrapper rounded border">
+                            <div class="chart-container">
+                                <app-charts [chartConfig]="item"></app-charts>
+                            </div>
+                            <div class="chart-title">
+                                <p class="m-0 p-0 fw-bold">
+                                    {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+                                </p>
+                                <p class="m-0 p-0 custom-font-size-7 text-center">
+                                    {{ item.additionalInfo?.indicatorName }}
+                                </p>
+                                <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
+                                <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
+                            </div>
+                        </div>
+                        }
+                    </div>
                 </div>
             </div>
-            <button class="btn btn-sm btn-outline-cfPrimary my-3" (click)="downloadData('dataAvailable')"><i
-                    class="bi bi-download"></i>&nbsp;Download
-                Data</button>
         </div>
-
         @if(isMoneyInfoLoading()) {
         <app-pre-loader></app-pre-loader>
         <app-pre-loader></app-pre-loader>

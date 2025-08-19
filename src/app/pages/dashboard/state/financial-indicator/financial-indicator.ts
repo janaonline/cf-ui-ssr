@@ -185,7 +185,8 @@ export class FinancialIndicator {
 
   onChangeCategory(event: any) {
     this.compareCategory = event.target.value;
-    this.getChartData();
+    // this.getChartData();
+    this.getRevenueChart();
   }
 
   onUlbSelect(ulbObj: any) {
@@ -360,7 +361,7 @@ export class FinancialIndicator {
   }
 
   updateScatterChartData(data: any): void {
-    const scatterData = this.chartService.setScatterData(data, this.subButton(), this.stateServiceLabel);
+    const scatterData = this.chartService.setScatterData(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
 
     const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
     options.plugins!.legend!.labels!.usePointStyle = true;
@@ -489,34 +490,35 @@ export class FinancialIndicator {
     });
   }
 
-  getSlb(chartType = 'scatter', sortBy = 'top10') {
-    const params = {
-      stateId: this.stateIdSignal(),
-      financialYear: this.selectedLedgerYear(),
-      headOfAccount: this.currentSelectedButtonKey(),
-      filterName: this.getFilterName(),
-      'chartType': chartType,
-      'isPerCapita': '',
-      'compareType': '',
-      'compareCategory': '',
-      ulb: this.dialogResult?.compareUlbs || [],
-      sortBy,
-      // 'ulb': this.dialogResult.ulbId,
-    };
-    // console.log('this.dialogResult', this.dialogResult)
-    const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
-    // const apiEndpoint = 'state-revenue';
-    return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
-      next: (res) => {
-        console.log('res', res);
-        // this.updateScatterChartData(res.data);
-        this.isChartLoading.set(false);
-      }, error: (err) => {
-        this.isChartLoading.set(false);
-        console.error(err);
-      }
-    });
-  }
+  // getSlb(chartType = 'scatter', sortBy = 'top10') {
+  //   const params = {
+  //     stateId: this.stateIdSignal(),
+  //     financialYear: this.selectedLedgerYear(),
+  //     headOfAccount: this.currentSelectedButtonKey(),
+  //     filterName: this.getFilterName(),
+  //     'chartType': chartType,
+  //     'isPerCapita': '',
+  //     'compareType': '',
+  //     'compareCategory': '',
+  //     ulb: this.dialogResult?.compareUlbs || [],
+  //     sortBy,
+  //     // 'ulb': this.dialogResult.ulbId,
+  //   };
+  //   // console.log('this.dialogResult', this.dialogResult)
+  //   const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
+  //   // const apiEndpoint = 'state-revenue';
+  //   return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
+  //     next: (res) => {
+  //       console.log('res', res);
+  //       // this.updateScatterChartData(res.data);
+  //       this.isChartLoading.set(false);
+  //     }, error: (err) => {
+  //       this.isChartLoading.set(false);
+  //       console.error(err);
+  //     }
+  //   });
+  // }
+
   onSelectCompareType(type: string) {
     this.compareType = type;
     this.getRevenueChart();
@@ -536,14 +538,26 @@ export class FinancialIndicator {
       chartType: this.chartType, // 'scatter',
       isPerCapita: this.getPerCapita(),
       compareType: this.compareType,
-      'compareCategory': '',
+      compareCategory: this.compareCategory,
+      which: this.compareCategory,
+      stateServiceLabel: this.stateServiceLabel,
       // ulb: this.dialogResult?.compareUlbs || []
-      ulb: this.compareUlbs
+      ulb: this.compareUlbs,
       // 'ulb': this.dialogResult.ulbId,
     };
 
+    let apiEndpoint = 'state-slb';
+
     // console.log('this.dialogResult', this.dialogResult)
-    const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
+    if (this.tabName() === 'Financial Indicators') {
+      apiEndpoint = 'state-revenue';
+      if (this.compareCategory) {
+        params.isPerCapita = '';
+        apiEndpoint = 'state-dashboard-averages';
+      }
+
+    }
+
     // const apiEndpoint = 'state-revenue';
     return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
       next: (res) => {

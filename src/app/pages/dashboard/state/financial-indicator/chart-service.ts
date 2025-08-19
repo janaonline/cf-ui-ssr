@@ -34,6 +34,8 @@ export class ChartService {
   thousand: number = 1000;
   defaultMaxPopulation: number = 1200;
   chartId = `stateSCharts-${Math.random()}`;
+  compareCategory: string = '';
+  defaultAvgObj: { x: number; y: number; }[] = [];
 
   constructor(private http: HttpClient, private _commonServices: CommonService) {
 
@@ -74,22 +76,22 @@ export class ChartService {
         borderColor: "#F5B742",
         backgroundColor: "#F5B742",
       },
-      {
-        label: "State Average",
-        data: [],
-        rev: [],
-        labels: ["State Average"],
-        showLine: true,
-        fill: false,
-        backgroundColor: "red",
-        borderColor: "red",
-      },
+      // {
+      //   label: "State Average",
+      //   data: [],
+      //   rev: [],
+      //   labels: ["State Average"],
+      //   showLine: true,
+      //   fill: false,
+      //   backgroundColor: "red",
+      //   borderColor: "red",
+      // },
     ];
   }
 
   toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
   convertToCr(value: number) {
-    if (this.toCroreBtns.includes(this.ActiveButton)) {
+    if (!this.compareCategory && this.toCroreBtns.includes(this.ActiveButton)) {
       if (value == 0) return 0;
       value /= 10000000;
     }
@@ -122,10 +124,11 @@ export class ChartService {
   }
 
 
-  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false) {
+  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false, compareCategory = '') {
+    this.compareCategory = compareCategory;
     this.ActiveButton = ActiveButton;
     this.stateServiceLabel = stateServiceLabel;
-    console.log('this.ActiveButton', this.ActiveButton);
+    // console.log('this.ActiveButton', this.ActiveButton);
     this.initializeScatterData();
     let m_data, mCorporation, tp_data, stateData;
     if (this.stateServiceLabel) {
@@ -148,6 +151,18 @@ export class ChartService {
 
 
     let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
+    this.defaultAvgObj = [
+      { x: 0, y: 0 },
+      { x: stateLevelMaxPopuCount ? stateLevelMaxPopuCount : this.defaultMaxPopulation, y: 0 },
+    ];
+    if (this.compareCategory) {
+      this.setCompareCategoryData(apiData);
+      // return this.scatterData;
+    }
+
+
+    const scatterData = this.setGraphData(stateData, 'State Average', 'red');
+    this.scatterData.push(scatterData);
 
     this.scatterData.forEach((el: any) => {
       if (el.label == "Town Panchayat") {
@@ -159,23 +174,65 @@ export class ChartService {
       } else if (el.label == "National Average") {
         // el["data"]["y"] = natData;
       } else if (el.label == "State Average") {
-        let obje = [
-          { x: 0, y: 0 },
-          {
-            x: stateLevelMaxPopuCount ? stateLevelMaxPopuCount : this.defaultMaxPopulation,
-            y: 0,
-          },
-        ];
-        obje.forEach((el2) => {
-          el2["y"] = stateData;
-          el["data"].push(el2);
-        });
+        // this.getAvgData(el, stateData);
+        // const scatterData = this.setGraphData(stateData, 'State Average', 'red');
+        // this.scatterData.push(scatterData);
       }
     });
+
+    console.log("scatterData-----", this.scatterData);
     return this.scatterData;
   }
 
-  getScatterData() {
+  setCompareCategoryData(apiData: any) {
+    if (this.compareCategory == 'populationAvg') {
+      const scatterData1 = this.setGraphData(apiData['< 100 Thousand'], '< 100 Thousand', '#11BC46');
+      this.scatterData.push(scatterData1);
+      const scatterData2 = this.setGraphData(apiData['100 Thousand - 500 Thousand'], '100 Thousand - 500 Thousand', '#FF608B');
+      this.scatterData.push(scatterData2);
+      const scatterData3 = this.setGraphData(apiData['500 Thousand - 1 Million'], '500 Thousand - 1 Million', '#E57504');
+      this.scatterData.push(scatterData3);
+      const scatterData4 = this.setGraphData(apiData['4 Million+'], '4 Million+', '#585FFF');
+      this.scatterData.push(scatterData4);
+      const scatterData5 = this.setGraphData(apiData['1 Million - 4 Million'], '1 Million - 4 Million', '#32CCFA');
+      this.scatterData.push(scatterData5);
+    } else if (this.compareCategory == 'ulbTypeAvg') {
+      const scatterDataMC = this.setGraphData(apiData['Municipal Corporation'], 'Municipal Corporation', '#11BC46');
+      this.scatterData.push(scatterDataMC);
+      const scatterDataM = this.setGraphData(apiData['Municipality'], 'Municipality', '#FF608B');
+      this.scatterData.push(scatterDataM);
+      const scatterDataTP = this.setGraphData(apiData['Town Panchayat'], 'Town Panchayat', '#E57504');
+      this.scatterData.push(scatterDataTP);
+    } else if (this.compareCategory == 'nationalAvg') {
+      const scatterData = this.setGraphData(apiData['national'], 'National Average', 'green');
+      this.scatterData.push(scatterData);
+    }
+  }
+
+  setGraphData(value: any, label: string, color: string = 'green') {
+    const data = {
+      label,
+      data: JSON.parse(JSON.stringify(this.getAvgData(value))),
+      rev: [],
+      labels: [label],
+      showLine: true,
+      // fill: false,
+      backgroundColor: color,
+      borderColor: color,
+    };
+    return data;
+  }
+
+  getAvgData(avgData: any) {
+    const arr: any[] = [];
+    this.defaultAvgObj.forEach((el2: any) => {
+      el2["y"] = avgData;
+      arr.push(el2);
+    });
+    return arr;
+  }
+
+  getScatterData_tobe_removed() {
     // this.createDynamicChartTitle(this.currentActiveTab);
     this.multiChart = false;
     this._loaderService.showLoader();
@@ -263,14 +320,9 @@ export class ChartService {
               stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
             }
 
-            let stateLevelMaxPopuCount =
-              this.getMaximumPopulationCount(
-                mCorporation,
-                tp_data,
-                m_data
-              );
+            let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
             // let   stateLevelMaxPopuCount = 30;
-            console.log("stateLevelMaxPopuCount", stateLevelMaxPopuCount);
+            // console.log("stateLevelMaxPopuCount", stateLevelMaxPopuCount);
             this.scatterData.data.datasets.forEach((el: any) => {
               let obj = { x: 0, y: 0 };
               if (el.label == "Town Panchayat") {
