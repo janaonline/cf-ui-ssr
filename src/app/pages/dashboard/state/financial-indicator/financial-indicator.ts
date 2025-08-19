@@ -540,6 +540,7 @@ export class FinancialIndicator {
       compareType: this.compareType,
       compareCategory: this.compareCategory,
       which: this.compareCategory,
+      stateServiceLabel: this.stateServiceLabel,
       // ulb: this.dialogResult?.compareUlbs || []
       ulb: this.compareUlbs,
       // 'ulb': this.dialogResult.ulbId,
@@ -551,7 +552,7 @@ export class FinancialIndicator {
     if (this.tabName() === 'Financial Indicators') {
       apiEndpoint = 'state-revenue';
       if (this.compareCategory) {
-        params.isPerCapita = true;
+        params.isPerCapita = '';
         apiEndpoint = 'state-dashboard-averages';
       }
 
