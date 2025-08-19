@@ -70,18 +70,17 @@
       </th>
       <td mat-cell *matCellDef="let element" [class]="item.class + ' ' + element.class"
         [class.bg-light]="element.isHeader">
-        <!-- {{ item.number }} -->
-        <!-- {{ element | json }} -->
-        <!-- {{ displayedColumns.length }} -->
 
-        @if (item.number && !element['isHeader']) {
+        @if (!element['isHeader']) {
         {{
-        getFormattedValue(element[item.key])
-        | inrFormat : currencyFormat() : currencyOptions
+        (element.isNumber && item.number)
+        ? (getFormattedValue(element[item.key]) | inrFormat : currencyFormat() : currencyOptions)
+        : element[item.key]
         }}
         } @else {
         {{ element[item.key] }}
         }
+
         <!-- Add info icon -->
         @if (element.info && item.key === 'lineItem') {
         <i class="bi bi-info-circle" matTooltip="{{ element.info }}" matTooltipPosition="above"></i>
