@@ -21,6 +21,7 @@ import {
   BsIsData,
   ButtonObj,
 } from '../../../../core/models/interfaces';
+import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
 import { UtilityService } from '../../../../core/services/utility-service';
@@ -28,7 +29,8 @@ import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
-import { tempData } from './temp';
+import { CompareBy } from './compare-by/compare-by';
+import { tempData, tempDataDetailed } from './temp';
 
 interface TableColumns {
   key: string;
@@ -66,6 +68,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   // @Input() ulbId!: string;
   readonly yearsSignal = input<string[]>([]);
   readonly ulbIdSignal = input<string>('');
+  readonly ulbName = input<string>('');
   private destroy$ = new Subject<void>();
 
   public compareUlbsList = new Set();
@@ -176,7 +179,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   // When ULBs are compared from popup.
   public compareUlbs() {
-    [this.ulbIdSignal(), 'abc', 'def'].forEach((ele) => this.compareUlbsList.add(ele));
+    [this.ulbIdSignal(), '5dd006d4ffbcc50cfd92c87c', 'def'].forEach((ele) => this.compareUlbsList.add(ele));
 
     console.log(this.compareUlbsList, this.compareUlbsList.size);
 
@@ -253,7 +256,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       (ele) => !ele.reportType || ele.reportType === this.reportType()
     );
 
-    this.dataSource = tempData;
+    // this.dataSource = tempData;
 
     console.log("data source - ", this.dataSource)
 
@@ -398,6 +401,33 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   onSelectedButtonChange(key: string): void {
     // console.log('Button key sent from child to parent:', key);
     this.selectedBtn.set(key);
+  }
+
+  openCompareByDialog() {
+    const dialogRef = this.dialog.open(CompareBy, {
+      width: '700px',
+      maxWidth: '70vw',
+      data: { selectedUlb: { ulbId: this.ulbIdSignal(), ulbName: this.ulbName() }, years: this.yearsSignal() }
+    });
+
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(dialogData => {
+        console.log("---------", dialogData)
+        const ulbs = dialogData.citiesArr.map((e: IULB) => e._id);
+        const years = dialogData.years;
+
+        ulbs.forEach((ulbId: string) => {
+          console.log(ulbId, years)
+        });
+      });
+  }
+
+  // Reset filter
+  resetFilters() {
+    const ulbId = this.ulbIdSignal();
+    const btnKey = this.selectedBtn();
+    this.getBsIsData(ulbId, btnKey);
   }
 
   ngOnDestroy(): void {
