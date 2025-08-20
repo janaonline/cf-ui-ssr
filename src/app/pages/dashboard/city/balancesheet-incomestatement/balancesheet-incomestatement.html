@@ -61,21 +61,17 @@
 </section>
 
 <!-- Population section -->
+@if (ulbsData.length > 0){
 <div class="my-4 text-end">
   <p class=" text-secondary custom-font-size-6 my-2 fw-bold">Population (Source: Census 2011)</p>
+  @for (ulb of ulbsData; track ulb._id) {
   <p class="p-0 m-0 text-secondary custom-font-size-6">
-    {{population | inrFormat: 'inr' : currencyOptions}}
-    <i class="custom-font-size-7">(Greater Hyderabad Municipal Corporation, Telangana)</i>
+    {{ulb.population | inrFormat: 'inr' : currencyOptions}}
+    <i class="custom-font-size-7">({{ulb.name}}, {{ulb.stateName}})</i>
   </p>
-  <p class="p-0 m-0 text-secondary custom-font-size-6">
-    {{1964086 | inrFormat: 'inr' : currencyOptions}}
-    <i class="custom-font-size-7">(Indore Municipal Corporation, Madhya Pradesh)</i>
-  </p>
-  <p class="p-0 m-0 text-secondary custom-font-size-6">
-    {{1798218 | inrFormat: 'inr' : currencyOptions}}
-    <i class="custom-font-size-7">(Bhopal Municipal Corporation, Madhya Pradesh)</i>
-  </p>
+  }
 </div>
+}
 
 <!-- Table data. -->
 <div class="table-container">
@@ -88,7 +84,7 @@
     @for (item of headers; track $index) {
     <ng-container [matColumnDef]="item.key" [sticky]="$index === 0">
       <th mat-header-cell *matHeaderCellDef class="text-center fw-bold bg-table-header">
-        {{ item.key }}
+        {{ item.value }}
       </th>
       <td mat-cell *matCellDef="let element" [class]="item.class + ' ' + element.class"
         [class.bg-light]="element.isHeader">

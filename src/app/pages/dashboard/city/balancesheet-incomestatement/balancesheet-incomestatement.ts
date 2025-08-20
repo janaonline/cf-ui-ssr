@@ -18,8 +18,9 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import {
   AfsPopupData,
+  BsCompareUlbsValue,
   BsIsData,
-  ButtonObj,
+  ButtonObj
 } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
@@ -30,7 +31,6 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
-import { tempData, tempDataDetailed } from './temp';
 
 interface TableColumns {
   key: string;
@@ -126,6 +126,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   filteredDataSource = new MatTableDataSource<object>();
   ledgerData!: BsIsData[];
   population!: number;
+  ulbsData: BsCompareUlbsValue[] = [];
 
   readonly DOWNLOAD_REPORTS_HEADERS_STRUCTURE: TableColumns[] = [
     { key: 'type', value: 'Download Report', class: '' },
@@ -149,18 +150,21 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     this.initializeForm();
   }
 
-  private getBsIsData(ulbId: string, btnKey: string): void {
-    if (!ulbId || !btnKey) return;
+  private getBsIsData(ulbIds: string[], btnKey: string, years: string[]): void {
+    if (!ulbIds.length || !btnKey) return;
     this.isLoading.set(true);
 
+    ulbIds.forEach(ulbId => ulbId.toString());
+
     this.dashboardService
-      .getBsIsData(ulbId, btnKey)
+      .getBsIsData(ulbIds, btnKey, years)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           // console.log('getBsIsData() called');
           this.ledgerData = res['data'];
           this.population = res['population'];
+          this.ulbsData = Object.values(res['ulbsData']);
           this.isLoading.set(false);
         },
         error: (error) => {
@@ -171,15 +175,9 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       });
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.compareUlbs();
-    }, 5000);
-  }
-
   // When ULBs are compared from popup.
-  public compareUlbs() {
-    [this.ulbIdSignal(), '5dd006d4ffbcc50cfd92c87c', 'def'].forEach((ele) => this.compareUlbsList.add(ele));
+  public compareUlbs(ulbs: string[], years: string[]) {
+    ulbs.forEach((ele) => this.compareUlbsList.add(ele));
 
     console.log(this.compareUlbsList, this.compareUlbsList.size);
 
@@ -197,14 +195,17 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
     // Create Headers.
     else {
-      this.createHeaders();
+      const ulbIds = Array.from(this.compareUlbsList) as string[];
+      console.log("ulbIds === ", ulbIds)
+      this.getBsIsData(ulbIds, this.selectedBtn(), years);
+      this.createHeaders(years);
     }
   }
 
   readonly ulbChangeEffect = effect(() => {
     if (this.ulbIdSignal()) {
-      this.getBsIsData(this.ulbIdSignal(), this.selectedBtn());
-      this.createHeaders();
+      this.getBsIsData([this.ulbIdSignal()], this.selectedBtn(), this.yearsSignal());
+      this.createHeaders(this.yearsSignal());
     }
   });
 
@@ -268,20 +269,20 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   // Create headers based on years [].
-  createHeaders(): void {
+  createHeaders(years: string[]): void {
     if (this.compareUlbsList.size === 0) {
       this.compareUlbsList.add(this.ulbIdSignal());
     }
 
+    console.log("ulbs = ", this.compareUlbsList)
+
     // console.log('createHeaders() called');
     // Create deep copy.
     this.headers = cloneDeep(this.HEADERS_STRUCTURE);
-    this.downloadReportsHeaders = cloneDeep(
-      this.DOWNLOAD_REPORTS_HEADERS_STRUCTURE
-    );
+    this.downloadReportsHeaders = cloneDeep(this.DOWNLOAD_REPORTS_HEADERS_STRUCTURE);
 
     // Generate headers
-    this.yearsSignal().forEach((year) => {
+    years.forEach((year) => {
       let yearKey = year.replace('-', '');
       // console.log('headers', this.headers);
       this.downloadReportsHeaders.push({
@@ -417,9 +418,8 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
         const ulbs = dialogData.citiesArr.map((e: IULB) => e._id);
         const years = dialogData.years;
 
-        ulbs.forEach((ulbId: string) => {
-          console.log(ulbId, years)
-        });
+        this.compareUlbs(ulbs, years);
+
       });
   }
 
@@ -427,7 +427,8 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   resetFilters() {
     const ulbId = this.ulbIdSignal();
     const btnKey = this.selectedBtn();
-    this.getBsIsData(ulbId, btnKey);
+    const years = this.yearsSignal();
+    this.getBsIsData([ulbId], btnKey, years);
   }
 
   ngOnDestroy(): void {
