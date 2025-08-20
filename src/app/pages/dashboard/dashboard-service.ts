@@ -30,10 +30,11 @@ export class DashboardService {
   }
 
   // City page: balance sheet and income statement table.
-  getBsIsData(ulbIds: string[], btnKey: string = 'incomeStatement', years: string[]) {
+  getBsIsData(selectedUlb: string, ulbIds: string[], btnKey: string = 'incomeStatement', years: string[]) {
     let params = new HttpParams();
 
     params = params.set('btnKey', btnKey);
+    params = params.set('selectedUlb', selectedUlb);
     ulbIds.forEach(id => { params = params.append('ulbIds', id); });
     years.forEach(year => { params = params.append('years', year); });
 

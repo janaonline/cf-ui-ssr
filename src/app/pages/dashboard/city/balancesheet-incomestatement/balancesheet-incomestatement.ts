@@ -71,7 +71,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   readonly ulbName = input<string>('');
   private destroy$ = new Subject<void>();
 
-  public compareUlbsList = new Set();
+  public compareUlbsList: Set<string> = new Set();
   private compareYears: string[] = [];
 
   readonly fileLink = `${environment.STORAGE_BASEURL}/GlobalFiles/STANDARDIZATION_PROCESS_OF_ANNUAL_FINANCIAL_STATEMENT_OF_ULBS_f6e6b60b-2245-4104-803f-0fe01e33ae90.pdf`;
@@ -157,7 +157,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     ulbIds.forEach(ulbId => ulbId.toString());
 
     this.dashboardService
-      .getBsIsData(ulbIds, btnKey, years)
+      .getBsIsData(this.ulbIdSignal(), ulbIds, btnKey, years)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
@@ -177,9 +177,9 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   // When ULBs are compared from popup.
   public compareUlbs(ulbs: string[], years: string[]) {
+    this.compareYears = [];
     ulbs.forEach((ele) => this.compareUlbsList.add(ele));
-
-    console.log(this.compareUlbsList, this.compareUlbsList.size);
+    years.forEach((ele) => this.compareYears.push(ele));
 
     // Check if atleat 1 ULB is selected (default will be current ULB).
     if (this.compareUlbsList.size < 2) {
@@ -195,8 +195,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
     // Create Headers.
     else {
-      const ulbIds = Array.from(this.compareUlbsList) as string[];
-      console.log("ulbIds === ", ulbIds)
+      const ulbIds = this.convertSetToArr(this.compareUlbsList);
       this.getBsIsData(ulbIds, this.selectedBtn(), years);
       this.createHeaders(years);
     }
@@ -204,10 +203,22 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   readonly ulbChangeEffect = effect(() => {
     if (this.ulbIdSignal()) {
-      this.getBsIsData([this.ulbIdSignal()], this.selectedBtn(), this.yearsSignal());
-      this.createHeaders(this.yearsSignal());
+      const ulbIds = this.compareUlbsList.size > 1 ?
+        this.convertSetToArr(this.compareUlbsList) :
+        [this.ulbIdSignal()];
+      const years = this.compareYears.length > 0 ?
+        this.compareYears :
+        this.yearsSignal();
+
+      this.getBsIsData(ulbIds, this.selectedBtn(), years);
+      this.createHeaders(years);
     }
   });
+
+  // Convert set to array.
+  private convertSetToArr(set: Set<string>) {
+    return Array.from(set) as string[]
+  }
 
   private initializeForm(): void {
     this.reportForm = this.fb.group({
@@ -257,10 +268,6 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       (ele) => !ele.reportType || ele.reportType === this.reportType()
     );
 
-    // this.dataSource = tempData;
-
-    console.log("data source - ", this.dataSource)
-
     this.filteredDataSource = new MatTableDataSource(this.dataSource);
   }
 
@@ -274,9 +281,6 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       this.compareUlbsList.add(this.ulbIdSignal());
     }
 
-    console.log("ulbs = ", this.compareUlbsList)
-
-    // console.log('createHeaders() called');
     // Create deep copy.
     this.headers = cloneDeep(this.HEADERS_STRUCTURE);
     this.downloadReportsHeaders = cloneDeep(this.DOWNLOAD_REPORTS_HEADERS_STRUCTURE);
@@ -316,9 +320,6 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     this.downloadReportsDisplayedColumns = this.downloadReportsHeaders.map(
       (e) => e.key
     );
-
-    console.log("headers = ", this.headers);
-    console.log("displayedColumns = ", this.displayedColumns);
   }
 
   // Search feature will filter the content based on search term.
@@ -405,6 +406,9 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   openCompareByDialog() {
+    this.compareUlbsList.clear();
+    this.compareYears = [];
+
     const dialogRef = this.dialog.open(CompareBy, {
       width: '700px',
       maxWidth: '70vw',
@@ -414,7 +418,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(dialogData => {
-        console.log("---------", dialogData)
+        // console.log("---------", dialogData)
         const ulbs = dialogData.citiesArr.map((e: IULB) => e._id);
         const years = dialogData.years;
 
@@ -425,9 +429,14 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   // Reset filter
   resetFilters() {
+    this.compareUlbsList.clear();
+    this.compareYears = [];
+
     const ulbId = this.ulbIdSignal();
     const btnKey = this.selectedBtn();
     const years = this.yearsSignal();
+
+    this.createHeaders(years);
     this.getBsIsData([ulbId], btnKey, years);
   }
 

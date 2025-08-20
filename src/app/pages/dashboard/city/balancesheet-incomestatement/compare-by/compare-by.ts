@@ -41,10 +41,8 @@ export class CompareBy {
 
     this.addDefaultUlb();
     this.setupSearchEffect();
-
-    console.log("dialog data = ", this.data)
-
     this.years.set(this.data.years)
+    // console.log("dialog data = ", this.data)
   }
 
   // Add selected ULB to arr.
@@ -92,7 +90,6 @@ export class CompareBy {
 
   // Add city to search arr.
   onCitySelection(city: IULB): void {
-    console.log(city)
     if (this.validateUlbsArr(city)) {
       this.citiesArr.push(city);
       this.myForm.get('ulbName')?.patchValue('');
@@ -115,15 +112,10 @@ export class CompareBy {
     return true;
   }
 
-  // Year selected
-  onYearSelection(year: string) {
-    console.log("Year selected", year);
-  }
-
   // Remove searched city.
   removeCity(city: IULB) {
-    console.log('remove:', city)
-    // this.citiesArr.splice(idx, 1);
+    const idx = this.citiesArr.findIndex(e => e._id == city._id);
+    this.citiesArr.splice(idx, 1);
   }
 
   private getYears() {
@@ -133,7 +125,7 @@ export class CompareBy {
   // Validate data
   validatePopupData(): boolean {
     const years = this.getYears();
-    console.log(this.citiesArr.length, this.citiesArr.length < 2)
+
     // Atleast 1 ULB must be selected.
     if (this.citiesArr.length < 2) {
       this.utilityService.triggerSnackbar(`Atleast 1 ULB must be selected!`, 'snackbar-danger');
