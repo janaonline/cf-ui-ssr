@@ -108,11 +108,15 @@ export class NationalTable {
       type: string;
       stateId: string;
       csv?: boolean;
+      ulbType?: any;
+      population?: any;
     } = {
       financialYear: this.selectedLedgerYear(),
       formType: this.selectedType(),
       type: this.getType(),
       stateId: this.selectedStateId(),
+      ulbType: this.selectedType() === 'ulbType' ? true : '',
+      population: this.selectedType() === 'populationCategory' ? true : '',
     }
 
     if (csv) params['csv'] = true;
@@ -150,7 +154,7 @@ export class NationalTable {
   }
 
   setTable() {
-    this.dataSource = this.tableData.rows;
+    this.dataSource = this.tableData.rows.filter((row: any) => Object.keys(row).length > 0);
     this.headers = this.tableData.columns;
     this.displayedColumns = this.tableData.columns?.map((ele: any) => ele.key);
   }
