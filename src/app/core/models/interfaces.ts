@@ -154,3 +154,14 @@ export interface IFinancialIndicatorInfo {
 //   label: string;
 //   data: number[];
 // }
+
+export interface BsCompareUlbs {
+  [_id: string]: BsCompareUlbsValue
+}
+
+export interface BsCompareUlbsValue {
+  _id: string;
+  name: string;
+  stateName: string;
+  population: number;
+}
