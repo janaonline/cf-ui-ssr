@@ -21,6 +21,7 @@ import { StateSearch } from "../../../shared/components/state-search/state-searc
 import { DashboardService } from '../dashboard-service';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
 import { FinancialIndicator } from './financial-indicator/financial-indicator';
+import { gaugeChartConfig } from './chart-constant';
 
 @Component({
   selector: 'app-state',
@@ -110,30 +111,9 @@ export class State implements OnInit {
   buttons: any;
   tabs: any[] = [];
 
-  chartData: ChartConfig[] = [
-    {
-      "chartId": "slb0",
-      "chartType": "gaugeChart",
-      "labels": [""],
-      "datasets": [
-        {
-          "label": "Data available",
-          "data": [135, 20],
-          "backgroundColor": ["rgba(51, 96, 219, 1)", "rgba(218, 226, 253, 1)"],
-          "borderWidth": 1,
-          "borderRadius": 5,
-          cutout: '70%',
-        }
-      ],
-      "options": gaugeChartOptions,
-      "additionalInfo": {
-        "value": 95,
-        "indicatorName": "Data Standardized (2021-22)",
-        "nationalAvg": 0,
-        "unit": "%"
-      }
-    }
-  ];
+  chartDataCongfig: ChartConfig = gaugeChartConfig;
+  chartData = signal<ChartConfig>(this.chartDataCongfig);
+  isDataLoading = signal<boolean>(false);
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -222,6 +202,11 @@ export class State implements OnInit {
     })
   }
 
+  loadTopPanelData() {
+    this.getMoneyInfo();
+    this.getDataAvailable();
+  }
+
   private getLedgerYears() {
     const stateCode = this.stateDetails()?.state?.code;
     if (!stateCode) {
@@ -231,25 +216,25 @@ export class State implements OnInit {
     this._commonService.getLedgerYears(stateCode).subscribe({
       next: (res) => {
         this.ledgerYears.set(res.ledgerYears);
-        this.selectedLedgerYear.set(this.ledgerYears()[0]);
+        this.selectedLedgerYear.set(this.ledgerYears()[1]);
       },
       error: () => console.error("Failed to get ledger years."),
       complete: () => {
-        this.getMoneyInfo();
-        this.getDataAvailable();
+        this.loadTopPanelData();
       }
 
     })
   }
 
   // Money info cards.
-  private getMoneyInfo(yearSelected: string = this.selectedLedgerYear()) {
+  private getMoneyInfo() {
     this.isMoneyInfoLoading.set(true);
     const stateId = this.stateDetails()?.state?._id;
     if (!stateId) {
       console.error("State id not found: money info");
       return;
     }
+    const yearSelected = this.selectedLedgerYear();
     return this.dashboardService.getMoneyInfo(yearSelected, stateId).subscribe({
       next: (res) => {
         this.moneyInfoRes.set(res)
@@ -265,25 +250,33 @@ export class State implements OnInit {
   // "Standardized Data Availability" section
   private getDataAvailable(csv: boolean = false) {
     const payload: { financialYear: string; stateId: any; csv?: boolean } = { financialYear: this.selectedLedgerYear(), stateId: this.stateDetails().state._id };
-
     if (csv) payload.csv = true;
-    else if ('csv' in payload) delete payload.csv;
+    else {
+      if ('csv' in payload) delete payload.csv;
+      this.isDataLoading.set(true);
+    }
 
     this.dashboardService.getDataAvailable(payload).subscribe({
       next: (res: any) => {
         if (csv) {
-          console.log('test',)
+          // console.log('test',)
           this._commonService.downloadExcel(res, 'DataAvailable');
         } else {
           this.dataAvailablePerc.set(Math.round(res.data?.percent));
           this.dataAvailableUlbs.set(res.data?.names);
-          if (this.chartData[0].additionalInfo) {
-            this.chartData[0].additionalInfo.value = this.dataAvailablePerc();
-            this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
+          this.chartDataCongfig.datasets[0].data = [this.dataAvailablePerc(), 100 - this.dataAvailablePerc()];
+          if (this.chartDataCongfig.additionalInfo) {
+            this.chartDataCongfig.additionalInfo.value = this.dataAvailablePerc();
+            this.chartDataCongfig.additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
           }
+          this.chartData.set(this.chartDataCongfig);
+          this.isDataLoading.set(false);
         }
       },
-      error: (err) => console.error('Failed to get data availability', err),
+      error: (err) => {
+        console.error('Failed to get data availability', err)
+        this.isDataLoading.set(false);
+      },
     });
   }
 
@@ -306,7 +299,7 @@ export class State implements OnInit {
     const yearSelected = ($event.target as HTMLSelectElement).value;
     if (this.selectedLedgerYear() !== yearSelected) {
       this.selectedLedgerYear.set(yearSelected);
-      this.getMoneyInfo(yearSelected);
+      this.loadTopPanelData();
     }
   }
 

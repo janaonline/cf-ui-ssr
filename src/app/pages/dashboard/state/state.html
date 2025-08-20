@@ -76,17 +76,17 @@
                     </div>
 
                     <div class="charts-container col-sm-12 col-md-4">
-                        @for (item of chartData; track $index) {
+                        @if(!isDataLoading()) {
                         <div class="chart-wrapper rounded border">
                             <div class="chart-container">
-                                <app-charts [chartConfig]="item"></app-charts>
+                                <app-charts [chartConfig]="chartData()"></app-charts>
                             </div>
                             <div class="chart-title">
                                 <p class="m-0 p-0 fw-bold">
-                                    {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+                                    {{ chartData().additionalInfo?.value }}{{ chartData().additionalInfo?.unit }}
                                 </p>
                                 <p class="m-0 p-0 custom-font-size-7 text-center">
-                                    {{ item.additionalInfo?.indicatorName }}
+                                    {{ chartData().additionalInfo?.indicatorName }}
                                 </p>
                                 <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
                                 <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
