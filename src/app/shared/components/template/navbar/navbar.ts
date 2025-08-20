@@ -64,6 +64,11 @@ export class Navbar {
       name: 'Resources',
       href: this.v1Url + '/resources-dashboard/data-sets/income_statement',
     },
+    {
+      name: 'Blogs',
+      href: environment.blogUrl,
+      target: '_blank',
+    },
   ];
 
   showMobileNav: boolean = false;

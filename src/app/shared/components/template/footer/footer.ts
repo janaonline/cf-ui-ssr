@@ -44,6 +44,11 @@ export class Footer {
       href: this.v1Url + '/resources-dashboard/learning-center/toolkits',
       title: 'Resources',
     },
+    {
+      href: environment.blogUrl,
+      title: 'Blogs',
+      target: '_blank',
+    },
   ];
   public readonly socialMediaInfo = [
     {
@@ -75,7 +80,7 @@ export class Footer {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     private transferState: TransferState
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadData();
