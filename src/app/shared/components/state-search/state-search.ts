@@ -30,10 +30,14 @@ import {
 } from 'rxjs';
 import { IState } from '../../../core/models/state/state';
 import { CommonService } from '../../../core/services/common.service';
+import { MaterialModule } from "../../../material.module";
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormField } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: 'app-state-search',
-  imports: [MatAutocompleteModule, ReactiveFormsModule, AsyncPipe],
+  imports: [MatAutocompleteModule, ReactiveFormsModule, AsyncPipe, MatIconModule, MatFormField, MatInputModule],
   templateUrl: './state-search.html',
   styleUrl: './state-search.scss',
 })
