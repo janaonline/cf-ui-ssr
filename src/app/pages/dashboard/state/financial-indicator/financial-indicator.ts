@@ -119,6 +119,7 @@ export class FinancialIndicator {
   isDataInCrore: boolean = false;
   isMixBtn = false;
   code: any;
+  compareTypeList: any[] = [];
 
   constructor(
     // private fb: FormBuilder,
@@ -563,7 +564,15 @@ export class FinancialIndicator {
       next: (res) => {
         if (this.isMixBtn) {
           this.responseData = res.data;
-          this.code = this.responseData[0].code.length ? this.responseData[0].code.join(',') : undefined;
+          if (this.compareType) {
+            const firstKey = Object.keys(this.responseData)[0];
+            const firstObj = this.responseData[firstKey];
+            this.compareTypeList = firstObj;
+          } else {
+            this.compareTypeList = this.responseData;
+          }
+          // console.log('compareTypeList', this.compareTypeList);
+          this.code = this.compareTypeList[0].code.length ? this.compareTypeList[0].code.join(',') : undefined;
           this.getPopulationChart();
           // this.updateDoughnutChartData(res.data);
         } else {

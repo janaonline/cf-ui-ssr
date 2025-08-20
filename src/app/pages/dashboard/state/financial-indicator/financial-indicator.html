@@ -136,7 +136,7 @@
                 @if(isMixBtn) {
                 <div class="mx-2">
                     <select class="form-select form-select-sm" (change)="onChangeLinteItem($event)">
-                        @for (item of responseData; track $index) {
+                        @for (item of compareTypeList; track $index) {
                         <option [value]="item?.code">
                             {{ item?._id }}
                         </option>
