@@ -4,6 +4,7 @@ import {
   effect,
   EventEmitter,
   inject,
+  Input,
   input,
   OnDestroy,
   OnInit,
@@ -30,10 +31,13 @@ import {
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
 import { MaterialModule } from "../../../material.module";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-city-search',
   imports: [
-    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatOptionModule,
@@ -45,6 +49,8 @@ import { MaterialModule } from "../../../material.module";
 export class CitySearch implements OnInit, OnDestroy {
 
   @Output() onUlbSelect = new EventEmitter<IULB>();
+  @Input() resetOnChange: boolean = false;
+
   private fb = inject(FormBuilder);
   private commonService = inject(CommonService);
   private destroy$ = new Subject<void>();
@@ -119,6 +125,12 @@ export class CitySearch implements OnInit, OnDestroy {
     this.onUlbSelect.emit(city);
     const callback = this.selectCity();
     if (callback) callback(city);
+    // console.log('this.myForm.value---', this.myForm.value);
+    if (this.resetOnChange) {
+      this.myForm.patchValue({ ulbName: '' }, { emitEvent: false });
+      this.filteredUlbs.set([]);
+      // console.log('after', this.myForm.value);
+    }
     // console.log('ULB obj is sent from child to parent: ', city);
   }
 

@@ -120,6 +120,7 @@ export class FinancialIndicator {
   isMixBtn = false;
   code: any;
   compareTypeList: any[] = [];
+  compareUlbsObj: any;
 
   constructor(
     // private fb: FormBuilder,
@@ -752,14 +753,19 @@ export class FinancialIndicator {
       width: '700px',
       maxWidth: '70vw',
       // data: { ulbType: this.ulbType(), compareUlbsFromParent: this.compareUlbsFromPopup, compareType: this.compareTypeFromPopup }
-      data: { ulbType: '', stateId: this.stateDetails().state._id }
+      data: {
+        ulbType: '', stateId: this.stateDetails().state._id, compareUlbsObj: this.compareUlbsObj,
+        compareUlbs: this.compareUlbs,
+      }
     });
 
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
+        // console.log('Dialog result:', result);
         // this.dialogResult = result;
         this.compareUlbs = result.compareUlbs;
+        this.compareUlbsObj = result.compareUlbsObj;
         if (result) this.getChartData();
       });
   }

@@ -8,12 +8,12 @@
       <i class="bi bi-x-lg"></i>
     </button>
     }
+    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+      @for (state of filteredStates | async; track $index) {
+      <mat-option [value]="state.name" (onSelectionChange)="onStateSelection(state)">{{ state.name }}</mat-option>
+      } @if (noDataFound()) {
+      <mat-option class="text-muted" disabled>No results found for your search.</mat-option>
+      }
+    </mat-autocomplete>
   </mat-form-field>
-  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
-    @for (state of filteredStates | async; track $index) {
-    <mat-option [value]="state.name" (onSelectionChange)="onStateSelection(state)">{{ state.name }}</mat-option>
-    } @if (noDataFound()) {
-    <mat-option class="text-muted" disabled>No results found for your search.</mat-option>
-    }
-  </mat-autocomplete>
 </form>
