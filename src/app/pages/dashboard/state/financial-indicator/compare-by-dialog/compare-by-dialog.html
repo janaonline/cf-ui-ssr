@@ -3,9 +3,9 @@
         <div class="border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare with Average</div>
         <div class="w-100">
             <!-- City search -->
-            <form [formGroup]="myForm" class="d-flex gap-2">
-                {{myForm.get('ulbName')?.value}}
-                <app-city-search [selectCity]="onUlbSelected" [stateId]="data.stateId"
+            <form [formGroup]="myForm" class="w-100 mt-3">
+                <!-- {{myForm.get('ulbName')?.value}} -->
+                <app-city-search [selectCity]="onUlbSelected" [stateId]="data.stateId" [resetOnChange]="true"
                     [cityName]="ulbName"></app-city-search>
             </form>
             <!-- Show selected cities -->
@@ -25,5 +25,6 @@
     <mat-dialog-actions class="d-flex justify-content-center gap-3">
         <button class="btn btn-cfPrimary" (click)="filterSelected()">Apply</button>
         <button class="btn btn-outline-cfPrimary" (click)="filterSelected('reset')">Reset</button>
+        <button class="btn btn-outline-cfPrimary" mat-dialog-close>close</button>
     </mat-dialog-actions>
 </div>

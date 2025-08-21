@@ -9,9 +9,10 @@
         <p>{{ currentSelectedButton().subButtons.text }}</p>
         <!-- Filters -->
         <div class="row container mx-auto p-0">
-            <div class="col-auto">
-                @if(stateServiceLabel) {
-                <div class="mb-3" style="padding-right: 1rem">
+
+            @if(stateServiceLabel) {
+            <div class="col-md-5 col-sm-12 mt-4">
+                <div class="mb-3" style="padding-right: 1rem; width: 100%;">
                     <mat-form-field appearance="outline">
                         <mat-label>Choose one</mat-label>
                         <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
@@ -22,19 +23,21 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                } @else {
+            </div>
+            } @else {
+            <div class="col-auto">
                 <!-- Sub Buttons -->
                 <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
                     (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
                 </app-tab-buttons>
-                }
             </div>
-            <div class="border rounded bg-light p-3 col-md-7 ms-auto">
-                <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+            }
+
+            <div class="border rounded bg-light pt-3 col-md-7 col-sm-12 ms-auto">
+                <div class="d-flex gap-2 justify-content-between align-items-end ">
                     @if(!stateServiceLabel && !isMixBtn) {
-                    <div class="my-2" [matTooltip]="'Select an option to view average data'">
-                        <select class="form-select text-capitalize" (change)="onChangeCategory($event)"
-                            style="opacity: 0.6; border: 1px solid gray; width: auto">
+                    <div class="custom-margin w-100" [matTooltip]="'Select an option to view average data'">
+                        <select class="form-select text-capitalize custom-class" (change)="onChangeCategory($event)">
                             <option value="none" selected hidden [disabled]="">
                                 Select an Option
                             </option>
@@ -47,8 +50,8 @@
                         </select>
                     </div>
                     }
-                    <select class="form-select form-select-sm" [(ngModel)]="selectedLedgerYear"
-                        (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;width:100px">
+                    <select class="form-select custom-margin custom-class w-50" [(ngModel)]="selectedLedgerYear"
+                        (change)="onYearChange($event)" id="chart_years">
                         @for (year of years(); track $index) {
                         <option [value]="year" [selected]="year === selectedLedgerYear()">
                             {{ year }}
@@ -57,7 +60,7 @@
                     </select>
                     <app-city-search (onUlbSelect)="onUlbSelect($event)"
                         [stateId]="stateDetails().state._id"></app-city-search>
-                    <div role="button" class="d-flex flex-column align-items-center custom-font-size-6"
+                    <div role="button" class="d-flex custom-margin flex-column align-items-center custom-font-size-6"
                         (click)="resetFilter()">
                         <i class="bi bi-arrow-clockwise inline-block"></i>
                         Reset
