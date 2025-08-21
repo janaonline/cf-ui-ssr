@@ -1,11 +1,10 @@
 <form [formGroup]="myForm" class="d-flex gap-2">
-  <mat-form-field class="example-form-field" appearance="outline">
-    <mat-label>State</mat-label>
-    <input type="text" placeholder="Search for State" matInput formControlName="stateName" id="stateName"
-      [matAutocomplete]="auto" class="input-box-style" [class.custom-readonly-input]="isStateReadonly()"
+  <mat-form-field class="" appearance="outline">
+    <mat-label>Search for State</mat-label>
+    <input type="text" matInput formControlName="stateName" id="stateName" [matAutocomplete]="auto"
       aria-label="Search for State" />
     @if (stateNameControl.value) {
-    <button matSuffix matIconButton aria-label="Clear" (click)="stateNameControl.patchValue('')" class="btn">
+    <button matSuffix matIconButton aria-label="Clear" (click)="resetFilter()" class="btn border-0">
       <i class="bi bi-x-lg"></i>
     </button>
     }

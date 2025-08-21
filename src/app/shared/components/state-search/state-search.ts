@@ -55,7 +55,7 @@ export class StateSearch implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   readonly myForm: FormGroup = this.fb.group({
-    stateName: [{ value: '', disabled: false }],
+    stateName: [{ value: '', disabled: this.isStateReadonly() }],
   });
 
   readonly noDataFound = signal<boolean>(false);
@@ -150,6 +150,11 @@ export class StateSearch implements OnInit, OnDestroy {
   // Helper to patch state value.
   private patchStateName(name: string): void {
     this.myForm.patchValue({ stateName: name }, { emitEvent: true });
+  }
+
+  // When close button is clicked.
+  public resetFilter() {
+    this.stateNameControl?.patchValue('');
   }
 
   ngOnDestroy(): void {
