@@ -1,0 +1,63 @@
+<div class="dialog-container">
+    <mat-dialog-content class="mat-typography text-dark">
+        @if(years().length > 0) {
+        <div class="mb-4 border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare up to 3 ULBs across 3 years.
+        </div>
+        <!-- City search -->
+        <form [formGroup]="myForm" class="my-2">
+            <mat-form-field appearance="outline">
+                <mat-label>Search for ULB(s)</mat-label>
+                <input type="text" class="" placeholder="Search for ULBs" matInput formControlName="ulbName"
+                    [matAutocomplete]="auto" id="ulbName" />
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    @for (option of filteredUlbs(); track $index) {
+                    <mat-option [value]="option.name" (onSelectionChange)="onCitySelection(option)">
+                        <small>{{ option.name }}</small>
+                    </mat-option>
+                    }
+                    @if (noDataFound()) {
+                    <mat-option class="text-muted" disabled>No results found.</mat-option>
+                    }
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Years -->
+            <mat-form-field appearance="outline">
+                <mat-label>Years</mat-label>
+                <mat-select formControlName="years" multiple>
+                    <!-- <option selected>Open this select menu</option> -->
+                    @for (year of years(); track $index) {
+                    <mat-option [value]=year>{{year}}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </form>
+
+        <!-- Show selected cities -->
+        <div class="d-flex flex-wrap gap-2 my-1">
+            @for (city of citiesArr.slice(0, 3); track $index) {
+            <div class="badge bg-light border border-secondary text-dark d-flex align-items-center p-2 pe-3 rounded-pill"
+                style="max-width: 12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                [title]="city.name">
+                <span class="me-2 text-truncate flex-grow-1">{{ city.name }}</span>
+
+                <!-- 0th idx will have selected ULB - default ulb -->
+                @if($index !== 0) {
+                <button type="button" class="btn-close btn-sm reset-btn-styles" aria-label="Close"
+                    (click)="removeCity(city)"><i class="bi bi-x-circle"></i></button>
+                }
+            </div>
+            }
+        </div>
+        }
+        @else {
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        }
+    </mat-dialog-content>
+    <mat-dialog-actions class="d-flex justify-content-center gap-3">
+        <button class="btn btn-cfPrimary" (click)="filterSelected()">Apply</button>
+        <button class="btn btn-outline-cfPrimary" (click)="filterSelected('reset')">Reset</button>
+    </mat-dialog-actions>
+</div>
