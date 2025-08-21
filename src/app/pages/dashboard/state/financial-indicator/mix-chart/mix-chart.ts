@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, input, signal } from '@angular/core';
 import { ChartConfig } from '../../../../../shared/components/charts/chart-interfaces';
 import { doughnutChartConfig } from './chartConfig';
 import { Charts } from "../../../../../shared/components/charts/charts";
@@ -14,28 +14,64 @@ export class MixChart {
   chartsData = signal<ChartConfig[]>([]);
   @Input() responseData: any = {};
   @Input() compareType: string = '';
+  @Input() mixChartObj: { key: string; label: string; }[] = [];
+  // stateDetails = input.required<any>();
+
+  types: any = {
+    ulbType: [
+      // { key: 'state', label: 'State' },
+      { key: 'mData', label: 'Municipality' },
+      { key: 'mcData', label: 'Municipal Corporation' },
+      { key: 'tpData', label: 'Town Panchayat' },
+    ],
+    popType: [
+      // { key: 'state', label: 'State' },
+      { key: '<100k', label: '<100k' },
+      { key: '100k-500k', label: '100k-500k' },
+      { key: '500k-1M', label: '500k-1M' },
+      { key: '1m-4m', label: '1m-4m' },
+      { key: '4m+', label: '4m+' },
+    ],
+  }
 
   ngOnInit() {
-    // console.log('this.responseData', this.responseData);
+    // console.log('this.responseData----', this.responseData);
     this.configureChartData();
   }
 
   configureChartData() {
     const chartData: any = [];
     let chart;
-    if (this.compareType === 'ulbType' || this.compareType === 'popType') {
-      Object.keys(this.responseData).forEach((ele, i) => {
+    if (this.compareType) {
+      // this.types[this.compareType][0].label = this.stateDetails().state.name;
+      const order: any = [...this.mixChartObj, ... this.types[this.compareType]];
+      order.forEach((ele: any, i: number) => {
         if (i === 0) {
-          this.colourArray = this.generateChartColor(this.responseData[ele]);
+          this.colourArray = this.generateChartColor(this.responseData[ele.key]);
         }
-        chart = this.createDoughnutChartData(this.responseData[ele], ele);
-        chartData.push(chart);
+        let typeData = this.responseData[ele.key];
+        if (this.compareType === 'ulbType' && !['state', 'ulb'].includes(ele.key)) {
+          typeData = this.responseData[ele.key][0];
+        }
+        if (typeData?.length !== 0) {
+          chart = this.createDoughnutChartData(typeData, ele.label);
+          chartData.push(chart);
+        }
       });
     } else {
-      this.colourArray = this.generateChartColor(this.responseData);
-      // console.log('this.colourArray', this.colourArray);
-      chart = this.createDoughnutChartData(this.responseData, 'state');
-      chartData.push(chart);
+      if (this.mixChartObj.length === 2) {
+        // if both state and ulb data is present
+        this.mixChartObj.forEach((ele: any) => {
+          this.colourArray = this.generateChartColor(this.responseData[ele.key]);
+          chart = this.createDoughnutChartData(this.responseData[ele.key], ele.label);
+          chartData.push(chart);
+        });
+      } else {
+        // only state data
+        this.colourArray = this.generateChartColor(this.responseData);
+        chart = this.createDoughnutChartData(this.responseData, this.mixChartObj[0].label);
+        chartData.push(chart);
+      }
     }
     this.chartsData.set(chartData)
     // console.log('chartData', chartData);

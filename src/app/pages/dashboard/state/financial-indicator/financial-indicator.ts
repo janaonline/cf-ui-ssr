@@ -121,6 +121,7 @@ export class FinancialIndicator {
   code: any;
   compareTypeList: any[] = [];
   compareUlbsObj: any;
+  mixChartObj: { key: string; label: string; }[] = [];
 
   constructor(
     // private fb: FormBuilder,
@@ -141,6 +142,7 @@ export class FinancialIndicator {
     this.selectedLedgerYear.set(this.years()[1]);
     this.getCurrentBtn();
     this.stateIdSignal.set(this.stateDetails().state._id);
+    this.mixChartObj.push({ key: 'state', label: this.stateDetails().state.name });
 
     // this.myForm = this.fb.group({ year: [this.years()[0]] });
 
@@ -176,8 +178,12 @@ export class FinancialIndicator {
   })
 
   resetFilter() {
-    this.selectedLedgerYear.set(this.years()[0]);
+    this.selectedLedgerYear.set(this.years()[1]);
     this.ulbIdSignal.set('');
+    this.compareUlbs = [];
+    this.compareCategory = '';
+    this.compareType = '';
+    if (this.mixChartObj.length > 1) this.mixChartObj.pop();
     this.getChartData();
   }
 
@@ -186,7 +192,7 @@ export class FinancialIndicator {
   }
 
   onChangeCategory(event: any) {
-    this.compareCategory = event.target.value;
+    // this.compareCategory = event.target.value;
     // this.getChartData();
     this.getRevenueChart();
   }
@@ -194,6 +200,7 @@ export class FinancialIndicator {
   onUlbSelect(ulbObj: any) {
     this.ulbIdSignal.set(ulbObj._id);
     this.compareUlbs.push(ulbObj._id);
+    this.mixChartObj.push({ key: 'ulb', label: ulbObj.name });
     this.getRevenueChart();
   }
 
@@ -564,20 +571,31 @@ export class FinancialIndicator {
     return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
       next: (res) => {
         if (this.isMixBtn) {
-          this.responseData = res.data;
-          if (this.compareType) {
-            const firstKey = Object.keys(this.responseData)[0];
+          if (this.compareType) { // if compareType is selected
+            this.responseData = res.data;
+            // const firstKey = Object.keys(this.responseData)[0];
+            const firstKey = 'state'; // default to state if compareType is not set
             const firstObj = this.responseData[firstKey];
-            if (this.compareType === 'ulbType') {
-              this.compareTypeList = firstObj[0];
-            } else {
-              this.compareTypeList = firstObj;
-            }
+            this.compareTypeList = firstObj;
+
+            // if (this.compareType === 'ulbType') {
+            //   this.compareTypeList = firstObj[0];
+            // } else {
+            //   this.compareTypeList = firstObj;
+            // }
           } else {
-            this.compareTypeList = this.responseData;
+            if (this.mixChartObj.length === 2) { // if state and ulb are selected
+              this.responseData = res;
+              this.compareTypeList = this.responseData.state;
+            } else {
+              this.responseData = res.data;
+              this.compareTypeList = this.responseData;
+            }
           }
-          // console.log('compareTypeList', this.compareTypeList);
-          this.code = this.compareTypeList[0].code.length ? this.compareTypeList[0].code.join(',') : undefined;
+          console.log('compareTypeList', this.compareTypeList);
+          if (this.compareTypeList[0].code) {
+            this.code = Array.isArray(this.compareTypeList[0].code) ? this.compareTypeList[0].code.join(',') : this.compareTypeList[0].code;
+          }
           this.getPopulationChart();
           // this.updateDoughnutChartData(res.data);
         } else {

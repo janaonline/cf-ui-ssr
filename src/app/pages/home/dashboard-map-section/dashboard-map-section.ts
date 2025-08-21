@@ -473,7 +473,7 @@ export class DashboardMapSection {
     if (this.ulbSlugName()) {
       this.router.navigateByUrl(`/municipal-data/city/${this.ulbSlugName()}`);
     } else {
-      console.log(this.selectedState());
+      // console.log(this.selectedState());
       // this.router.navigateByUrl(
       //   `/dashboard/state/${this.selectedStateIdSignal()}`,
       // );

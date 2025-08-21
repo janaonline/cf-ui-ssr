@@ -37,8 +37,9 @@
                 <div class="d-flex gap-2 justify-content-between align-items-end ">
                     @if(!stateServiceLabel && !isMixBtn) {
                     <div class="custom-margin w-100" [matTooltip]="'Select an option to view average data'">
-                        <select class="form-select text-capitalize custom-class" (change)="onChangeCategory($event)">
-                            <option value="none" selected hidden [disabled]="">
+                        <select class="form-select text-capitalize custom-class" [(ngModel)]="compareCategory"
+                            (change)="onChangeCategory($event)">
+                            <option value="" selected [disabled]="">
                                 Select an Option
                             </option>
                             @for (item of categoryAvgArray; track $index) {
@@ -83,7 +84,8 @@
             @if(this.isChartLoading()) {
             <app-pre-loader></app-pre-loader>
             } @else {
-            <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
+            <app-mix-chart [compareType]="compareType" [responseData]="responseData"
+                [mixChartObj]="mixChartObj"></app-mix-chart>
             }
         </div>
     </div>
