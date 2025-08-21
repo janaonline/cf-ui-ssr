@@ -177,6 +177,17 @@ export class National implements OnInit {
               (a, b) => a.sequence - b.sequence
             );
 
+            // TODO: make this dynamic.
+            const obj = {
+              sequence: 5,
+              label: 'ULBs With Rating A & Above',
+              value: 22,
+              info: '',
+              src: ''
+            }
+
+            this.exploreData().gridDetails[4] = obj;
+
             this.isLoading.set(false);
 
             if (isPlatformServer(this.platformId)) {
