@@ -29,6 +29,7 @@ import {
 } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
+import { MaterialModule } from "../../../material.module";
 @Component({
   selector: 'app-city-search',
   imports: [
@@ -36,6 +37,7 @@ import { CommonService } from '../../../core/services/common.service';
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatOptionModule,
+    MaterialModule
   ],
   templateUrl: './city-search.html',
   styleUrl: './city-search.scss',
