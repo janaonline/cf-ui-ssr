@@ -567,7 +567,11 @@ export class FinancialIndicator {
           if (this.compareType) {
             const firstKey = Object.keys(this.responseData)[0];
             const firstObj = this.responseData[firstKey];
-            this.compareTypeList = firstObj;
+            if (this.compareType === 'ulbType') {
+              this.compareTypeList = firstObj[0];
+            } else {
+              this.compareTypeList = firstObj;
+            }
           } else {
             this.compareTypeList = this.responseData;
           }
