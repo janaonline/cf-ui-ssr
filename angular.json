@@ -24,9 +24,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              "src/robots.txt",
-              "src/sitemap.xml"
+              }
             ],
             "stylePreprocessorOptions": {
               "sass": {
@@ -54,9 +52,7 @@
             "ssr": {
               "entry": "src/server.ts"
             },
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           },
           "configurations": {
             "production": {
@@ -151,9 +147,7 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/slick-carousel/slick/slick.min.js"
             ],
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           }
         }
       }
