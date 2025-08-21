@@ -3,7 +3,7 @@
     <mat-label>Search for State</mat-label>
     <input type="text" matInput formControlName="stateName" id="stateName" [matAutocomplete]="auto"
       aria-label="Search for State" />
-    @if (stateNameControl.value) {
+    @if (stateNameControl.value && !isStateReadonly) {
     <button matSuffix matIconButton aria-label="Clear" (click)="resetFilter()" class="btn border-0">
       <i class="bi bi-x-lg"></i>
     </button>
