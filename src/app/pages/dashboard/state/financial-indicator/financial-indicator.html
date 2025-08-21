@@ -9,9 +9,10 @@
         <p>{{ currentSelectedButton().subButtons.text }}</p>
         <!-- Filters -->
         <div class="row container mx-auto p-0">
-            <div class="col-auto">
-                @if(stateServiceLabel) {
-                <div class="mb-3" style="padding-right: 1rem">
+
+            @if(stateServiceLabel) {
+            <div class="col-md-5 mt-4">
+                <div class="mb-3" style="padding-right: 1rem; width: 100%;">
                     <mat-form-field appearance="outline">
                         <mat-label>Choose one</mat-label>
                         <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
@@ -22,13 +23,16 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                } @else {
+            </div>
+            } @else {
+            <div class="col-auto">
                 <!-- Sub Buttons -->
                 <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
                     (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
                 </app-tab-buttons>
-                }
             </div>
+            }
+
             <div class="border rounded bg-light p-3 col-md-7 ms-auto">
                 <div class="d-flex gap-2 justify-content-between align-items-center my-2">
                     @if(!stateServiceLabel && !isMixBtn) {
