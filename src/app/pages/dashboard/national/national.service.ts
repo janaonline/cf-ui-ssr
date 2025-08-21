@@ -1,5 +1,6 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, signal } from "@angular/core";
+import { Observable } from "rxjs";
 import { environment } from "../../../../environments/environment";
 
 interface NationalInput {
@@ -67,5 +68,16 @@ export class NationalService {
       `national-dashboard/${endPoint}?financialYear=${downloadInput?.financialYear}&formType=${downloadInput?.formType}&stateId=${downloadInput?.stateId}&type=${downloadInput?.type}&csv=${downloadInput.csv} `,
       { responseType: "blob" }
     );
+  }
+
+  getDataAvailabilityMapData(financialYear = '2021-22', type = 'populationCategory', stateId: string): Observable<any> {
+    let params = new HttpParams();
+    if (financialYear) params = params.set('financialYear', financialYear);
+    if (type = 'populationCategory') params = params.set('population', true);
+    else params = params.set('ulbType', true);
+    if (stateId) params = params.set('stateId', stateId);
+
+
+    return this.http.get(environment.api.url + 'get-statewise-data-availability', { params });
   }
 }

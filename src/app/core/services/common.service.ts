@@ -134,7 +134,7 @@ export class CommonService {
     return this.http.get<BondIssuances>(url);
   }
 
-  public fetchStateList() {
+  public fetchStateList(): Observable<IState[]> {
     return this.http
       .get<{ data: IState[] }>(environment.api.url + 'state')
       .pipe(map((res) => res.data));
