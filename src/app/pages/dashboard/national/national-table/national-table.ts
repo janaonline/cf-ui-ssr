@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, effect, input, Output, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
@@ -11,6 +11,7 @@ import { StateSearch } from "../../../../shared/components/state-search/state-se
 import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
 import { NationalChart } from "../national-chart/national-chart";
 import { NationalService } from '../national.service';
+import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-national-table',
   imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule],
@@ -18,6 +19,9 @@ import { NationalService } from '../national.service';
   styleUrl: './national-table.scss'
 })
 export class NationalTable {
+
+  @Output() filterChange = new EventEmitter<{ reset: boolean, year: string; stateObj: IState; type: string, timestamp: number }>();
+
   headers: any[] = [];
   tableData: any;
   responseData: any;
@@ -28,7 +32,7 @@ export class NationalTable {
 
   isLoadingData = signal<boolean>(false);
 
-
+  selectedState = signal<IState>({ _id: '', name: '', code: '' });
   selectedStateName = signal<string>('');
   selectedStateCode = signal<string>('');
   selectedStateId = signal<string>('');
@@ -37,7 +41,7 @@ export class NationalTable {
   readonly ledgerYears = input.required<string[]>();
   readonly isFullWidth = input<boolean>(true);
   // ledgerYears = signal<string[]>(this.year.data);
-  selectedLedgerYear = signal<string>('2021-22');
+  selectedLedgerYear = signal<string>('');
 
   // currentSelectedButton: any = signal<any>({});
   // currentSelectedButtonKey = signal<string>('');
@@ -72,6 +76,7 @@ export class NationalTable {
 
 
   ngOnInit() {
+    this.selectedLedgerYear.set(this.ledgerYears()[0]);
   }
 
   getType() {
@@ -159,8 +164,21 @@ export class NationalTable {
     this.displayedColumns = this.tableData.columns?.map((ele: any) => ele.key);
   }
   onSelectedType(key: string): void {
+    // console.log(key)
     this.selectedType.set(key);
+    this.emitFilterValue(false, key);
     this.getNationalData();
+  }
+
+  private emitFilterValue(reset = false, key = 'populationCategory') {
+    const payload = {
+      year: this.selectedLedgerYear(),
+      stateObj: this.selectedState(),
+      type: key,
+      reset,
+      timestamp: Date.now()
+    }
+    this.filterChange.emit({ ...payload });
   }
 
   // Year changed from Drop down.
@@ -169,33 +187,37 @@ export class NationalTable {
     if (this.selectedLedgerYear() !== yearSelected) {
       this.selectedLedgerYear.set(yearSelected);
     }
+    this.emitFilterValue();
     // console.log("year changed", this.selectedLedgerYear())
     this.getNationalData();
   }
 
   onStateSelection = (stateObj: IState) => {
-    console.log("state selection", stateObj)
-    // this.setStateData(stateObj.code, stateObj._id, stateObj.name)
-    this.selectedStateId.set(stateObj._id);
+    // console.log("state selection", stateObj)
+    this.setStateData(stateObj.code, stateObj._id, stateObj.name)
+    this.selectedState.set(stateObj);
+    this.emitFilterValue();
     this.getNationalData();
   }
 
   // Helper: Update signal values with latest state data.
-  // private setStateData(code: string = '', _id: string = '', name: string = ''): void {
-  //   this.selectedStateCode.set(code);
-  //   this.selectedStateName.set(name);
-  //   this.selectedStateId.set(_id);
-  // }
+  private setStateData(code: string = '', _id: string = '', name: string = ''): void {
+    this.selectedStateCode.set(code);
+    this.selectedStateName.set(name);
+    this.selectedStateId.set(_id);
+  }
 
   downloadData() {
     this.getNationalData(true);
   }
 
   resetFilter() {
-    console.log("resetFilter called")
+    const stateObj = { _id: '', code: '', name: '' };
+    this.selectedState.set(stateObj);
+    this.setStateData();
+
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
-    this.selectedStateId.set('');
     this.getNationalData();
-    // this.resetMap();
+    this.emitFilterValue(true);
   }
 }

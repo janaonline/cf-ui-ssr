@@ -1,18 +1,17 @@
 <section class="container row p-0 my-4">
-    <h5 class="fw-bold text-center">Data Availability - {{tableData.dataAvailability}}%</h5>
+    <!-- <h5 class="fw-bold text-center">Data Availability - {{tableData.dataAvailability}}%</h5> -->
 
     <!-- Map section -->
     <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
         <div class="position-relative" style="min-height: 500px">
-            <!-- Show map: {{ showMap() }} Browser: {{ checkIfBrowser() }} -->
-            @if (showMap()) {
-            <app-map #map [showUlbs]="false" [stateCode]="selectedStateCode()"
+            @if (this.mapData) {
+            <app-map #map [showUlbs]="false" [stateCode]="selectedstate().code || ''"
                 (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData"></app-map>
             }
         </div>
         <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
-        @if (selectedStateCode()) {
-        <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetMap()">
+        @if (selectedstate().code) {
+        <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetFilter()">
             Reset Map To India
         </button>
         }
@@ -21,7 +20,8 @@
     <!-- Data section -->
     <div class="col-sm-12 col-md-6">
         <!-- Table -->
-        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false"></app-national-table>
+        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false"
+            (filterChange)="filterChanged($event)"></app-national-table>
     </div>
     <!-- <div class="my-4 text-center">
         You can also download the source data in excel format
