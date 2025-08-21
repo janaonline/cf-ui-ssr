@@ -5,12 +5,12 @@
     <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
         <div class="position-relative" style="min-height: 500px">
             @if (this.mapData) {
-            <app-map #map [showUlbs]="false" [stateCode]="selectedstate().code || ''"
+            <app-map #map [showUlbs]="false" [stateCode]="selectedstateObj().code || ''"
                 (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData"></app-map>
             }
         </div>
         <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
-        @if (selectedstate().code) {
+        @if (selectedstateObj().code) {
         <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetFilter()">
             Reset Map To India
         </button>
@@ -20,8 +20,8 @@
     <!-- Data section -->
     <div class="col-sm-12 col-md-6">
         <!-- Table -->
-        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false"
-            (filterChange)="filterChanged($event)"></app-national-table>
+        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false" (filterChange)="filterChanged($event)"
+            [selectedstateObj]="selectedstateObj()"></app-national-table>
     </div>
     <!-- <div class="my-4 text-center">
         You can also download the source data in excel format

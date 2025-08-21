@@ -6,6 +6,7 @@ import { StateDataByCode } from '../../../../shared/components/map/interfaces';
 import { Map } from "../../../../shared/components/map/map";
 import { NationalTable } from "../national-table/national-table";
 import { NationalService } from '../national.service';
+import { CommonService } from '../../../../core/services/common.service';
 
 type StateInput = {
   _id: string;
@@ -28,7 +29,7 @@ export interface PeriodicElement {
 })
 export class DataAvailability {
   @ViewChild('map') mapComponent!: Map;
-  selectedstate = signal<IState>({ _id: '', name: '', code: '' });
+  selectedstateObj = signal<IState>({ _id: '', name: '', code: '' });
   type = signal<string>('populationCategory');
 
   selectedLedgerYear = signal<string>('');
@@ -45,13 +46,33 @@ export class DataAvailability {
   showMap = signal<boolean>(false);
   mapData!: any;
 
+  // isResetFilter = signal<boolean>(false);
+  stateList: any = {};
+
   constructor(
     private nationalService: NationalService,
+    private commonService: CommonService,
   ) { }
 
   ngOnInit() {
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    this.getStatesList();
     this.loadData();
+  }
+
+  private getStatesList() {
+    this.commonService.fetchStateList().subscribe({
+      next: (statesArr) => {
+        for (const state of statesArr) {
+          const stateCode = state.code;
+          if (stateCode) {
+            if (!(stateCode in this.stateList)) this.stateList[stateCode] = {};
+            this.stateList[stateCode] = state;
+          }
+        }
+      },
+      error: () => console.error("Failed to fetch states list"),
+    })
   }
 
   private loadData() {
@@ -66,7 +87,7 @@ export class DataAvailability {
         .getDataAvailabilityMapData(
           this.selectedLedgerYear(),
           this.type(),
-          this.selectedstate()._id
+          this.selectedstateObj()._id
         ).subscribe({
           next: (res) => {
             // console.log(res)
@@ -107,23 +128,17 @@ export class DataAvailability {
     } else {
 
       this.selectedLedgerYear.set(data.year);
-      this.selectedstate.set(data.stateObj);
+      this.selectedstateObj.set(data.stateObj);
       this.type.set(data.type);
 
       this.loadData();
     }
   }
 
-  // // When state is selected from drop down.
-  // onStateSelection = (stateObj: IState) => {
-  //   this.selectedstate.set(stateObj)
-  //   console.log("state selection", this.selectedstate())
-  // }
-
   // When state is selected from map.
   selectedStateCodeChange(stateCode: string) {
-    this.selectedstate.set({ code: stateCode, _id: '', name: '' });
-    // console.log("state selection", this.selectedstate())
+    const stateObj = this.stateList[stateCode];
+    this.selectedstateObj.set(stateObj);
   }
 
   // Year changed from Drop down.
@@ -138,9 +153,10 @@ export class DataAvailability {
 
   // Reset map to india.
   public resetFilter(): void {
+    // this.isResetFilter.set(true);
     this.mapComponent?.resetMap();
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
-    this.selectedstate.set({ _id: '', code: '', name: '' });
+    this.selectedstateObj.set({ _id: '', code: '', name: '' });
     this.loadData();
   }
 }

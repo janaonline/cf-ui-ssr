@@ -40,6 +40,9 @@ export class NationalTable {
 
   readonly ledgerYears = input.required<string[]>();
   readonly isFullWidth = input<boolean>(true);
+  // readonly isResetFilter = input<boolean>(false);
+  readonly selectedstateObj = input<IState>({ _id: '', name: '', code: '' });
+
   // ledgerYears = signal<string[]>(this.year.data);
   selectedLedgerYear = signal<string>('');
 
@@ -70,14 +73,17 @@ export class NationalTable {
     });
   }
 
-  // readonly stateIdChangeEffect = effect(() => {
-
-  // })
-
-
   ngOnInit() {
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
   }
+
+
+  readonly stateObjEffect = effect(() => {
+    const stateObj = this.selectedstateObj();
+    if (stateObj._id !== this.selectedState()._id) {
+      this.onStateSelection(stateObj);
+    }
+  })
 
   getType() {
     const activeTab = this.nationalService.selectedButtonKey();
@@ -215,9 +221,10 @@ export class NationalTable {
     const stateObj = { _id: '', code: '', name: '' };
     this.selectedState.set(stateObj);
     this.setStateData();
-
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.getNationalData();
+
+    // Emit value to parent.
     this.emitFilterValue(true);
   }
 }
