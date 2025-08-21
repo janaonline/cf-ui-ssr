@@ -38,7 +38,7 @@ export class CompareByDialog {
   ngOnInit() {
 
     // Keep selected values as is.
-    // if (this.data.compareUlbsFromParent?.length) this.citiesArr = this.data.compareUlbsFromParent;
+    if (this.data.compareUlbsObj?.length) this.citiesArr = this.data.compareUlbsObj;
 
     this.myForm = new FormGroup({
       ulbName: new FormControl(''),
