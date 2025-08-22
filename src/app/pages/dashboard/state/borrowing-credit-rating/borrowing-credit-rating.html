@@ -78,7 +78,7 @@
   </table>
 </div>
 
-} @else {
+} @else if (currentSelectedButtonKey() === 'Borrowing' && !dataSource.length) {
 <app-no-data-found></app-no-data-found>
 }
 
