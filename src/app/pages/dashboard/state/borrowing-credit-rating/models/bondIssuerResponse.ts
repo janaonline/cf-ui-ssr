@@ -10,10 +10,10 @@ export interface IBondIssuer {
 }
 
 export interface IBondsData {
-  year: string;
-  municipality: string;
+  ulb: string;
   ulbType: string;
+  yearOfBondIssued: string;
   rating: string;
-  amount: string;
+  issueSizeAmount: string;
   couponRate: string;
 }
