@@ -122,7 +122,7 @@
     }
     @else {
     <div class="row justify-content-between my-4 position-relative" id="scatterChartContainer">
-        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2">
+        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="scatterChart">
             @if(!stateServiceLabel) {
             <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
             }

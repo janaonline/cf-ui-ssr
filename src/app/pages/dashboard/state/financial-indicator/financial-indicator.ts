@@ -781,14 +781,14 @@ export class FinancialIndicator {
 
     if (selectedIcon === 'Download') {
       setTimeout(() => {
-        const chartElement = document.getElementById('chartContainer');
+        const chartElement = document.getElementById('scatterChart');
         if (!chartElement) return;
 
-        const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
+        // const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
         // const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
-        const subBtn = this.getLabelByKey(this.currentSelectedButton().subButtons.buttons, this.subButton());
-        const imgName = `${mainBtn}_${subBtn}.png`;
-        const chartContainer = document.getElementById('chartContainer');
+        // const subBtn = this.getLabelByKey(this.currentSelectedButton().subButtons.buttons, this.subButton());
+        const imgName = `${this.currentSelectedButton().label}.png`;
+        const chartContainer = document.getElementById('scatterChart');
         const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
 
         // Hide elements
