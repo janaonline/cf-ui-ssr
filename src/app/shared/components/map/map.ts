@@ -1,6 +1,7 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Inject,
@@ -55,6 +56,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
     private mapService: MapService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   // Set map zoom based on screen width.
@@ -91,7 +93,10 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       !changes['ulbId'].isFirstChange() &&
       changes['ulbId'].previousValue !== changes['ulbId'].currentValue;
 
-    if (stateChanged && this.mapInitialized()) {
+    if (changes['stateColorCode'] && !stateChanged && this.mapInitialized()) {
+      this.loadMapData();
+      this.cdr.markForCheck();
+    } else if (stateChanged && this.mapInitialized()) {
       this.loadMapData();
     }
 

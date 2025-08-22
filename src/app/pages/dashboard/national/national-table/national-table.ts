@@ -176,7 +176,8 @@ export class NationalTable {
     this.getNationalData();
   }
 
-  private emitFilterValue(reset = false, key = 'populationCategory') {
+  private emitFilterValue(reset: boolean, key = 'populationCategory') {
+    // console.log("emite called from: ", abc);
     const payload = {
       year: this.selectedLedgerYear(),
       stateObj: this.selectedState(),
@@ -193,7 +194,7 @@ export class NationalTable {
     if (this.selectedLedgerYear() !== yearSelected) {
       this.selectedLedgerYear.set(yearSelected);
     }
-    this.emitFilterValue();
+    this.emitFilterValue(false);
     // console.log("year changed", this.selectedLedgerYear())
     this.getNationalData();
   }
@@ -202,7 +203,7 @@ export class NationalTable {
     // console.log("state selection", stateObj)
     this.setStateData(stateObj.code, stateObj._id, stateObj.name)
     this.selectedState.set(stateObj);
-    this.emitFilterValue();
+    this.emitFilterValue(false);
     this.getNationalData();
   }
 
@@ -221,7 +222,7 @@ export class NationalTable {
     const stateObj = { _id: '', code: '', name: '' };
     this.selectedState.set(stateObj);
     this.setStateData();
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    // this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.getNationalData();
 
     // Emit value to parent.
