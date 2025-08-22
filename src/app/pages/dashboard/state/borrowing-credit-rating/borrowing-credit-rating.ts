@@ -70,8 +70,9 @@ export class BorrowingCreditRating {
     if (!stateId) return;
     this.municipalBondService.getBondsData(stateId).subscribe({
       next: (res: { headers: TableColumns[]; data: IBondsData[] }) => {
-        const ulbList = res.data.map(e => e.ulb);
-        const yearList = res.data.map(e => e.yearOfBondIssued);
+        const ulbList = [...new Set(res.data.map(e => e.ulb))];
+        const yearList = [...new Set(res.data.map(e => e.yearOfBondIssued))];
+
         this.ulbsList.set(ulbList);
         this.yearsList.set(yearList);
 
