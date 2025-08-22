@@ -11,18 +11,16 @@
         <div class="row container mx-auto p-0">
 
             @if(stateServiceLabel) {
-            <div class="col-md-5 col-sm-12 mt-4">
-                <div class="mb-3" style="padding-right: 1rem; width: 100%;">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Choose one</mat-label>
-                        <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
-                            <!-- <mat-option>None</mat-option> -->
-                            @for (item of serviceTabList; track item) {
-                            <mat-option [value]="item">{{item}}</mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+            <div class="col-md-5 col-sm-12 mt-4 px-4">
+                <mat-form-field appearance="outline">
+                    <mat-label>Choose one</mat-label>
+                    <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
+                        <!-- <mat-option>None</mat-option> -->
+                        @for (item of serviceTabList; track item) {
+                        <mat-option [value]="item">{{item}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
             </div>
             } @else {
             <div class="col-auto">
@@ -36,7 +34,7 @@
             <div class="border rounded bg-light pt-3 col-md-7 col-sm-12 ms-auto">
                 <div class="d-flex gap-2 justify-content-between align-items-end ">
                     @if(!stateServiceLabel && !isMixBtn) {
-                    <div class="custom-margin w-100" [matTooltip]="'Select an option to view average data'">
+                    <!-- <div class="custom-margin w-100">
                         <select class="form-select text-capitalize custom-class" [(ngModel)]="compareCategory"
                             (change)="onChangeCategory($event)">
                             <option value="" selected [disabled]="">
@@ -49,18 +47,50 @@
                             }
 
                         </select>
-                    </div>
+                    </div> -->
+                    <mat-form-field appearance="outline" [matTooltip]="'Select an option to view average data'"
+                        style="width: 40%">
+                        <mat-label>Category</mat-label>
+                        <mat-select [(ngModel)]="compareCategory" (change)="onChangeCategory($event)"
+                            name="compareCategory">
+                            <mat-option value="" selected [disabled]="">
+                                Select an Option
+                            </mat-option>
+                            @for (item of categoryAvgArray; track $index) {
+                            <mat-option [value]="item?.value">
+                                {{ item?.title }}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
                     }
-                    <select class="form-select custom-margin custom-class w-50" [(ngModel)]="selectedLedgerYear"
-                        (change)="onYearChange($event)" id="chart_years">
-                        @for (year of years(); track $index) {
-                        <option [value]="year" [selected]="year === selectedLedgerYear()">
-                            {{ year }}
-                        </option>
-                        }
-                    </select>
-                    <app-city-search (onUlbSelect)="onUlbSelect($event)"
-                        [stateId]="stateDetails().state._id"></app-city-search>
+
+
+                    <mat-form-field appearance="outline" style="width: 20%">
+                        <mat-label>Year</mat-label>
+                        <mat-select [(ngModel)]="selectedLedgerYear" (change)="onYearChange($event)" name="year">
+                            @for (year of years(); track $index) {
+                            <mat-option [value]="year">
+                                {{ year }}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <mat-form-field appearance="outline">
+                        <select class="form-select custom-margin custom-class w-50" [(ngModel)]="selectedLedgerYear"
+                            (change)="onYearChange($event)" id="chart_years">
+                            @for (year of years(); track $index) {
+                            <option [value]="year" [selected]="year === selectedLedgerYear()">
+                                {{ year }}
+                            </option>
+                            }
+                        </select>
+                    </mat-form-field> -->
+                    <div style="width: 40%;">
+                        <app-city-search (onUlbSelect)="onUlbSelect($event)" [cityName]="ulbObj()?.name || ''"
+                            [stateId]="stateDetails().state._id"></app-city-search>
+                    </div>
+
                     <div role="button" class="d-flex custom-margin flex-column align-items-center custom-font-size-6"
                         (click)="resetFilter()">
                         <i class="bi bi-arrow-clockwise inline-block"></i>

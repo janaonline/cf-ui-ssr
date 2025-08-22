@@ -8,40 +8,50 @@
 @if (currentSelectedButtonKey() === 'Borrowing' && tableDataSource.length > 0) {
 
 <p>Below are the details of municipal bond issuances undertaken by the ULB</p>
-<div class="mt-2 mx-2 filter-section d-none">
+<div class="mt-2 mx-2 filter-section">
     <div class="filter-title">
         <!-- <span class="material-icons" style="margin-right: 5px">filter_list</span> -->
         <i class="bi bi-filter"></i>
         <span>Filter By</span>
     </div>
-    <div class="row mt-4 d-flex justify-content-evenly filter-container">
-        <div class="col-md-4 col-sm-12 d-flex justify-content-start filterPosition">
-            <mat-select class="selectClass" [(ngModel)]="selectedUlbList" (ngModelChange)="selectMultipleUlb($event)"
-                placeholder="Select City" multiple>
-                <mat-option *ngFor="let item of stateUlbList" [value]="item">
-                    {{ item.name }}
-                </mat-option>
-            </mat-select>
-        </div>
-        <div class="col-md-4 col-sm-12 d-flex justify-content-end filterPosition">
-            <mat-select class="selectClass" [(ngModel)]="selectedYears" (ngModelChange)="selectMultipleYear($event)"
-                placeholder="Select Year" multiple>
-                <mat-option *ngFor="let item of yearsList" [value]="item">
-                    {{ item }}
-                </mat-option>
-            </mat-select>
-        </div>
-        <div class="col-md-2 col-sm-12 d-flex justify-content-end filterPosition">
-            <button (click)="searchFilter()" class="btn btn-cfPrimary searchButton">
-                Search
-            </button>
-        </div>
-        <div class="col-md-2 col-sm-12 d-flex justify-content-end filterPosition">
-            <button class="btn reset-btn" (click)="clearAllValue()">
-                Clear All &nbsp;<i class="bi bi-x-circle"></i>
-            </button>
-            <!-- Clear All
+    <div class="row mt-4 ">
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- <div class="col-md-4 col-sm-12 d-flex justify-content-start filterPosition"> -->
+            <mat-form-field appearance="outline" class="col-md-3 col-sm-12 compact">
+                <mat-select class="selectClass" [(ngModel)]="selectedUlbList"
+                    (ngModelChange)="selectMultipleUlb($event)" placeholder="Select City" multiple>
+                    @for (item of stateUlbList; track $index) {
+                    <mat-option [value]="item">
+                        {{ item.name }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <!-- </div> -->
+            <!-- <div class="col-md-4 col-sm-12 justify-content-end filterPosition"> -->
+            <mat-form-field appearance="outline" class="col-md-3 col-sm-12 compact">
+                <mat-select class="selectClass" [(ngModel)]="selectedYears" (ngModelChange)="selectMultipleYear($event)"
+                    placeholder="Select Year" multiple>
+                    @for (item of yearsList; track $index) {
+                    <mat-option [value]="item">
+                        {{ item }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <!-- </div> -->
+            <div class="col-md-2 col-sm-12">
+                <button (click)="searchFilter()" class="btn btn-cfPrimary">
+                    Search
+                </button>
+            </div>
+            <div class="col-md-2 col-sm-12">
+                <button class="btn btn-outline-cfPrimary" (click)="clearAllValue()">
+                    Clear All &nbsp;<i class="bi bi-x-circle"></i>
+                </button>
+                <!-- Clear All
           <span class="ml-2 material-icons">highlight_off</span> -->
+            </div>
         </div>
     </div>
 </div>

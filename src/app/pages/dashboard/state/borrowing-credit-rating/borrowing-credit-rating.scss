@@ -651,3 +651,38 @@ td {
     color: #e67e15 !important;
     transition: 0.5s;
 }
+
+.dense-form-field {
+    --mat-form-field-container-height: 36px; // default is ~56px
+    --mat-form-field-container-vertical-padding: 0px;
+    --mat-form-field-container-horizontal-padding: 8px;
+    --mat-form-field-label-text-size: 12px; // shrink label font
+    --mat-form-field-input-text-size: 13px; // shrink input text
+}
+
+.compact .mat-mdc-form-field-infix {
+    padding: 0 !important;
+    min-height: 30px !important; // shrink height
+}
+
+.compact input.mat-mdc-input-element {
+    padding: 4px !important; // smaller input padding
+    font-size: 13px; // optional: smaller font
+}
+
+.compact .mat-mdc-form-field-subscript-wrapper {
+    display: none !important; // remove bottom gap
+}
+
+// ::ng-deep .mat-mdc-form-field-infix {
+//     padding: 0 !important; // removes top/bottom padding
+//     min-height: unset !important;
+// }
+
+// ::ng-deep .mat-mdc-text-field-wrapper {
+//     padding: 0 !important; // wrapper space
+// }
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none !important; // removes hint/error space below
+}

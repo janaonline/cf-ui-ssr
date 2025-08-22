@@ -46,7 +46,7 @@ export class FinancialIndicator {
   readonly compraeByOptions = compraeByOptions;
 
   readonly stateIdSignal = signal('');
-  readonly ulbIdSignal = signal('');
+  // readonly ulbIdSignal = signal('');
   readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
   readonly tabName = input.required<any>();
@@ -122,6 +122,7 @@ export class FinancialIndicator {
   compareTypeList: any[] = [];
   compareUlbsObj: any;
   mixChartObj: { key: string; label: string; }[] = [];
+  ulbObj = signal<IULB | undefined>(undefined);
 
   constructor(
     // private fb: FormBuilder,
@@ -179,7 +180,7 @@ export class FinancialIndicator {
 
   resetFilter() {
     this.selectedLedgerYear.set(this.years()[1]);
-    this.ulbIdSignal.set('');
+    this.ulbObj.set(undefined);
     this.compareUlbs = [];
     this.compareCategory = '';
     this.compareType = '';
@@ -198,7 +199,7 @@ export class FinancialIndicator {
   }
 
   onUlbSelect(ulbObj: any) {
-    this.ulbIdSignal.set(ulbObj._id);
+    this.ulbObj.set(ulbObj);
     this.compareUlbs.push(ulbObj._id);
     this.mixChartObj.push({ key: 'ulb', label: ulbObj.name });
     this.getRevenueChart();
@@ -214,20 +215,7 @@ export class FinancialIndicator {
   }
 
   getSLBBtn() {
-    // this.reset();
-    // if (changes.stateServiceLabel) {
-    //   this.stateFilterDataService.getYearListSLB().subscribe(
-    //     (res) => {
-    //       this.yearList = res["data"];
-    //     },
-    //     (err) => {
-    //       console.log(err.message);
-    //     }
-    //   );
-    // }
-
     const btn = this.currentSelectedButton().label;
-    // this.createDynamicChartTitle(this.currentActiveTab);
     if (btn == "Water Supply") {
       this.serviceTab = "water supply";
       this.stateServiceLabel = true;
