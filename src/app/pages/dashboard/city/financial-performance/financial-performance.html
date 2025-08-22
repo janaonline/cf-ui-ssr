@@ -53,8 +53,8 @@
 
                         <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
                             @for(year of node.yearData; track $index) {
-                            <div [class]="'text-end w-100 px-2 d-flex flex-column justify-content-center '"
-                                [class.selected]="node.isSelected">{{year}}
+                            <div [class]="'text-end w-100 justify-content-center '" [class.selected]="node.isSelected">
+                                {{year}}
                                 @if (node.yearGrowth?.[$index]) {
                                 <br>
                                 <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
