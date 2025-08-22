@@ -21,7 +21,7 @@
     </div>
 
     <!-- Show .content class only if isTooltipVisible is true -->
-    <div class="row justify-content-between align-items-start position-relative " [class.content]="isTooltipVisible()">
+    <div class="row justify-content-between align-items-start position-relative ">
 
         <!-- Table -->
         <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
@@ -37,8 +37,7 @@
                     }">
                     <!-- expand icon -->
                     @if (hasChild(0, node)) {
-                    <button class="p-0 m-0" (click)="buttonClicked(node)" matIconButton
-                        [attr.aria-label]="'Toggle ' + node.name">
+                    <button class="p-0 m-0" matIconButton [attr.aria-label]="'Toggle ' + node.name">
                         <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
                     </button>
                     }
@@ -47,7 +46,9 @@
                     }
 
                     <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
-                        <div [class.selected]="node.isSelected" [class]=" node.className " style=" width: 300px;">
+
+                        <div [class.selected]="node.isSelected" [class]=" node.className "
+                            [ngClass]="{ 'no-pointer': node.disableEvents }" style=" width: 300px;">
                             {{node.name}}
                         </div>
 
@@ -81,9 +82,7 @@
                             {{chartData().chartId}}
                         </span>
                         <img src="https://cdn-icons-png.flaticon.com/128/157/157933.png" class="hide-while-download"
-                            alt="" style="width: 4.5%;" (click)="showInfoAlert()">
-                        <!-- <i class="bi bi-info-circle custom-font-size-6 hide-while-download"
-                            matTooltip="Click to view"></i> -->
+                            matTooltip="Click to view" alt="" style="width: 4.5%;" (click)="showInfoAlert()">
                     </div>
 
                     <button class="btn btn-close border-0 p-0 hide-while-download" role="button"
