@@ -6,16 +6,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
-import { ChartDataset, ChartOptions } from 'chart.js';
 import html2canvas from 'html2canvas';
-import Swal from 'sweetalert2';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { DashboardService } from '../../dashboard-service';
-import { barChart } from './chart-constant';
+import Swal from 'sweetalert2';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
@@ -32,84 +31,83 @@ interface DataNode {
   className: string;
   isHeader?: boolean
   isSelected?: boolean;
-  isParent?: boolean;
 }
-// const Financial_Performance_DATA: DataNode[] =
-//   [
-//     {
-//       name: 'Indicators',
-//       yearData: ['2020-21', '2021-22', '2022-23'],
-//       className: 'text-center fw-bold ',
-//       isHeader: true,
-//     },
-//     {
-//       name: 'Total Expenditure to Total Revenue (%)',
-//       yearData: ['99,999', '99,999', '99,999',],
-//       yearGrowth: ['', '89', '-90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 ',
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89'],
-//           className: 'ps-5 ',
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Grants to Total Revenue (%)',
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       yearData: ['90', '45', '67',],
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89',],
-//           info: 'Own Source revenue to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Own Source Revenue to Total Expenditure (%)',
-//       yearData: ['78', '44', '90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89',],
-//           info: 'Own Source revenue to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Own Source Revenue to Total Expenditure (%)',
-//       yearData: ['78', '44', '90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       className: '',
-//     },
+const Financial_Performance_DATA: DataNode[] =
+  [
+    {
+      name: 'Indicators',
+      yearData: ['2020-21', '2021-22', '2022-23'],
+      className: 'text-center fw-bold ',
+      isHeader: true,
+    },
+    {
+      name: 'Total Expenditure to Total Revenue (%)',
+      yearData: ['99,999', '99,999', '99,999',],
+      yearGrowth: ['', '89', '-90',],
+      info: 'Total Expenditure to Total Revenue (%)',
+      children: [
+        {
+          name: 'Total Expenditure to Total Revenue (%)',
+          yearData: ['78', '56', '88',],
+          info: 'Total Expenditure to Total Revenue (%)',
+          className: 'ps-5 ',
+        },
+        {
+          name: 'Own Source revenue to Total Revenue (%)',
+          yearData: ['55', '87', '89'],
+          className: 'ps-5 ',
+        },
+      ],
+      className: '',
+    },
+    {
+      name: 'Grants to Total Revenue (%)',
+      info: 'Total Expenditure to Total Revenue (%)',
+      yearData: ['90', '45', '67',],
+      children: [
+        {
+          name: 'Total Expenditure to Total Revenue (%)',
+          yearData: ['78', '56', '88',],
+          info: 'Total Expenditure to Total Revenue (%)',
+          className: 'ps-5 '
+        },
+        {
+          name: 'Own Source revenue to Total Revenue (%)',
+          yearData: ['55', '87', '89',],
+          info: 'Own Source revenue to Total Revenue (%)',
+          className: 'ps-5 '
+        },
+      ],
+      className: '',
+    },
+    {
+      name: 'Own Source Revenue to Total Expenditure (%)',
+      yearData: ['78', '44', '90',],
+      info: 'Total Expenditure to Total Revenue (%)',
+      children: [
+        {
+          name: 'Total Expenditure to Total Revenue (%)',
+          yearData: ['78', '56', '88',],
+          info: 'Total Expenditure to Total Revenue (%)',
+          className: 'ps-5 '
+        },
+        {
+          name: 'Own Source revenue to Total Revenue (%)',
+          yearData: ['55', '87', '89',],
+          info: 'Own Source revenue to Total Revenue (%)',
+          className: 'ps-5 '
+        },
+      ],
+      className: '',
+    },
+    {
+      name: 'Own Source Revenue to Total Expenditure (%)',
+      yearData: ['78', '44', '90',],
+      info: 'Total Expenditure to Total Revenue (%)',
+      className: '',
+    },
 
-//   ];
+  ];
 
 @Component({
   selector: 'app-financial-performance',
@@ -133,6 +131,8 @@ export class FinancialPerformance {
   intro: string = '';
   years = signal<string[]>([]);
   source: string = '';
+  // source: string = 'Audited financial statements of FY 2019-20, FY 2020-21, unaudited statements of FY 2021-22, City Finance';
+  isTooltipVisible = signal<boolean>(false);
   buttons: ButtonObj[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'revenue', label: 'Revenue' },
@@ -143,12 +143,18 @@ export class FinancialPerformance {
   ulbName = input.required<string>();
   ulbType = input.required<string>();
   graphPayload = signal<any[]>([]);
+  // optionsAxis:any
   optionsAxis = signal<any>('');
   ulbPopulation = input.required<string>();
   stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
-  barChartConfig = barChart;
-  chartData = signal<ChartConfig>(barChart);
+  chartData = signal<ChartConfig>({
+    chartId: this.graphPayload()[0]?.label,
+    chartType: 'barChart',
+    labels: ['test'],
+    datasets: this.graphPayload(),
+    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
+  });
   faqs = signal<any[]>([]);
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
@@ -200,21 +206,11 @@ export class FinancialPerformance {
   hasChild = (_: number, node: DataNode) => !!node.children && node.children.length > 0;
 
   buttonClicked(node: DataNode) {
-    // console.log(node, 'this is node');
-    if (!node.isParent) {
-      return;
-    }
     this.dataSource().forEach(n => n.isSelected = false);
-    node.isSelected = true;
-    if (node.children && node.children.length > 0) {
-      node.children.forEach(child => child.isSelected = false);
-    }
     this.infoData.set(node.info ?? 'N/A')
+    node.isSelected = true;
     if (!this.tree) return;
-
     const datasets: any[] = [];
-    const chart: any = JSON.parse(JSON.stringify(this.barChartConfig));
-
     if (node.children && node.children.length > 0) {
       node.children.forEach((child: any, index: number) => {
         datasets.push({
@@ -225,9 +221,20 @@ export class FinancialPerformance {
           barThickness: 50,
           stack: 'stack1',
         });
+        if (child.graphKey === 'amount') {
+          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
+        } else if (child.graphKey === 'percentage') {
+          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
+        }
       });
       this.graphPayload.set(datasets);
-      this.setChartData(node.graphKey);
+      this.chartData.update(() => ({
+        ...this.chartData(),
+        labels: this.yearsArrDyna,
+        chartId: node.name,
+        datasets: this.graphPayload(),
+        options: this.optionsAxis(),
+      }));
     }
     else {
       this.graphPayload.set([
@@ -239,12 +246,22 @@ export class FinancialPerformance {
           barThickness: 50,
         },
       ])
-
-      this.setChartData(node.graphKey);
+      if (node.graphKey === 'amount') {
+        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
+      } else if (node.graphKey === 'percentage') {
+        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
+      }
+      // Update chartData with new datasets
+      this.chartData.update(() => ({
+        ...this.chartData(),
+        chartId: this.graphPayload()[0].label,
+        labels: this.yearsArrDyna,
+        datasets: this.graphPayload(),  // overwrite datasets
+        options: this.optionsAxis(),
+      }));
     }
 
     if (this.tree.isExpanded(node)) {
-      this.tree.collapse(node);
       return;
     }
     this.tree.collapseAll();
@@ -255,21 +272,6 @@ export class FinancialPerformance {
       this.tree.expand(node);
     }, 0);
 
-  }
-
-  setChartData(dataType = 'amount') {
-    const chart = JSON.parse(JSON.stringify(this.barChartConfig));
-    chart.chartId = this.graphPayload()[0].label;
-    chart.labels = this.yearsArrDyna;
-    chart.datasets = this.graphPayload();
-    if (dataType === 'percentage') {
-      chart.options.scales['y']['min'] = 0;
-      chart.options.scales['y']['max'] = 100;
-      chart.options.scales['y'].title.text = 'In %';
-    } else {
-      chart.options.scales['y'].title.text = 'Amt in ₹ Cr';
-    }
-    this.chartData.set(chart);
   }
 
   // // Helper: Add class name.
@@ -411,9 +413,10 @@ export class FinancialPerformance {
   // Show info alert.
   showInfoAlert() {
     Swal.fire({
-      text: `${this.infoData()}`,
+      icon: 'info',
+      text: 'infoData',
       confirmButtonText: 'Close',
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#3085d6'
     });
   }
 
