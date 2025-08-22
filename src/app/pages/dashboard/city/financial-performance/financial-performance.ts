@@ -6,15 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
+import { ChartDataset, ChartOptions } from 'chart.js';
 import html2canvas from 'html2canvas';
+import Swal from 'sweetalert2';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { DashboardService } from '../../dashboard-service';
-import Swal from 'sweetalert2';
+import { barChart } from './chart-constant';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
@@ -148,13 +149,8 @@ export class FinancialPerformance {
   ulbPopulation = input.required<string>();
   stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
-  chartData = signal<ChartConfig>({
-    chartId: this.graphPayload()[0]?.label,
-    chartType: 'barChart',
-    labels: ['test'],
-    datasets: this.graphPayload(),
-    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'),
-  });
+  barChartConfig = barChart;
+  chartData = signal<ChartConfig>(barChart);
   faqs = signal<any[]>([]);
   selectedButton: ButtonObj | null = null;
   readonlyButtons = computed<ButtonObj[]>(() => {
@@ -211,6 +207,8 @@ export class FinancialPerformance {
     node.isSelected = true;
     if (!this.tree) return;
     const datasets: any[] = [];
+    const chart: any = JSON.parse(JSON.stringify(this.barChartConfig));
+
     if (node.children && node.children.length > 0) {
       node.children.forEach((child: any, index: number) => {
         datasets.push({
@@ -221,20 +219,9 @@ export class FinancialPerformance {
           barThickness: 50,
           stack: 'stack1',
         });
-        if (child.graphKey === 'amount') {
-          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
-        } else if (child.graphKey === 'percentage') {
-          this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
-        }
       });
       this.graphPayload.set(datasets);
-      this.chartData.update(() => ({
-        ...this.chartData(),
-        labels: this.yearsArrDyna,
-        chartId: node.name,
-        datasets: this.graphPayload(),
-        options: this.optionsAxis(),
-      }));
+      this.setChartData(node.graphKey);
     }
     else {
       this.graphPayload.set([
@@ -246,19 +233,8 @@ export class FinancialPerformance {
           barThickness: 50,
         },
       ])
-      if (node.graphKey === 'amount') {
-        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in ₹ Cr'));
-      } else if (node.graphKey === 'percentage') {
-        this.optionsAxis.set(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'In %'));
-      }
-      // Update chartData with new datasets
-      this.chartData.update(() => ({
-        ...this.chartData(),
-        chartId: this.graphPayload()[0].label,
-        labels: this.yearsArrDyna,
-        datasets: this.graphPayload(),  // overwrite datasets
-        options: this.optionsAxis(),
-      }));
+
+      this.setChartData(node.graphKey);
     }
 
     if (this.tree.isExpanded(node)) {
@@ -272,6 +248,21 @@ export class FinancialPerformance {
       this.tree.expand(node);
     }, 0);
 
+  }
+
+  setChartData(dataType = 'amount') {
+    const chart = JSON.parse(JSON.stringify(this.barChartConfig));
+    chart.chartId = this.graphPayload()[0].label;
+    chart.labels = this.yearsArrDyna;
+    chart.datasets = this.graphPayload();
+    if (dataType === 'percentage') {
+      chart.options.scales['y']['min'] = 0;
+      chart.options.scales['y']['max'] = 100;
+      chart.options.scales['y'].title.text = 'In %';
+    } else {
+      chart.options.scales['y'].title.text = 'Amt in ₹ Cr';
+    }
+    this.chartData.set(chart);
   }
 
   // // Helper: Add class name.
