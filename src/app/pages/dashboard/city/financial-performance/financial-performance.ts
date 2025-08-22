@@ -413,7 +413,7 @@ export class FinancialPerformance {
     Swal.fire({
       text: `${this.infoData()}`,
       confirmButtonText: 'Close',
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#326594ff',
     });
   }
 
