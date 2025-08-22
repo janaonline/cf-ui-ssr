@@ -20,6 +20,7 @@ import {
   AfsPopupData,
   BsIsData,
   ButtonObj,
+  TableColumns,
 } from '../../../../core/models/interfaces';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
@@ -28,14 +29,6 @@ import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
-
-interface TableColumns {
-  key: string;
-  value: string;
-  class?: string;
-  number?: boolean;
-  width?: string;
-}
 
 type DownloadReportElement = {
   type: string;

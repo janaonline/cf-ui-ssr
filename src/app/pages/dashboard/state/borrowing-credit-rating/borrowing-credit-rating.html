@@ -1,91 +1,83 @@
 <section class="container">
-    @if(dashboardTabData()) {
-    <!-- Main Buttons -->
-    <app-tab-buttons [buttons]="dashboardTabData()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
-    </app-tab-buttons>
-    }
+  @if(dashboardTabData()) {
+  <!-- Main Buttons -->
+  <app-tab-buttons [buttons]="dashboardTabData()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+  </app-tab-buttons>
+  }
 </section>
-@if (currentSelectedButtonKey() === 'Borrowing' && tableDataSource.length > 0) {
+@if (currentSelectedButtonKey() === 'Borrowing') {
 
 <p>Below are the details of municipal bond issuances undertaken by the ULB</p>
-<div class="mt-2 mx-2 filter-section">
-    <div class="filter-title">
-        <!-- <span class="material-icons" style="margin-right: 5px">filter_list</span> -->
-        <i class="bi bi-filter"></i>
-        <span>Filter By</span>
-    </div>
-    <div class="row mt-4 ">
-        <div class="d-flex justify-content-between align-items-center">
-            <!-- <div class="col-md-4 col-sm-12 d-flex justify-content-start filterPosition"> -->
-            <mat-form-field appearance="outline" class="col-md-3 col-sm-12 compact">
-                <mat-select class="selectClass" [(ngModel)]="selectedUlbList"
-                    (ngModelChange)="selectMultipleUlb($event)" placeholder="Select City" multiple>
-                    @for (item of stateUlbList; track $index) {
-                    <mat-option [value]="item">
-                        {{ item.name }}
-                    </mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-            <!-- </div> -->
-            <!-- <div class="col-md-4 col-sm-12 justify-content-end filterPosition"> -->
-            <mat-form-field appearance="outline" class="col-md-3 col-sm-12 compact">
-                <mat-select class="selectClass" [(ngModel)]="selectedYears" (ngModelChange)="selectMultipleYear($event)"
-                    placeholder="Select Year" multiple>
-                    @for (item of yearsList; track $index) {
-                    <mat-option [value]="item">
-                        {{ item }}
-                    </mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
-            <!-- </div> -->
-            <div class="col-md-2 col-sm-12">
-                <button (click)="searchFilter()" class="btn btn-cfPrimary">
-                    Search
-                </button>
-            </div>
-            <div class="col-md-2 col-sm-12">
-                <button class="btn btn-outline-cfPrimary" (click)="clearAllValue()">
-                    Clear All &nbsp;<i class="bi bi-x-circle"></i>
-                </button>
-                <!-- Clear All
-          <span class="ml-2 material-icons">highlight_off</span> -->
-            </div>
-        </div>
-    </div>
+
+<div class="border rounded bg-light p-4 my-4">
+  <p class="text-center fw-bold">Filter By:</p>
+  <!-- Search section -->
+  <mat-form [formGroup]="filterForm" class="d-flex gap-2 justify-content-evenly align-items-center flex-wrap">
+    <!-- ULB search -->
+    @if (ulbsList().length) {
+    <mat-form-field appearance="outline" class="w-25">
+      <mat-select placeholder="Select City" multiple formControlName="ulbs">
+        @for (item of ulbsList(); track $index) {
+        <mat-option [value]="item">
+          {{ item }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    }
+
+    <!-- Year search -->
+    @if (yearsList().length) {
+    <mat-form-field appearance="outline" class="w-25">
+      <mat-select class="selectClass" placeholder="Select Year" multiple formControlName="years">
+        @for (item of yearsList(); track $index) {
+        <mat-option [value]="item">
+          {{ item }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    }
+
+    <!-- Search button -->
+    <button (click)="searchFilter()" class="btn btn-cfPrimary">Search</button>
+
+    <!-- Clear button -->
+    <button class="btn btn-outline-cfPrimary" (click)="clearFilters()">
+      Clear All&nbsp;<i class="bi bi-x-circle"></i>
+    </button>
+  </mat-form>
 </div>
-<div class="mt-4 mx-2">
-    <div class="table-responsive">
-        <table class="custom-table table">
-            <tbody>
-                <tr class="border-none">
-                    @for (heading of tableHeading; track $index) {
-                    <th>
-                        {{ heading?.title }}
-                        <i style="cursor: pointer" class="fa" [class]="heading?.class" aria-hidden="true"
-                            (click)="sortTableData(heading?.keyToAccessValue)"></i>
-                    </th>
-                    }
-                </tr>
-                @for (data of tableDataSource; track $index) {
-                <tr class="border-all">
-                    @for (heading of tableHeading; track $index) {
-                    <td class="border-top-bottom" [class]="{
-                      'border-left': $index == 0,
-                      'border-right': $index == tableHeading.length - 1
-                    }">
-                        {{ data[heading.keyToAccessValue] }}
-                    </td>
-                    }
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+
+<div class="table-container my-4">
+  @if (isLoading()) {
+  <div class="custom-spinner-overlay position-absolute">
+    <mat-spinner></mat-spinner>
+  </div>
+  }
+  <table mat-table [dataSource]="filteredData" class="mat-elevation-z8 border border-bg-light">
+    @for (item of headers; track $index) {
+    <ng-container [matColumnDef]="item.key" [sticky]="$index === 0">
+      <th mat-header-cell *matHeaderCellDef class=" fw-bold bg-table-header">
+        {{ item.value }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element[item.key] }}
+      </td>
+    </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="fw-bold p-4 fs-5 text-center" [attr.colspan]="displayedColumns.length - 1">
+        No results found for the applied filter.
+      </td>
+    </tr>
+  </table>
 </div>
-}
-@if(currentSelectedButtonKey() === 'Credit Rating' && this.stateDetails()) {
+
+} @if(currentSelectedButtonKey() === 'Credit Rating' && this.stateDetails()) {
 <app-credit-rating [stateDetails]="this.stateDetails()"></app-credit-rating>
-<!-- <app-credit-rating></app-credit-rating> -->
 }
