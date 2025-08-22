@@ -74,13 +74,13 @@ export class NationalTable {
   }
 
   ngOnInit() {
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    this.selectedLedgerYear.set(this.ledgerYears()[1]);
   }
 
 
   readonly stateObjEffect = effect(() => {
     const stateObj = this.selectedstateObj();
-    if (stateObj._id !== this.selectedState()._id) {
+    if (stateObj._id !== this.selectedState()._id && this.nationalService.selectedTabName() === 'Data Availability') {
       this.onStateSelection(stateObj);
     }
   })
@@ -199,7 +199,7 @@ export class NationalTable {
     this.getNationalData();
   }
 
-  onStateSelection = (stateObj: IState) => {
+  onStateSelection(stateObj: IState) {
     // console.log("state selection", stateObj)
     this.setStateData(stateObj.code, stateObj._id, stateObj.name)
     this.selectedState.set(stateObj);
@@ -222,7 +222,7 @@ export class NationalTable {
     const stateObj = { _id: '', code: '', name: '' };
     this.selectedState.set(stateObj);
     this.setStateData();
-    // this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.getNationalData();
 
     // Emit value to parent.

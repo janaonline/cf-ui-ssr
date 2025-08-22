@@ -125,7 +125,7 @@ export class National implements OnInit {
     return this._commonService.getLedgerYears().subscribe({
       next: (res) => {
         this.ledgerYears.set(res.ledgerYears);
-        this.selectedLedgerYear.set(this.ledgerYears()[0]);
+        this.selectedLedgerYear.set(this.ledgerYears()[1]);
       },
       error: () => console.error('Failed to get years'),
       complete: () => this.loadData()

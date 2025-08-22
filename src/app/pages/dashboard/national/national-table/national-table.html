@@ -33,7 +33,8 @@
 @if(nationalService.selectedButtonKey().includes('Mix')) {
 <div class="mt-5">
     @if(responseData.colourArray.length) {
-    <app-national-chart [responseData]="responseData" [chartType]="'gaugeChart'"></app-national-chart>
+    <app-national-chart [responseData]="responseData" [chartType]="'gaugeChart'"
+        [stateName]="selectedStateName()"></app-national-chart>
     } @else {
     <app-no-data-found></app-no-data-found>
     }
@@ -49,7 +50,7 @@
 </div>
 }
 @if(viewType() === 'graph') {
-<app-national-chart [responseData]="tableData"></app-national-chart>
+<app-national-chart [responseData]="tableData" [stateName]="selectedStateName()"></app-national-chart>
 } @else {
 @if (dataSource.length && headers.length && displayedColumns.length) {
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">

@@ -26,7 +26,7 @@ export const barChartConfig = {
             "borderRadius": 5
         },
     ],
-    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Amt in cr', 'Years'),
+    options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Average', 'Revenue in Cr'),
 };
 
 export const guageChartConfig = {

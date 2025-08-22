@@ -55,6 +55,7 @@ export class ChartService {
         fill: true,
         borderColor: "#1EBFC6",
         backgroundColor: "#1EBFC6",
+        pointRadius: 7,
       },
       {
         labels: [],
@@ -65,6 +66,7 @@ export class ChartService {
         fill: true,
         borderColor: "#3E5DB1",
         backgroundColor: "#3E5DB1",
+        pointRadius: 7,
       },
       {
         label: "Town Panchayat",
@@ -75,6 +77,7 @@ export class ChartService {
         fill: true,
         borderColor: "#F5B742",
         backgroundColor: "#F5B742",
+        pointRadius: 7,
       },
       // {
       //   label: "State Average",
@@ -219,6 +222,7 @@ export class ChartService {
       // fill: false,
       backgroundColor: color,
       borderColor: color,
+      pointRadius: 7,
     };
     return data;
   }
