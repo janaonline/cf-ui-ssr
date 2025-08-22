@@ -413,10 +413,9 @@ export class FinancialPerformance {
   // Show info alert.
   showInfoAlert() {
     Swal.fire({
-      icon: 'info',
-      text: 'infoData',
+      text: `${this.infoData()}`,
       confirmButtonText: 'Close',
-      confirmButtonColor: '#3085d6'
+      confirmButtonColor: '#326594ff',
     });
   }
 
