@@ -74,13 +74,13 @@ export class NationalTable {
   }
 
   ngOnInit() {
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    this.selectedLedgerYear.set(this.ledgerYears()[1]);
   }
 
 
   readonly stateObjEffect = effect(() => {
     const stateObj = this.selectedstateObj();
-    if (stateObj._id !== this.selectedState()._id) {
+    if (stateObj._id !== this.selectedState()._id && this.nationalService.selectedTabName() === 'Data Availability') {
       this.onStateSelection(stateObj);
     }
   })
@@ -176,7 +176,8 @@ export class NationalTable {
     this.getNationalData();
   }
 
-  private emitFilterValue(reset = false, key = 'populationCategory') {
+  private emitFilterValue(reset: boolean, key = 'populationCategory') {
+    // console.log("emite called from: ", abc);
     const payload = {
       year: this.selectedLedgerYear(),
       stateObj: this.selectedState(),
@@ -193,16 +194,16 @@ export class NationalTable {
     if (this.selectedLedgerYear() !== yearSelected) {
       this.selectedLedgerYear.set(yearSelected);
     }
-    this.emitFilterValue();
+    this.emitFilterValue(false);
     // console.log("year changed", this.selectedLedgerYear())
     this.getNationalData();
   }
 
-  onStateSelection = (stateObj: IState) => {
+  onStateSelection(stateObj: IState) {
     // console.log("state selection", stateObj)
     this.setStateData(stateObj.code, stateObj._id, stateObj.name)
     this.selectedState.set(stateObj);
-    this.emitFilterValue();
+    this.emitFilterValue(false);
     this.getNationalData();
   }
 

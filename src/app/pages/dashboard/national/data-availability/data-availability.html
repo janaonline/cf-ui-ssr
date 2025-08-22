@@ -4,9 +4,9 @@
     <!-- Map section -->
     <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
         <div class="position-relative" style="min-height: 500px">
-            @if (this.mapData) {
+            @if (mapData()) {
             <app-map #map [showUlbs]="false" [stateCode]="selectedstateObj().code || ''"
-                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData"></app-map>
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData()"></app-map>
             }
         </div>
         <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->

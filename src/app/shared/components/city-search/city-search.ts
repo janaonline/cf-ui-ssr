@@ -1,38 +1,13 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  effect,
-  EventEmitter,
-  inject,
-  Input,
-  input,
-  OnDestroy,
-  OnInit,
-  Output,
-  signal,
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { Component, effect, EventEmitter, inject, Input, input, OnDestroy, OnInit, Output, signal, } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  of,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { debounceTime, distinctUntilChanged, filter, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { CommonService } from '../../../core/services/common.service';
 import { MaterialModule } from "../../../material.module";
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-city-search',
   imports: [
@@ -116,7 +91,11 @@ export class CitySearch implements OnInit, OnDestroy {
   // When parent sends ulb name - patch the value.
   private syncParentValueEffect = effect(() => {
     const name = this.cityName();
+    console.log('City name from parent:', name);
     this.myForm.patchValue({ ulbName: name }, { emitEvent: false });
+    if (name) {
+      this.filteredUlbs.set([]);
+    }
     // console.log('ULB name is sent from parent to child: ', this.cityName());
   });
 

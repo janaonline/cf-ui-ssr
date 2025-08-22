@@ -26,11 +26,11 @@ export class MixChart {
     ],
     popType: [
       // { key: 'state', label: 'State' },
-      { key: '<100k', label: '<100k' },
-      { key: '100k-500k', label: '100k-500k' },
-      { key: '500k-1M', label: '500k-1M' },
-      { key: '1m-4m', label: '1m-4m' },
-      { key: '4m+', label: '4m+' },
+      { key: '<100k', label: '<100K' },
+      { key: '100k-500k', label: '100K-500K' },
+      { key: '500k-1M', label: '500K-1M' },
+      { key: '1m-4m', label: '1M-4M' },
+      { key: '4m+', label: '4M+' },
     ],
   }
 

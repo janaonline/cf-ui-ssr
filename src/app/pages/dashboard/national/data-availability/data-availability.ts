@@ -44,7 +44,7 @@ export class DataAvailability {
   dataSource!: any[];
 
   showMap = signal<boolean>(false);
-  mapData!: any;
+  mapData = signal<StateDataByCode>({});
 
   // isResetFilter = signal<boolean>(false);
   stateList: any = {};
@@ -57,7 +57,6 @@ export class DataAvailability {
   ngOnInit() {
     this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.getStatesList();
-    this.loadData();
   }
 
   private getStatesList() {
@@ -76,12 +75,13 @@ export class DataAvailability {
   }
 
   private loadData() {
-    this.fetchMapData();
+    if (!this.selectedstateObj()._id)
+      this.fetchMapData();
   }
 
   private fetchMapData() {
     this.showMap.set(false);
-
+    // console.log("selected state = ", abc, "---", this.selectedstateObj())
     if (this.selectedLedgerYear()) {
       this.nationalService
         .getDataAvailabilityMapData(
@@ -91,7 +91,8 @@ export class DataAvailability {
         ).subscribe({
           next: (res) => {
             // console.log(res)
-            this.mapData = this.transformStateData(res.data)
+            const data = this.transformStateData(res.data);
+            this.mapData.set(data);
             this.showMap.set(true);
           },
           error: () => console.error('Failed to fetch map data, data availabilty section.')
@@ -122,11 +123,10 @@ export class DataAvailability {
 
   // Filter changed from national-table.
   filterChanged(data: { reset: boolean, year: string, stateObj: IState, type: string }) {
-    // console.log("data", data)
     if (data.reset) {
       this.resetFilter();
+      // this.mapComponent?.resetMap();
     } else {
-
       this.selectedLedgerYear.set(data.year);
       this.selectedstateObj.set(data.stateObj);
       this.type.set(data.type);
@@ -145,18 +145,17 @@ export class DataAvailability {
   public onYearChange($event: Event): void {
     const yearSelected = ($event.target as HTMLSelectElement).value;
     if (this.selectedLedgerYear() !== yearSelected) {
+      this.resetFilter()
       this.selectedLedgerYear.set(yearSelected);
     }
-
     this.loadData();
   }
 
   // Reset map to india.
   public resetFilter(): void {
-    // this.isResetFilter.set(true);
     this.mapComponent?.resetMap();
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.selectedstateObj.set({ _id: '', code: '', name: '' });
-    this.loadData();
+    // this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    // this.loadData('reset filter');
   }
 }

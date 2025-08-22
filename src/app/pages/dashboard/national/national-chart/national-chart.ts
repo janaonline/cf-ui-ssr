@@ -16,6 +16,7 @@ export class NationalChart {
   chartsData = signal<ChartConfig[]>([])
   tableData: any;
   revnueChartData: any;
+  @Input() stateName: string = '';
   @Input() responseData: any = {};
   @Input() chartType = 'barChart';
   gaugechartBGColor = [];
@@ -36,17 +37,25 @@ export class NationalChart {
     gaugeChart.datasets[0].label = 'National';
     chartData.push(gaugeChart);
 
+    if (this.stateName) {
+      const gaugeChartState = this.generateGuageData(this.responseData, 'state');
+      gaugeChartState.datasets[0].label = this.stateName;
+      chartData.push(gaugeChartState);
+    }
+
     Object.keys(this.responseData.individual).forEach((ele, i) => {
       const gaugeChart = this.generateGuageData(this.responseData.individual, ele);
       chartData.push(gaugeChart);
     });
-    // console.log('chartData---', chartData);
+    console.log('chartData---', chartData);
     this.chartsData.set(chartData)
   }
 
   generateGuageData(typeData: any, ele: string) {
     const labels: any[] = Object.keys(typeData[ele]).sort(([a], [b]) => a.localeCompare(b));
-    const data = labels.map((line) => typeData[ele][line]); // 
+    const data = labels.map((line) => typeData[ele][line]);
+    // console.log('typeData', typeData[ele], ' ele', ele, 'this.getPercentageData(data)', this.getPercentageData(data));
+
 
     const gaugeChart = JSON.parse(JSON.stringify(guageChartConfig));
     gaugeChart.chartId = 'chart-' + ele;

@@ -138,6 +138,15 @@ export interface IFinancialIndicatorInfo {
   text: 'success' | 'danger'
 }
 
+export interface TableColumns {
+  key: string;
+  value: string;
+  class?: string;
+  number?: boolean;
+  width?: string;
+  mergeCell?: boolean;
+}
+
 // export interface ChartResponse {
 //   success: boolean;
 //   data: ChartData;
