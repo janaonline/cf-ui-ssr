@@ -55,7 +55,7 @@ export class ChartService {
         fill: true,
         borderColor: "#1EBFC6",
         backgroundColor: "#1EBFC6",
-        pointRadius: 7,
+        // pointRadius: 7,
       },
       {
         labels: [],
@@ -66,7 +66,7 @@ export class ChartService {
         fill: true,
         borderColor: "#3E5DB1",
         backgroundColor: "#3E5DB1",
-        pointRadius: 7,
+        // pointRadius: 7,
       },
       {
         label: "Town Panchayat",
@@ -77,7 +77,7 @@ export class ChartService {
         fill: true,
         borderColor: "#F5B742",
         backgroundColor: "#F5B742",
-        pointRadius: 7,
+        // pointRadius: 7,
       },
       // {
       //   label: "State Average",
@@ -93,10 +93,14 @@ export class ChartService {
   }
 
   toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
+  isCrore() {
+    return this.toCroreBtns.includes(this.ActiveButton);
+  }
   convertToCr(value: number) {
-    if (!this.compareCategory && this.toCroreBtns.includes(this.ActiveButton)) {
+    // if (!this.stateServiceLabel && !this.compareCategory && this.toCroreBtns.includes(this.ActiveButton)) {
+    if (!this.stateServiceLabel && this.isCrore()) {
       if (value == 0) return 0;
-      value /= 10000000;
+      value /= 10000000; // divide by 1 crore
     }
     return Math.round(value);
   }
@@ -149,7 +153,8 @@ export class ChartService {
       m_data = apiData["municipality"];
       this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
       // let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
-      stateData = this.convertToCr(this.stateAvgVal);
+      // stateData = this.convertToCr(this.stateAvgVal);
+      stateData = this.stateAvgVal;
     }
 
 
@@ -162,7 +167,6 @@ export class ChartService {
       this.setCompareCategoryData(apiData);
       // return this.scatterData;
     }
-
 
     const scatterData = this.setGraphData(stateData, 'State Average', 'red');
     this.scatterData.push(scatterData);
@@ -200,11 +204,11 @@ export class ChartService {
       const scatterData5 = this.setGraphData(apiData['1 Million - 4 Million'], '1 Million - 4 Million', '#32CCFA');
       this.scatterData.push(scatterData5);
     } else if (this.compareCategory == 'ulbTypeAvg') {
-      const scatterDataMC = this.setGraphData(apiData['Municipal Corporation'], 'Municipal Corporation', '#11BC46');
+      const scatterDataMC = this.setGraphData(apiData['Municipal Corporation'], 'Municipal Corporation Average', '#11BC46');
       this.scatterData.push(scatterDataMC);
-      const scatterDataM = this.setGraphData(apiData['Municipality'], 'Municipality', '#FF608B');
+      const scatterDataM = this.setGraphData(apiData['Municipality'], 'Municipality Average', '#FF608B');
       this.scatterData.push(scatterDataM);
-      const scatterDataTP = this.setGraphData(apiData['Town Panchayat'], 'Town Panchayat', '#E57504');
+      const scatterDataTP = this.setGraphData(apiData['Town Panchayat'], 'Town Panchayat Average', '#E57504');
       this.scatterData.push(scatterDataTP);
     } else if (this.compareCategory == 'nationalAvg') {
       const scatterData = this.setGraphData(apiData['national'], 'National Average', 'green');
@@ -213,6 +217,7 @@ export class ChartService {
   }
 
   setGraphData(value: any, label: string, color: string = 'green') {
+    value = this.convertToCr(value);
     const data = {
       label,
       data: JSON.parse(JSON.stringify(this.getAvgData(value))),
