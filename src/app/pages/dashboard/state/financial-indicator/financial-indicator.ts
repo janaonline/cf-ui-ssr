@@ -1,17 +1,19 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from "@angular/material/select";
+import { MatTooltipModule } from '@angular/material/tooltip';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
-import { MaterialModule } from '../../../../material.module';
+import { CommonService } from '../../../../core/services/common.service';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { CitySearch } from "../../../../shared/components/city-search/city-search";
-import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { compraeByOptions, IndicatorDetails } from '../../city/financial-indicator/constants';
@@ -19,12 +21,8 @@ import { DashboardService } from '../../dashboard-service';
 import { ChartService } from './chart-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
-import { PopulationTable } from "./population-table/population-table";
 import { MixChart } from "./mix-chart/mix-chart";
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from "@angular/material/select";
-import { CommonService } from '../../../../core/services/common.service';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { PopulationTable } from "./population-table/population-table";
 
 @Component({
   selector: 'app-financial-indicator',
@@ -193,6 +191,7 @@ export class FinancialIndicator {
   }
 
   onChangeCategory(event: any) {
+    // console.log('event', event);
     // this.compareCategory = event.target.value;
     // this.getChartData();
     this.getRevenueChart();
@@ -360,10 +359,91 @@ export class FinancialIndicator {
   updateScatterChartData(data: any): void {
     const scatterData = this.chartService.setScatterData(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
 
-    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
-    options.plugins!.legend!.labels!.usePointStyle = true;
-    options.plugins!.legend!.labels!.padding = 20;
-    options.plugins!.legend!.position = 'bottom';
+    // const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
+    const options: any = {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem: any) => {
+              // console.log("tooltipItem", tooltipItem);
+              const dataset = tooltipItem.dataset;
+              const datasetLabel = dataset.label || 'Other';
+
+              // Access your custom labels array if you attached it
+              const customLabels = (dataset as any).labels || [];
+              const label = customLabels[tooltipItem.dataIndex];
+
+              const valueY = tooltipItem.parsed.y;
+
+              // Format Y value (Cr if > 1Cr, else just number)
+              // const valueFormatted = valueY
+              //   ? valueY > 10000000
+              //     ? `(${Math.round(valueY / 10000000)} Cr)`
+              //     : `(${Math.round(valueY)})`
+              //   : '';
+              const valueFormatted = `(${Math.round(valueY).toLocaleString()}${this.chartService.isCrore() ? ' Cr' : ''})`;
+              // return valueY;
+              return `${datasetLabel}: ${label && datasetLabel !== label ? label : ''} ${valueFormatted}`;
+            },
+          },
+        },
+        legend: {
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+          }
+          // display: false
+        }
+      },
+      elements: {
+        point: {
+          radius: 7,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Population(in Thousands)',
+            font: { size: 14, weight: 'bold' },
+            color: '#333',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: this.chartService.isCrore() ? 'Total Revenue (In Cr.)' : 'Total Revenue',
+            font: { size: 14, weight: 'bold' },
+            color: '#333',
+          },
+        },
+      },
+
+      // tooltips1: {
+      //   callbacks: {
+      //     label: (tooltipItem: any, data: any) => {
+      //       console.log("tooltipItem", tooltipItem, data);
+      //       var datasetLabel =
+      //         data.datasets[tooltipItem.datasetIndex].label || "Other";
+      //       var label =
+      //         data.datasets[tooltipItem.datasetIndex]["labels"][
+      //         tooltipItem.index
+      //         ];
+      //       return `${datasetLabel}: ${label && datasetLabel != label ? label : ""
+      //         } ${tooltipItem?.yLabel
+      //           ? tooltipItem?.yLabel > 10000000
+      //             ? `(${Math.round(tooltipItem?.yLabel / 10000000)} Cr)`
+      //             : `(${Math.round(tooltipItem?.yLabel)})`
+      //           : ""
+      //         }`;
+      //     },
+      //   },
+      // },
+    };
+    // options.plugins!.legend!.labels!.usePointStyle = true;
+    // options.plugins!.legend!.labels!.padding = 20;
+    // options.plugins!.legend!.position = 'bottom';
 
     let config: ChartConfig = {
       chartId: 'scatterChart0',
@@ -526,7 +606,7 @@ export class FinancialIndicator {
   }
   getRevenueChart() {
     this.isChartLoading.set(true);
-    const params = {
+    const params: any = {
       state: this.stateIdSignal(),
       stateId: this.stateIdSignal(),
       financialYear: this.selectedLedgerYear(),
@@ -540,6 +620,7 @@ export class FinancialIndicator {
       stateServiceLabel: this.stateServiceLabel,
       // ulb: this.dialogResult?.compareUlbs || []
       ulb: this.compareUlbs,
+      TabType: this.getTabType(),
       // 'ulb': this.dialogResult.ulbId,
     };
 
@@ -549,7 +630,9 @@ export class FinancialIndicator {
     if (this.tabName() === 'Financial Indicators') {
       apiEndpoint = 'state-revenue';
       if (this.compareCategory) {
-        params.isPerCapita = '';
+        params.isPerCapita = params.isPerCapita || '';
+        delete params['stateId'];
+        // params["TabType"] = "TotalRevenue";
         apiEndpoint = 'state-dashboard-averages';
       }
 

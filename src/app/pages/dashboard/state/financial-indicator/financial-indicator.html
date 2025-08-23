@@ -14,7 +14,7 @@
             <div class="col-md-5 col-sm-12 mt-4 px-4">
                 <mat-form-field appearance="outline">
                     <mat-label>Choose one</mat-label>
-                    <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
+                    <mat-select [(ngModel)]="filterName" (selectionChange)="onChangeFilterName()">
                         <!-- <mat-option>None</mat-option> -->
                         @for (item of serviceTabList; track item) {
                         <mat-option [value]="item">{{item}}</mat-option>
@@ -51,8 +51,8 @@
                     <mat-form-field appearance="outline" [matTooltip]="'Select an option to view average data'"
                         style="width: 40%">
                         <mat-label>Category</mat-label>
-                        <mat-select [(ngModel)]="compareCategory" (change)="onChangeCategory($event)"
-                            name="compareCategory">
+                        <mat-select [(ngModel)]="compareCategory" (selectionChange)="onChangeCategory($event)"
+                            name="compareCategory" (change)="onChangeCategory($event)">
                             <mat-option value="" selected [disabled]="">
                                 Select an Option
                             </mat-option>
@@ -68,7 +68,8 @@
 
                     <mat-form-field appearance="outline" style="width: 20%">
                         <mat-label>Year</mat-label>
-                        <mat-select [(ngModel)]="selectedLedgerYear" (change)="onYearChange($event)" name="year">
+                        <mat-select [(ngModel)]="selectedLedgerYear" (selectionChange)="onYearChange($event)"
+                            name="year">
                             @for (year of years(); track $index) {
                             <mat-option [value]="year">
                                 {{ year }}
