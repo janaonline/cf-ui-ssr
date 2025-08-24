@@ -1,5 +1,8 @@
 // import 'chart.js';
-import { ChartOptions, ChartType } from 'chart.js';
+import { ChartOptions, ChartType, Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.register(...registerables, ChartDataLabels);
 
 declare module 'chart.js' {
   interface PluginOptionsByType<TType extends ChartType> {
@@ -33,6 +36,15 @@ export const baseChartOptions = (
     customDataLabel: {
       enabled: showLabelOnChart,
       format: label
+    },
+    datalabels: {
+      display: false, // Ensure labels are always displayed
+      color: 'black', // Set label color
+      anchor: 'end', // Position the label at the end of the bar
+      align: 'top', // Align the label to the top of the bar
+      // formatter: function (value, context) {
+      //   return value; // Display the data value as the label
+      // }
     },
     legend: { labels: { font: { family: fontFamily, size: 12 } } },
     tooltip: {
@@ -69,6 +81,11 @@ export const baseChartOptions = (
         },
         color: TEXT_LIGHT,
       },
+      afterDataLimits: (axis) => {
+        if (axis.max < 10) {
+          axis.max = 10;
+        }
+      }
     },
   },
 });
@@ -81,6 +98,9 @@ export const gaugeChartOptions: ChartOptions<'doughnut'> = {
   rotation: 270,
   cutout: '55%',
   plugins: {
+    datalabels: {
+      display: false,
+    },
     legend: { display: false },
     tooltip: {
       filter: (tooltipItem) => tooltipItem.dataIndex === 0,

@@ -110,8 +110,21 @@
             <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
             </app-tab-buttons>
         </div>
-        <div class="p-3 mb-2 col-md-12 bg-light rounded">
-            <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+        <div class="p-3 mb-2 col-md-12 bg-light rounded" id="mixChart">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+                </div>
+                <!-- Expand, download, Share/ Embed -->
+                <div
+                    class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
+                    @for (item of items; track $index) {
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'mixChart')">
+                        <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
+                    </button>
+                    }
+                </div>
+            </div>
             @if(this.isChartLoading()) {
             <app-pre-loader></app-pre-loader>
             } @else {
@@ -140,7 +153,7 @@
                 <div
                     class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
                     @for (item of items; track $index) {
-                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label)">
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'scatterChart')">
                         <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
                     </button>
                     }
@@ -198,15 +211,33 @@
         <app-pre-loader></app-pre-loader>
         }
         @else {
-        <div class="row bg-light p-3 rounded" style="height: 500px;">
-            @if(stateServiceLabel) {
-            <p>{{this.sortBy | titlecase}} 10 performing ULBs on {{ this.filterName }} in {{ stateDetails().state.name
-                }}</p>
-            } @else {
-            <p>Compare ULBs on various financial indicators .</p>
-            }
+        <div class="row bg-light p-3 rounded" style="height: 500px;" id="barChart">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    @if(stateServiceLabel) {
+                    <p>{{this.sortBy | titlecase}} 10 performing ULBs on {{ this.filterName }} in {{
+                        stateDetails().state.name
+                        }}</p>
+                    } @else {
+                    <p>Compare ULBs on various financial indicators .</p>
+                    }
+                </div>
+                <!-- Expand, download, Share/ Embed -->
+                <div
+                    class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
+                    @for (item of items; track $index) {
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'barChart')">
+                        <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
+                    </button>
+                    }
+                </div>
+            </div>
+
             <div class="col-12 ">
-                @if(barChart().datasets.length !== 0) {
+                <!-- @if(barChart().datasets.length !== 0) { -->
+                @if(barDataNotFound) {
+                <app-no-data-found></app-no-data-found>
+                } @else {
                 <app-charts [chartConfig]="barChart()"></app-charts>
                 }
             </div>
