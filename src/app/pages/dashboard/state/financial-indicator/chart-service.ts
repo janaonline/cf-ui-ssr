@@ -46,6 +46,9 @@ export class ChartService {
   setScatterOptions() {
     const options: any = {
       plugins: {
+        datalabels: {
+          display: false,
+        },
         tooltip: {
           callbacks: {
             label: (tooltipItem: any) => {

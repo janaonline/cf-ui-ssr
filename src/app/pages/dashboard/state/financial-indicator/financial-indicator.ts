@@ -23,6 +23,8 @@ import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
 import { MixChart } from "./mix-chart/mix-chart";
 import { PopulationTable } from "./population-table/population-table";
+import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
+import { get } from 'http';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -30,7 +32,7 @@ import { PopulationTable } from "./population-table/population-table";
     // MaterialModule,
     TitleCasePipe,
     FormsModule, MatFormFieldModule, MatTooltipModule,
-    TabButtons, PreLoader, CitySearch, PopulationTable, MixChart, MatSelectModule],
+    TabButtons, PreLoader, CitySearch, PopulationTable, MixChart, MatSelectModule, NoDataFound],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss'
 })
@@ -122,6 +124,8 @@ export class FinancialIndicator {
   compareUlbsObj: any;
   mixChartObj: { key: string; label: string; }[] = [];
   ulbObj = signal<IULB | undefined>(undefined);
+  isPercentage: boolean = false;
+  barDataNotFound: boolean = false;
 
   constructor(
     // private fb: FormBuilder,
@@ -177,14 +181,17 @@ export class FinancialIndicator {
     }
   })
 
-  resetFilter() {
+  resetFilter(callApi: boolean = true) {
     this.selectedLedgerYear.set(this.years()[1]);
     this.ulbObj.set(undefined);
     this.compareUlbs = [];
     this.compareCategory = '';
     this.compareType = '';
     if (this.mixChartObj.length > 1) this.mixChartObj.pop();
-    this.getChartData();
+    if (callApi) {
+      this.getChartData();
+    }
+    // this.getChartData();
   }
 
   onYearChange(event: any) {
@@ -207,6 +214,7 @@ export class FinancialIndicator {
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
+    this.resetFilter(false);
     this.currentSelectedButtonKey.set(key as LineItemType);
     this.getCurrentBtn();
     if (this.stateServiceLabel) {
@@ -254,6 +262,7 @@ export class FinancialIndicator {
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
+    this.resetFilter(false);
     this.isMixBtn = key.includes('Mix');
     this.subButton.set(key);
   }
@@ -288,7 +297,16 @@ export class FinancialIndicator {
     return 'mix';
   }
 
-  updateBarChartData(data: any): void {
+  getLabel(data: any, label: string) {
+    if (this.stateServiceLabel) {
+      label = `${(data).toLocaleString()} ${this.isPercentage ? '%' : ''}`;
+    } else {
+      label = `₹ ${(data).toLocaleString()} ${label}`;
+    }
+    return label;
+  }
+  updateBarChartData(data: any, unitType: string = 'Percent'): void {
+    // console.log('updateBarChartData data', data);
     let countKey = 'sum';
 
     switch (this.subButton()) {
@@ -328,8 +346,32 @@ export class FinancialIndicator {
 
     // console.log('labels', labels);
     // console.log('values---', values);
-    const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', `Amount ${this.isDataInCrore ? '(in Cr.)' : '(in INR)'}`);
+    const yAxisLabel = this.stateServiceLabel ? unitType : `Amount ${this.isDataInCrore ? '(in Cr.)' : '(in INR)'}`;
+    const options = JSON.parse(JSON.stringify(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', yAxisLabel)));
+
+    // this.barChartOptions["scales"]["yAxes"][0]["scaleLabel"]["labelString"] = yAxisLabel;
     options.plugins!.legend!.display = false;
+    options.plugins!.datalabels!.display = true;
+    options.plugins!.datalabels!.formatter = (value: any, ctx: any) => {
+      // console.log('ctx', ctx.chart.data.datasets?.[ctx.dataIndex]);
+      // const label = ctx.chart.data.labels?.[ctx.dataIndex] || '';
+      const label = this.isDataInCrore ? 'Cr' : '';
+      // const label = ctx.chart.data.label || '';
+      return this.getLabel(value, label);
+    }
+    options.plugins!.tooltip!.callbacks = {
+      label: (tooltipItem: any) => {
+        let label = tooltipItem.dataset.label || '';
+        // if (this.stateServiceLabel) {
+        //   label = ` ${(tooltipItem.parsed.y).toLocaleString()} ${this.isPercentage ? '%' : ''}`;
+        // } else {
+        //   label = `₹ ${(tooltipItem.parsed.y).toLocaleString()} ${label}`;
+        // }
+        // return label;
+        return this.getLabel(tooltipItem.parsed.y, label);
+      }
+    };
+
     let config: ChartConfig = {
       chartId: 'populationChart',
       chartType: 'barChart',
@@ -337,7 +379,7 @@ export class FinancialIndicator {
       datasets: [
         {
           type: 'bar',
-          label: this.isDataInCrore ? 'CR' : 'INR',
+          label: this.isDataInCrore ? 'Cr' : '',
           data: values,
           backgroundColor: '#1E44AD',
           barThickness: 50,
@@ -402,7 +444,9 @@ export class FinancialIndicator {
   // }
   onChangeFilterName() {
     // this.filterName = event.target.value;
-    this.getRevenueChart();
+    // console.log('this.filterName', this.filterName);
+    // this.getRevenueChart();
+    this.getChartData();
   }
 
   getSortBy() {
@@ -440,7 +484,7 @@ export class FinancialIndicator {
       // code: this.code ? this.code.join(',') : undefined
       code: this.code
     };
-
+    // console.log('payload---', payload, this.filterName);
     // let p = {
     //   "financialYear": "2019-20",
     //   "stateId": "5dcf9d7416a06aed41c748f0",
@@ -464,19 +508,23 @@ export class FinancialIndicator {
     return subscribe.subscribe({
       next: (res) => {
         let data = [];
+        let unitType = 'Percent';
         if (this.stateServiceLabel) {
           data = res.data.scatterData.tenData
+          unitType = res.data.scatterData.unitType || 'Percent';
         } else {
           data = res.data;
         }
         if (csv) {
           this.commonService.downloadExcel(res, this.currentSelectedButton().label);
         } else {
-          this.updateBarChartData(data);
+          this.barDataNotFound = data.length === 0;
+          this.updateBarChartData(data, unitType);
         }
         this.isBarChartLoading.set(false);
 
       }, error: (err) => {
+        this.barDataNotFound = true;
         this.isBarChartLoading.set(false);
         console.error(err);
       }
@@ -775,19 +823,19 @@ export class FinancialIndicator {
       });
   }
 
-  takeAction(selectedIcon: string) {
+  takeAction(selectedIcon: string, containerId: string) {
     this.isChartDownloading.set(true);
 
     if (selectedIcon === 'Download') {
       setTimeout(() => {
-        const chartElement = document.getElementById('scatterChart');
+        const chartElement = document.getElementById(containerId);
         if (!chartElement) return;
 
         // const mainBtn = this.getLabelByKey(this.buttons, this.currentSelectedButtonKey());
         // const subBtn = this.getLabelByKey(this.subButtons[this.currentSelectedButtonKey()].buttons, this.subButton());
         // const subBtn = this.getLabelByKey(this.currentSelectedButton().subButtons.buttons, this.subButton());
-        const imgName = `${this.currentSelectedButton().label}.png`;
-        const chartContainer = document.getElementById('scatterChart');
+        const imgName = `${this.currentSelectedButton().label}_${this.selectedLedgerYear()}_${this.stateDetails().state.name} Chart.png`;
+        const chartContainer = chartElement;
         const elementsToHide = chartContainer?.querySelectorAll('.hide-while-download');
 
         // Hide elements
