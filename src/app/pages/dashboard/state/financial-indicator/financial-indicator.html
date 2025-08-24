@@ -167,7 +167,7 @@
                 <app-pre-loader></app-pre-loader>
                 }
                 @else {
-                <div class="row" style="height: 500px;">
+                <div class="row">
                     <div class="col-12">
                         @if(scatterChart().datasets.length !== 0) {
                         <app-charts [chartConfig]="scatterChart()"></app-charts>
@@ -224,7 +224,7 @@
                 </div>
                 <!-- Expand, download, Share/ Embed -->
                 <div
-                    class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
+                    class="col-sm-12 col-md-2 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
                     @for (item of items; track $index) {
                     <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'barChart')">
                         <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}

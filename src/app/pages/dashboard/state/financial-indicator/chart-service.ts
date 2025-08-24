@@ -232,7 +232,7 @@ export class ChartService {
     // let obj = { x: 0, y: 0 };
     data.forEach((el2: any) => {
       let obj = { x: 0, y: 0 };
-      obj.x = Math.round(+(el2.population) / this.thousand);
+      obj.x = el2.population ? Math.round(+(el2.population) / this.thousand) : 0;
       // obj.y = this.stateServiceLabel
       //   ? Math.round(el2.value)
       //   : // ? el2.value.toFixed(2)
@@ -248,7 +248,7 @@ export class ChartService {
         this.stateServiceLabel ? Math.round(el2.value) : el2.amount
       );
       chartData.data.push(obj);
-      // console.log('sasasasasaasa', el)
+      // console.log('sasasasasaasa', obj)
       // obj = { x: 0, y: 0 };
     });
 

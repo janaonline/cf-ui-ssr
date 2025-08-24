@@ -512,6 +512,7 @@ export class FinancialIndicator {
         if (this.stateServiceLabel) {
           data = res.data.scatterData.tenData
           unitType = res.data.scatterData.unitType || 'Percent';
+          this.isPercentage = unitType === 'Percent';
         } else {
           data = res.data;
         }
