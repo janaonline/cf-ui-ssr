@@ -46,7 +46,7 @@ export const baseChartOptions = (
       //   return value; // Display the data value as the label
       // }
     },
-    legend: { labels: { font: { family: fontFamily, size: 12 } } },
+    legend: { labels: { font: { family: fontFamily, size: 12 } }, position: "bottom", },
     tooltip: {
       titleFont: { family: fontFamily },
       bodyFont: { family: fontFamily },

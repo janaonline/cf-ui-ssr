@@ -165,7 +165,7 @@ export class NationalTable {
   }
 
   setTable() {
-    this.dataSource = this.tableData.rows.filter((row: any) => Object.keys(row).length > 0);
+    this.dataSource = this.tableData.rows.filter((row: any) => Object.keys(row).length > 0 && row.ulbType !== 'Average');
     this.headers = this.tableData.columns;
     this.displayedColumns = this.tableData.columns?.map((ele: any) => ele.key);
   }

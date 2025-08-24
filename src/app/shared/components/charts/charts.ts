@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   ElementRef,
   Inject,
   input,
@@ -30,7 +31,19 @@ export class Charts implements AfterViewInit, OnDestroy {
   // console.log('Chart called: ', this.chartConfig());
   // }
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    effect(() => {
+      const config = this.chartConfig(); // access the signal
+      console.log('Chart config changed:', config);
+      if (this.chartInstance) {
+        // this.chart.config = config;
+        // this.chartInstance.update();
+        setTimeout(() => {
+          this.createChart();
+        }, 100);
+      }
+    });
+  }
 
 
   ngAfterViewInit(): void {
