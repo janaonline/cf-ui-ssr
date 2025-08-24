@@ -203,8 +203,10 @@ export class NationalTable {
     // console.log("state selection", stateObj)
     this.setStateData(stateObj.code, stateObj._id, stateObj.name)
     this.selectedState.set(stateObj);
-    this.emitFilterValue(false);
     this.getNationalData();
+
+    if (stateObj._id)
+      this.emitFilterValue(false);
   }
 
   // Helper: Update signal values with latest state data.
@@ -222,7 +224,7 @@ export class NationalTable {
     const stateObj = { _id: '', code: '', name: '' };
     this.selectedState.set(stateObj);
     this.setStateData();
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    // this.selectedLedgerYear.set(this.ledgerYears()[0]);
     this.getNationalData();
 
     // Emit value to parent.
