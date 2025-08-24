@@ -1,4 +1,4 @@
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { isPlatformBrowser, isPlatformServer, TitleCasePipe } from '@angular/common';
 import { Component, computed, effect, inject, Inject, input, PLATFORM_ID, signal } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,6 +28,7 @@ import { PopulationTable } from "./population-table/population-table";
   selector: 'app-financial-indicator',
   imports: [Charts,
     // MaterialModule,
+    TitleCasePipe,
     FormsModule, MatFormFieldModule, MatTooltipModule,
     TabButtons, PreLoader, CitySearch, PopulationTable, MixChart, MatSelectModule],
   templateUrl: './financial-indicator.html',
@@ -239,7 +240,6 @@ export class FinancialIndicator {
       next: (res: any) => {
         this.serviceTabList = [...new Set(res?.data?.names)];
         this.filterName = this.serviceTabList[0];
-        this.stateServiceLabel = this.filterName;
         this.getChartData();
         // this.getRevenueChart();
       }, error: (err) => {
@@ -377,6 +377,7 @@ export class FinancialIndicator {
 
   getFilterName() {
     if (this.stateServiceLabel) {
+      this.stateServiceLabel = this.filterName;
       // return this.serviceTab;
       return this.filterName;
     } else {
@@ -550,7 +551,6 @@ export class FinancialIndicator {
         // params["TabType"] = "TotalRevenue";
         apiEndpoint = 'state-dashboard-averages';
       }
-
     }
 
     // const apiEndpoint = 'state-revenue';
