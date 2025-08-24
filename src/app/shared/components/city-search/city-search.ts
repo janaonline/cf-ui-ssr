@@ -91,7 +91,7 @@ export class CitySearch implements OnInit, OnDestroy {
   // When parent sends ulb name - patch the value.
   private syncParentValueEffect = effect(() => {
     const name = this.cityName();
-    console.log('City name from parent:', name);
+    // console.log('City name from parent:', name);
     this.myForm.patchValue({ ulbName: name }, { emitEvent: false });
     if (name) {
       this.filteredUlbs.set([]);

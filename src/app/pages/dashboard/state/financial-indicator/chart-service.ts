@@ -1,8 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { CommonService } from '../../../../core/services/common.service';
-import { error } from 'console';
 
 @Injectable({
   providedIn: 'root'
@@ -30,14 +29,104 @@ export class ChartService {
   stateAvgVal: any;
   scatterData: any;
   chartDropdownList: any;
-  ActiveButton!: string;
+  activeButton!: string;
   thousand: number = 1000;
   defaultMaxPopulation: number = 1200;
   chartId = `stateSCharts-${Math.random()}`;
   compareCategory: string = '';
   defaultAvgObj: { x: number; y: number; }[] = [];
 
+  toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
+
   constructor(private http: HttpClient, private _commonServices: CommonService) {
+
+  }
+
+  setScatterOptions() {
+    const options: any = {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem: any) => {
+              // console.log("tooltipItem", tooltipItem);
+              const dataset = tooltipItem.dataset;
+              const datasetLabel = dataset.label || 'Other';
+
+              // Access your custom labels array if you attached it
+              const customLabels = (dataset as any).labels || [];
+              const label = customLabels[tooltipItem.dataIndex];
+
+              const valueY = tooltipItem.parsed.y;
+
+              let valueFormatted = '';
+              let displayVlaue = Math.round(valueY).toLocaleString();
+
+              if (this.isCrore()) {
+                valueFormatted = `(${displayVlaue} Cr)`;
+              } else {
+                // Format Y value (Cr if > 1Cr, else just number)
+                valueFormatted = valueY > 10000000 ? `(${Math.round(valueY / 10000000).toLocaleString()} Cr)` : `(${displayVlaue})`;
+              }
+              // return valueY;
+              return `${datasetLabel}: ${label && datasetLabel !== label ? label : ''} ${valueFormatted}`;
+            },
+          },
+        },
+        legend: {
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+          }
+          // display: false
+        }
+      },
+      elements: {
+        point: {
+          radius: 7,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Population(in Thousands)',
+            font: { size: 14, weight: 'bold' },
+            color: '#333',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: this.isCrore() ? 'Total Revenue (In Cr.)' : 'Total Revenue',
+            font: { size: 14, weight: 'bold' },
+            color: '#333',
+          },
+        },
+      },
+
+      // tooltips1: {
+      //   callbacks: {
+      //     label: (tooltipItem: any, data: any) => {
+      //       console.log("tooltipItem", tooltipItem, data);
+      //       var datasetLabel =
+      //         data.datasets[tooltipItem.datasetIndex].label || "Other";
+      //       var label =
+      //         data.datasets[tooltipItem.datasetIndex]["labels"][
+      //         tooltipItem.index
+      //         ];
+      //       return `${datasetLabel}: ${label && datasetLabel != label ? label : ""
+      //         } ${tooltipItem?.yLabel
+      //           ? tooltipItem?.yLabel > 10000000
+      //             ? `(${Math.round(tooltipItem?.yLabel / 10000000)} Cr)`
+      //             : `(${Math.round(tooltipItem?.yLabel)})`
+      //           : ""
+      //         }`;
+      //     },
+      //   },
+      // },
+    };
+    return options;
 
   }
   initializeScatterData() {
@@ -46,16 +135,11 @@ export class ChartService {
         labels: [],
         rev: [],
         label: "Municipality",
-        data: [
-          // { x: 10, y: 20 },
-          // { x: 20, y: 100 },
-          // { x: 35, y: 110 },
-        ],
+        data: [],
         showLine: false,
         fill: true,
         borderColor: "#1EBFC6",
         backgroundColor: "#1EBFC6",
-        // pointRadius: 7,
       },
       {
         labels: [],
@@ -66,7 +150,6 @@ export class ChartService {
         fill: true,
         borderColor: "#3E5DB1",
         backgroundColor: "#3E5DB1",
-        // pointRadius: 7,
       },
       {
         label: "Town Panchayat",
@@ -77,7 +160,6 @@ export class ChartService {
         fill: true,
         borderColor: "#F5B742",
         backgroundColor: "#F5B742",
-        // pointRadius: 7,
       },
       // {
       //   label: "State Average",
@@ -92,18 +174,50 @@ export class ChartService {
     ];
   }
 
-  toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
-  isCrore() {
-    return this.toCroreBtns.includes(this.ActiveButton);
+  setScatterConfig(data: any, activeButton: string, stateServiceLabel = false, compareCategory = '') {
+    console.log('setScatterConfig data----', data, 'stateServiceLabel----', stateServiceLabel);
+    this.compareCategory = compareCategory;
+    this.activeButton = activeButton;
+    this.stateServiceLabel = stateServiceLabel;
+    this.initializeScatterData();
+    let datasets = this.scatterData;
+    if (data) {
+      datasets = this.setScatterData(data, this.activeButton, this.stateServiceLabel, this.compareCategory);
+    }
+    const options = this.setScatterOptions();
+    let yTitle = this._commonServices.toTitleCase(this.stateServiceLabel);
+    if (this.stateServiceLabel && data && data['scatterData'] && data['scatterData'].unitType) {
+      if (data['scatterData'].unitType == 'Percent') {
+        options.scales.y.title.text = this._commonServices.toTitleCase(`${this.stateServiceLabel} (%)`);
+      } else {
+        options.scales.y.title.text = this._commonServices.toTitleCase(data['scatterData'].unitType);
+      }
+    }
+    options.scales.y.title.text = yTitle;
+    // const scatterData = this.setScatterData(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
+    const ChartConfig = {
+      chartId: this.chartId,
+      chartType: 'scatterChart',
+      datasets,
+      options,
+      // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
+    }
+    return ChartConfig;
   }
+
+  isCrore() {
+    return this.toCroreBtns.includes(this.activeButton);
+  }
+
   convertToCr(value: number) {
-    // if (!this.stateServiceLabel && !this.compareCategory && this.toCroreBtns.includes(this.ActiveButton)) {
+    // if (!this.stateServiceLabel && !this.compareCategory && this.toCroreBtns.includes(this.activeButton)) {
     if (!this.stateServiceLabel && this.isCrore()) {
       if (value == 0) return 0;
       value /= 10000000; // divide by 1 crore
     }
     return Math.round(value);
   }
+
   setXYData(data: any, chartData: any) {
     // let obj = { x: 0, y: 0 };
     data.forEach((el2: any) => {
@@ -112,9 +226,9 @@ export class ChartService {
       // obj.y = this.stateServiceLabel
       //   ? Math.round(el2.value)
       //   : // ? el2.value.toFixed(2)
-      //   this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
+      //   this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
       if (!this.stateServiceLabel) {
-        // obj.y = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'].includes(this.ActiveButton) ? this.convertToCr(el2.amount) : el2.amount;
+        // obj.y = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'].includes(this.activeButton) ? this.convertToCr(el2.amount) : el2.amount;
         obj.y = this.convertToCr(el2.amount);
       } else {
         obj.y = Math.round(el2.value);
@@ -131,12 +245,12 @@ export class ChartService {
   }
 
 
-  setScatterData(apiData: any, ActiveButton: string, stateServiceLabel = false, compareCategory = '') {
+  setScatterData(apiData: any, activeButton: string, stateServiceLabel = false, compareCategory = '') {
     this.compareCategory = compareCategory;
-    this.ActiveButton = ActiveButton;
+    this.activeButton = activeButton;
     this.stateServiceLabel = stateServiceLabel;
-    // console.log('this.ActiveButton', this.ActiveButton);
-    this.initializeScatterData();
+    // console.log('this.activeButton', this.activeButton);
+    // this.initializeScatterData();
     let m_data, mCorporation, tp_data, stateData;
     if (this.stateServiceLabel) {
       // if (apiData && apiData["scatterData"]) {      }
@@ -152,7 +266,7 @@ export class ChartService {
       tp_data = apiData["townPanchayat"];
       m_data = apiData["municipality"];
       this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
-      // let stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
+      // let stateData = this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
       // stateData = this.convertToCr(this.stateAvgVal);
       stateData = this.stateAvgVal;
     }
@@ -187,7 +301,7 @@ export class ChartService {
       }
     });
 
-    console.log("scatterData-----", this.scatterData);
+    // console.log("scatterData-----", this.scatterData);
     return this.scatterData;
   }
 
@@ -245,7 +359,7 @@ export class ChartService {
     // this.createDynamicChartTitle(this.currentActiveTab);
     this.multiChart = false;
     this._loaderService.showLoader();
-    this.initializeScatterData();
+    // this.initializeScatterData();
     let apiEndPoint = this.stateServiceLabel ? "state-slb" : "state-revenue";
     this.scatterChartPayload = {
       [this.stateServiceLabel ? "stateId" : "state"]: this.stateId,
@@ -275,7 +389,7 @@ export class ChartService {
         next: (res: any) => {
           this.notfound = false;
           console.log("response data", res);
-          console.log("activeButtonStateDashboard", this.ActiveButton);
+          console.log("activeButtonStateDashboard", this.activeButton);
           //scatter plots center
           let apiData = res["data"];
           if (!this.filterName.includes("mix")) {
@@ -326,7 +440,7 @@ export class ChartService {
               this.stateAvgVal = apiData["stateAvg"]
                 ? apiData["stateAvg"]
                 : this.stateAvgVal;
-              stateData = this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
+              stateData = this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
             }
 
             let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
@@ -341,7 +455,7 @@ export class ChartService {
                   obj.y = this.stateServiceLabel
                     ? Math.round(el2.value)
                     : // ? el2.value.toFixed(2)
-                    this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
+                    this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
                   el["labels"].push(el2.ulbName);
                   el["rev"].push(
                     this.stateServiceLabel ? Math.round(el2.value) : el2.amount
@@ -356,7 +470,7 @@ export class ChartService {
                   obj.y = this.stateServiceLabel
                     ? Math.round(el2.value)
                     : // ? el2.value.toFixed(2)
-                    this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
+                    this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
                   el["labels"].push(el2.ulbName);
                   el["rev"].push(
                     this.stateServiceLabel ? Math.round(el2.value) : el2.amount
@@ -372,7 +486,7 @@ export class ChartService {
                   obj.y = this.stateServiceLabel
                     ? Math.round(el2.value)
                     : // ? el2.value.toFixed(2)
-                    this.ActiveButton == 'Total Revenue' || this.ActiveButton == 'Total Own Revenue' || this.ActiveButton == 'Total Surplus/Deficit' || this.ActiveButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
+                    this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(el2.amount) : el2.amount;
                   el["labels"].push(el2.ulbName);
                   el["rev"].push(
                     this.stateServiceLabel ? Math.round(el2.value) : el2.amount
@@ -583,10 +697,4 @@ export class ChartService {
     let maxPopulationCount = Math.max(...populationCountList);
     return Math.round(maxPopulationCount / this.thousand);
   }
-}
-
-function convertToCr1(value: number) {
-  if (value == 0) return 0;
-  value /= 10000000;
-  return Math.round(value);
 }
