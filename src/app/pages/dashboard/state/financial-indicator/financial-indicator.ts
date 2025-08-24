@@ -91,7 +91,7 @@ export class FinancialIndicator {
   isBarChartLoading = signal(false);
   sortBy: string = 'top';
   serviceTabList: any[] = [];
-  stateServiceLabel: boolean = false;
+  stateServiceLabel: any = false;
   serviceTab: string = '';
   filterName: string = '';
 
@@ -239,6 +239,7 @@ export class FinancialIndicator {
       next: (res: any) => {
         this.serviceTabList = [...new Set(res?.data?.names)];
         this.filterName = this.serviceTabList[0];
+        this.stateServiceLabel = this.filterName;
         this.getChartData();
         // this.getRevenueChart();
       }, error: (err) => {
@@ -357,101 +358,15 @@ export class FinancialIndicator {
   }
 
   updateScatterChartData(data: any): void {
-    const scatterData = this.chartService.setScatterData(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
+
 
     // const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
-    const options: any = {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (tooltipItem: any) => {
-              // console.log("tooltipItem", tooltipItem);
-              const dataset = tooltipItem.dataset;
-              const datasetLabel = dataset.label || 'Other';
-
-              // Access your custom labels array if you attached it
-              const customLabels = (dataset as any).labels || [];
-              const label = customLabels[tooltipItem.dataIndex];
-
-              const valueY = tooltipItem.parsed.y;
-
-              // Format Y value (Cr if > 1Cr, else just number)
-              // const valueFormatted = valueY
-              //   ? valueY > 10000000
-              //     ? `(${Math.round(valueY / 10000000)} Cr)`
-              //     : `(${Math.round(valueY)})`
-              //   : '';
-              const valueFormatted = `(${Math.round(valueY).toLocaleString()}${this.chartService.isCrore() ? ' Cr' : ''})`;
-              // return valueY;
-              return `${datasetLabel}: ${label && datasetLabel !== label ? label : ''} ${valueFormatted}`;
-            },
-          },
-        },
-        legend: {
-          position: 'bottom',
-          labels: {
-            usePointStyle: true,
-            padding: 20,
-          }
-          // display: false
-        }
-      },
-      elements: {
-        point: {
-          radius: 7,
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: 'Population(in Thousands)',
-            font: { size: 14, weight: 'bold' },
-            color: '#333',
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: this.chartService.isCrore() ? 'Total Revenue (In Cr.)' : 'Total Revenue',
-            font: { size: 14, weight: 'bold' },
-            color: '#333',
-          },
-        },
-      },
-
-      // tooltips1: {
-      //   callbacks: {
-      //     label: (tooltipItem: any, data: any) => {
-      //       console.log("tooltipItem", tooltipItem, data);
-      //       var datasetLabel =
-      //         data.datasets[tooltipItem.datasetIndex].label || "Other";
-      //       var label =
-      //         data.datasets[tooltipItem.datasetIndex]["labels"][
-      //         tooltipItem.index
-      //         ];
-      //       return `${datasetLabel}: ${label && datasetLabel != label ? label : ""
-      //         } ${tooltipItem?.yLabel
-      //           ? tooltipItem?.yLabel > 10000000
-      //             ? `(${Math.round(tooltipItem?.yLabel / 10000000)} Cr)`
-      //             : `(${Math.round(tooltipItem?.yLabel)})`
-      //           : ""
-      //         }`;
-      //     },
-      //   },
-      // },
-    };
+    // const options = {};
     // options.plugins!.legend!.labels!.usePointStyle = true;
     // options.plugins!.legend!.labels!.padding = 20;
     // options.plugins!.legend!.position = 'bottom';
 
-    let config: ChartConfig = {
-      chartId: 'scatterChart0',
-      chartType: 'scatterChart',
-      datasets: scatterData,
-      options
-      // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', 'Total Revenue (in Cr.)')
-    }
+    let config: any = this.chartService.setScatterConfig(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
     this.scatterChart.set(config);
   }
 
@@ -663,7 +578,7 @@ export class FinancialIndicator {
               this.compareTypeList = this.responseData;
             }
           }
-          console.log('compareTypeList', this.compareTypeList);
+          // console.log('compareTypeList', this.compareTypeList);
           if (this.compareTypeList[0].code) {
             this.code = Array.isArray(this.compareTypeList[0].code) ? this.compareTypeList[0].code.join(',') : this.compareTypeList[0].code;
           }
@@ -674,6 +589,7 @@ export class FinancialIndicator {
         }
         this.isChartLoading.set(false);
       }, error: (err) => {
+        this.updateScatterChartData(false);
         this.isChartLoading.set(false);
         console.error(err);
       }
