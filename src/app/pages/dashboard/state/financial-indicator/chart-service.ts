@@ -37,6 +37,7 @@ export class ChartService {
   defaultAvgObj: { x: number; y: number; }[] = [];
 
   toCroreBtns = ['Total Revenue', 'Total Own Revenue', 'Capital Expenditure', 'Total Surplus/Deficit'];
+  isPercentage: boolean = false;
 
   constructor(private http: HttpClient, private _commonServices: CommonService) {
 
@@ -60,8 +61,9 @@ export class ChartService {
 
               let valueFormatted = '';
               let displayVlaue = Math.round(valueY).toLocaleString();
-
-              if (this.isCrore()) {
+              if (this.isPercentage) {
+                valueFormatted = `(${displayVlaue} %)`;
+              } else if (this.isCrore()) {
                 valueFormatted = `(${displayVlaue} Cr)`;
               } else {
                 // Format Y value (Cr if > 1Cr, else just number)
@@ -185,15 +187,20 @@ export class ChartService {
       datasets = this.setScatterData(data, this.activeButton, this.stateServiceLabel, this.compareCategory);
     }
     const options = this.setScatterOptions();
-    let yTitle = this._commonServices.toTitleCase(this.stateServiceLabel);
-    if (this.stateServiceLabel && data && data['scatterData'] && data['scatterData'].unitType) {
-      if (data['scatterData'].unitType == 'Percent') {
-        options.scales.y.title.text = this._commonServices.toTitleCase(`${this.stateServiceLabel} (%)`);
-      } else {
-        options.scales.y.title.text = this._commonServices.toTitleCase(data['scatterData'].unitType);
+    this.isPercentage = false;
+    if (this.stateServiceLabel && data && data['scatterData']) {
+      options.scales.y.title.text = this.stateServiceLabel;
+      if (data['scatterData'].unitType) {
+        if (data['scatterData'].unitType == 'Percent') {
+          this.isPercentage = true;
+          options.scales.y.title.text = this._commonServices.toTitleCase(`${this.stateServiceLabel} (%)`);
+        } else {
+          options.scales.y.title.text = this._commonServices.toTitleCase(data['scatterData'].unitType);
+        }
       }
+      // options.scales.y.title.text = yTitle;
+
     }
-    options.scales.y.title.text = yTitle;
     // const scatterData = this.setScatterData(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
     const ChartConfig = {
       chartId: this.chartId,

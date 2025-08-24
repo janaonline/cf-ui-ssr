@@ -200,7 +200,8 @@
         @else {
         <div class="row bg-light p-3 rounded" style="height: 500px;">
             @if(stateServiceLabel) {
-            <p>{{sortBy}} 10 performing ULBs on {{ this.filterName }} in {{ stateDetails().state.name }}</p>
+            <p>{{this.sortBy | titlecase}} 10 performing ULBs on {{ this.filterName }} in {{ stateDetails().state.name
+                }}</p>
             } @else {
             <p>Compare ULBs on various financial indicators .</p>
             }
