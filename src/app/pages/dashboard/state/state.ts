@@ -148,14 +148,20 @@ export class State implements OnInit {
   }
 
   setSeo() {
-    this.seoService.updateTitle('Municipal Financial Data of AP Cities | City Finance ');
+    const state = this.stateDetails().state;
+    const title = `Municipal Financial Data of ${state.name} Cities | City Finance`;
+    const url = `${environment.baseUrl}/municipal-data/state/${state.slug}`;
+    const desc = `View aggregated municipal finance data availability for ${state.name} cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure.`
+    const keywords = 'municipal finance, city data, ULB performance, revenue trends, expenditure analysis, city benchmarking,  cities, financial dashboard, urban governance';
+
+    this.seoService.updateTitle(title);
 
     this.seoService.updateMetaTags([
-      { name: 'description', content: `View aggregated municipal finance data availability for Andhra Pradesh cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure. ` },
-      { name: 'keywords', content: ' municipal finance, city data, ULB performance, revenue trends, expenditure analysis, city benchmarking,  cities, financial dashboard, urban governance' },
-      { property: 'og:title', content: 'Municipal Financial Data of Ap Cities | City Finance ' },
-      { property: 'og:description', content: 'View aggregated municipal finance data availability for Andhra Pradesh cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure. ' },
-      { property: 'og:url', content: `https://cityfinance.in/dashboard/slb` },
+      { name: 'description', content: desc },
+      { name: 'keywords', content: keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:url', content: url },
       { property: 'og:type', content: 'website' },
       //{ property: 'robotsrobots', content: 'index, follow' }
     ]);
@@ -163,8 +169,12 @@ export class State implements OnInit {
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
       "@type": "Dataset",
-      "name": "City Finance",
-      "url": `https://cityfinance.in/dashboard/slb`
+      "name": title,
+      "url": url,
+      "keywords": keywords,
+      "description": desc,
+      "spatial": `${state.name}, India`,
+      "temporalCoverage": "2021/2024",
     });
   }
 
