@@ -9,7 +9,19 @@
                 (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData()"></app-map>
             }
         </div>
-        <!-- {{ selectedStateCodeSignal() }} {{ selectedStateNameSignal() }} {{ selectedCityIdSignal() }} -->
+
+        <div class="custom-font-size-8 text-end">
+            <p class="m-0 mb-1 p-0">% of Data Availability on Cityfinance.in</p>
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                @for (item of GRAPH_LEGEND; track $index) {
+                <p class="m-0 p-0">
+                    <i class="bi bi-sm bi-square-fill" [style.color]="item.color"></i>
+                    {{item.label}}
+                </p>
+                }
+            </div>
+        </div>
+
         @if (selectedstateObj().code) {
         <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetFilter()">
             Reset Map To India

@@ -29,6 +29,14 @@ export interface PeriodicElement {
 })
 export class DataAvailability {
   @ViewChild('map') mapComponent!: Map;
+  readonly GRAPH_LEGEND =
+    [
+      { label: '81%-100%', min: 81, max: 100, color: "#2c448c" },
+      { label: '61%-80%', min: 61, max: 80, color: "#3e5db1" },
+      { label: '26%-60%', min: 26, max: 60, color: "#7a91d1" },
+      { label: '1%-25%', min: 1, max: 25, color: "#c3cdee" },
+      { label: '0%', min: 0, max: 0, color: "#e0e3ecff" },
+    ]
   selectedstateObj = signal<IState>({ _id: '', name: '', code: '' });
   type = signal<string>('populationCategory');
 
@@ -102,11 +110,22 @@ export class DataAvailability {
 
   // Get map shade
   private getShade(percentage: number): string {
-    if (percentage >= 85) return "#2c448c";
-    if (percentage >= 70) return "#3e5db1";
-    if (percentage >= 50) return "#7a91d1";
-    return "#c3cdee";
+    for (const obj of this.GRAPH_LEGEND) {
+      if (percentage >= obj.min && percentage <= obj.max)
+        return obj.color;
+    }
+    return "#e0e3ecff";
   }
+
+  // private getShade(percentage: number): string {
+  //   if (percentage === 0) return "#e0e3ecff";
+  //   if (percentage >= 1 && percentage <= 25) return "#c3cdee";
+  //   if (percentage >= 26 && percentage <= 60) return "#7a91d1";
+  //   if (percentage >= 61 && percentage <= 80) return "#3e5db1";
+  //   if (percentage >= 81 && percentage <= 100) return "#2c448c";
+  //   return "#e0e3ecff";
+  // }
+
 
   // Restructure api res.
   private transformStateData(data: StateInput[]): StateDataByCode {
