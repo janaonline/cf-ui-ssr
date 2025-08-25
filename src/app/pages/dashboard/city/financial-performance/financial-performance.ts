@@ -184,8 +184,11 @@ export class FinancialPerformance {
     if (!isPlatformBrowser(this.platformId)) return;
     this.getYearsDynamic(this.ulbIdSignal());
     this.myForm.get('year')?.valueChanges.subscribe((selectedYear: string) => {
+      const pop = this.ulbPopulation(); // e.g. '4M+' | '1M-4M' | '100K-1M' | '<100K'
+      const populationCategory =
+        typeof pop === 'string' && pop.includes('<100K') ? 'cat2' : 'cat1';
       this.onYearChanged(selectedYear);
-      this.getFaqs(this.ulbIdSignal(), selectedYear, this.stateName())
+      this.getFaqs(this.ulbIdSignal(), selectedYear, this.stateName(), populationCategory);
     });
   }
   private onYearChanged(selectedYear: string) {
@@ -308,9 +311,9 @@ export class FinancialPerformance {
       }
     })
   }
-  private getFaqs(ulbId: string, year: string, state: string) {
+  private getFaqs(ulbId: string, year: string, state: string, populationType: string) {
     if (!isPlatformBrowser(this.platformId)) return;
-    this._dashboardService.getFaqs(ulbId, year, state).subscribe({
+    this._dashboardService.getFaqs(ulbId, year, state, populationType).subscribe({
       next: (data) => {
         this.faqs.set(data?.faqs)
       },
