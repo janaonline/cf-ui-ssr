@@ -100,24 +100,32 @@ export class National implements OnInit {
   }
 
   setSeo() {
-    this.seoService.updateTitle('Municipal Financial Data of Indian Cities | City Finance ');
+    const title = 'Municipal Financial Data of Indian Cities | City Finance';
+    const url = `${environment.baseUrl}/municipal-data/national`;
+    const keywords = `audited financial statements, municipal finance, budget`;
+    const desc = `View aggregated data availability for municipal finance across Indian cities. Explore revenue and expenditure trends and benchmark performance.`
+
+    this.seoService.updateTitle(title);
 
     this.seoService.updateMetaTags([
-      { name: 'description', content: `View aggregated data availability for municipal finance across Indian cities. Explore revenue and expenditure trends and benchmark performance.` },
-      { name: 'keywords', content: '' },
-      { property: 'og:title', content: 'Municipal Financial Data of Indian Cities | City Finance ' },
-      { property: 'og:description', content: 'View aggregated data availability for municipal finance across Indian cities. Explore revenue and expenditure trends and benchmark performance.' },
-      { property: 'og:url', content: `https://cityfinance.in/dashboard/national/61e150439ed0e8575c881028` },
+      { name: 'description', content: desc },
+      { name: 'keywords', content: keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:url', content: url },
       { property: 'og:type', content: 'website' },
-      //{ property: 'robotsrobots', content: 'index, follow' }
+      // { property: 'robotsrobots', content: 'index, follow' }
     ]);
 
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "City Finance",
-      "url": `https://cityfinance.in/dashboard/national/61e150439ed0e8575c881028`
-
+      "@type": "Dataset",
+      "name": title,
+      "url": url,
+      "keywords": keywords,
+      "description": desc,
+      "spatial": `India`,
+      "temporalCoverage": "2021/2024",
     });
   }
 
