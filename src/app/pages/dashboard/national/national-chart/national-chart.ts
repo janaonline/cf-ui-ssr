@@ -75,8 +75,9 @@ export class NationalChart {
 
   selectGraphMode(event: any) {
     // this.selectedGraphValue = event.target.value;
-
-    this.creatBarChartData();
+    setTimeout(() => {
+      this.creatBarChartData();
+    });
   }
   createGaugeChartData() {
     const chartData: any = [];
@@ -124,7 +125,8 @@ export class NationalChart {
     // console.log('this.responseData', this.selectedGraphValue);
 
     this.selectedGraphValue = this.selectedGraphValue || 'revenue';
-
+    // console.log('tthis.responseData.rows', this.responseData);
+    if (!this.responseData || !this.responseData.rows) return;
     // const { labels, values } = this.responseData.rows.reduce((acc: any, { ulb_pop_category, revenue }: any) => {
     const { labels, values, expenses } = this.responseData.rows.reduce((acc: any, item: any) => {
       const excludeList = ['Average', 'All ULBs'];
@@ -134,7 +136,11 @@ export class NationalChart {
           acc.labels.push(item['ulbType']);
           acc.expenses.push(Number(item['expense'])); // ensure number
         } else {
-          acc.labels.push(item['ulb_pop_category']);
+          if (item['ulb_pop_category']) {
+            acc.labels.push(item['ulb_pop_category']);
+          } else if (item['ulbType']) {
+            acc.labels.push(item['ulbType']);
+          }
           acc.values.push(Number(item[this.selectedGraphValue])); // ensure number
         }
       }
