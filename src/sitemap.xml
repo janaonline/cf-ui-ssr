@@ -19,710 +19,899 @@
     <priority>0.6</priority>
   </url> -->
 
+    <!-- National Dashboard. -->
+    <url>
+        <loc>https://www.cityfinance.in/municipal-data/national</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- State Dashboard. -->
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/assam</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/chhattisgarh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/himachal-pradesh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/jammu-and-kashmir</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/kerala</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/maharashtra</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/mizoram</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/tamil-nadu</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/tripura</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/uttar-pradesh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/ladakh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/andhra-pradesh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/goa</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/manipur</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/telangana</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/chandigarh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/andaman-and-nicobar-islands</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/the-government-of-nct-of-delhi</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/gujarat</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/haryana</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/jharkhand</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/karnataka</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/lakshadweep</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/madhya-pradesh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/nagaland</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/odisha</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/rajasthan</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/west-bengal</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/arunachal-pradesh</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/bihar</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/dadra-and-nagar-haveli-and-daman-&-diu</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/meghalaya</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/puducherry</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/punjab</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/sikkim</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+       <url>
+        <loc>https://www.cityfinance.in/municipal-data/state/uttarakhand</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
     <!-- Add dynamic city routes -->
     <!-- Example: -->
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bengaluru</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bengaluru</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kolkata</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kolkata</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/surat</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/surat</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/nagpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/nagpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/nashik</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/nashik</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/faridabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/faridabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/rajkot</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/rajkot</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/mumbai</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/mumbai</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/hyderabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/hyderabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/amdavad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/amdavad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/lucknow</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/lucknow</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/thane</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/thane</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhopal</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhopal</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/visakhapatnam</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/visakhapatnam</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/patna</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/patna</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ludhiana</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ludhiana</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jaipur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jaipur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jaipur-heritage</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jaipur-heritage</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/chennai</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/chennai</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kanpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kanpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/indore</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/indore</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/pimpari-chinchwad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/pimpari-chinchwad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/vadodara</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/vadodara</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ghaziabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ghaziabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/agra</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/agra</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/meerut</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/meerut</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/pune</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/pune</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kalyan-dombivli</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kalyan-dombivli</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/vasai-virar-city</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/vasai-virar-city</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/varanasi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/varanasi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/chhatrapati-sambhajinagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/chhatrapati-sambhajinagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/dhanbad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/dhanbad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/amritsar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/amritsar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/navi-mumbai</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/navi-mumbai</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/prayagraj</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/prayagraj</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/howrah</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/howrah</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ranchi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ranchi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jabalpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jabalpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/gwalior</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/gwalior</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/coimbatore</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/coimbatore</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/vijayawada</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/vijayawada</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/madurai</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/madurai</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/raipur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/raipur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/guwahati</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/guwahati</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/solapur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/solapur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/hubli-dharwad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/hubli-dharwad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bareilly</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bareilly</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/mysore</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/mysore</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/moradabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/moradabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/gurugram</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/gurugram</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/aligarh</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/aligarh</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jalandhar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jalandhar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/tiruchirappalli</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/tiruchirappalli</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhubaneswar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhubaneswar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/salem</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/salem</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/mira-bhayandar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/mira-bhayandar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/thiruvananthapuram</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/thiruvananthapuram</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhiwandi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhiwandi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/saharanpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/saharanpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/gorakhpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/gorakhpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/guntur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/guntur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/amravati</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/amravati</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bikaner</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bikaner</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhilai</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhilai</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/warangal</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/warangal</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/cuttack</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/cuttack</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/firozabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/firozabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kochi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kochi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhavnagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhavnagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/dehradun</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/dehradun</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/durgapur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/durgapur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/asansol</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/asansol</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/nanded-waghala</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/nanded-waghala</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kolhapur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kolhapur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ajmer</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ajmer</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kalaburagi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kalaburagi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jodhpur-north</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jodhpur-north</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jodhpur-south</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jodhpur-south</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ujjain</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ujjain</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/siliguri</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/siliguri</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ulhasnagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ulhasnagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jhansi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jhansi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/sangli-miraj</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/sangli-miraj</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kota-north</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kota-north</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kota-south</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kota-south</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jamshedpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jamshedpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/loni</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/loni</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/nellore</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/nellore</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/mangalore</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/mangalore</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/belagavi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/belagavi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jamnagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jamnagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/tirunelveli</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/tirunelveli</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/malegaon</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/malegaon</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/gaya</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/gaya</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/jalgaon</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/jalgaon</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/udaipur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/udaipur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/tiruppur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/tiruppur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/davanagere</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/davanagere</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kozhikode</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kozhikode</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kurnool</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kurnool</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/akola</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/akola</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bellary</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bellary</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/patiala</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/patiala</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhagalpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhagalpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/agartala</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/agartala</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/latur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/latur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/dhule</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/dhule</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/rohtak</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/rohtak</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/korba</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/korba</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/brahmapur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/brahmapur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/muzaffarpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/muzaffarpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/ahmadnagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/ahmadnagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/mathura-vrindavan</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/mathura-vrindavan</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kollam</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kollam</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/avadi</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/avadi</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kadapa</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kadapa</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/rajahmundry</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/rajahmundry</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bilaspur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bilaspur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/shahjahanpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/shahjahanpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/vijayapura</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/vijayapura</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/chandrapur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/chandrapur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/junagadh</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/junagadh</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/thrissur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/thrissur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kakinada</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kakinada</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/nizamabad</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/nizamabad</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/parbhani</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/parbhani</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/tumakuru</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/tumakuru</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/hisar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/hisar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/biharsharif</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/biharsharif</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/maheshtala</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/maheshtala</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/rajpur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/rajpur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/south-dum-dum</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/south-dum-dum</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/muzaffarnagar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/muzaffarnagar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhatpara</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhatpara</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/panihati</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/panihati</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/bhilwara</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/bhilwara</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/kamarhati</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/kamarhati</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/rampur</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/rampur</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/shimoga</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/shimoga</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/alwar</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/alwar</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://www.cityfinance.in/municipal-data/burdwan</loc>
+        <loc>https://www.cityfinance.in/municipal-data/city/burdwan</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
