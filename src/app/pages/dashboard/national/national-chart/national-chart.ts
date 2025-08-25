@@ -32,21 +32,25 @@ export class NationalChart {
       code: "Expenditure",
     },
 
-    { name: "Own Revenue", value: "ownRevenue", code: "Own Revenue" },
+    // { name: "Own Revenue", value: "ownRevenue", code: "Own Revenue" },
+    { name: "Own Revenue", value: "Ownrevenue", code: "Own Revenue" },
     {
       name: "Own Revenue Per Capita",
-      value: "ownRevenuePerCapita",
+      // value: "ownRevenuePerCapita",
+      value: "OwnrevenuePerCapita",
       code: "Own Revenue",
     },
 
     {
       name: "Capital Expenditure",
-      value: "capitalExpenditure",
+      // value: "capitalExpenditure",
+      value: "amount",
       code: "Capital Expenditure",
     },
     {
       name: "Capital Expenditure Per Capita",
-      value: "capitalExpenditurePerCapita",
+      // value: "capitalExpenditurePerCapita",
+      value: "perCapita",
       code: "Capital Expenditure",
     },
   ];
