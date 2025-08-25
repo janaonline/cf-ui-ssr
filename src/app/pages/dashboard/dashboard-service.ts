@@ -123,7 +123,7 @@ export class DashboardService {
     return this.http.get(`${environment.api.url}/ledger/getYearsDynamic`, { params })
 
   }
-  getFaqs(ulbId: string, year: string, state: string): Observable<any> {
+  getFaqs(ulbId: string, year: string, state: string, populationType: string): Observable<any> {
     let params = new HttpParams();
     if (state) {
       params = params.set('state', state);
@@ -133,6 +133,9 @@ export class DashboardService {
     }
     if (year) {
       params = params.set('year', year);
+    }
+    if (populationType) {
+      params = params.set('populationType', populationType);
     }
 
     return this.http.get(`${environment.api.url}/ledger/getFaqs`, { params })
