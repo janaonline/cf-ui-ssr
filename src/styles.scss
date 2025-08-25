@@ -255,11 +255,15 @@ input::-webkit-inner-spin-button {
 
 // Custom font size.
 .custom-font-size-6 {
-    font-size: var(--fs-6) !important;
+    font-size: var(--fs-6);
 }
 
 .custom-font-size-7 {
-    font-size: var(--fs-7) !important;
+    font-size: var(--fs-7);
+}
+
+.custom-font-size-8 {
+    font-size: var(--fs-8);
 }
 
 // Custom text shadow.
