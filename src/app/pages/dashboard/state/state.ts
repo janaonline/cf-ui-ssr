@@ -152,7 +152,7 @@ export class State implements OnInit {
     const title = `Municipal Financial Data of ${state.name} Cities | City Finance`;
     const url = `${environment.baseUrl}/municipal-data/state/${state.slug}`;
     const desc = `View aggregated municipal finance data availability for ${state.name} cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure.`
-    const keywords = 'municipal finance, city data, ULB performance, revenue trends, expenditure analysis, city benchmarking,  cities, financial dashboard, urban governance';
+    const keywords = `${state.name} audited financial statements, municipal finance, ${state.name} budget`;
 
     this.seoService.updateTitle(title);
 
