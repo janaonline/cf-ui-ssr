@@ -96,7 +96,7 @@ export class NationalChart {
       const gaugeChart = this.generateGuageData(this.responseData.individual, ele);
       chartData.push(gaugeChart);
     });
-    console.log('chartData---', chartData);
+    // console.log('chartData---', chartData);
     this.chartsData.set(chartData)
   }
 
@@ -158,6 +158,7 @@ export class NationalChart {
       barChartData.options.scales.y.title.text = yAxisLabel + (this.selectedGraphValue.includes('PerCapita') ? ' (in Rs)' : ' (in Cr)');
     }
     barChartData.labels = labels;
+    barChartData.datasets[0].label = this.nationalService.selectedButtonKey();
     barChartData.datasets[0].data = values;
     const charts: any = [barChartData];
     // barChartData.update()
