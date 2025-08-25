@@ -168,6 +168,8 @@ export class NationalTable {
     this.dataSource = this.tableData.rows.filter((row: any) => Object.keys(row).length > 0 && row.ulbType !== 'Average');
     this.headers = this.tableData.columns;
     this.displayedColumns = this.tableData.columns?.map((ele: any) => ele.key);
+    const idx = this.dataSource.length - 1;
+    this.dataSource[idx]['className'] = 'fw-bold';
   }
   onSelectedType(key: string): void {
     // console.log(key)
