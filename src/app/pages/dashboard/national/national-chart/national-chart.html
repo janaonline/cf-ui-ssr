@@ -1,4 +1,4 @@
-@if (nationalService.selectedButtonKey() !== 'Deficit or Surplus') {
+@if (nationalService.selectedButtonKey() !== 'Deficit or Surplus' && this.chartType === 'barChart') {
 <div class="text-end mt-4">
     <mat-form-field appearance="outline" class="col-md-4">
         <mat-label>Choose option</mat-label>
