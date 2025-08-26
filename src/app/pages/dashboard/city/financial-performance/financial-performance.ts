@@ -33,83 +33,6 @@ interface DataNode {
   isSelected?: boolean;
   isParent?: boolean;
 }
-// const Financial_Performance_DATA: DataNode[] =
-//   [
-//     {
-//       name: 'Indicators',
-//       yearData: ['2020-21', '2021-22', '2022-23'],
-//       className: 'text-center fw-bold ',
-//       isHeader: true,
-//     },
-//     {
-//       name: 'Total Expenditure to Total Revenue (%)',
-//       yearData: ['99,999', '99,999', '99,999',],
-//       yearGrowth: ['', '89', '-90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 ',
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89'],
-//           className: 'ps-5 ',
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Grants to Total Revenue (%)',
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       yearData: ['90', '45', '67',],
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89',],
-//           info: 'Own Source revenue to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Own Source Revenue to Total Expenditure (%)',
-//       yearData: ['78', '44', '90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       children: [
-//         {
-//           name: 'Total Expenditure to Total Revenue (%)',
-//           yearData: ['78', '56', '88',],
-//           info: 'Total Expenditure to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//         {
-//           name: 'Own Source revenue to Total Revenue (%)',
-//           yearData: ['55', '87', '89',],
-//           info: 'Own Source revenue to Total Revenue (%)',
-//           className: 'ps-5 '
-//         },
-//       ],
-//       className: '',
-//     },
-//     {
-//       name: 'Own Source Revenue to Total Expenditure (%)',
-//       yearData: ['78', '44', '90',],
-//       info: 'Total Expenditure to Total Revenue (%)',
-//       className: '',
-//     },
-
-//   ];
-
 @Component({
   selector: 'app-financial-performance',
   imports: [
@@ -138,6 +61,8 @@ export class FinancialPerformance {
     { key: 'expenditure', label: 'Expenditure' },
     { key: 'debt', label: 'Debt and Assets' }
   ];
+  isWarningMessage: boolean = false;
+  warningMessage: string = ''
   ulbIdSignal = input.required<string>();
   ulbName = input.required<string>();
   ulbType = input.required<string>();
@@ -360,6 +285,12 @@ export class FinancialPerformance {
         // console.log(data.response.data[0].yearData, 'this is bmw')
         const dataSource = data.response.data;
         this.dataSource.set(dataSource);
+        if (keyType === 'debt' && dataSource.length > 0) {
+          if (dataSource)
+            this.isWarningMessage = true
+          this.warningMessage = 'warningMessage'
+          console.log(dataSource, 'this is debt data')
+        }
         // console.log(this.dataSource(), 'this is daaaa')
         this.buttonClicked(dataSource[1]);
 
@@ -373,8 +304,7 @@ export class FinancialPerformance {
     });
   }
   // Download chart as img.
-  downloadImg() {
-    const selectedIndicator = this.chartData().chartId || 'CityPageChart';
+  downloadImg(selectedIndicator: string = 'CityPageChart') {
     let isChartDownloading = true;
 
     setTimeout(() => {
