@@ -150,7 +150,7 @@ export class NationalChart {
     // console.log('labels, values', labels, values, expenses);
     const barChartData = JSON.parse(JSON.stringify(barChartConfig));
     if (this.nationalService.selectedButtonKey() === 'Deficit or Surplus') {
-      barChartData.options.scales.y.title.text = 'Revenu and Expenditure';
+      barChartData.options.scales.y.title.text = 'Total Expenditure';
       barChartData.datasets = deficitBarChartData;
       barChartData.datasets[1].data = expenses;
     } else {

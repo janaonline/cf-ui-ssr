@@ -1,4 +1,8 @@
-<div class="row container mx-auto p-0">
+<div class="row container mx-auto p-0 position-relative">
+    @if (isLoadingData()) {
+    <div class="custom-spinner-overlay"></div>
+    }
+
     <div class="p-0" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
         <app-tab-buttons [buttons]="buttons()" (selectedButtonKeyChange)="onSelectedType($event)">
         </app-tab-buttons>
