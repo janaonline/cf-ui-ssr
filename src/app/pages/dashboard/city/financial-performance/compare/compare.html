@@ -1,0 +1,43 @@
+<div class="position-relative">
+    <div class="banner-bg"></div>
+</div>
+<div class="container py-4 position-relative">
+    <div class="intro mx-auto text-center  my-4" style="max-width: 700px;">
+        <h1 class="fs-1 mb-2">Customize and compare city finance data</h1>
+        <p class="fs-5 mb-4">Reduce your research time and compare financial data of India’s top cities in minutes.
+            Standardized for your
+            convenience. </p>
+        <div class="text-center d-flex flex-column flex-md-row justify-content-center gap-2">
+            <span><i class="bi bi-check-square-fill text-success"></i> Standardized data </span>
+            <span><i class="bi bi-check-square-fill text-success"></i> Shaped by investor feedback </span>
+            <span><i class="bi bi-check-square-fill text-success"></i> No logins necessary </span>
+        </div>
+    </div>
+
+    <div class="shadow p-4 rounded mb-4 bg-light">
+
+        <div class="mb-4">
+            <h2 class="fs-3 text-center mb-4">Build your comparison</h2>
+            <div class="d-flex align-items-center flex-wrap gap-2">
+
+                <mat-form-field appearance="outline" class="search-field">
+                    <mat-label>Search</mat-label>
+                    <input matInput placeholder="Search..." />
+                    <button mat-icon-button matSuffix aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <span *ngFor="let ulb of ulbs" class="badge rounded-pill ulb-badge">
+                        {{ ulb }}
+                        <i class="bi bi-x ms-1" role="button" (click)="removeULB(ulb)"></i>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>

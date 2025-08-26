@@ -1,0 +1,111 @@
+* {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
+  font-size: 0.95rem;
+}
+
+.banner-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  min-height: 60vh;
+  background-color: #f7dbbf;
+}
+.btn-compare {
+  background-color: #12326b;
+  color: #fff;
+}
+.search-field {
+  max-width: 300px;
+  flex: 1;
+}
+
+.ulb-badge {
+  background-color: #12326b;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ulb-badge i {
+  font-size: 0.85rem;
+}
+
+.compare-badge {
+  background-color: #d9e2f3;
+  color: #12326b;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.compare-badge.active {
+  background-color: #12326b;
+  color: #fff;
+}
+
+.compare-badge:hover {
+  opacity: 0.85;
+}
+
+canvas {
+  width: 100% !important;
+  height: 350px !important;
+}
+
+.table-container {
+  overflow: auto;
+  max-height: 450px;
+  border: 1px solid #ddd;
+}
+
+/* Sticky headers */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: #0d2d6c;
+  color: white;
+  z-index: 3;
+  text-align: center;
+}
+
+/* Second row of header (years) */
+.sub-header {
+  top: 40px; /* adjust based on header row height */
+}
+
+/* Sticky columns */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: #0d2d6c;
+  z-index: 4;
+}
+
+.indicator-col {
+  left: 50px; /* width of select column */
+  background: #0d2d6c;
+  z-index: 4;
+  min-width: 150px;
+}
+
+/* First header row (city names) */
+.city-header {
+  font-weight: bold;
+  background: #123a87;
+  color: #fff;
+  text-align: center;
+}
+
+.rowspan-2 {
+  vertical-align: middle;
+  text-align: center;
+}
