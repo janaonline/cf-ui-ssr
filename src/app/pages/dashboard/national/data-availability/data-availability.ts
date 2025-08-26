@@ -174,6 +174,7 @@ export class DataAvailability {
   public resetFilter(): void {
     this.mapComponent?.resetMap();
     this.selectedstateObj.set({ _id: '', code: '', name: '' });
+    this.nationalService.stateSlugName.set('');
     // this.selectedLedgerYear.set(this.ledgerYears()[0]);
     // this.loadData('reset filter');
   }
