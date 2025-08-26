@@ -277,6 +277,66 @@ export class FinancialPerformance {
       }
     }
   }
+  // Utility method in your component or a service
+  private hasNA(item: any): boolean {
+    if (!item || !Array.isArray(item.yearData)) {
+      return false;
+    }
+    return item.yearData.some((v: any) => this.isNA(v));
+  }
+
+  // The existing isNA helper
+  private isNA(v: unknown): boolean {
+    return (
+      v == null ||
+      (typeof v === 'string' && v.trim().toUpperCase() === 'N/A') ||
+      (typeof v === 'number' && !Number.isFinite(v))
+    );
+  }
+  private isZero(v: unknown): boolean {
+    return (
+      v !== null &&
+      v !== undefined &&
+      v !== '' &&
+      !isNaN(Number(v)) &&
+      Number(v) === 0
+    );
+  }
+
+  // Checks if an item has any zero values in its yearData
+  private hasExactZero(item: any): boolean {
+    if (!item || !Array.isArray(item.yearData)) {
+      return false;
+    }
+    return item.yearData.some((v: any) => this.isZero(v));
+  }
+  private checkISCR(item: any): string | null {
+    if (!item || !Array.isArray(item.yearData)) {
+      return null;
+    }
+
+    // Convert yearData strings/numbers into actual numbers
+    interface YearDataItem {
+      yearData: (string | number)[];
+    }
+
+    const values: number[] = (item as YearDataItem).yearData
+      .map((v: string | number) => Number(v))
+      .filter((v: number) => !isNaN(v));
+
+    if (values.length === 0) return null;
+
+    // Pick the latest year value (or you can loop all values if needed)
+    const latest = values[values.length - 1];
+    // console.log(latest, 'this is latest iscr');
+    if (latest < 5) {
+      return `ISCR is less than 5 → financial stress risk`;
+    } else if (latest > 20) {
+      return `ISCR is greater than 20 → strong repayment capacity`;
+    }
+
+    return null; // no alert
+  }
   private getIndicators(years: string[], ulbId: string, keyType: string): void {
     if (!isPlatformBrowser(this.platformId)) return;
     this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
@@ -285,11 +345,29 @@ export class FinancialPerformance {
         // console.log(data.response.data[0].yearData, 'this is bmw')
         const dataSource = data.response.data;
         this.dataSource.set(dataSource);
-        if (keyType === 'debt' && dataSource.length > 0) {
-          if (dataSource)
-            this.isWarningMessage = true
-          this.warningMessage = 'warningMessage'
-          console.log(dataSource, 'this is debt data')
+        if (keyType === 'debt' && Array.isArray(dataSource) && dataSource.length > 0) {
+          const totalDebt = dataSource.find((i: any) => i?.name === 'Total Debt (Cr)');
+          const dar = dataSource.find((i: any) => i?.name === 'Debt to Asset Ratio');
+          const iscr = dataSource.find(
+            (item: any) => item?.name?.trim?.() === 'Interest Service Coverage Ratio (ISCR)'
+          );
+
+          const iscrAlert = this.checkISCR(iscr);
+
+          if (iscrAlert) {
+            this.isWarningMessage = true;
+            this.warningMessage = iscrAlert;
+          }
+
+          if (this.hasNA(totalDebt)) {
+            this.isWarningMessage = true;
+            this.warningMessage = 'Total Debt data is unavailable';
+          }
+
+          if (this.hasExactZero(dar)) {
+            this.isWarningMessage = true;
+            this.warningMessage = 'Debt to Asset Ratio data is unavailable';
+          }
         }
         // console.log(this.dataSource(), 'this is daaaa')
         this.buttonClicked(dataSource[1]);
@@ -355,9 +433,11 @@ export class FinancialPerformance {
   // Show info alert.
   showInfoAlert() {
     Swal.fire({
-      text: `${this.infoData()}`,
+      html: `${this.infoData()}`, // Use 'html' instead of 'text' to render raw HTML
       confirmButtonText: 'Close',
       confirmButtonColor: '#3085d6',
+      width: '600px',  // Optional: Adjust the width of the modal
+      padding: '3em'   // Optional: Add some padding to make the content look better
     });
   }
 
