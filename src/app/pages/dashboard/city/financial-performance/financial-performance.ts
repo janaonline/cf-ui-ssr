@@ -373,7 +373,8 @@ export class FinancialPerformance {
     });
   }
   // Download chart as img.
-  downloadImg(selectedIndicator: string = 'CityPageChart') {
+  downloadImg() {
+    const selectedIndicator = this.chartData().chartId || 'CityPageChart';
     let isChartDownloading = true;
 
     setTimeout(() => {
