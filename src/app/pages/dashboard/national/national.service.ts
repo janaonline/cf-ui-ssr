@@ -19,6 +19,7 @@ export class NationalService {
   selectedButtonKey: any = signal<string>('');
   selectedLedgerYear = signal<string>('');
   selectedTabName = signal<string>('');
+  stateSlugName = signal<string>('');
 
   constructor(private http: HttpClient) { }
 

@@ -1,7 +1,8 @@
-import { Component, effect, input, Output, output, signal } from '@angular/core';
+import { Component, effect, EventEmitter, input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { IState } from '../../../../core/models/state/state';
 import { CommonService } from '../../../../core/services/common.service';
@@ -11,7 +12,6 @@ import { StateSearch } from "../../../../shared/components/state-search/state-se
 import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
 import { NationalChart } from "../national-chart/national-chart";
 import { NationalService } from '../national.service';
-import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-national-table',
   imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule],
@@ -59,6 +59,7 @@ export class NationalTable {
   constructor(
     public commonService: CommonService,
     public nationalService: NationalService,
+    private router: Router,
     // @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     effect(() => {
@@ -203,6 +204,8 @@ export class NationalTable {
 
   onStateSelection(stateObj: IState) {
     // console.log("state selection", stateObj)
+    if (stateObj.slug) this.nationalService.stateSlugName.set(stateObj.slug);
+    else this.nationalService.stateSlugName.set('')
     this.setStateData(stateObj.code, stateObj._id, stateObj.name)
     this.selectedState.set(stateObj);
     this.getNationalData();
@@ -222,8 +225,13 @@ export class NationalTable {
     this.getNationalData(true);
   }
 
+  navigateToState() {
+    this.router.navigate(['/municipal-data/state', this.nationalService.stateSlugName()])
+  }
+
   resetFilter() {
     const stateObj = { _id: '', code: '', name: '' };
+    this.nationalService.stateSlugName.set('');
     this.selectedState.set(stateObj);
     this.setStateData();
     // this.selectedLedgerYear.set(this.ledgerYears()[0]);

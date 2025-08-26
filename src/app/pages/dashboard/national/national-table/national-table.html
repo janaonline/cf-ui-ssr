@@ -77,6 +77,10 @@
 }
 }
 
+@if (nationalService.stateSlugName()){
+<button class="btn btn-cfPrimary" (click)="navigateToState()">View State Dashboard</button>
+}
+
 <div class="my-4 text-center custom-font-size-6">
     You can also download the source data in excel format
     <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
