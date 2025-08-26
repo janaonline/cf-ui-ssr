@@ -69,6 +69,7 @@ export const baseChartOptions = (
       },
     },
     y: {
+      grace: '5%',
       display: showAxes,
       ticks: { font: { family: fontFamily } },
       title: {
