@@ -44,6 +44,7 @@ export class FinancialIndicators {
   }
 
   navigateToData() {
+    this.nationalService.selectedTabName.set('Data Availability');
     this.navigateTab.emit('data-availability');
   }
 
