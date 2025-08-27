@@ -440,48 +440,106 @@ export class FinancialPerformance {
 
   // Download Excel
   downlaodExcel() {
-    console.log("data = ", this.dataSource())
+    console.log(this.dataSource())
+
+    // Create columns array.
+    const columns = [];
+    const obj = this.dataSource()[0];
+    columns.push({ header: obj.name, key: obj.name, width: 39, style: DEFAULT_STYLES });
+    obj.yearData.forEach((year: string) => {
+      columns.push({ header: year, key: year, width: 14, style: DEFAULT_STYLES })
+    })
+
+    // Create rows array.
+    const dataArr = this.dataSource().slice(1);
+    const rows = this.createRowsStructure(dataArr, obj['yearData']);
+
     const payload: CreateExcelParams = {
       addLogo: true,
       addContactUsNote: true,
-      fileName: 'Test name',
-      sheetName: 'sheet test',
-      rows: [
-        {
-          'Indicators': "Total Expenditure to Total Revenue (%)",
-          '2019-20': "N/A",
-          '2020-21': 81.39,
-          '2021-22': 76.71,
-        },
-        {
-          'Indicators': "Own Source Revenue to Total Revenue (%)",
-          '2019-20': 83.28,
-          '2020-21': 76.73,
-          '2021-22': 70.28,
-        },
-        {
-          'Indicators': "Grants to Total Revenue (%)",
-          '2019-20': 16.72,
-          '2020-21': 23.27,
-          '2021-22': 29.36,
-        },
-        {
-          'Indicators': "Own Source Revenue to Total Expenditure (%)",
-          '2019-20': "N/A",
-          '2020-21': 106.08,
-          '2021-22': 109.14,
-        },
-      ],
-      columns: [
-        { header: 'Indicators', key: 'Indicators', width: 39, style: DEFAULT_STYLES, },
-        { header: '2019-20', key: '2019-20', width: 14, style: DEFAULT_STYLES, },
-        { header: '2020-21', key: '2020-21', width: 14, style: DEFAULT_STYLES, },
-        { header: '2021-22', key: '2021-22', width: 14, style: DEFAULT_STYLES, },
-      ],
+      fileName: `CityFinance_${this.ulbName()}_${this.chartData().chartId}`,
+      sheetName: this.chartData().chartId,
+      rows,
+      columns,
       header: { index: 5, fontSize: 11, fontFamily: 'Aptos' },
+      // rows: [
+      //   {
+      //     'Indicators': "Total Expenditure to Total Revenue (%)",
+      //     '2019-20': "N/A",
+      //     '2020-21': 81.39,
+      //     '2021-22': 76.71,
+      //   },
+      //   {
+      //     'Indicators': "Own Source Revenue to Total Revenue (%)",
+      //     '2019-20': 83.28,
+      //     '2020-21': 76.73,
+      //     '2021-22': 70.28,
+      //   },
+      //   {
+      //     'Indicators': "Grants to Total Revenue (%)",
+      //     '2019-20': 16.72,
+      //     '2020-21': 23.27,
+      //     '2021-22': 29.36,
+      //   },
+      //   {
+      //     'Indicators': "Own Source Revenue to Total Expenditure (%)",
+      //     '2019-20': "N/A",
+      //     '2020-21': 106.08,
+      //     '2021-22': 109.14,
+      //   },
+      // ],
+      // columns: [
+      //   { header: 'Indicators', key: 'Indicators', width: 39, style: DEFAULT_STYLES, },
+      //   { header: '2019-20', key: '2019-20', width: 14, style: DEFAULT_STYLES, },
+      //   { header: '2020-21', key: '2020-21', width: 14, style: DEFAULT_STYLES, },
+      //   { header: '2021-22', key: '2021-22', width: 14, style: DEFAULT_STYLES, },
+      // ],
     }
+
     this._uitityService.createExcel(payload)
   }
+
+  // Helper: create excel dump - rows structure
+  private createRowsStructure(dataArr: any[], yearsArr: string[]) {
+    const rows: any[] = [];
+
+    const _createRowsStructure = (dataList: any[], spacer = "") => {
+      dataList.forEach((data: any) => {
+        const tempObj: any = { Indicators: `${spacer}${data.name}`, width: 14 };
+
+        yearsArr.forEach((year: string, idx: number) => {
+          let amt = data.yearData?.[idx];
+          const growthPerc = data.yearGrowth?.[idx];
+
+          // If amt is string and has comma - remove comma.
+          if (typeof amt === 'string') { amt = amt.replace(/,/g, ''); }
+
+          // If amt is number but in string foramt - convert it into number.
+          if (!isNaN(amt)) { amt = +amt; }
+          // console.log(isNaN(amt), amt)
+
+          // If growthPerc is available include it.
+          if (growthPerc !== undefined && growthPerc !== null && growthPerc !== 'N/A') {
+            tempObj[year] = `${amt} (${growthPerc}%)`;
+          } else {
+            tempObj[year] = amt;
+          }
+        });
+
+        rows.push(tempObj);
+
+        // Recurse into children if available
+        if (data.children && data.children.length > 0) {
+          _createRowsStructure(data.children, "    - ");
+        }
+      });
+    };
+
+    _createRowsStructure(dataArr);
+
+    return rows;
+  }
+
 
   // Show info alert.
   showInfoAlert() {
