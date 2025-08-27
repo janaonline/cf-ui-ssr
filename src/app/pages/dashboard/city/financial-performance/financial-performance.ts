@@ -6,16 +6,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
+import { ChartDataset } from 'chart.js';
 import html2canvas from 'html2canvas';
-import { ButtonObj } from '../../../../core/models/interfaces';
+import Swal from 'sweetalert2';
+import { ButtonObj, CreateExcelParams } from '../../../../core/models/interfaces';
+import { GlobalLoaderService } from '../../../../core/services/loaders/global-loader.service';
+import { UtilityService } from '../../../../core/services/utility-service';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
-import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { DashboardService } from '../../dashboard-service';
-import Swal from 'sweetalert2';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
+const DEFAULT_STYLES = {
+  alignment: { vertical: 'middle' },
+  font: { name: 'Aptos', size: 10 },
+}
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
 
@@ -87,16 +93,15 @@ export class FinancialPerformance {
   errorMessage: any;
   yearsArrDyna: any;
   titleTabs = signal<string>('overview');
+
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private _dashboardService: DashboardService,
+    private _globalLoaderService: GlobalLoaderService,
+    private _uitityService: UtilityService,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) {
-    this.myForm = this.fb.group({
-      year: ['']
-    });
-  }
+  ) { }
 
   @ViewChild(CdkTree) tree!: CdkTree<any>;
   dataSource = signal<any[]>([]);
@@ -105,7 +110,11 @@ export class FinancialPerformance {
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+
+    this.myForm = this.fb.group({ year: [''] });
     this.getYearsDynamic(this.ulbIdSignal());
+
+    // Track value changes - Year changed from drop-down.
     this.myForm.get('year')?.valueChanges.subscribe((selectedYear: string) => {
       const pop = this.ulbPopulation(); // e.g. '4M+' | '1M-4M' | '100K-1M' | '<100K'
       const populationCategory =
@@ -210,7 +219,7 @@ export class FinancialPerformance {
 
   }
 
-  // // Helper: Add class name.
+  // Helper: Add class name.
   getGrowthClass(value: string) {
     let className = 'text-danger';
     if (!isNaN(+value) && +value > 0) className = 'text-success';
@@ -383,7 +392,7 @@ export class FinancialPerformance {
   }
   // Download chart as img.
   downloadImg(selectedIndicator: string = 'CityPageChart') {
-    let isChartDownloading = true;
+    this._globalLoaderService.showLoader();
 
     setTimeout(() => {
       const chartContainer = document.getElementById('chartContainer');
@@ -423,12 +432,56 @@ export class FinancialPerformance {
             console.error('Error capturing chart:', err);
           })
           .finally(() => {
-            isChartDownloading = false;
+            this._globalLoaderService.hideLoader();
           });
       }, 100);
     }, 0);
   }
 
+  // Download Excel
+  downlaodExcel() {
+    console.log("data = ", this.dataSource())
+    const payload: CreateExcelParams = {
+      addLogo: true,
+      addContactUsNote: true,
+      fileName: 'Test name',
+      sheetName: 'sheet test',
+      rows: [
+        {
+          'Indicators': "Total Expenditure to Total Revenue (%)",
+          '2019-20': "N/A",
+          '2020-21': 81.39,
+          '2021-22': 76.71,
+        },
+        {
+          'Indicators': "Own Source Revenue to Total Revenue (%)",
+          '2019-20': 83.28,
+          '2020-21': 76.73,
+          '2021-22': 70.28,
+        },
+        {
+          'Indicators': "Grants to Total Revenue (%)",
+          '2019-20': 16.72,
+          '2020-21': 23.27,
+          '2021-22': 29.36,
+        },
+        {
+          'Indicators': "Own Source Revenue to Total Expenditure (%)",
+          '2019-20': "N/A",
+          '2020-21': 106.08,
+          '2021-22': 109.14,
+        },
+      ],
+      columns: [
+        { header: 'Indicators', key: 'Indicators', width: 39, style: DEFAULT_STYLES, },
+        { header: '2019-20', key: '2019-20', width: 14, style: DEFAULT_STYLES, },
+        { header: '2020-21', key: '2020-21', width: 14, style: DEFAULT_STYLES, },
+        { header: '2021-22', key: '2021-22', width: 14, style: DEFAULT_STYLES, },
+      ],
+      header: { index: 5, fontSize: 11, fontFamily: 'Aptos' },
+    }
+    this._uitityService.createExcel(payload)
+  }
 
   // Show info alert.
   showInfoAlert() {

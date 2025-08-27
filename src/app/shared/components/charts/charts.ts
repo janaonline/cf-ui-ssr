@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -11,7 +12,6 @@ import {
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
-import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -27,12 +27,9 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   chartConfig = input.required<ChartConfig>();
   chartInstance: Chart | undefined;
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
-  }
-  ngOnInit(): void {
-
-  }
+  // ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -41,14 +38,11 @@ export class Charts implements AfterViewInit, OnDestroy {
   }
   readonly chartChangeEffect = effect(() => {
     if (!isPlatformBrowser(this.platformId)) return;
-    // const canFetch = this.canFetchChart();
-    // console.log("canFetchChart:", canFetch);
     this.createChart()
-    // if (canFetch) this.getChartData();
   })
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
-    console.log('Chart called: ', this.chartConfig());
+    // console.log('Chart called: ', this.chartConfig());
     if (!this.chartCanvas) {
       // console.error(
       //   'Canvas element not found for chart:',
