@@ -347,6 +347,7 @@ export class FinancialPerformance {
     return null; // no alert
   }
   private getIndicators(years: string[], ulbId: string, keyType: string): void {
+    this._globalLoaderService.showLoader();
     if (!isPlatformBrowser(this.platformId)) return;
     this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
       next: (data) => {
@@ -384,9 +385,11 @@ export class FinancialPerformance {
         // this.yearArr = this.dataSource()[0];
         this.intro = this.marketData.response.intro
         this.source = this.marketData.source;
+        this._globalLoaderService.hideLoader();
       },
       error: (err) => {
         this.errorMessage = err.message;
+        this._globalLoaderService.hideLoader();
       }
     });
   }
