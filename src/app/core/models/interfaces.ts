@@ -147,6 +147,16 @@ export interface TableColumns {
   mergeCell?: boolean;
 }
 
+export interface CreateExcelParams {
+  addLogo: boolean,
+  addContactUsNote: boolean,
+  fileName: string,
+  sheetName: string,
+  rows: any[],
+  columns: any[],
+  header: { index: number, fontSize: number, fontFamily: string }
+}
+
 // export interface ChartResponse {
 //   success: boolean;
 //   data: ChartData;

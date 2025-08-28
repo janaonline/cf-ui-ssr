@@ -1,3 +1,4 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -11,7 +12,6 @@ import {
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
-import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -54,10 +54,7 @@ export class Charts implements AfterViewInit, OnDestroy {
   }
   readonly chartChangeEffect = effect(() => {
     if (!isPlatformBrowser(this.platformId)) return;
-    // const canFetch = this.canFetchChart();
-    // console.log("canFetchChart:", canFetch);
     this.createChart()
-    // if (canFetch) this.getChartData();
   })
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
