@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ICreditRatingData } from '../../core/models/creditRating/creditRatingResponse';
 import {
   BorrowingsKeys,
+  BsCompareUlbs,
   BsIsData,
   ExploreSectionResponse,
   IFinancialIndicatorRes,
@@ -30,16 +31,17 @@ export class DashboardService {
   }
 
   // City page: balance sheet and income statement table.
-  getBsIsData(ulbId: string, btnKey: string = 'incomeStatement') {
+  getBsIsData(selectedUlb: string, ulbIds: string[], btnKey: string = 'incomeStatement', years: string[]) {
     let params = new HttpParams();
-    if (ulbId) params = params.set('ulbId', ulbId);
-    params = params.set('btnKey', btnKey);
 
-    return this.http.get<{ data: BsIsData[]; population: number }>(
+    params = params.set('btnKey', btnKey);
+    params = params.set('selectedUlb', selectedUlb);
+    ulbIds.forEach(id => { params = params.append('ulbIds', id); });
+    years.forEach(year => { params = params.append('years', year); });
+
+    return this.http.get<{ data: BsIsData[]; population: number, ulbsData: BsCompareUlbs }>(
       `${environment.api.url}dashboard/city/bs-is`,
-      {
-        params,
-      }
+      { params }
     );
   }
 

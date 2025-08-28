@@ -102,8 +102,8 @@
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[1]) {
-      <app-balancesheet-incomestatement [yearsSignal]="ledgerYears()"
-        [ulbIdSignal]="ulbIdSignal()"></app-balancesheet-incomestatement>
+      <app-balancesheet-incomestatement [yearsSignal]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()"
+        [ulbName]="cityDetails().ulbName"></app-balancesheet-incomestatement>
       }
     </mat-tab>
     <mat-tab label="Service Level BenchMark" [disabled]="slbYears().length === 0">
