@@ -291,7 +291,8 @@ export class FinancialPerformance {
     if (!item || !Array.isArray(item.yearData)) {
       return false;
     }
-    return item.yearData.some((v: any) => this.isNA(v));
+    // return item.yearData.some((v: any) => this.isNA(v));
+    return this.isNA(item.yearData[item.yearData.length - 1]);
   }
 
   // The existing isNA helper
@@ -317,44 +318,52 @@ export class FinancialPerformance {
     if (!item || !Array.isArray(item.yearData)) {
       return false;
     }
-    return item.yearData.some((v: any) => this.isZero(v));
+    // return item.yearData.some((v: any) => this.isZero(v));
+    return this.isZero(item.yearData[item.yearData.length - 1]);
   }
   private checkISCR(item: any): string | null {
     if (!item || !Array.isArray(item.yearData)) {
       return null;
     }
 
-    // Convert yearData strings/numbers into actual numbers
-    interface YearDataItem {
-      yearData: (string | number)[];
-    }
+    // // Convert yearData strings/numbers into actual numbers
+    // interface YearDataItem {
+    //   yearData: (string | number)[];
+    // }
 
-    const values: number[] = (item as YearDataItem).yearData
-      .map((v: string | number) => Number(v))
-      .filter((v: number) => !isNaN(v));
+    // const values: number[] = (item as YearDataItem).yearData
+    //   .map((v: string | number) => Number(v))
+    //   .filter((v: number) => !isNaN(v));
 
-    if (values.length === 0) return null;
+    // if (values.length === 0) return null;
 
     // Pick the latest year value (or you can loop all values if needed)
-    const latest = values[values.length - 1];
+    // const latest = values[values.length - 1];
+
+    const latest = item.yearData[item.yearData.length - 1]
+
     // console.log(latest, 'this is latest iscr');
     if (latest < 5) {
-      return `ISCR is less than 5 → financial stress risk`;
+      return `${this.ulbName()}'s ISCR is significantly negative, as its Operating Surplus is insufficient to cover interest obligations.`;
     } else if (latest > 20) {
-      return `ISCR is greater than 20 → strong repayment capacity`;
+      return `${this.ulbName()}'s unusually high ISCR indicates either a low level of outstanding debt or a robust operating surplus.`;
     }
 
     return null; // no alert
   }
   private getIndicators(years: string[], ulbId: string, keyType: string): void {
     this._globalLoaderService.showLoader();
+    this.isWarningMessage = false;
+
     if (!isPlatformBrowser(this.platformId)) return;
+
     this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
       next: (data) => {
         this.marketData = data
-        // console.log(data.response.data[0].yearData, 'this is bmw')
         const dataSource = data.response.data;
         this.dataSource.set(dataSource);
+
+        // TODO: clean the code. get warning msg from API?
         if (keyType === 'debt' && Array.isArray(dataSource) && dataSource.length > 0) {
           const totalDebt = dataSource.find((i: any) => i?.name === 'Total Debt (Cr)');
           const dar = dataSource.find((i: any) => i?.name === 'Debt to Asset Ratio');
@@ -371,12 +380,23 @@ export class FinancialPerformance {
 
           if (this.hasNA(totalDebt)) {
             this.isWarningMessage = true;
-            this.warningMessage = 'Total Debt data is unavailable';
+            this.warningMessage = `Since ${this.ulbName()} has reported no outstanding debt in its annual financial statements, all debt-related indicators have not been computed.`;
           }
 
           if (this.hasExactZero(dar)) {
             this.isWarningMessage = true;
-            this.warningMessage = 'Debt to Asset Ratio data is unavailable';
+            this.warningMessage = `${this.ulbName()}'s debt-to-asset ratio is effectively zero, as its outstanding debt is negligible relative to its asset base.`;
+          }
+        } else if (keyType === 'expenditure') {
+          const capex = dataSource
+            .find((i: any) => i.name === "Total Expenditure (Cr)")
+            .children[1]
+            .yearData;
+
+          const len = capex.length;
+          if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
+            this.isWarningMessage = true;
+            this.warningMessage = `Since ${this.ulbName()} has not reported capital expenditure in its annual financial statements, all capex-related indicators have not been calculated.`;
           }
         }
         // console.log(this.dataSource(), 'this is daaaa')
