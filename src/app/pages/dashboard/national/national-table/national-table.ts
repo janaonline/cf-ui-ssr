@@ -12,9 +12,10 @@ import { StateSearch } from "../../../../shared/components/state-search/state-se
 import { TabButtons } from "../../../../shared/components/tab-buttons/tab-buttons";
 import { NationalChart } from "../national-chart/national-chart";
 import { NationalService } from '../national.service';
+import { InrFormatPipe } from "../../../../core/pipes/inr-format.pipe";
 @Component({
   selector: 'app-national-table',
-  imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule],
+  imports: [FormsModule, MatTableModule, TabButtons, StateSearch, NationalChart, PreLoader, NoDataFound, MatButtonToggleModule, InrFormatPipe],
   templateUrl: './national-table.html',
   styleUrl: './national-table.scss'
 })
@@ -55,6 +56,7 @@ export class NationalTable {
   ]);
 
   lastSubButtonValue: string | null = null;
+  readonly currencyOptions = { showSymbol: false, showUnit: false };
 
   constructor(
     public commonService: CommonService,
@@ -145,7 +147,8 @@ export class NationalTable {
         {
           next: (res: any) => {
             if (csv) {
-              this.commonService.downloadExcel(res);
+              const fileName = `CityFinance_${this.nationalService.selectedTabName()}`;
+              this.commonService.downloadExcel(res, fileName);
               this.isLoadingData.set(false);
             } else {
               if (this.nationalService.selectedButtonKey().includes('Mix')) {
@@ -227,6 +230,11 @@ export class NationalTable {
 
   navigateToState() {
     this.router.navigate(['/municipal-data/state', this.nationalService.stateSlugName()])
+  }
+
+  getFormattedValue(value: number | string): boolean {
+    const numberValue = Number(value);
+    return isNaN(numberValue) ? false : true;
   }
 
   resetFilter() {
