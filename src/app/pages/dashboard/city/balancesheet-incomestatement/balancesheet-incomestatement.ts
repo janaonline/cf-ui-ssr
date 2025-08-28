@@ -33,15 +33,6 @@ import { TabButtons } from '../../../../shared/components/tab-buttons/tab-button
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
 
-interface TableColumns {
-  key: string;
-  value: string;
-  class?: string;
-  number?: boolean;
-  mergeCell?: boolean;
-  width?: string;
-}
-
 type DownloadReportElement = {
   type: string;
   key: string;

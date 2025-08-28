@@ -144,6 +144,7 @@ export interface TableColumns {
   class?: string;
   number?: boolean;
   width?: string;
+  mergeCell?: boolean;
 }
 
 // export interface ChartResponse {
