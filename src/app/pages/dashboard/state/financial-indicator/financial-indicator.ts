@@ -517,7 +517,8 @@ export class FinancialIndicator {
           data = res.data;
         }
         if (csv) {
-          this.commonService.downloadExcel(res, this.currentSelectedButton().label);
+          const fileName = `CityFinance_${this.stateDetails().state.name}_${this.currentSelectedButton().label}`;
+          this.commonService.downloadExcel(res, fileName);
         } else {
           this.barDataNotFound = data.length === 0;
           this.updateBarChartData(data, unitType);

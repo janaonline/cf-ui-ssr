@@ -147,7 +147,8 @@ export class NationalTable {
         {
           next: (res: any) => {
             if (csv) {
-              this.commonService.downloadExcel(res);
+              const fileName = `CityFinance_${this.nationalService.selectedTabName()}`;
+              this.commonService.downloadExcel(res, fileName);
               this.isLoadingData.set(false);
             } else {
               if (this.nationalService.selectedButtonKey().includes('Mix')) {
