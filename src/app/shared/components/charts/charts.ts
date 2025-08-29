@@ -58,6 +58,7 @@ export class Charts implements AfterViewInit, OnDestroy {
   })
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
+    console.log('Chart called: ', this.chartConfig());
     if (!this.chartCanvas) {
       // console.error(
       //   'Canvas element not found for chart:',
