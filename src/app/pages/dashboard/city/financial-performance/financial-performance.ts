@@ -17,6 +17,7 @@ import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
+import { InrFormatPipe } from "../../../../core/pipes/inr-format.pipe";
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
@@ -50,6 +51,7 @@ interface DataNode {
     MatIconModule,
     MatTooltipModule,
     ReactiveFormsModule,
+    InrFormatPipe
   ],
   templateUrl: './financial-performance.html',
   styleUrl: './financial-performance.scss',
@@ -86,6 +88,7 @@ export class FinancialPerformance {
   });
   faqs = signal<any[]>([]);
   selectedButton: ButtonObj | null = null;
+  readonly currencyOptions = { showSymbol: false, showUnit: false, max: 2, min: 0 };
   readonlyButtons = computed<ButtonObj[]>(() => {
     return this.buttons
   });
@@ -127,7 +130,10 @@ export class FinancialPerformance {
     this.yearsArrDyna = this.getYearsArray(selectedYear);
     this.onSelectedButtonChange(this.currentSelectedButtonKey());
   }
-
+  public getFormattedValue(value: string | number, graphKey: string): boolean {
+    if (value === null || value === undefined || isNaN(Number(value)) || graphKey === 'percentage') return false;
+    return true;
+  }
   private getYearsArray(selectedYear: string): string[] {
     const currentYearNum = parseInt(selectedYear.split('-')[0]);
     return [
@@ -357,61 +363,64 @@ export class FinancialPerformance {
 
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
-      next: (data) => {
-        this.marketData = data
-        const dataSource = data.response.data;
-        this.dataSource.set(dataSource);
+    if (years?.length > 0 && ulbId && keyType) {
+      this._dashboardService.getMarketDashboardIndicators(ulbId, keyType, years).subscribe({
+        next: (data) => {
+          this.marketData = data
+          const dataSource = data.response.data;
+          this.dataSource.set(dataSource);
 
-        // TODO: clean the code. get warning msg from API?
-        if (keyType === 'debt' && Array.isArray(dataSource) && dataSource.length > 0) {
-          const totalDebt = dataSource.find((i: any) => i?.name === 'Total Debt (Cr)');
-          const dar = dataSource.find((i: any) => i?.name === 'Debt to Asset Ratio');
-          const iscr = dataSource.find(
-            (item: any) => item?.name?.trim?.() === 'Interest Service Coverage Ratio (ISCR)'
-          );
+          // TODO: clean the code. get warning msg from API?
+          if (keyType === 'debt' && Array.isArray(dataSource) && dataSource.length > 0) {
+            const totalDebt = dataSource.find((i: any) => i?.name === 'Total Debt (Cr)');
+            const dar = dataSource.find((i: any) => i?.name === 'Debt to Asset Ratio');
+            const iscr = dataSource.find(
+              (item: any) => item?.name?.trim?.() === 'Interest Service Coverage Ratio (ISCR)'
+            );
 
-          const iscrAlert = this.checkISCR(iscr);
+            const iscrAlert = this.checkISCR(iscr);
 
-          if (iscrAlert) {
-            this.isWarningMessage = true;
-            this.warningMessage = iscrAlert;
+            if (iscrAlert) {
+              this.isWarningMessage = true;
+              this.warningMessage = iscrAlert;
+            }
+
+            if (this.hasNA(totalDebt)) {
+              this.isWarningMessage = true;
+              this.warningMessage = `Since ${this.ulbName()} has reported no outstanding debt in its annual financial statements, all debt-related indicators have not been computed.`;
+            }
+
+            if (this.hasExactZero(dar)) {
+              this.isWarningMessage = true;
+              this.warningMessage = `${this.ulbName()}'s debt-to-asset ratio is effectively zero, as its outstanding debt is negligible relative to its asset base.`;
+            }
+          } else if (keyType === 'expenditure') {
+            const capex = dataSource
+              .find((i: any) => i.name === "Total Expenditure (Cr)")
+              .children[1]
+              .yearData;
+
+            const len = capex.length;
+            if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
+              this.isWarningMessage = true;
+              this.warningMessage = `Since ${this.ulbName()} has not reported capital expenditure in its annual financial statements, all capex-related indicators have not been calculated.`;
+            }
           }
+          // console.log(this.dataSource(), 'this is daaaa')
+          this.buttonClicked(dataSource[1]);
 
-          if (this.hasNA(totalDebt)) {
-            this.isWarningMessage = true;
-            this.warningMessage = `Since ${this.ulbName()} has reported no outstanding debt in its annual financial statements, all debt-related indicators have not been computed.`;
-          }
-
-          if (this.hasExactZero(dar)) {
-            this.isWarningMessage = true;
-            this.warningMessage = `${this.ulbName()}'s debt-to-asset ratio is effectively zero, as its outstanding debt is negligible relative to its asset base.`;
-          }
-        } else if (keyType === 'expenditure') {
-          const capex = dataSource
-            .find((i: any) => i.name === "Total Expenditure (Cr)")
-            .children[1]
-            .yearData;
-
-          const len = capex.length;
-          if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
-            this.isWarningMessage = true;
-            this.warningMessage = `Since ${this.ulbName()} has not reported capital expenditure in its annual financial statements, all capex-related indicators have not been calculated.`;
-          }
+          // this.yearArr = this.dataSource()[0];
+          this.intro = this.marketData.response.intro
+          this.source = this.marketData.source;
+          this._globalLoaderService.hideLoader();
+        },
+        error: (err) => {
+          this.errorMessage = err.message;
+          this._globalLoaderService.hideLoader();
         }
-        // console.log(this.dataSource(), 'this is daaaa')
-        this.buttonClicked(dataSource[1]);
+      });
+    }
 
-        // this.yearArr = this.dataSource()[0];
-        this.intro = this.marketData.response.intro
-        this.source = this.marketData.source;
-        this._globalLoaderService.hideLoader();
-      },
-      error: (err) => {
-        this.errorMessage = err.message;
-        this._globalLoaderService.hideLoader();
-      }
-    });
   }
   // Download chart as img.
   downloadImg(selectedIndicator: string = 'CityPageChart') {
