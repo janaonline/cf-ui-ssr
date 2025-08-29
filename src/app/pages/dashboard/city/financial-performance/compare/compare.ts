@@ -41,7 +41,7 @@ import { UtilityService } from '../../../../../core/services/utility-service';
     MatButtonModule,
     CitySearch,
     MatRadioModule,
-    Charts
+    // Charts
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss'

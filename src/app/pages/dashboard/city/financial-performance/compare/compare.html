@@ -21,8 +21,7 @@
             <div class="mb-4">
                 <h3 class="fs-5 mb-4">01 Select up to three cities </h3>
                 <div class="d-flex align-items-center flex-wrap gap-2">
-                    <app-city-search [selectCity]="onUlbSelected"
-                        [stateId]="'5dcf9d7316a06aed41c748ec'"></app-city-search>
+                    <app-city-search [selectCity]="onUlbSelected"></app-city-search>
                     <div class="mt-3 d-flex flex-wrap gap-2">
                         <!-- Selected city chips -->
                         @for (city of selectedCities(); track city._id) {
@@ -67,16 +66,20 @@
                 <button class="btn btn-outline-cfPrimary" (click)="onReset()">Reset</button>
             </div>
 
-        </form>
+            <div class="mt-4">
+                <a href="#">Not sure where to begin? Try a sample comparison →</a>
+            </div>
 
-        <!-- chart render -->
-        <div *ngIf="chartConfig" class="mt-4">
-            <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
-            <!-- <app-charts [chartData]="chartConfig"></app-charts> -->
-        </div>
+        </form>
     </div>
 
+    <!-- chart render -->
+    <!-- @if (chartConfig) {
+    <!-- <app-charts [chartConfig]="chartConfig"></app-charts> -->
+    } -->
+
     <div class="rounded-5 p-4 bg-secondary-subtle mt-4">
+        <h3 class="">What you’ll get </h3>
         <div class="row text-center text-md-start">
             <div class="col-md-4">
                 <div class="d-flex align-items-center">

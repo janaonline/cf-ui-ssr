@@ -53,6 +53,7 @@
 }
 ::ng-deep .mat-internal-form-field > label {
   color: #fff !important;
+  cursor: pointer;
 }
 /* Selected state */
 .mat-mdc-radio-button.radio-pill.mat-mdc-radio-checked {
@@ -62,22 +63,4 @@
 .mat-mdc-radio-button.radio-pill.mat-mdc-radio-checked {
   background-color: #12326b;
   color: #fff;
-}
-
-.feature-box {
-  background: #f5f5f5;
-  border-radius: 12px;
-  padding: 2rem;
-}
-.feature-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-.feature-title {
-  font-weight: 600;
-  font-size: 1.25rem;
-}
-.feature-text {
-  font-size: 0.95rem;
-  color: #555;
 }
