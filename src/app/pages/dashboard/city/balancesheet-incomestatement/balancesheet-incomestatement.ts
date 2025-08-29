@@ -20,7 +20,8 @@ import {
   AfsPopupData,
   BsCompareUlbsValue,
   BsIsData,
-  ButtonObj
+  ButtonObj,
+  TableColumns,
 } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
@@ -31,15 +32,6 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
-
-interface TableColumns {
-  key: string;
-  value: string;
-  class?: string;
-  number?: boolean;
-  mergeCell?: boolean;
-  width?: string;
-}
 
 type DownloadReportElement = {
   type: string;

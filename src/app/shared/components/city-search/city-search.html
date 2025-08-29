@@ -1,24 +1,15 @@
-<form [formGroup]="myForm" class="d-flex gap-2">
-  <input
-    type="text"
-    class="input-box-style"
-    placeholder="Search for ULBs"
-    matInput
-    formControlName="ulbName"
-    [matAutocomplete]="auto"
-    id="ulbName"
-  />
-  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-    @for (option of filteredUlbs(); track $index) {
-      <mat-option
-        [value]="option.name"
-        (onSelectionChange)="onCitySelection(option)"
-      >
+<form [formGroup]="myForm">
+  <mat-form-field appearance="outline">
+    <mat-label>Search for ULBs</mat-label>
+    <input matInput type="text" formControlName="ulbName" [matAutocomplete]="auto" />
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      @for (option of filteredUlbs(); track $index) {
+      <mat-option [value]="option.name" (onSelectionChange)="onCitySelection(option)">
         <small>{{ option.name }}</small>
       </mat-option>
-    }
-    @if (noDataFound()) {
+      } @if (noDataFound()) {
       <mat-option class="text-muted" disabled>No results found.</mat-option>
-    }
-  </mat-autocomplete>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
 </form>

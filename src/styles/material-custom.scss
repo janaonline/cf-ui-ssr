@@ -15,6 +15,12 @@
   font-family: 'Material Icons' !important;
 }
 
+html {
+  --mat-sys-label-large-font: var(--ff-base) !important;
+  --mat-sys-body-large-font: var(--ff-base) !important;
+  --mat-sys-body-large-weight: var(--ff-medium) !important;
+}
+
 // Snackbar.
 .snackbar-success {
   --mat-snack-bar-container-color: #2e7d32;
@@ -27,21 +33,6 @@
 .snackbar-warn {
   --mat-snack-bar-container-color: #f9a825;
 }
-
-
-// .mdc-button .mdc-button__label {
-//   color: #fff;
-// }
-
-// .mat-mdc-form-field-hint-wrapper,
-// .mat-mdc-form-field-error-wrapper {
-//   padding: 0 5px !important;
-// }
-
-// .mat-mdc-form-field-hint-wrapper {
-//   position: relative !important;
-//   top: -20px !important;
-// }
 
 // Mat tabs.
 .mat-mdc-tab-header {

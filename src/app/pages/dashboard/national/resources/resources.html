@@ -1,0 +1,13 @@
+<div class="d-flex flex-wrap my-4">
+    @for (item of resourceData(); track item) {
+    <div ngxSlickItem class="card-body">
+        <div class="card-image">
+            <!-- <img [src]="item.imageUrl" alt="carouselImage" /> -->
+            <img [src]="item?.imageUrl | toStorageUrl" class="card-img-top" [alt]="item.label" width="250" height="200">
+        </div>
+        <a class="card-text card-label" [href]="item?.downloadUrl | toStorageUrl" target="_blank">
+            {{ item.name }}
+        </a>
+    </div>
+    }
+</div>

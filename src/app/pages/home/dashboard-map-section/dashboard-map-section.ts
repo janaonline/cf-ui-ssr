@@ -57,6 +57,7 @@ export class DashboardMapSection {
   isLoading = signal<boolean>(true);
   showMap = signal<boolean>(false);
 
+  selectedState = signal<IState>({ _id: '', name: '' });
   selectedStateCodeSignal = signal<string>('');
   selectedStateIdSignal = signal<string>('');
   selectedStateNameSignal = signal<string>('');
@@ -404,6 +405,7 @@ export class DashboardMapSection {
   // State object sent by child - Drop down selection.
   public onStateSelected = (stateObj: IState) => {
     // console.log('State obj sent by child to parent', stateObj);
+    this.selectedState.set(stateObj);
     this.setStateData(stateObj.code, stateObj._id, stateObj.name);
     this.setUlbData();
   };
@@ -447,8 +449,10 @@ export class DashboardMapSection {
     // console.log('state clicked on map:', stateCode);
     const stateData = this.stateList().find((ele) => ele.code === stateCode);
 
-    if (stateData)
+    if (stateData) {
       this.setStateData(stateData.code, stateData._id, stateData.name);
+      this.selectedState.set(stateData);
+    }
   }
 
   // Update data when ulb is changed from map.
@@ -467,14 +471,15 @@ export class DashboardMapSection {
   // View state/ city dashboard.
   public viewDashboard(): void {
     if (this.ulbSlugName()) {
-      this.router.navigateByUrl(`/municipal-data/${this.ulbSlugName()}`);
-    }
-    else {
+      this.router.navigateByUrl(`/municipal-data/city/${this.ulbSlugName()}`);
+    } else {
+      // console.log(this.selectedState());
       // this.router.navigateByUrl(
       //   `/dashboard/state/${this.selectedStateIdSignal()}`,
       // );
-      window.location.href =
-        `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+      // window.location.href =
+      //   `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
+      this.router.navigateByUrl(`/municipal-data/state/${this.selectedState().slug}`);
     }
   }
 

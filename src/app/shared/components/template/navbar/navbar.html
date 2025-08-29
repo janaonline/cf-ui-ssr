@@ -1,4 +1,4 @@
-<nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom">
+<nav #stickyMenu [class]="{ 'position-relative': !isSticky, 'sticky': isSticky }" class="bg-white shadow-bottom">
   <div class="container d-flex justify-content-between align-items-center bg-white">
     <button class="mobile-nav-ham" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav">
@@ -32,9 +32,15 @@
         </li>
         <mat-menu #DashboardMenu="matMenu">
           @for (childMenu of menu.child; track childMenu) {
+          @if (childMenu.link) {
+          <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.link"
+            routerLinkActive="active">{{childMenu.name}}</a>
+          } @else {
           <a mat-menu-item [href]="childMenu.href" [class.border-bottom]="!$last" routerLinkActive="active">
             {{ childMenu.name }}
           </a>
+          }
+
           }
         </mat-menu>
         } @else {
