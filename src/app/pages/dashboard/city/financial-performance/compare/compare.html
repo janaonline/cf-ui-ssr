@@ -17,11 +17,12 @@
 
     <div class="shadow p-4 rounded mb-4 bg-light">
         <h2 class="fs-3 text-center mb-4">Build your comparison</h2>
-        <form [formGroup]="compareForm" (ngSubmit)="onApply()">
+        <form [formGroup]="compareForm" (ngSubmit)="onSubmit()">
             <div class="mb-4">
                 <h3 class="fs-5 mb-4">01 Select up to three cities </h3>
                 <div class="d-flex align-items-center flex-wrap gap-2">
-                    <app-city-search [selectCity]="onUlbSelected"></app-city-search>
+                    <app-city-search [selectCity]="onUlbSelected" #citySearch>
+                    </app-city-search>
                     <div class="mt-3 d-flex flex-wrap gap-2">
                         <!-- Selected city chips -->
                         @for (city of selectedCities(); track city._id) {
@@ -34,49 +35,46 @@
                 </div>
             </div>
 
+            <!-- Years -->
             <div class="mb-4">
-                <h3 class="fs-5 mb-4">02 Select up to three cities </h3>
-                <div class="d-flex gap-2 flex-wrap">
-                    <mat-radio-group formControlName="yearSelect" class="d-flex gap-1 flex-wrap">
-                        @for (year of years; track year.value) {
-                        <mat-radio-button class="radio-pill rounded-5 m-1 text-nowrap py-1 px-2" [value]="year.value">
-                            {{ year.label }}
-                        </mat-radio-button>
-                        }
-                    </mat-radio-group>
+                <h3 class="fs-5 mb-4">02 Select Years</h3>
+                <div formArrayName="yearSelect" class="d-flex gap-2 flex-wrap">
+                    @for (year of years; track year.value; let i = $index) {
+                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="i">
+                        {{ year.label }}
+                    </mat-checkbox>
+                    }
                 </div>
             </div>
 
+            <!-- Indicators -->
             <div class="mb-4">
-                <h3 class="fs-5 mb-4">03 Select Indicators </h3>
-                <div class="d-flex gap-2 flex-wrap">
-                    <mat-radio-group formControlName="indicatorSelect" class="d-flex gap-1 flex-wrap">
-                        @for (indicator of indicators; track indicator.name) {
-                        <mat-radio-button class="radio-pill rounded-5 m-1 text-nowrap py-1 px-2"
-                            [value]="indicator.name">
-                            {{ indicator.name }}
-                        </mat-radio-button>
-                        }
-                    </mat-radio-group>
+                <h3 class="fs-5 mb-4">03 Select Indicators</h3>
+                <div formArrayName="indicatorSelect" class="d-flex gap-2 flex-wrap">
+                    @for (indicator of indicators; track indicator.name; let j = $index) {
+                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="j">
+                        {{ indicator.name }}
+                    </mat-checkbox>
+                    }
                 </div>
             </div>
 
+            <!-- Buttons -->
             <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                <button class="btn btn-cfPrimary">Apply</button>
-                <button class="btn btn-outline-cfPrimary" (click)="onReset()">Reset</button>
+                <button class="btn btn-cfPrimary" type="submit" [disabled]="!isValidSelection()">Apply</button>
+                <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
             </div>
 
             <div class="mt-4">
                 <a href="#">Not sure where to begin? Try a sample comparison →</a>
             </div>
-
         </form>
+
     </div>
 
 
-
     <div class="rounded-5 p-4 bg-secondary-subtle mt-4">
-        <h3 class="">What you’ll get </h3>
+        <h3 class="fs-3 mb-4">What you’ll get </h3>
         <div class="row text-center text-md-start">
             <div class="col-md-4">
                 <div class="d-flex align-items-center">
@@ -84,7 +82,7 @@
                         <img src="./assets/images/chart.png" alt="icon">
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h3 class="font-weight-bold fs-3 mb-3">Charts</h3>
+                        <h3 class="font-weight-bold fs-4 mb-3">Charts</h3>
                         <div>Side-by-side visual comparison of city finances across years and indicators</div>
                     </div>
                 </div>
@@ -97,7 +95,7 @@
                     </div>
                     <div class="flex-grow-1 ms-3">
 
-                        <h3 class="font-weight-bold fs-3 mb-3">Tables</h3>
+                        <h3 class="font-weight-bold fs-4 mb-3">Tables</h3>
                         <div>Downloadable data tables for deeper analysis</div>
                     </div>
                 </div>
@@ -110,7 +108,7 @@
                     </div>
                     <div class="flex-grow-1 ms-3">
 
-                        <h3 class="font-weight-bold fs-3 mb-3">Exports</h3>
+                        <h3 class="font-weight-bold fs-4 mb-3">Exports</h3>
                         <div>PNG or CSV exports for your reports and presentations</div>
                     </div>
                 </div>

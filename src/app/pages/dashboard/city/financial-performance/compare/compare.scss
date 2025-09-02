@@ -23,44 +23,25 @@
   font-size: 0.85rem;
 }
 
-.mat-mdc-radio-button.radio-pill .mdc-radio__background,
-.mat-mdc-radio-button.radio-pill .mdc-radio__native-control {
-  display: none !important;
+::ng-deep .mat-mdc-checkbox .mdc-checkbox {
+  display: none; // hide default square box
 }
 
-.mat-mdc-radio-button.radio-pill .mdc-form-field {
-  padding-left: 0 !important;
-}
-
-::ng-deep .mat-mdc-radio-button .mdc-radio {
-  display: none !important;
-}
-
-.mat-mdc-radio-button.radio-pill {
-  background-color: #9ea1a8;
+.checkbox-pill {
+  border-radius: 50px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  user-select: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #d1dbf0;
+  font-weight: 500;
 }
 
-/* Hover effect */
-.mat-mdc-radio-button.radio-pill:hover {
-  background-color: #12326b;
+.checkbox-pill.mat-mdc-checkbox-checked {
+  background-color: #1b4965; // same as your earlier selected color
   color: #fff;
 }
-::ng-deep .mat-internal-form-field > label {
+
+::ng-deep .mat-mdc-checkbox-checked label {
   color: #fff !important;
   cursor: pointer;
-}
-/* Selected state */
-.mat-mdc-radio-button.radio-pill.mat-mdc-radio-checked {
-  background-color: #12326b;
-  color: #fff;
-}
-.mat-mdc-radio-button.radio-pill.mat-mdc-radio-checked {
-  background-color: #12326b;
-  color: #fff;
 }
