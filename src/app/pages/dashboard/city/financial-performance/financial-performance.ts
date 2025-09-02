@@ -349,7 +349,7 @@ export class FinancialPerformance {
     const latest = item.yearData[item.yearData.length - 1]
 
     // console.log(latest, 'this is latest iscr');
-    if (latest < 5) {
+    if (latest < -5) {
       return `${this.ulbName()}'s ISCR is significantly negative, as its Operating Surplus is insufficient to cover interest obligations.`;
     } else if (latest > 20) {
       return `${this.ulbName()}'s unusually high ISCR indicates either a low level of outstanding debt or a robust operating surplus.`;
