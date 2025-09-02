@@ -1,7 +1,6 @@
 * {
   font-family: var(--ff-base);
   font-weight: var(--fw-medium);
-  font-size: 0.95rem;
 }
 
 .banner-bg {
@@ -13,35 +12,35 @@
   background-color: #f7dbbf;
 }
 
-.ulb-badge {
-  background-color: #12326b;
-  cursor: pointer;
-  color: #fff;
-}
+// .ulb-badge {
+//   background-color: #12326b;
+//   cursor: pointer;
+//   color: #fff;
+// }
 
-.ulb-badge i {
-  font-size: 0.85rem;
-}
+// .ulb-badge i {
+//   font-size: 0.85rem;
+// }
 
-::ng-deep .mat-mdc-checkbox .mdc-checkbox {
-  display: none; // hide default square box
-}
+// ::ng-deep .mat-mdc-checkbox .mdc-checkbox {
+//   display: none; // hide default square box
+// }
 
-.checkbox-pill {
-  border-radius: 50px;
-  padding: 4px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-color: #d1dbf0;
-  font-weight: 500;
-}
+// .checkbox-pill {
+//   border-radius: 50px;
+//   padding: 4px 12px;
+//   cursor: pointer;
+//   transition: all 0.2s ease-in-out;
+//   background-color: #d1dbf0;
+//   font-weight: 500;
+// }
 
-.checkbox-pill.mat-mdc-checkbox-checked {
-  background-color: #1b4965; // same as your earlier selected color
-  color: #fff;
-}
+// .checkbox-pill.mat-mdc-checkbox-checked {
+//   background-color: #1b4965; // same as your earlier selected color
+//   color: #fff;
+// }
 
-::ng-deep .mat-mdc-checkbox-checked label {
-  color: #fff !important;
-  cursor: pointer;
-}
+// ::ng-deep .mat-mdc-checkbox-checked label {
+//   color: #fff !important;
+//   cursor: pointer;
+// }

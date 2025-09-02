@@ -2,62 +2,107 @@
 <div class="position-relative">
     <div class="banner-bg"></div>
 </div>
-<div class="container py-4 position-relative">
-    <div class="intro mx-auto text-center  my-4" style="max-width: 700px;">
-        <h1 class="fs-1 mb-2">Customize and compare city finance data</h1>
-        <p class="fs-5 mb-4">Reduce your research time and compare financial data of India’s top cities in minutes.
-            Standardized for your
-            convenience. </p>
-        <div class="text-center d-flex flex-column flex-md-row justify-content-center gap-2">
-            <span><i class="bi bi-check-square-fill text-success"></i> Standardized data </span>
-            <span><i class="bi bi-check-square-fill text-success"></i> Shaped by investor feedback </span>
-            <span><i class="bi bi-check-square-fill text-success"></i> No logins necessary </span>
+
+<div class="container position-relative">
+    <div class="mb-4 pt-5">
+        <h1 class="mx-auto text-center w-50 mb-3 fs-1">
+            Customize and compare city finance data
+        </h1>
+        <p class="mx-auto text-center w-75 mb-4 fs-5 lh-sm ">
+            Reduce your research time and compare financial data of India's top cities in minutes. Standardized for your
+            convenience.
+        </p>
+        <div class="mx-auto d-flex justify-content-center gap-2">
+            @for (item of introCheckBoxText; track $index) {
+            <div class="d-flex gap-1 flex-wrap align-items-center justify-content-center">
+                <i class="bi bi-check-square-fill text-success"></i>
+                <p class="text-center lh-sm p-0 m-0">{{item}}</p>
+            </div>
+            }
         </div>
     </div>
 
-    <div class="shadow p-4 rounded mb-4 bg-light">
-        <h2 class="fs-3 text-center mb-4">Build your comparison</h2>
+    <div class="shadow p-4 rounded my-4 bg-light">
+        <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
         <form [formGroup]="compareForm" (ngSubmit)="onSubmit()">
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">01 Select up to three cities </h3>
-                <div class="d-flex align-items-center flex-wrap gap-2">
+            <!-- Ulbs -->
+            <div class="my-4 p-1">
+                <p class="fw-bold mb-2">01 Select up to three cities</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
                     <app-city-search [selectCity]="onUlbSelected" #citySearch>
                     </app-city-search>
-                    <div class="mt-3 d-flex flex-wrap gap-2">
-                        <!-- Selected city chips -->
-                        @for (city of selectedCities(); track city._id) {
-                        <span class="ulb-badge btn rounded-5 m-1 text-nowrap font-bold py-1 px-2">
-                            {{ city.name }}
-                            <i class="bi bi-x ms-1" role="button" (click)="removeCity(city)"></i>
-                        </span>
-                        }
-                    </div>
+                    <!-- Selected city chips -->
+                    @for (item of selectedCities(); track item._id) {
+                    <small [title]="item.name" class="rounded-5 text-truncate py-1 px-2 bg-cfSecondary text-white"
+                        style="max-width: 80vw;">
+                        {{ item.name }}
+                        <i class="bi bi-x ms-1" role="button" (click)="removeCity(item)"></i>
+                    </small>
+                    }
                 </div>
             </div>
 
             <!-- Years -->
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">02 Select Years</h3>
-                <div formArrayName="yearSelect" class="d-flex gap-2 flex-wrap">
-                    @for (year of years; track year.value; let i = $index) {
-                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="i">
-                        {{ year.label }}
-                    </mat-checkbox>
+            @if(years().length > 0) {
+            <div class="my-4 p-1">
+                <p class="fw-bold mb-2">02 Select Years</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                    @if (isYearsActive()) {
+                    <small (click)="removeAllYears()" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1 bg-cfSecondary text-white"
+                        style="max-width: 80vw;">
+                        All years
+                        <i class="bi bi-check2 ms-1" role="button"></i>
+                    </small>
+                    } @else {
+                    <small (click)="allAllYears()" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1 unselected-secondary-btn" style="max-width: 80vw;">
+                        All years
+                        <i class="bi bi-plus ms-1" role="button"></i>
+                    </small>
+                    }
+                    @for (item of years(); track $index) {
+                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;" (click)="modifyYears($index)">
+                        {{ item.label }}&nbsp;
+                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
+                    </small>
                     }
                 </div>
             </div>
+            }
 
             <!-- Indicators -->
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">03 Select Indicators</h3>
-                <div formArrayName="indicatorSelect" class="d-flex gap-2 flex-wrap">
-                    @for (indicator of indicators; track indicator.name; let j = $index) {
-                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="j">
-                        {{ indicator.name }}
-                    </mat-checkbox>
+            @if (indicators().length > 0) {
+            <div class=" my-4 p-1">
+                <p class="fw-bold mb-2">03 Select Indicators</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                    @if (isIndicatorssActive()) {
+                    <small (click)="removeAllIndicators()" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1 bg-cfSecondary text-white"
+                        style="max-width: 80vw;">
+                        All Indicators
+                        <i class="bi bi-check2 ms-1" role="button"></i>
+                    </small>
+                    } @else {
+                    <small (click)="allAllIndicators()" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1 unselected-secondary-btn" style="max-width: 80vw;">
+                        All Indicators
+                        <i class="bi bi-plus ms-1" role="button"></i>
+                    </small>
+                    }
+                    @for (item of indicators(); track $index) {
+                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;" (click)="modifyIndicators($index)">
+                        {{ item.label }}&nbsp;
+                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
+                    </small>
                     }
                 </div>
             </div>
+            }
 
             <!-- Buttons -->
             <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
@@ -65,11 +110,11 @@
                 <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
             </div>
 
-            <div class="mt-4">
-                <a href="#">Not sure where to begin? Try a sample comparison →</a>
-            </div>
         </form>
 
+        <div class="mt-4">
+            <a href="#">Not sure where to begin? Try a sample comparison →</a>
+        </div>
     </div>
 
 

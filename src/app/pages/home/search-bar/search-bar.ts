@@ -263,7 +263,7 @@ export class SearchBar {
     }
 
     if (option.type == 'ulb') {
-      this.router.navigateByUrl(`/municipal-data/${option.slug}`);
+      this.router.navigateByUrl(`/municipal-data/city/${option.slug}`);
     }
 
     if (option.type == 'searchKeyword') {

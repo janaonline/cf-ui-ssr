@@ -9,7 +9,7 @@ export const DASHBOARD_ROUTES: Route[] = [
         path: 'state',
         loadComponent: () => import('./state/state').then(m => m.State)
     }, {
-        path: ':dataId',
+        path: 'city/:slug',
         children: [
             {
                 path: '',
