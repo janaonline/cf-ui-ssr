@@ -105,7 +105,8 @@ export class City {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        const citySlugName = params.get('dataId') || '';
+        console.log(params)
+        const citySlugName = params.get('slug') || '';
         // const citySlugName = params.get('cityId') || '';
         this.selectedLedgerYear.set('');
 

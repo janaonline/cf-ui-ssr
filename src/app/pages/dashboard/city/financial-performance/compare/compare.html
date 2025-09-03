@@ -2,118 +2,199 @@
 <div class="position-relative">
     <div class="banner-bg"></div>
 </div>
-<div class="container py-4 position-relative">
-    <div class="intro mx-auto text-center  my-4" style="max-width: 700px;">
-        <h1 class="fs-1 mb-2">Customize and compare city finance data</h1>
-        <p class="fs-5 mb-4">Reduce your research time and compare financial data of India’s top cities in minutes.
-            Standardized for your
-            convenience. </p>
-        <div class="text-center d-flex flex-column flex-md-row justify-content-center gap-2">
-            <span><i class="bi bi-check-square-fill text-success"></i> Standardized data </span>
-            <span><i class="bi bi-check-square-fill text-success"></i> Shaped by investor feedback </span>
-            <span><i class="bi bi-check-square-fill text-success"></i> No logins necessary </span>
+
+<div class="container position-relative">
+    <div class="mb-4 pt-5">
+        <h1 class="mx-auto text-center w-50 mb-3 fs-1">
+            Customize and compare city finance data
+        </h1>
+        <p class="mx-auto text-center w-75 mb-4 fs-5 lh-sm ">
+            Reduce your research time and compare financial data of India's top cities in minutes. Standardized for your
+            convenience.
+        </p>
+        <div class="mx-auto d-flex justify-content-center gap-2">
+            @for (item of introCheckBoxText; track $index) {
+            <div class="d-flex gap-1 flex-wrap align-items-center justify-content-center">
+                <i class="bi bi-check-square-fill text-success"></i>
+                <p class="text-center lh-sm p-0 m-0">{{item}}</p>
+            </div>
+            }
         </div>
     </div>
 
-    <div class="shadow p-4 rounded mb-4 bg-light">
-        <h2 class="fs-3 text-center mb-4">Build your comparison</h2>
-        <form [formGroup]="compareForm" (ngSubmit)="onSubmit()">
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">01 Select up to three cities </h3>
-                <div class="d-flex align-items-center flex-wrap gap-2">
+    <div class="shadow-sm p-4 rounded my-4 bg-light">
+        <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
+        <form>
+            <!-- Ulbs -->
+            <div class=" my-4 p-1">
+                <p class="fw-bold mb-2">01 Select up to three cities</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
                     <app-city-search [selectCity]="onUlbSelected" #citySearch>
                     </app-city-search>
-                    <div class="mt-3 d-flex flex-wrap gap-2">
-                        <!-- Selected city chips -->
-                        @for (city of selectedCities(); track city._id) {
-                        <span class="ulb-badge btn rounded-5 m-1 text-nowrap font-bold py-1 px-2">
-                            {{ city.name }}
-                            <i class="bi bi-x ms-1" role="button" (click)="removeCity(city)"></i>
-                        </span>
-                        }
-                    </div>
+                    <!-- Selected city chips -->
+                    @for (item of selectedCities(); track item._id) {
+                    <small [title]="item.name" class="rounded-5 text-truncate py-1 px-2 bg-cfSecondary text-white"
+                        style="max-width: 80vw;">
+                        {{ item.name }}
+                        <i class="bi bi-x ms-1" role="button" (click)="removeCity(item)"></i>
+                    </small>
+                    }
                 </div>
             </div>
 
             <!-- Years -->
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">02 Select Years</h3>
-                <div formArrayName="yearSelect" class="d-flex gap-2 flex-wrap">
-                    @for (year of years; track year.value; let i = $index) {
-                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="i">
-                        {{ year.label }}
-                    </mat-checkbox>
+            @if(years().length > 0) {
+            <div class="my-4 p-1">
+                <p class="fw-bold mb-2">02 Select Years</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                    <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;">
+                        All Years
+                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
+                    </small>
+                    @for (item of years(); track $index) {
+                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;" (click)="modifyYears($index)">
+                        {{ item.label }}&nbsp;
+                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
+                    </small>
                     }
                 </div>
             </div>
+            }
 
             <!-- Indicators -->
-            <div class="mb-4">
-                <h3 class="fs-5 mb-4">03 Select Indicators</h3>
-                <div formArrayName="indicatorSelect" class="d-flex gap-2 flex-wrap">
-                    @for (indicator of indicators; track indicator.name; let j = $index) {
-                    <mat-checkbox class="checkbox-pill rounded-5 m-1 text-nowrap py-1 px-2" [formControlName]="j">
-                        {{ indicator.name }}
-                    </mat-checkbox>
+            @if (indicators().length > 0) {
+            <div class=" my-4 p-1">
+                <p class="fw-bold mb-2">03 Select Indicators</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                    <small (click)="modifyIndicators(-1)" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="isIndicatorsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;">
+                        All Indicators
+                        <i [class]=" isIndicatorsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
+                    </small>
+                    @for (item of indicators(); track $index) {
+                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;" (click)="modifyIndicators($index)">
+                        {{ item.label }}&nbsp;
+                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
+                    </small>
                     }
                 </div>
             </div>
+            }
 
             <!-- Buttons -->
             <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                <button class="btn btn-cfPrimary" type="submit" [disabled]="!isValidSelection()">Apply</button>
+                <button class="btn btn-cfPrimary" type="submit" (click)="applyFilter()">Apply</button>
                 <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
             </div>
 
-            <div class="mt-4">
-                <a href="#">Not sure where to begin? Try a sample comparison →</a>
-            </div>
         </form>
 
+        <div class="mt-4">
+            <a href="#">Not sure where to begin? Try a sample comparison →</a>
+        </div>
+    </div>
+
+    @if(selectedIndicator.value) {
+    <div
+        class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
+        <p class="col-sm-12 col-lg-6 custom-mb px-0">
+            Use the dropdown to view charts for individual indicators within the selected group.
+        </p>
+        <!-- @if (consolidatedIndicators().length > 0) { -->
+        <mat-form-field appearance="outline" class="col-sm-12 col-lg-3 px-0">
+            <mat-select [formControl]="selectedIndicator">
+                @for (indicator of consolidatedIndicators(); track $index) {
+                <mat-option [value]=indicator.key>{{indicator.label}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <!-- } -->
+        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3">
+            Download as PNG&nbsp;
+            <i class="bi bi-download"></i>
+        </button>
+    </div>
+
+    <div class="my-4 chart-container">
+        @if (chartConfig().datasets.length > 0) {
+        <app-charts [chartConfig]="chartConfig()"></app-charts>
+        } @else {
+        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+            <i class=" bi bi-bar-chart"></i>&nbsp;
+            Build your comparison
+        </div>
+        }
+    </div>
+
+    <div
+        class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
+        <p class="col-sm-12 col-md-9 custom-mb px-0">
+            Check the boxes for the rows you want to download. If all rows are selected, the full table will be
+            downloaded.
+        </p>
+        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3">
+            Download as XLSX&nbsp;
+            <i class="bi bi-download"></i>
+        </button>
     </div>
 
 
-    <div class="rounded-5 p-4 bg-secondary-subtle mt-4">
-        <h3 class="fs-3 mb-4">What you’ll get </h3>
-        <div class="row text-center text-md-start">
+    <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
+        @if (dataSource().length > 0 && displayedColumns.length > 0) {
+        <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 border border-bg-light">
+
+            @for (item of headers(); track $index) {
+            <ng-container [matColumnDef]="item.key">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header">
+                    {{item['label']}}
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    @if(isNumber(element[item.key])){
+                    {{element[item.key] | inrFormat : 'inr' : currencyOptions}}
+                    } @else {
+                    {{element[item.key]}}
+                    }
+                </td>
+            </ng-container>
+            }
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        } @else {
+        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+            <i class=" bi bi-table"></i>&nbsp;
+            Build your comparison
+        </div>
+        }
+    </div>
+    }
+
+    <div class="rounded-4 p-4 bg-secondary-subtle my-4">
+        <p class="fs-3 mb-4">What you'll get </p>
+        <div class="row text-start">
+            @for (item of whatYouWillGet; track $index) {
             <div class="col-md-4">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <img src="./assets/images/chart.png" alt="icon">
+                        <img [src]="item.src" [alt]="item.header">
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h3 class="font-weight-bold fs-4 mb-3">Charts</h3>
-                        <div>Side-by-side visual comparison of city finances across years and indicators</div>
+                        <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
+                        <p class="m-0 p-0 lh-sm">{{item.label}}</p>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img src="./assets/images/table.png" alt="icon">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-
-                        <h3 class="font-weight-bold fs-4 mb-3">Tables</h3>
-                        <div>Downloadable data tables for deeper analysis</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img src="./assets/images/export.png" alt="icon">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-
-                        <h3 class="font-weight-bold fs-4 mb-3">Exports</h3>
-                        <div>PNG or CSV exports for your reports and presentations</div>
-                    </div>
-                </div>
-            </div>
-
+            }
         </div>
     </div>
 </div>
