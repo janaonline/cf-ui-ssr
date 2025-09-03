@@ -11,7 +11,7 @@ export interface IULB {
   name: string;
   natureOfUlb: string;
   population: number;
-  type: ulbType;
+  type?: ulbType;
   wards: number;
   state: string;
   stateInfo?: IState;

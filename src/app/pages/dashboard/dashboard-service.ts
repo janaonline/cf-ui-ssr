@@ -140,28 +140,29 @@ export class DashboardService {
 
     return this.http.get(`${environment.api.url}/ledger/getFaqs`, { params })
   }
-  // Get state details.
-  getHomeData(): Observable<any> {
-    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
-    // .pipe(
-    //   map((response: any) => {
-    //     const data = response.data;
-    //     const result: { key: string; label: string; value: number }[] = [];
 
-    //   //     for (const key in data) {
-    //   //       if (Array.isArray(data[key])) continue;
+  // // Get state details.
+  // getHomeData(): Observable<any> {
+  //   return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
+  //   // .pipe(
+  //   //   map((response: any) => {
+  //   //     const data = response.data;
+  //   //     const result: { key: string; label: string; value: number }[] = [];
 
-    //   //       result.push({
-    //   //         key,
-    //   //         label: key,
-    //   //         value: data[key].toLocaleString('en-IN')
-    //   //       });
-    //   //     }
+  //   //     for (const key in data) {
+  //   //       if (Array.isArray(data[key])) continue;
 
-    //   //     return result;
-    //   //   })
-    //   // );
-  }
+  //   //       result.push({
+  //   //         key,
+  //   //         label: key,
+  //   //         value: data[key].toLocaleString('en-IN')
+  //   //       });
+  //   //     }
+
+  //   //     return result;
+  //   //   })
+  //   // );
+  // }
 
   // Get state details.
   getStateDetails(params: { slug: string; year: string }): Observable<ExploreSectionResponse> {

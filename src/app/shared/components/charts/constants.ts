@@ -37,7 +37,6 @@ export const baseChartOptions = (
       enabled: showLabelOnChart,
       format: label
     },
-    legend: { position: 'bottom', align: 'start', labels: { font: { family: fontFamily, size: 12 } } },
     datalabels: {
       display: false, // Ensure labels are always displayed
       color: 'black', // Set label color
@@ -47,6 +46,7 @@ export const baseChartOptions = (
       //   return value; // Display the data value as the label
       // }
     },
+    legend: { labels: { font: { family: fontFamily, size: 12 } }, position: "bottom", },
     tooltip: {
       titleFont: { family: fontFamily },
       bodyFont: { family: fontFamily },

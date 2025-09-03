@@ -1,4 +1,3 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -12,6 +11,7 @@ import {
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
+import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -27,9 +27,10 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   chartConfig = input.required<ChartConfig>();
   chartInstance: Chart | undefined;
-  ngOnInit(): void {
 
-  }
+  // ngOnInit(): void {
+  // console.log('Chart called: ', this.chartConfig());
+  // }
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     effect(() => {
