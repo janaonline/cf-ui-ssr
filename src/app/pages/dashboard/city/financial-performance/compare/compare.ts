@@ -8,6 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { IULB } from '../../../../../core/models/ulb';
+import { InrFormatPipe } from "../../../../../core/pipes/inr-format.pipe";
+import { GlobalLoaderService } from '../../../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../../../core/services/utility-service';
 import { ChartConfig } from '../../../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../../../shared/components/charts/charts";
@@ -23,24 +25,36 @@ interface RadioOption {
 };
 
 interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+  [key: string]: string;
 }
 
 const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+  {
+    indicator: "Own Source Revenue (Cr)",
+    "2020,21": "20000",
+    "2021,22": "10000",
+    "2022,23": "20000"
+  },
+  {
+    indicator: "Assigned Revenue (Cr)",
+    "2020,21": "30000",
+    "2021,22": "60000",
+    "2022,23": "10000"
+  },
+  {
+    indicator: "Revenue Grants (Cr)",
+    "2020,21": "6000",
+    "2021,22": "1000",
+    "2022,23": "200"
+  },
+  {
+    indicator: "Others (Cr)",
+    "2020,21": "20000",
+    "2021,22": "1000",
+    "2022,23": "900"
+  },
 ];
+
 
 @Component({
   selector: 'app-compare',
@@ -56,12 +70,14 @@ const ELEMENT_DATA: PeriodicElement[] = [
     MatCheckboxModule,
     CitySearch,
     MatSelectModule,
-    Charts
+    Charts,
+    InrFormatPipe
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss'
 })
 export class Compare implements OnInit {
+  readonly currencyOptions = { showSymbol: true, showUnit: false };
   readonly whatYouWillGet = [
     {
       header: 'Charts',
@@ -164,11 +180,17 @@ export class Compare implements OnInit {
 
   displayedColumns: string[] = [];
   dataSource = signal<any[]>([]);
-
+  headers = [
+    { key: 'indicator', label: 'Indicator' },
+    { key: '2020,21', label: '2020-21' },
+    { key: '2021,22', label: '2021-22' },
+    { key: '2022,23', label: '2022-23' },
+  ]
 
 
   constructor(
     private utilityService: UtilityService,
+    private globalLoaderService: GlobalLoaderService,
     @Inject(PLATFORM_ID) private platformId: object
   ) { }
 
@@ -259,6 +281,10 @@ export class Compare implements OnInit {
     }
   };
 
+  isNumber(value: number | string) {
+    return !isNaN(+value);
+  }
+
   // Check if all filter options are selected to apply filter.
   isInvalidSelection() {
     return this.years().some(item => item.isActive) &&
@@ -277,11 +303,21 @@ export class Compare implements OnInit {
     const consolidatedIndicators = this.getIndicators(indicators);
     this.consolidatedIndicators.set(consolidatedIndicators);
 
-    console.log("years - ", years);
-    console.log("ulbs - ", ulbs);
-    console.log("consolidatedIndicators - ", consolidatedIndicators);
-    console.log("this.consolidatedIndicators - ", this.consolidatedIndicators());
+    this.globalLoaderService.showLoader();
+    setTimeout(() => {
+      this.getTableData(ELEMENT_DATA);
+    }, 1000);
+  }
 
+  private getTableData(resData: any) {
+    this.displayedColumns = this.headers.map(item => item.key);
+    this.dataSource.set(resData);
+    this.globalLoaderService.hideLoader();
+    this.createChartData();
+  }
+
+  private createChartData() {
+    this.globalLoaderService.showLoader();
     this.chartConfig.set({
       "chartId": "bar-0",
       "chartType": "barChart",
@@ -327,12 +363,8 @@ export class Compare implements OnInit {
       ],
       "options": baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Amt in Cr', 'Years')
     })
-
-    this.displayedColumns = ['position', 'name', 'weight', 'symbol'];
-    this.dataSource.set(ELEMENT_DATA);
+    this.globalLoaderService.hideLoader();
   }
-
-
 
   // Flattens a list of indicators by extracting child indicators if present.
   private getIndicators(indicators: RadioOption[]) {
