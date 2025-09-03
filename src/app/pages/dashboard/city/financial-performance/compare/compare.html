@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="shadow p-4 rounded my-4 bg-light">
+    <div class="shadow-sm p-4 rounded my-4 bg-light">
         <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
         <form>
             <!-- Ulbs -->
@@ -50,7 +50,7 @@
                     <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
                         [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
                         style="max-width: 80vw;">
-                        All Indicators
+                        All Years
                         <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
                     </small>
                     @for (item of years(); track $index) {
@@ -102,48 +102,105 @@
         </div>
     </div>
 
+    <div
+        class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
+        <p class="col-sm-12 col-lg-6 custom-mb px-0">
+            Use the dropdown to view charts for individual indicators within the selected group.
+        </p>
+        <!-- @if (consolidatedIndicators().length > 0) { -->
+        <mat-form-field appearance="outline" class="col-sm-12 col-lg-3 px-0">
+            <mat-select>
+                @for (indicator of consolidatedIndicators(); track $index) {
+                <mat-option [value]=indicator.key>{{indicator.label}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <!-- } -->
+        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3">
+            Download as PNG&nbsp;
+            <i class="bi bi-download"></i>
+        </button>
+    </div>
 
-    <div class="rounded-5 p-4 bg-secondary-subtle mt-4">
-        <h3 class="fs-3 mb-4">What you’ll get </h3>
-        <div class="row text-center text-md-start">
+    <div class="my-4 chart-container">
+        @if (chartConfig().datasets.length > 0) {
+        <app-charts [chartConfig]="chartConfig()"></app-charts>
+        } @else {
+        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+            <i class=" bi bi-bar-chart"></i>&nbsp;
+            Build your comparison
+        </div>
+        }
+    </div>
+
+    <div
+        class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
+        <p class="col-sm-12 col-md-9 custom-mb px-0">
+            Check the boxes for the rows you want to download. If all rows are selected, the full table will be
+            downloaded.
+        </p>
+        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3">
+            Download as XLSX&nbsp;
+            <i class="bi bi-download"></i>
+        </button>
+    </div>
+
+
+    <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
+        @if (dataSource().length > 0) {
+        <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 border border-bg-light">
+            <!-- Position Column -->
+            <ng-container matColumnDef="position">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header"> No. </th>
+                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header"> Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="weight">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header"> Weight </th>
+                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="symbol">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header"> Symbol </th>
+                <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        } @else {
+        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+            <i class=" bi bi-table"></i>&nbsp;
+            Build your comparison
+        </div>
+        }
+    </div>
+
+    <div class="rounded-4 p-4 bg-secondary-subtle my-4">
+        <p class="fs-3 mb-4">What you'll get </p>
+        <div class="row text-start">
+            @for (item of whatYouWillGet; track $index) {
             <div class="col-md-4">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <img src="./assets/images/chart.png" alt="icon">
+                        <img [src]="item.src" [alt]="item.header">
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <h3 class="font-weight-bold fs-4 mb-3">Charts</h3>
-                        <div>Side-by-side visual comparison of city finances across years and indicators</div>
+                        <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
+                        <p class="m-0 p-0 lh-sm">{{item.label}}</p>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img src="./assets/images/table.png" alt="icon">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-
-                        <h3 class="font-weight-bold fs-4 mb-3">Tables</h3>
-                        <div>Downloadable data tables for deeper analysis</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img src="./assets/images/export.png" alt="icon">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-
-                        <h3 class="font-weight-bold fs-4 mb-3">Exports</h3>
-                        <div>PNG or CSV exports for your reports and presentations</div>
-                    </div>
-                </div>
-            </div>
-
+            }
         </div>
     </div>
 </div>

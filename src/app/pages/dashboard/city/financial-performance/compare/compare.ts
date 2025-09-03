@@ -5,16 +5,42 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { IULB } from '../../../../../core/models/ulb';
 import { UtilityService } from '../../../../../core/services/utility-service';
+import { ChartConfig } from '../../../../../shared/components/charts/chart-interfaces';
+import { Charts } from "../../../../../shared/components/charts/charts";
+import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../../shared/components/charts/constants';
 import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 // import { financeData } from './finance-data';
 
 interface RadioOption {
+  key: string;
   label: string;
-  isActive: boolean
+  isActive: boolean;
+  children?: RadioOption[];
 };
+
+interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+  symbol: string;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
+  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
+  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
+  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
+  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
+  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+];
 
 @Component({
   selector: 'app-compare',
@@ -29,11 +55,30 @@ interface RadioOption {
     MatTableModule,
     MatCheckboxModule,
     CitySearch,
+    MatSelectModule,
+    Charts
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss'
 })
 export class Compare implements OnInit {
+  readonly whatYouWillGet = [
+    {
+      header: 'Charts',
+      label: 'Side-by-side visual comparison of city finances across years and indicators',
+      src: './assets/images/chart.png'
+    },
+    {
+      header: 'Tables',
+      label: 'Downloadable data tables for deeper analysis',
+      src: './assets/images/table.png'
+    },
+    {
+      header: 'Exports',
+      label: 'PNG or CSV exports for your reports and presentations',
+      src: './assets/images/export.png'
+    },
+  ]
   readonly introCheckBoxText = [
     'Standardized data',
     'Shaped by investor feedback',
@@ -41,16 +86,68 @@ export class Compare implements OnInit {
   ]
   readonly indicatorsArr = signal<RadioOption[]>([
     // { label: "All Indicators", isActive: false },
-    { label: "Total Expenditure to Total Revenue (%)", isActive: false },
-    { label: "Own Source Revenue to Total Revenue (%)", isActive: false },
-    { label: "Grants to Total Revenue (%)", isActive: false },
-    { label: "Own Source Revenue to Total Expenditure (%)", isActive: false },
-    { label: "Capital Expenditure to Total Expenditure (%)", isActive: false },
-    { label: "Operating Surplus (Cr)", isActive: false }
+    {
+      key: 'totExpenditureByTotRevenue',
+      label: "Total Expenditure to Total Revenue (%)",
+      isActive: false
+    },
+    {
+      key: 'totOwnRevenueByTotRevenue',
+      label: "Own Source Revenue to Total Revenue (%)",
+      isActive: false
+    },
+    {
+      key: 'grantsByTotRevenue',
+      label: "Grants to Total Revenue (%)",
+      isActive: false
+    },
+    {
+      key: 'totExpenditureByTotOwnRevenue',
+      label: "Own Source Revenue to Total Expenditure (%)",
+      isActive: false
+    },
+    {
+      key: 'capitalExpenditureByTotExpenditure',
+      label: "Capital Expenditure to Total Expenditure (%)",
+      isActive: false
+    },
+    {
+      key: 'operatingSurplus',
+      label: "Operating Surplus (Cr)",
+      isActive: false
+    },
+    {
+      key: 'totRevenue',
+      label: "Total Revenue (Cr)",
+      isActive: false,
+      children: [
+        {
+          key: 'totOwnRevenue',
+          label: 'Own Source Revenue (Cr)',
+          isActive: false,
+        },
+        {
+          key: '120',
+          label: 'Assigned Revenue (Cr)',
+          isActive: false,
+        },
+        {
+          key: '160',
+          label: 'Revenue Grants (Cr)',
+          isActive: false,
+        },
+        {
+          key: '100',
+          label: 'Others (Cr)',
+          isActive: false,
+        },
+      ]
+    }
   ]); // Will be sent from parent/ api call
   yearsArr = signal<string[]>(['2020-21', '2021-22', '2022-23']); // Will be sent from parent/ api call
 
   indicators = signal<RadioOption[]>([]);
+  consolidatedIndicators = signal<RadioOption[]>([]);
   years = signal<RadioOption[]>([]);
 
   isYearsActive = signal<boolean>(false);
@@ -58,6 +155,17 @@ export class Compare implements OnInit {
   isBrowser: boolean = false;
 
   selectedCities = signal<IULB[]>([]);
+
+  chartConfig = signal<ChartConfig>({
+    chartId: '',
+    chartType: 'barChart',
+    datasets: []
+  });
+
+  displayedColumns: string[] = [];
+  dataSource = signal<any[]>([]);
+
+
 
   constructor(
     private utilityService: UtilityService,
@@ -76,7 +184,7 @@ export class Compare implements OnInit {
   // Based on yearsArr: string[] create years: RadioOption[] which has isActive etc..
   private setYearsArr() {
     const years = this.yearsArr().map((item: string) => {
-      return { label: item, isActive: false }
+      return { key: item, label: item, isActive: false }
     });
     this.years.set(years)
   }
@@ -164,15 +272,97 @@ export class Compare implements OnInit {
       return;
     }
     const years = this.years().filter(item => item.isActive);
-    const indicators = this.indicators().filter(item => item.isActive);
     const ulbs = this.selectedCities();
+    const indicators = this.indicators().filter(item => item.isActive);
+    const consolidatedIndicators = this.getIndicators(indicators);
+    this.consolidatedIndicators.set(consolidatedIndicators);
 
-    console.log(years, indicators, ulbs)
+    console.log("years - ", years);
+    console.log("ulbs - ", ulbs);
+    console.log("consolidatedIndicators - ", consolidatedIndicators);
+    console.log("this.consolidatedIndicators - ", this.consolidatedIndicators());
+
+    this.chartConfig.set({
+      "chartId": "bar-0",
+      "chartType": "barChart",
+      "labels": [
+        "2019-20",
+        "2020-21",
+        "2021-22"
+      ],
+      "datasets": [
+        {
+          "label": "Indore Municipal Corporation",
+          "data": [
+            83.28,
+            76.73,
+            70.28
+          ],
+          "backgroundColor": "#1b4965",
+          "borderRadius": 5,
+          "barThickness": 50,
+        },
+        {
+          "label": "Bruhat Bengaluru Mahanagara Palike",
+          "data": [
+            93.28,
+            36.73,
+            40.28
+          ],
+          "backgroundColor": "#62b6cb",
+          "borderRadius": 5,
+          "barThickness": 50,
+        },
+        {
+          "label": "Greater Chennai Corporation",
+          "data": [
+            63.28,
+            16.73,
+            90.28
+          ],
+          "backgroundColor": "#bee9e8",
+          "borderRadius": 5,
+          "barThickness": 50,
+        },
+      ],
+      "options": baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Amt in Cr', 'Years')
+    })
+
+    this.displayedColumns = ['position', 'name', 'weight', 'symbol'];
+    this.dataSource.set(ELEMENT_DATA);
+  }
+
+
+
+  // Flattens a list of indicators by extracting child indicators if present.
+  private getIndicators(indicators: RadioOption[]) {
+    const consolidatedIndicators: RadioOption[] = [];
+
+    const _getIndicators = (indicator: RadioOption) => {
+      if (indicator.children && indicator.children.length > 0) {
+        consolidatedIndicators.push(...indicator.children);
+      } else {
+        consolidatedIndicators.push(indicator);
+      }
+      return;
+    }
+
+    for (const indicator of indicators) {
+      _getIndicators(indicator);
+    }
+    return consolidatedIndicators;
   }
 
   onReset() {
     this.selectedCities.set([]);
     this.modifyIndicators(-1, false);
     this.modifyYears(-1, false);
+    this.consolidatedIndicators.set([]);
+    this.chartConfig.set({
+      chartId: '',
+      chartType: 'barChart',
+      datasets: []
+    });
+    this.dataSource.set([]);
   }
 }
