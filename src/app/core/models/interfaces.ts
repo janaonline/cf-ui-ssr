@@ -114,7 +114,8 @@ export type CalcType = 'total' | 'perCapita' | 'mix';
 export interface IFinancialIndicatorsChart {
   years: string[];
   compareType: compareType,
-  ulbId: string,
+  ulbId?: string,
+  stateId?: string,
   lineItem: LineItemType,
   calcType: CalcType,
   compareUlbs: string[]
@@ -147,6 +148,15 @@ export interface CreateExcelParams {
   header: { index: number, fontSize: number, fontFamily: string }
 }
 
+export interface TableColumns {
+  key: string;
+  value: string;
+  class?: string;
+  number?: boolean;
+  width?: string;
+  mergeCell?: boolean;
+}
+
 // export interface ChartResponse {
 //   success: boolean;
 //   data: ChartData;
@@ -163,3 +173,14 @@ export interface CreateExcelParams {
 //   label: string;
 //   data: number[];
 // }
+
+export interface BsCompareUlbs {
+  [_id: string]: BsCompareUlbsValue
+}
+
+export interface BsCompareUlbsValue {
+  _id: string;
+  name: string;
+  stateName: string;
+  population: number;
+}

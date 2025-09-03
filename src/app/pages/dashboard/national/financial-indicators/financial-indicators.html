@@ -1,0 +1,24 @@
+<div class="position-relative">
+    <!-- {{dashboardTabData() | json}} -->
+    @if(dashboardTabData()) {
+    <p class="my-4">{{ dashboardTabData().buttons[0].subButtons.text }}</p>
+    <p>Click here to view data availability for each financial year -
+        <!-- <a href="{{baseUrl}}//dashboard/national/61e150439ed0e8575c881028">link </a> -->
+        <a class="link-primary" (click)="navigateToData()">link </a>
+    </p>
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="dashboardTabData().buttons[0].subButtons.buttons"
+        (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+    }
+</div>
+<app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="true"></app-national-table>
+
+<!-- <div class="my-4 text-center">
+    You can also download the source data in excel format
+    <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
+        <i class="bi bi-download"></i>
+        &nbsp;
+        Download Data
+    </button>
+</div> -->

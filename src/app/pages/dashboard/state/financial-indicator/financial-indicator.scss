@@ -1,0 +1,43 @@
+.scatterChart,
+.barChart {
+    min-height: 500px;
+    min-width: 500px;
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    // border: 1px solid green;
+}
+
+.gaugeChart,
+.pieChart {
+    height: 227px;
+    width: 227px;
+
+    // border: 1px solid green;
+}
+
+
+.rankingButton {
+    border: 1px solid #9299b2;
+    color: #8b92a8;
+    border-radius: 6px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.activeButton {
+    border: 1px solid #f2991f;
+    color: #e57504;
+    background-color: #fff1e3;
+    box-shadow: 0px 2px 8px #fadaad;
+}
+
+.custom-class {
+    padding: 0.92rem 1rem;
+    background-color: transparent;
+    border: 1px solid grey;
+}
+
+.custom-margin {
+    margin-bottom: 1.29rem;
+}

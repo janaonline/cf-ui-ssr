@@ -13,6 +13,14 @@ export const serverRoutes: ServerRoute[] = [
     //   return ids.map(id => ({ cityId:id })); // Generates paths like: /post/1, /post/2, /post/3
     // },
   },
+  // {
+  //   path: 'municipal-data/state/:slug',
+  //   renderMode: RenderMode.Client,
+  // },
+  // {
+  //   path: 'municipal-data/national',
+  //   renderMode: RenderMode.Client,
+  // },
   {
     path: '**',
     renderMode: RenderMode.Prerender

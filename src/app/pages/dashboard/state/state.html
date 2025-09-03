@@ -1,1 +1,174 @@
-<p>state works!</p>
+<section class="bg-light-primary py-3">
+    <div class="container">
+        <!-- Go to state dashbard -->
+        <a [routerLink]="'/municipal-data/national'" class="custom-font-size-7">
+            Go To National Dashboard
+        </a>
+
+        <!-- Grid data + Map  -->
+        @if(stateDetails()?.state?._id) {
+        <div class="row my-3">
+            <!-- Left section -->
+            <div class="col-sm-12 col-md-6">
+                <h1 class="fw-bold my-3 fs-2">{{stateDetails()?.state?.name}}</h1>
+                <p class="my-3">
+                    Summary of key state demographics and municipal (urban) indicators
+                </p>
+                <!-- Grid -->
+                @if (isLoading()) {
+                <app-pre-loader></app-pre-loader>
+                <app-pre-loader></app-pre-loader>
+                } @else {
+                <app-grid-view [gridData]="stateDetails().gridData"></app-grid-view>
+                <!-- <p class="text-secondary custom-font-size-7">
+                    *To enable standardization of nomenclature across states, we have reclassified all ULBs into one of
+                    the three categories - Municipal Corporation, Municipality or Town Panchayat
+                </p> -->
+                }
+            </div>
+
+            <!-- Right Section -->
+            <div class="col-sm-12 col-md-6 my-3">
+                <!-- State and ULB search -->
+                <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
+                    <app-state-search [stateName]="stateDetails().state.name" (onStateChange)="onStateSelection($event)"
+                        [stateId]="stateDetails().state._id">
+                    </app-state-search>
+
+                    <app-city-search [cityName]="''" (onUlbSelect)="onUlbSelected($event)"
+                        [stateId]="stateDetails().state._id"></app-city-search>
+                </div>
+
+                <!-- State Map -->
+                <div class="position-relative row" style="min-height: 350px">
+                    @if (showMap() && stateDetails().state.code) {
+                    <app-map #map [stateCode]="stateDetails().state.code" [ulbId]="''"
+                        (ulbObjChange)="selectedUlbObjChange($event)"></app-map>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Money Cards -->
+        <!-- @if (this.isLoading2) { -->
+        @if (this.isLoading()) {
+        <app-pre-loader></app-pre-loader>
+        } @else if (selectedLedgerYear()) {
+        <div class="row justify-content-center my-4">
+            <div class="col-md-11 rounded border shadow-sm p-3 mx-auto">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8 mt-4">
+                        <h6 class="fw-bold">Standardized Data Availability</h6>
+
+                        <p class="text-secondary custom-font-size-6 ">Of the financial statements submitted by the ULBs,
+                            {{ dataAvailablePerc() }}%
+                            have been changed to a comparable, standardized, and digitized format for the year
+                            {{selectedLedgerYear()}}.
+                            Digitization of data is in progress for several ULBs including
+                            {{dataAvailableUlbs().join('
+                            ')}}.
+                            For more details, download the complete set of
+                            ULBs for which the data is available for the year {{selectedLedgerYear()}}.
+                        </p>
+                        <button class="btn btn-sm btn-outline-cfPrimary my-3" (click)="downloadData('dataAvailable')"><i
+                                class="bi bi-download"></i>&nbsp;Download
+                            Data</button>
+                    </div>
+
+                    <div class="charts-container col-sm-12 col-md-4">
+                        @if(!isDataLoading()) {
+                        <div class="chart-wrapper">
+                            <div class="chart-container">
+                                <app-charts [chartConfig]="chartData()"></app-charts>
+                            </div>
+                            <div class="chart-title">
+                                <p class="m-0 p-0 fw-bold">
+                                    {{ chartData().additionalInfo?.value }}{{ chartData().additionalInfo?.unit }}
+                                </p>
+                                <p class="m-0 p-0 custom-font-size-7 text-center">
+                                    <!-- {{ chartData().additionalInfo?.indicatorName }} -->
+                                    Data Standardized <br>({{selectedLedgerYear()}})
+                                </p>
+                                <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
+                                <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if(isMoneyInfoLoading()) {
+        <app-pre-loader></app-pre-loader>
+        <app-pre-loader></app-pre-loader>
+        }@else {
+        <app-info-cards [items]="moneyInfoRes().result"></app-info-cards>
+        }
+        }
+
+        <!-- Last modified date -->
+        <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
+            style="font-size: 0.75rem">
+            Last updated on:
+            {{ moneyInfoRes().lastModifiedAt | date : "mediumDate" }}; Source:
+            financial statements for the year
+            <select class="form-select form-select-sm w-auto d-inline-block" [value]="selectedLedgerYear()"
+                (change)="onMoneyInfoYearChange($event)" id="state_years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select>
+        </p>
+    </div>
+</section>
+
+<section class="container matTabGroup">
+    <div class="alert alert-info text-center mt-5" role="alert">
+        <i class="bi bi-bell"></i>
+        NEW ON CITY FINANCE: 10,000+ budget documents of 2,000 cities(FY 2020-2024) are now available for
+        download. <a [href]="`${v1Url}/resources-dashboard/data-sets/income_statement`">Click here to access files.</a>
+    </div>
+    <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+    <div class="d-flex justify-content-center">
+        <div class="px-4 dataAvailabiltyTab">
+            {{ stateDetails()?.state?.name }} Data Availability - {{ dataAvailablePerc() }}% ({{
+            selectedLedgerYear() }})
+        </div>
+    </div>
+    @if(dashboardTabs() && dashboardTabs().length !== 0 && stateDetails()?.state?._id) {
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
+        <mat-tab label="Financial Indicators">
+            @if (selectedTabIndex === 0 && ledgerYears().length) {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[0].buttons"
+                [tabName]="'Financial Indicators'" [years]="ledgerYears()">
+            </app-financial-indicator>
+            }
+        </mat-tab>
+
+        <mat-tab label="Service Level Benchmark">
+            @if (selectedTabIndex === 1) {
+            @if(isYearLoading()) {
+            <app-pre-loader></app-pre-loader>
+            <app-pre-loader></app-pre-loader>
+            <app-pre-loader></app-pre-loader>
+            } @else {
+            <app-financial-indicator [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[1].buttons"
+                [tabName]="'Service Level Benchmark'" [years]="ledgerYears()">
+            </app-financial-indicator>
+            }
+            }
+        </mat-tab>
+
+        <mat-tab label="Borrowings & Credit Rating">
+            @if (selectedTabIndex === 2) {
+            <app-borrowing-credit-rating [stateDetails]="stateDetails()" [dashboardTabData]="dashboardTabs()[2].buttons"
+                [tabName]="'Borrowings & Credit Rating'">
+            </app-borrowing-credit-rating>
+            }
+        </mat-tab>
+    </mat-tab-group>
+    }
+</section>

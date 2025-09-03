@@ -1,0 +1,99 @@
+<div class="row container mx-auto p-0 position-relative">
+    @if (isLoadingData()) {
+    <div class="custom-spinner-overlay"></div>
+    }
+
+    <div class="p-0" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
+        <app-tab-buttons [buttons]="buttons()" (selectedButtonKeyChange)="onSelectedType($event)">
+        </app-tab-buttons>
+    </div>
+    <div class="border rounded bg-light pt-3" [class]="{'col-md-6': isFullWidth(), 'col-md-12': !isFullWidth()}">
+        <div class="d-flex gap-2 justify-content-between align-items-end my-2">
+            <app-state-search [stateName]="selectedStateName()" [stateId]="selectedStateId()"
+                (onStateChange)="onStateSelection($event)">
+            </app-state-search>
+            <select class="form-select w-50 custom-margin custom-class" [value]="selectedLedgerYear()"
+                (change)="onYearChange($event)" id="state_years">
+                @for (year of ledgerYears(); track $index) {
+                <option [value]="year" [selected]="year === selectedLedgerYear()">
+                    {{ year }}
+                </option>
+                }
+            </select>
+            <div role="button" class="d-flex flex-column align-items-center custom-font-size-6 custom-margin"
+                (click)="resetFilter()">
+                <i class="bi bi-arrow-clockwise inline-block"></i>
+                Reset
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (isLoadingData()) {
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+<app-pre-loader></app-pre-loader>
+} @else {
+@if(nationalService.selectedButtonKey().includes('Mix')) {
+<div class="mt-5">
+    @if(responseData.colourArray.length) {
+    <app-national-chart [responseData]="responseData" [chartType]="'gaugeChart'"
+        [stateName]="selectedStateName()"></app-national-chart>
+    } @else {
+    <app-no-data-found></app-no-data-found>
+    }
+</div>
+} @else {
+<!-- View Type -->
+@if (nationalService.selectedTabName() !== 'Data Availability') {
+<div class="text-end mt-4">
+    <mat-button-toggle-group appearance="legacy" name="viewType" aria-label="View Type" [(ngModel)]="viewType">
+        <mat-button-toggle value="table"><i class="bi bi-table"></i> Table</mat-button-toggle>
+        <mat-button-toggle value="graph"><i class="bi bi-bar-chart-fill"></i> Graph</mat-button-toggle>
+    </mat-button-toggle-group>
+</div>
+}
+@if(viewType() === 'graph') {
+<app-national-chart [responseData]="tableData" [stateName]="selectedStateName()"></app-national-chart>
+} @else {
+@if (dataSource.length && headers.length && displayedColumns.length) {
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8 border rounded my-4">
+
+    @for (item of headers; track $index) {
+    <ng-container [matColumnDef]=item.key>
+        <th mat-header-cell *matHeaderCellDef class=" fw-bold bg-table-header ">{{item.display_name}}
+        </th>
+        <td mat-cell *matCellDef="let element" [class]="element.className + ' ps-4 '">
+            @if (getFormattedValue(element[item.key])) {
+            {{(element[item.key] | inrFormat : 'inr' : currencyOptions)}}
+            }
+            @else {
+            {{element[item.key]}}
+            }
+
+        </td>
+    </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [hidden]="row.ulb_pop_category === 'Average'"></tr>
+</table>
+} @else {
+<app-no-data-found></app-no-data-found>
+}
+}
+}
+}
+
+@if (nationalService.stateSlugName()){
+<button class="btn btn-cfPrimary" (click)="navigateToState()">View State Dashboard</button>
+}
+
+<div class="my-4 text-center custom-font-size-6">
+    You can also download the source data in excel format
+    <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
+        <i class="bi bi-download"></i>
+        &nbsp;
+        Download Data
+    </button>
+</div>

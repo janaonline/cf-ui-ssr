@@ -1,0 +1,29 @@
+tr {
+    font-family: var(--ff-base);
+    font-weight: var(--fw-medium);
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-container {
+    max-height: 95vh;
+    overflow: auto
+}
+
+.mat-column-lineItem {
+    min-width: 240px !important;
+}
+
+.mat-mdc-table {
+    background-color: white;
+}
+
+table,
+tr,
+td,
+th {
+    border-top: 1px solid #d3d3d3;
+    border-bottom: 1px solid lightgrey;
+}

@@ -1,6 +1,7 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Inject,
@@ -17,7 +18,7 @@ import * as L from 'leaflet';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { IULB } from '../../../core/models/ulb';
 import { UserUtility } from '../../../core/util/user/user';
-import { MapConfig, ResettableMap, StateGeoJson } from './interfaces';
+import { MapConfig, ResettableMap, StateDataByCode, StateGeoJson } from './interfaces';
 import { MapService } from './map.service';
 
 @Component({
@@ -31,6 +32,8 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   // Note: Ensure the map component is initialized only after the parent component has fully loaded and rendered.
   @Input() stateCode!: string;
   @Input() ulbId!: string;
+  @Input() showUlbs: boolean = true;
+  @Input() stateColorCode!: StateDataByCode;
   @Output() ulbObjChange = new EventEmitter<IULB>();
   @Output() slugNameChange = new EventEmitter<string>();
   @Output() stateCodeChange = new EventEmitter<string>();
@@ -53,6 +56,7 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
     private mapService: MapService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   // Set map zoom based on screen width.
@@ -89,7 +93,10 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
       !changes['ulbId'].isFirstChange() &&
       changes['ulbId'].previousValue !== changes['ulbId'].currentValue;
 
-    if (stateChanged && this.mapInitialized()) {
+    if (changes['stateColorCode'] && !stateChanged && this.mapInitialized()) {
+      this.loadMapData();
+      this.cdr.markForCheck();
+    } else if (stateChanged && this.mapInitialized()) {
       this.loadMapData();
     }
 
@@ -188,19 +195,22 @@ export class Map implements OnChanges, AfterViewInit, OnDestroy, ResettableMap {
 
           this.stateLayer = this.mapService.addGeoJsonLayer(
             stateGeoJson,
-            this.stateCode
+            this.stateCode,
+            this.stateColorCode
           );
 
           if (this.stateCode && features.length && this.stateLayer) {
             this.mapService.flyToStateBounds(this.stateLayer, [0, 0], 1.5, 0.5);
             // this.loadCityCoordinates();
-            this.getUlbsObservable(this.stateCode).subscribe({
-              next: (res) => {
-                this.ulbsList = res['data'][this.stateCode]['ulbs'];
-                this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
-              },
-              error: () => console.error('Failed to get data'),
-            });
+            if (this.showUlbs) {
+              this.getUlbsObservable(this.stateCode).subscribe({
+                next: (res) => {
+                  this.ulbsList = res['data'][this.stateCode]['ulbs'];
+                  this.mapService.addCityMarkersToMap(this.ulbId, this.ulbsList);
+                },
+                error: () => console.error('Failed to get data'),
+              });
+            }
           } else {
             this.mapService.map?.setView(
               this.mapConfig.initialView,

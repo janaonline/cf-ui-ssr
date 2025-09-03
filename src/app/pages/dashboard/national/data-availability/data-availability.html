@@ -1,0 +1,46 @@
+<section class="container row p-0 my-4">
+    <!-- <h5 class="fw-bold text-center">Data Availability - {{tableData.dataAvailability}}%</h5> -->
+
+    <!-- Map section -->
+    <div class="col-sm-12 col-md-6 d-flex flex-column justify-content-end">
+        <div class="position-relative" style="min-height: 500px">
+            @if (mapData()) {
+            <app-map #map [showUlbs]="false" [stateCode]="selectedstateObj().code || ''"
+                (stateCodeChange)="selectedStateCodeChange($event)" [ulbId]="''" [stateColorCode]="mapData()"></app-map>
+            }
+        </div>
+
+        <div class="custom-font-size-8 text-end my-4 me-3">
+            <p class="m-0 mb-1 p-0">% of Data Availability on Cityfinance.in</p>
+            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                @for (item of GRAPH_LEGEND; track $index) {
+                <p class="m-0 p-0">
+                    <i class="bi bi-sm bi-square-fill" [style.color]="item.color"></i>
+                    {{item.label}}
+                </p>
+                }
+            </div>
+        </div>
+
+        @if (selectedstateObj().code) {
+        <button class="btn p-0 m-0 border-0 bg-transparent text-cfPrimary fw-bold" (click)="resetFilter()">
+            Reset Map To India
+        </button>
+        }
+    </div>
+
+    <!-- Data section -->
+    <div class="col-sm-12 col-md-6">
+        <!-- Table -->
+        <app-national-table [ledgerYears]="ledgerYears()" [isFullWidth]="false" (filterChange)="filterChanged($event)"
+            [selectedstateObj]="selectedstateObj()"></app-national-table>
+    </div>
+    <!-- <div class="my-4 text-center">
+        You can also download the source data in excel format
+        <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
+            <i class="bi bi-download"></i>
+            &nbsp;
+            Download Data
+        </button>
+    </div> -->
+</section>

@@ -1,0 +1,30 @@
+<div class="dialog-container">
+    <mat-dialog-content class="mat-typography text-dark">
+        <div class="border rounded bg-table-header fw-bold px-2 py-3 my-2">Compare with Average</div>
+        <div class="w-100">
+            <!-- City search -->
+            <form [formGroup]="myForm" class="w-100 mt-3">
+                <!-- {{myForm.get('ulbName')?.value}} -->
+                <app-city-search [selectCity]="onUlbSelected" [stateId]="data.stateId" [resetOnChange]="true"
+                    [cityName]="ulbName"></app-city-search>
+            </form>
+            <!-- Show selected cities -->
+            <div class="d-flex flex-wrap gap-2 my-1">
+                @for (city of citiesArr.slice(0, 3); track $index) {
+                <div class="badge bg-light border border-secondary text-dark d-flex align-items-center p-1 pe-3 rounded-pill"
+                    style="max-width: 12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                    [title]="city.name">
+                    <span class="me-2 text-truncate flex-grow-1">{{ city.name }}</span>
+                    <button type="button" class="btn-close btn-sm reset-btn-styles" aria-label="Close"
+                        (click)="removeCity($index)"><i class="bi bi-x-circle"></i></button>
+                </div>
+                }
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions class="d-flex justify-content-center gap-3">
+        <button class="btn btn-cfPrimary" (click)="filterSelected()">Apply</button>
+        <button class="btn btn-outline-cfPrimary" (click)="filterSelected('reset')">Reset</button>
+        <button class="btn btn-outline-cfPrimary" mat-dialog-close>close</button>
+    </mat-dialog-actions>
+</div>

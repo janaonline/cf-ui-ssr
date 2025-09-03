@@ -1,4 +1,3 @@
-import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -12,6 +11,7 @@ import {
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
+import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -27,11 +27,28 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   chartConfig = input.required<ChartConfig>();
   chartInstance: Chart | undefined;
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
-  // ngOnInit(): void { }
+  // ngOnInit(): void {
+  // console.log('Chart called: ', this.chartConfig());
+  // }
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    effect(() => {
+      const config = this.chartConfig(); // access the signal
+      console.log('Chart config changed:', config);
+      if (this.chartInstance) {
+        // this.chart.config = config;
+        // this.chartInstance.update();
+        setTimeout(() => {
+          this.createChart();
+        }, 100);
+      }
+    });
+  }
+
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
       this.createChart();
     }, 100);
@@ -121,6 +138,15 @@ export class Charts implements AfterViewInit, OnDestroy {
           },
           options: config.options,
           plugins,
+        });
+        break;
+      case 'scatterChart':
+        this.chartInstance = new Chart(ctx, {
+          type: 'scatter',
+          data: {
+            datasets: config.datasets, // No labels for scatter
+          },
+          options: config.options,
         });
         break;
       default:

@@ -14,7 +14,8 @@
     "exp:sm": "npx source-map-explorer dist/cf-ui-ssr/browser/*.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs"
+    "serve:ssr:cf-ui-ssr": "node dist/cf-ui-ssr/server/server.mjs",
+    "ssr": "node dist/cf-ui-ssr/server/server.mjs"
   },
   "prettier": {
     "overrides": [
@@ -45,8 +46,10 @@
     "@types/jquery": "^3.5.32",
     "@types/slick-carousel": "^1.6.40",
     "bootstrap": "^5.3.6",
+    "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
     "exceljs": "^4.4.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "express": "^5.1.0",
     "file-saver": "^2.0.5",
     "geojson": "^0.5.0",

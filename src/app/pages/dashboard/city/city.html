@@ -8,7 +8,8 @@
     }
 
     <!-- Go to state dashbard -->
-    <a [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`" class="custom-font-size-7">
+    <!-- <a [href]="`${this.v1Url}/dashboard/state?stateId=${this.cityDetails()?.state?._id}`" class="custom-font-size-7"> -->
+    <a [routerLink]="['/municipal-data/state', this.cityDetails()?.state?.slug]" class="custom-font-size-7">
       Go To {{ cityDetails()?.state?.name }} Dashboard
       <!-- Go To {{ selectedStateNameSignal() }} Dashboard -->
     </a>
@@ -104,8 +105,8 @@
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[1]) {
-      <app-balancesheet-incomestatement [yearsSignal]="ledgerYears()"
-        [ulbIdSignal]="ulbIdSignal()"></app-balancesheet-incomestatement>
+      <app-balancesheet-incomestatement [yearsSignal]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()"
+        [ulbName]="cityDetails().ulbName"></app-balancesheet-incomestatement>
       }
     </mat-tab>
     <mat-tab label="Borrowing & Credit Rating">

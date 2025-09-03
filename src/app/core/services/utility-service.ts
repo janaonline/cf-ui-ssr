@@ -141,7 +141,7 @@ export class UtilityService {
     this._snackBar.open(msg, 'Close', {
       horizontalPosition: 'end',
       verticalPosition: 'top',
-      duration: 2000,
+      duration: 3000,
       panelClass: [className],
     });
   }

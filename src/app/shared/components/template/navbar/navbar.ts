@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -46,7 +46,8 @@ export class Navbar {
       child: [
         {
           name: 'National Performance',
-          href: this.v1Url + '/dashboard/national/61e150439ed0e8575c881028',
+          link: '/municipal-data/national',
+          // href: this.v1Url + '/dashboard/national/61e150439ed0e8575c881028',
         },
         {
           name: 'Own Revenue Performance',
@@ -73,7 +74,8 @@ export class Navbar {
   constructor(
     public _router: Router,
     private authService: AuthService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.isLoggedIn = this.authService.loggedIn();
     this.user = this.isLoggedIn ? this.user : null;
@@ -83,7 +85,7 @@ export class Navbar {
   ngOnInit(): void {
     this.isProd = environment?.isProduction;
     this.checkUserLoggedIn();
-    this.setLoggedInUserMenu();
+    // this.setLoggedInUserMenu();
   }
 
   checkUserLoggedIn() {
@@ -94,7 +96,7 @@ export class Navbar {
     if (this.isLoggedIn) {
       UserUtility.getUserLoggedInData().subscribe((value: any) => {
         this.user = value;
-        // this.setLoggedInUserMenu();
+        this.setLoggedInUserMenu();
       });
       this.btnName = 'Logout';
     } else {
@@ -265,6 +267,7 @@ export class Navbar {
     setTimeout(() => {
       if (this.menuElement) {
         this.elementPosition = this.menuElement.nativeElement.offsetTop;
+        this.cdr.detectChanges();
       }
     });
   }
