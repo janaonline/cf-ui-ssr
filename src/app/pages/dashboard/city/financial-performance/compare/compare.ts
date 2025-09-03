@@ -1,15 +1,14 @@
 import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, computed, effect, ElementRef, EnvironmentInjector, inject, Inject, OnInit, PLATFORM_ID, runInInjectionContext, signal, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { CitySearch } from "../../../../../shared/components/city-search/city-search";
-import { UtilityService } from '../../../../../core/services/utility-service';
 import { IULB } from '../../../../../core/models/ulb';
-import { Chart } from 'chart.js';
+import { UtilityService } from '../../../../../core/services/utility-service';
+import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 // import { financeData } from './finance-data';
 
 interface RadioOption {
@@ -58,25 +57,23 @@ export class Compare implements OnInit {
   isIndicatorssActive = signal<boolean>(false);
   isBrowser: boolean = false;
 
-  compareForm!: FormGroup;
-
-  public selectedYears() {
-    console.log("years: ", this.compareForm.get('years')?.value);
-    return this.compareForm.get('years')?.value;
-  }
-
-
   selectedCities = signal<IULB[]>([]);
+
+  constructor(
+    private utilityService: UtilityService,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) { }
+
 
   ngOnInit() {
     if (isPlatformServer(this.platformId)) return;
     this.isBrowser = isPlatformBrowser(this.platformId);
 
-    this.initializeForm();
     this.setYearsArr();
     this.setIndicatorsArr();
   }
 
+  // Based on yearsArr: string[] create years: RadioOption[] which has isActive etc..
   private setYearsArr() {
     const years = this.yearsArr().map((item: string) => {
       return { label: item, isActive: false }
@@ -84,127 +81,97 @@ export class Compare implements OnInit {
     this.years.set(years)
   }
 
+  // Set indicators array.
   private setIndicatorsArr() {
     const indicators = [...this.indicatorsArr()];
     this.indicators.set(indicators);
   }
 
-  private initializeForm() {
-    this.compareForm = this.fb.group({
-      years: [],
-      // indicatorSelect: this.fb.array(this.indicators.map(() => false))
-    });
-  }
-
   // TODO - make a generic function to add/ remmove
+  // Remove city from searched cities list.
   removeCity(city: IULB) {
     this.selectedCities.update(cities => cities.filter(c => c._id !== city._id));
   }
 
+  // Make isActive true based on year selection in years()
   modifyYears(index: number) {
     this.years()[index].isActive = !this.years()[index].isActive;
     this.isYearsActiveFn();
     console.log("modify year: ", index, this.years());
   }
 
+  // Make all years active.
   allAllYears() {
     this.years().forEach(item => item.isActive = true);
     this.isYearsActive.set(true);
   }
 
+  // Make all years inactive.
   removeAllYears() {
     this.years().forEach(item => item.isActive = false);
     this.isYearsActive.set(false);
   }
 
+  // Update isYearsActive variable if all years are active.
   private isYearsActiveFn() {
     const isActive = this.years().every(item => item.isActive);
     this.isYearsActive.set(isActive);
   }
 
+  // Make isActive true based on year selection in indicators()
   modifyIndicators(index: number) {
     this.indicators()[index].isActive = !this.indicators()[index].isActive;
     this.isIndicatorsActiveFn();
     console.log("addIndicator: ", index, this.indicators())
   }
 
+  // Make all indicators active.
   allAllIndicators() {
     this.indicators().forEach(item => item.isActive = true);
     this.isIndicatorssActive.set(true);
   }
 
+  // Make all indicators inactive.
   removeAllIndicators() {
     this.indicators().forEach(item => item.isActive = false);
     this.isIndicatorssActive.set(false);
   }
 
+  // Update isIndicatorssActive variable if all years are active.
   private isIndicatorsActiveFn() {
     const isActive = this.indicators().every(item => item.isActive);
     this.isIndicatorssActive.set(isActive);
   }
 
+  // When ULB is selected from drop down - update selectedCities()
+  onUlbSelected = (city: IULB) => {
+    if (this.selectedCities().length >= 3) {
+      this.utilityService.triggerSnackbar('Maximum 3 cities can be selected.', 'snackbar-danger');
+    } else if (this.selectedCities().find(c => c._id === city._id)) {
+      this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
+    } else {
+      this.selectedCities.update(cities => [...cities, city]);
+    }
+  };
+
+  // Check if all filter options are selected to apply filter.
   isValidSelection() {
     return this.years().some(item => item.isActive) &&
       this.indicators().some(item => item.isActive) &&
       this.selectedCities().length > 0;
   }
 
-  @ViewChild('citySearch') citySearch!: any;
-  allCities: any;
+  applyFilter() {
+    const years = this.years().filter(item => item.isActive);
+    const indicators = this.indicators().filter(item => item.isActive);
+    const ulbs = this.selectedCities();
 
-  constructor(
-    private fb: FormBuilder,
-    private utilityService: UtilityService,
-    @Inject(PLATFORM_ID) private platformId: object
-  ) { }
-
-  // const injector = inject(EnvironmentInjector);
-
-
-  onUlbSelected = (city: IULB) => {
-    if (this.selectedCities().length < 3 && !this.selectedCities().find(c => c._id === city._id)) {
-      this.selectedCities.update(cities => [...cities, city]);
-    } else {
-      this.utilityService.triggerSnackbar('Maximum 3 cities can be selected', 'snackbar-danger');
-    }
-  };
-
-
-
-
-  // getSelectedYears(): string[] {
-  //   return this.compareForm.value.yearSelect
-  //     .map((checked: boolean, i: number) => checked ? this.years[i].value : null)
-  //     .filter((v: string | null) => v !== null);
-  // }
-
-  // getSelectedIndicators(): string[] {
-  //   return this.compareForm.value.indicatorSelect
-  //     .map((checked: boolean, i: number) => checked ? this.indicators[i].name : null)
-  //     .filter((v: string | null) => v !== null);
-  // }
+    console.log(years, indicators, ulbs)
+  }
 
   onReset() {
     this.selectedCities.set([]);
     this.removeAllIndicators();
     this.removeAllYears();
   }
-
-
-  onSubmit(): void {
-    // console.log('Selected Years:', this.getSelectedYears());
-    // console.log('Selected Indicators:', this.getSelectedIndicators());
-    console.log('Full Form Value:', this.compareForm.value);
-  }
-
-  // isValidSelection(): boolean {
-  //   return this.getSelectedYears().length > 0 && this.getSelectedIndicators().length > 0;
-  // }
-
-
-  getValue(city: any, year: string): number | string {
-    const found = city.values.find((v: any) => v.year === year);
-    return found ? found.value : '-';
-  }
-
 }

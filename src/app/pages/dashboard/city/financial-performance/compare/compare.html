@@ -24,9 +24,9 @@
 
     <div class="shadow p-4 rounded my-4 bg-light">
         <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
-        <form [formGroup]="compareForm" (ngSubmit)="onSubmit()">
+        <form>
             <!-- Ulbs -->
-            <div class="my-4 p-1">
+            <div class=" my-4 p-1">
                 <p class="fw-bold mb-2">01 Select up to three cities</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
                     <app-city-search [selectCity]="onUlbSelected" #citySearch>
@@ -106,7 +106,8 @@
 
             <!-- Buttons -->
             <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                <button class="btn btn-cfPrimary" type="submit" [disabled]="!isValidSelection()">Apply</button>
+                <button class="btn btn-cfPrimary" type="submit" [disabled]="!isValidSelection()"
+                    (click)="applyFilter()">Apply</button>
                 <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
             </div>
 
