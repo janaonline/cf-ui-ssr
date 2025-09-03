@@ -54,7 +54,7 @@ export class Compare implements OnInit {
   years = signal<RadioOption[]>([]);
 
   isYearsActive = signal<boolean>(false);
-  isIndicatorssActive = signal<boolean>(false);
+  isIndicatorsActive = signal<boolean>(false);
   isBrowser: boolean = false;
 
   selectedCities = signal<IULB[]>([]);
@@ -87,29 +87,27 @@ export class Compare implements OnInit {
     this.indicators.set(indicators);
   }
 
-  // TODO - make a generic function to add/ remmove
   // Remove city from searched cities list.
   removeCity(city: IULB) {
     this.selectedCities.update(cities => cities.filter(c => c._id !== city._id));
   }
 
-  // Make isActive true based on year selection in years()
-  modifyYears(index: number) {
-    this.years()[index].isActive = !this.years()[index].isActive;
+  /**
+   * @param index 
+   *    - Index of the years to toggle.
+   *    - If index === -1, the `isActive` status for all years will be set to the provided 
+   * @param activeStatus 
+   *    - Boolean flag to set all years' active state. 
+   *    - Defaults to the inverse of `this.isYearsActive()` if not provided.
+   */
+  modifyYears(index: number, activeStatus: boolean = !this.isYearsActive()) {
+    if (index === -1) {
+      this.years().forEach(item => item.isActive = activeStatus);
+    } else {
+      this.years()[index].isActive = !this.years()[index].isActive;
+    }
     this.isYearsActiveFn();
     console.log("modify year: ", index, this.years());
-  }
-
-  // Make all years active.
-  allAllYears() {
-    this.years().forEach(item => item.isActive = true);
-    this.isYearsActive.set(true);
-  }
-
-  // Make all years inactive.
-  removeAllYears() {
-    this.years().forEach(item => item.isActive = false);
-    this.isYearsActive.set(false);
   }
 
   // Update isYearsActive variable if all years are active.
@@ -118,29 +116,28 @@ export class Compare implements OnInit {
     this.isYearsActive.set(isActive);
   }
 
-  // Make isActive true based on year selection in indicators()
-  modifyIndicators(index: number) {
-    this.indicators()[index].isActive = !this.indicators()[index].isActive;
+  /**
+   * @param index 
+   *    - Index of the indicator to toggle.
+   *    - If index === -1, the `isActive` status for all indicators will be set to the provided 
+   * @param activeStatus 
+   *    - Boolean flag to set all indicators' active state. 
+   *    - Defaults to the inverse of `this.isIndicatorsActive()` if not provided.
+   */
+  modifyIndicators(index: number, activeStatus: boolean = !this.isIndicatorsActive()) {
+    if (index === -1) {
+      this.indicators().forEach(item => item.isActive = activeStatus);
+    } else {
+      this.indicators()[index].isActive = !this.indicators()[index].isActive;
+    }
     this.isIndicatorsActiveFn();
     console.log("addIndicator: ", index, this.indicators())
-  }
-
-  // Make all indicators active.
-  allAllIndicators() {
-    this.indicators().forEach(item => item.isActive = true);
-    this.isIndicatorssActive.set(true);
-  }
-
-  // Make all indicators inactive.
-  removeAllIndicators() {
-    this.indicators().forEach(item => item.isActive = false);
-    this.isIndicatorssActive.set(false);
   }
 
   // Update isIndicatorssActive variable if all years are active.
   private isIndicatorsActiveFn() {
     const isActive = this.indicators().every(item => item.isActive);
-    this.isIndicatorssActive.set(isActive);
+    this.isIndicatorsActive.set(isActive);
   }
 
   // When ULB is selected from drop down - update selectedCities()
@@ -155,13 +152,17 @@ export class Compare implements OnInit {
   };
 
   // Check if all filter options are selected to apply filter.
-  isValidSelection() {
+  isInvalidSelection() {
     return this.years().some(item => item.isActive) &&
       this.indicators().some(item => item.isActive) &&
       this.selectedCities().length > 0;
   }
 
   applyFilter() {
+    if (!this.isInvalidSelection()) {
+      this.utilityService.triggerSnackbar('Kindly ensure all filter options are selected before applying the filter.', 'snackbar-danger');
+      return;
+    }
     const years = this.years().filter(item => item.isActive);
     const indicators = this.indicators().filter(item => item.isActive);
     const ulbs = this.selectedCities();
@@ -171,7 +172,7 @@ export class Compare implements OnInit {
 
   onReset() {
     this.selectedCities.set([]);
-    this.removeAllIndicators();
-    this.removeAllYears();
+    this.modifyIndicators(-1, false);
+    this.modifyYears(-1, false);
   }
 }

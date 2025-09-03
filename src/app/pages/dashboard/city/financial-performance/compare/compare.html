@@ -47,20 +47,12 @@
             <div class="my-4 p-1">
                 <p class="fw-bold mb-2">02 Select Years</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    @if (isYearsActive()) {
-                    <small (click)="removeAllYears()" title="All years"
-                        class="rounded-5 text-truncate py-1 px-2 m-1 bg-cfSecondary text-white"
+                    <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
                         style="max-width: 80vw;">
-                        All years
-                        <i class="bi bi-check2 ms-1" role="button"></i>
+                        All Indicators
+                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
                     </small>
-                    } @else {
-                    <small (click)="allAllYears()" title="All years"
-                        class="rounded-5 text-truncate py-1 px-2 m-1 unselected-secondary-btn" style="max-width: 80vw;">
-                        All years
-                        <i class="bi bi-plus ms-1" role="button"></i>
-                    </small>
-                    }
                     @for (item of years(); track $index) {
                     <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
                         [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
@@ -78,20 +70,13 @@
             <div class=" my-4 p-1">
                 <p class="fw-bold mb-2">03 Select Indicators</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    @if (isIndicatorssActive()) {
-                    <small (click)="removeAllIndicators()" title="All years"
-                        class="rounded-5 text-truncate py-1 px-2 m-1 bg-cfSecondary text-white"
+                    <small (click)="modifyIndicators(-1)" title="All years"
+                        class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="isIndicatorsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
                         style="max-width: 80vw;">
                         All Indicators
-                        <i class="bi bi-check2 ms-1" role="button"></i>
+                        <i [class]=" isIndicatorsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
                     </small>
-                    } @else {
-                    <small (click)="allAllIndicators()" title="All years"
-                        class="rounded-5 text-truncate py-1 px-2 m-1 unselected-secondary-btn" style="max-width: 80vw;">
-                        All Indicators
-                        <i class="bi bi-plus ms-1" role="button"></i>
-                    </small>
-                    }
                     @for (item of indicators(); track $index) {
                     <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
                         [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
@@ -106,8 +91,7 @@
 
             <!-- Buttons -->
             <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                <button class="btn btn-cfPrimary" type="submit" [disabled]="!isValidSelection()"
-                    (click)="applyFilter()">Apply</button>
+                <button class="btn btn-cfPrimary" type="submit" (click)="applyFilter()">Apply</button>
                 <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
             </div>
 
