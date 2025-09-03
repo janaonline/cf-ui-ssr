@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,11 +11,11 @@ import { IULB } from '../../../../../core/models/ulb';
 import { InrFormatPipe } from "../../../../../core/pipes/inr-format.pipe";
 import { GlobalLoaderService } from '../../../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../../../core/services/utility-service';
-import { ChartConfig } from '../../../../../shared/components/charts/chart-interfaces';
+import { ChartConfig, ChartDataSet } from '../../../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../../../shared/components/charts/charts";
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../../shared/components/charts/constants';
 import { CitySearch } from "../../../../../shared/components/city-search/city-search";
-// import { financeData } from './finance-data';
+const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", '#f43f5e', '#B388FF'];
 
 interface RadioOption {
   key: string;
@@ -23,38 +23,6 @@ interface RadioOption {
   isActive: boolean;
   children?: RadioOption[];
 };
-
-interface PeriodicElement {
-  [key: string]: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {
-    indicator: "Own Source Revenue (Cr)",
-    "2020,21": "20000",
-    "2021,22": "10000",
-    "2022,23": "20000"
-  },
-  {
-    indicator: "Assigned Revenue (Cr)",
-    "2020,21": "30000",
-    "2021,22": "60000",
-    "2022,23": "10000"
-  },
-  {
-    indicator: "Revenue Grants (Cr)",
-    "2020,21": "6000",
-    "2021,22": "1000",
-    "2022,23": "200"
-  },
-  {
-    indicator: "Others (Cr)",
-    "2020,21": "20000",
-    "2021,22": "1000",
-    "2022,23": "900"
-  },
-];
-
 
 @Component({
   selector: 'app-compare',
@@ -164,6 +132,7 @@ export class Compare implements OnInit {
 
   indicators = signal<RadioOption[]>([]);
   consolidatedIndicators = signal<RadioOption[]>([]);
+  selectedIndicator: FormControl = new FormControl('');
   years = signal<RadioOption[]>([]);
 
   isYearsActive = signal<boolean>(false);
@@ -178,14 +147,85 @@ export class Compare implements OnInit {
     datasets: []
   });
 
+  headers = signal<any[]>([]);
   displayedColumns: string[] = [];
   dataSource = signal<any[]>([]);
-  headers = [
-    { key: 'indicator', label: 'Indicator' },
-    { key: '2020,21', label: '2020-21' },
-    { key: '2021,22', label: '2021-22' },
-    { key: '2022,23', label: '2022-23' },
-  ]
+  res = {
+    headers: [
+      { key: 'indicator', label: 'Indicator' },
+      { key: "5e4a75dc47cb2749e5a56be0_2020_21", label: '2020-21' },
+      { key: "5e4a75dc47cb2749e5a56be0_2021_22", label: '2021-22' },
+      { key: "5e4a75dc47cb2749e5a56be0_2022_23", label: '2022-23' },
+      { key: "5eb5844f76a3b61f40ba0697_2020_21", label: '2020-21' },
+      { key: "5eb5844f76a3b61f40ba0697_2021_22", label: '2021-22' },
+      { key: "5eb5844f76a3b61f40ba0697_2022_23", label: '2022-23' },
+      { key: "5f5610b3aab0f778b2d2cac0_2020_21", label: '2020-21' },
+      { key: "5f5610b3aab0f778b2d2cac0_2021_22", label: '2021-22' },
+      { key: "5f5610b3aab0f778b2d2cac0_2022_23", label: '2022-23' },
+    ],
+    data: [
+      {
+        indicator: "Capital Expenditure to Total Expenditure (%)",
+        "5e4a75dc47cb2749e5a56be0_2020_21": "2000",
+        "5e4a75dc47cb2749e5a56be0_2021_22": "1000",
+        "5e4a75dc47cb2749e5a56be0_2022_23": "800",
+        "5eb5844f76a3b61f40ba0697_2020_21": "1510",
+        "5eb5844f76a3b61f40ba0697_2021_22": "1050",
+        "5eb5844f76a3b61f40ba0697_2022_23": "570",
+        "5f5610b3aab0f778b2d2cac0_2020_21": "200",
+        "5f5610b3aab0f778b2d2cac0_2021_22": "100",
+        "5f5610b3aab0f778b2d2cac0_2022_23": "400",
+      },
+      {
+        indicator: "Own Source Revenue (Cr)",
+        "5e4a75dc47cb2749e5a56be0_2020_21": "2000",
+        "5e4a75dc47cb2749e5a56be0_2021_22": "1000",
+        "5e4a75dc47cb2749e5a56be0_2022_23": "800",
+        "5eb5844f76a3b61f40ba0697_2020_21": "1510",
+        "5eb5844f76a3b61f40ba0697_2021_22": "1050",
+        "5eb5844f76a3b61f40ba0697_2022_23": "570",
+        "5f5610b3aab0f778b2d2cac0_2020_21": "200",
+        "5f5610b3aab0f778b2d2cac0_2021_22": "100",
+        "5f5610b3aab0f778b2d2cac0_2022_23": "400",
+      },
+      {
+        indicator: "Assigned Revenue (Cr)",
+        "5e4a75dc47cb2749e5a56be0_2020_21": "800",
+        "5e4a75dc47cb2749e5a56be0_2021_22": "780",
+        "5e4a75dc47cb2749e5a56be0_2022_23": "660",
+        "5eb5844f76a3b61f40ba0697_2020_21": "550",
+        "5eb5844f76a3b61f40ba0697_2021_22": "470",
+        "5eb5844f76a3b61f40ba0697_2022_23": "590",
+        "5f5610b3aab0f778b2d2cac0_2020_21": "400",
+        "5f5610b3aab0f778b2d2cac0_2021_22": "480",
+        "5f5610b3aab0f778b2d2cac0_2022_23": "800",
+      },
+      {
+        indicator: "Revenue Grants (Cr)",
+        "5e4a75dc47cb2749e5a56be0_2020_21": "920",
+        "5e4a75dc47cb2749e5a56be0_2021_22": "810",
+        "5e4a75dc47cb2749e5a56be0_2022_23": "780",
+        "5eb5844f76a3b61f40ba0697_2020_21": "298",
+        "5eb5844f76a3b61f40ba0697_2021_22": "100",
+        "5eb5844f76a3b61f40ba0697_2022_23": "200",
+        "5f5610b3aab0f778b2d2cac0_2020_21": "920",
+        "5f5610b3aab0f778b2d2cac0_2021_22": "100",
+        "5f5610b3aab0f778b2d2cac0_2022_23": "200",
+      },
+      {
+        indicator: "Others (Cr)",
+        "5e4a75dc47cb2749e5a56be0_2020_21": "800",
+        "5e4a75dc47cb2749e5a56be0_2021_22": "100",
+        "5e4a75dc47cb2749e5a56be0_2022_23": "10",
+        "5eb5844f76a3b61f40ba0697_2020_21": "400",
+        "5eb5844f76a3b61f40ba0697_2021_22": "100",
+        "5eb5844f76a3b61f40ba0697_2022_23": "70",
+        "5f5610b3aab0f778b2d2cac0_2020_21": "264",
+        "5f5610b3aab0f778b2d2cac0_2021_22": "300",
+        "5f5610b3aab0f778b2d2cac0_2022_23": "220",
+      },
+    ]
+  }
 
 
   constructor(
@@ -201,12 +241,14 @@ export class Compare implements OnInit {
 
     this.setYearsArr();
     this.setIndicatorsArr();
+
+    this.selectedIndicator!.valueChanges.subscribe(() => this.createChartData());
   }
 
   // Based on yearsArr: string[] create years: RadioOption[] which has isActive etc..
   private setYearsArr() {
     const years = this.yearsArr().map((item: string) => {
-      return { key: item, label: item, isActive: false }
+      return { key: item.replace('-', '_'), label: item, isActive: false }
     });
     this.years.set(years)
   }
@@ -237,7 +279,7 @@ export class Compare implements OnInit {
       this.years()[index].isActive = !this.years()[index].isActive;
     }
     this.isYearsActiveFn();
-    console.log("modify year: ", index, this.years());
+    // console.log("modify year: ", index, this.years());
   }
 
   // Update isYearsActive variable if all years are active.
@@ -261,7 +303,7 @@ export class Compare implements OnInit {
       this.indicators()[index].isActive = !this.indicators()[index].isActive;
     }
     this.isIndicatorsActiveFn();
-    console.log("addIndicator: ", index, this.indicators())
+    // console.log("addIndicator: ", index, this.indicators())
   }
 
   // Update isIndicatorssActive variable if all years are active.
@@ -297,73 +339,132 @@ export class Compare implements OnInit {
       this.utilityService.triggerSnackbar('Kindly ensure all filter options are selected before applying the filter.', 'snackbar-danger');
       return;
     }
+
+    // TDOD: will be removed - for dev only.
+    this.selectedCities.set([
+      {
+        "_id": "5e4a75dc47cb2749e5a56be0",
+        "code": "MP005",
+        "name": "Indore Municipal Corporation",
+        "slug": "indore",
+        location: {
+          lat: null,
+          lng: null
+        },
+        amrut: undefined,
+        isActive: false,
+        area: 0,
+        natureOfUlb: '',
+        population: 0,
+        wards: 0,
+        state: '',
+        financialYear: ''
+      },
+      {
+        "_id": "5eb5844f76a3b61f40ba0697",
+        "code": "MP004",
+        "name": "Bhopal Municipal Corporation",
+        "slug": "bhopal",
+        location: {
+          lat: null,
+          lng: null
+        },
+        amrut: undefined,
+        isActive: false,
+        area: 0,
+        natureOfUlb: '',
+        population: 0,
+        wards: 0,
+        state: '',
+        financialYear: ''
+      },
+      {
+        "_id": "5f5610b3aab0f778b2d2cac0",
+        "code": "KA194",
+        "name": "Bruhat Bengaluru Mahanagara Palike",
+        "slug": "bengaluru",
+        location: {
+          lat: null,
+          lng: null
+        },
+        amrut: undefined,
+        isActive: false,
+        area: 0,
+        natureOfUlb: '',
+        population: 0,
+        wards: 0,
+        state: '',
+        financialYear: ''
+      }
+    ])
+
     const years = this.years().filter(item => item.isActive);
     const ulbs = this.selectedCities();
     const indicators = this.indicators().filter(item => item.isActive);
     const consolidatedIndicators = this.getIndicators(indicators);
     this.consolidatedIndicators.set(consolidatedIndicators);
+    this.selectedIndicator.setValue(this.consolidatedIndicators()[0].key)
 
     this.globalLoaderService.showLoader();
+    this.loadData(years, ulbs, consolidatedIndicators);
+    this.globalLoaderService.hideLoader();
+  }
+
+  private loadData(years: RadioOption[], ulbs: IULB[], consolidatedIndicators: RadioOption[]) {
+    // TODO: change to string[] - based on api requirement.
+    console.log("filters = ", years, ulbs, consolidatedIndicators);
     setTimeout(() => {
-      this.getTableData(ELEMENT_DATA);
+      this.getTableData(this.res);
+      // this.createChartData(this.res); // This is called from valueChanges.
     }, 1000);
   }
 
   private getTableData(resData: any) {
-    this.displayedColumns = this.headers.map(item => item.key);
-    this.dataSource.set(resData);
-    this.globalLoaderService.hideLoader();
-    this.createChartData();
+    this.headers.set(resData.headers);
+    this.displayedColumns = resData.headers.map((item: any) => item.key);
+    this.dataSource.set(resData.data);
   }
 
-  private createChartData() {
-    this.globalLoaderService.showLoader();
+  private createChartData(resData: any = this.res) {
+    // console.log('Create chart called');
+    // Create chart labels.
+    const labelsWithDup: string[] = resData.headers
+      .filter((item: any) => item.key !== 'indicator')
+      .map((item: any) => item.label);
+    const labels = Array.from(new Set(labelsWithDup));
+
+    // Create data set.
+    const indicatorLabel = this.consolidatedIndicators()
+      .find(({ key }) => key === this.selectedIndicator.value)
+      ?.label;
+    const indicatorsData = resData.data.find((item: any) => item.indicator === indicatorLabel);
+
+    const datasets: ChartDataSet[] = [];
+    this.selectedCities().forEach((city: IULB, idx: number) => {
+      const cityId = city._id;
+      const data: number[] = [];
+      for (const year of this.years()) {
+        const key = cityId + '_' + year.key;
+        data.push(indicatorsData[key]);
+      }
+      const obj = {
+        label: city.name,
+        data,
+        "backgroundColor": GRAPH_COLORS[idx],
+        "borderRadius": 5,
+        "barThickness": 50,
+      };
+      datasets.push(obj);
+    })
+
+
     this.chartConfig.set({
       "chartId": "bar-0",
       "chartType": "barChart",
-      "labels": [
-        "2019-20",
-        "2020-21",
-        "2021-22"
-      ],
-      "datasets": [
-        {
-          "label": "Indore Municipal Corporation",
-          "data": [
-            83.28,
-            76.73,
-            70.28
-          ],
-          "backgroundColor": "#1b4965",
-          "borderRadius": 5,
-          "barThickness": 50,
-        },
-        {
-          "label": "Bruhat Bengaluru Mahanagara Palike",
-          "data": [
-            93.28,
-            36.73,
-            40.28
-          ],
-          "backgroundColor": "#62b6cb",
-          "borderRadius": 5,
-          "barThickness": 50,
-        },
-        {
-          "label": "Greater Chennai Corporation",
-          "data": [
-            63.28,
-            16.73,
-            90.28
-          ],
-          "backgroundColor": "#bee9e8",
-          "borderRadius": 5,
-          "barThickness": 50,
-        },
-      ],
+      labels,
+      datasets,
       "options": baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Amt in Cr', 'Years')
     })
-    this.globalLoaderService.hideLoader();
   }
 
   // Flattens a list of indicators by extracting child indicators if present.
@@ -396,5 +497,6 @@ export class Compare implements OnInit {
       datasets: []
     });
     this.dataSource.set([]);
+    this.selectedIndicator.setValue('');
   }
 }

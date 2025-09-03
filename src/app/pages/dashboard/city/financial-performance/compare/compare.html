@@ -102,6 +102,7 @@
         </div>
     </div>
 
+    @if(selectedIndicator.value) {
     <div
         class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
         <p class="col-sm-12 col-lg-6 custom-mb px-0">
@@ -109,7 +110,7 @@
         </p>
         <!-- @if (consolidatedIndicators().length > 0) { -->
         <mat-form-field appearance="outline" class="col-sm-12 col-lg-3 px-0">
-            <mat-select>
+            <mat-select [formControl]="selectedIndicator">
                 @for (indicator of consolidatedIndicators(); track $index) {
                 <mat-option [value]=indicator.key>{{indicator.label}}</mat-option>
                 }
@@ -150,7 +151,7 @@
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
         <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 border border-bg-light">
 
-            @for (item of headers; track $index) {
+            @for (item of headers(); track $index) {
             <ng-container [matColumnDef]="item.key">
                 <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header">
                     {{item['label']}}
@@ -176,6 +177,7 @@
         </div>
         }
     </div>
+    }
 
     <div class="rounded-4 p-4 bg-secondary-subtle my-4">
         <p class="fs-3 mb-4">What you'll get </p>
