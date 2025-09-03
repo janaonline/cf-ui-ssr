@@ -1,4 +1,4 @@
-<nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom">
+<nav #stickyMenu [class]="{ 'position-relative': !isSticky, 'sticky': isSticky }" class="bg-white shadow-bottom">
   <div class="container d-flex justify-content-between align-items-center bg-white">
     <button class="mobile-nav-ham" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav">
@@ -13,7 +13,7 @@
 
     <!-- Nav items -->
     <div class="d-flex flex-grow-1 align-items-center justify-content-end gap-1">
-      <ul id="primary-navigation" class="primary-navigation d-flex gap-3"
+      <ul id="primary-navigation" class="primary-navigation d-flex gap-3 fw-semibold"
         [class]="showMobileNav ? 'primary-navigation-data-visible' : ''">
         <!-- Cancel Hamburger Menu -->
         @if (showMobileNav) {
@@ -32,9 +32,15 @@
         </li>
         <mat-menu #DashboardMenu="matMenu">
           @for (childMenu of menu.child; track childMenu) {
+          @if (childMenu.link) {
+          <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.link"
+            routerLinkActive="active">{{childMenu.name}}</a>
+          } @else {
           <a mat-menu-item [href]="childMenu.href" [class.border-bottom]="!$last" routerLinkActive="active">
             {{ childMenu.name }}
           </a>
+          }
+
           }
         </mat-menu>
         } @else {
@@ -51,12 +57,12 @@
         } }
         @if (!isLoggedIn) {
         <li>
-          <button class="btn btn-outline-cfPrimary fw-bold border-2" (click)="showRequestDemoPopup()">
+          <button class="btn btn-outline-cfPrimary fw-semibold border-2" (click)="showRequestDemoPopup()">
             Request a Demo
           </button>
         </li>
         <li>
-          <button class="btn btn-cfPrimary fw-bold d-flex align-items-center" [matMenuTriggerFor]="loginMenu">
+          <button class="btn btn-cfPrimary d-flex align-items-center fw-semibold" [matMenuTriggerFor]="loginMenu">
             Login&nbsp;
             <i class="bi bi-caret-down-fill"></i>
           </button>

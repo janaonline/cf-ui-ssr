@@ -11,12 +11,14 @@ export type ChartType =
   | 'pieChart'
   | 'mixedChart'
   | 'gaugeChart'
-  | 'doughnut';
+  | 'doughnut'
+  | 'scatterChart';
 
 export interface ChartDataSet {
   type?: 'bar' | 'line'; // For mixed charts
   label: string;
-  data: (number | null)[];
+  // data: (number | null)[];
+  data: (number | null)[] | { x: number, y: number }[];
   backgroundColor?: string | string[];
   borderColor?: string;
   borderWidth?: number;
@@ -24,6 +26,7 @@ export interface ChartDataSet {
   borderRadius?: number;
   tension?: number;
   fill?: boolean;
+  cutout?: string;
   barThickness?: number;
 }
 

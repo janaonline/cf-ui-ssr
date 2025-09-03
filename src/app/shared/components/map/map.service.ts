@@ -5,8 +5,7 @@ import type * as Leaflet from 'leaflet';
 import { Observable, Subject } from 'rxjs'; // Import throwError
 import { environment } from '../../../../environments/environment';
 import { IULB } from '../../../core/models/ulb';
-import { IStateLayerStyle } from '../../../core/util/map/models/mapCreationConfig';
-import { MapConfig, StateGeoJson, ULBStateData } from './interfaces';
+import { MapConfig, StateDataByCode, StateGeoJson, ULBStateData } from './interfaces';
 
 interface LeafletHTMLElement extends HTMLElement {
   _leaflet_id?: number;
@@ -22,18 +21,21 @@ declare module 'leaflet' {
 export class MapService {
   private readonly cfPrimary = '#e57d15';
   private readonly cfSecondary = '#3e5db1';
+  private readonly fallbackColor = '#e0e3ecff';
   private readonly FLY_TO_DELAY_MS = 400;
 
   public map: Leaflet.Map | null = null;
   private L!: typeof Leaflet;
   private leafletLoaded = false;
 
-  private defaultStateLayerStyle: IStateLayerStyle = {
-    fillColor: this.cfSecondary,
-    weight: 1,
-    opacity: 0.8,
-    color: 'lightgrey',
-    fillOpacity: 1,
+  private defaultStateLayerStyle = (fillColor: string = this.cfSecondary) => {
+    return {
+      fillColor,
+      weight: 1,
+      opacity: 0.8,
+      color: 'lightgrey',
+      fillOpacity: 1,
+    }
   };
 
   private blueIcon!: Leaflet.Icon;
@@ -154,13 +156,14 @@ export class MapService {
    */
   addGeoJsonLayer(
     geoJsonData: StateGeoJson,
-    stateCode: string
+    stateCode: string,
+    stateColorCode: StateDataByCode,
   ): Leaflet.GeoJSON | null {
     if (!isPlatformBrowser(this.platformId) || !this.map || !this.L)
       return null;
 
     return this.L.geoJSON(geoJsonData, {
-      style: this.defaultStateLayerStyle,
+      style: (feature) => this.getStateLayerStyle(feature, stateColorCode),
       onEachFeature: (feature, layer) => {
         const stateName = feature.properties.ST_NM;
         const stateFeatureCode = feature.properties.ST_CODE;
@@ -191,13 +194,26 @@ export class MapService {
           },
           mouseout: () => {
             if (layer instanceof this.L.Path && !stateCode) {
-              layer.setStyle(this.defaultStateLayerStyle);
+              layer.setStyle(this.getStateLayerStyle(feature, stateColorCode));
             }
           },
         });
       },
     }).addTo(this.map);
   }
+
+  // Get state color.
+  private getStateLayerStyle(feature: any, stateColorCode: StateDataByCode, fallbackColor = this.fallbackColor): any {
+    if (!feature || !stateColorCode) {
+      return this.defaultStateLayerStyle(this.cfSecondary);
+    }
+
+    const stateFeatureCode = feature.properties?.ST_CODE;
+    const color = stateColorCode[stateFeatureCode]?.shade || fallbackColor;
+
+    return this.defaultStateLayerStyle(color);
+  }
+
 
   /**
    * Flies the map to the bounds of a given GeoJSON layer.

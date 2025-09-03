@@ -17,7 +17,7 @@
         <div class="w-100">
             <!-- <app-city-search [selectCity]="onUlbSelected" [cityName]="resetCity()"></app-city-search> -->
             <!-- City search -->
-            <form [formGroup]="myForm" class="d-flex gap-2">
+            <form [formGroup]="myForm" class="d-flex gap-2 my-2">
                 <input type="text" class="input-box-style" placeholder="Search for ULBs" matInput
                     formControlName="ulbName" [matAutocomplete]="auto" id="ulbName" />
                 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
@@ -35,7 +35,7 @@
             <!-- Show selected cities -->
             <div class="d-flex flex-wrap gap-2 my-1">
                 @for (city of citiesArr.slice(0, 3); track $index) {
-                <div class="badge bg-light border border-secondary text-dark d-flex align-items-center p-1 pe-3 rounded-pill"
+                <div class="badge bg-light border border-secondary text-dark d-flex align-items-center p-2 pe-3 rounded-pill"
                     style="max-width: 12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                     [title]="city.name">
                     <span class="me-2 text-truncate flex-grow-1">{{ city.name }}</span>

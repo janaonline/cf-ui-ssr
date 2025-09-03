@@ -6,11 +6,11 @@ export const DASHBOARD_ROUTES: Route[] = [
         loadComponent: () => import('./national/national').then(m => m.National)
     },
     {
-        path: 'state',
+        path: 'state/:slug',
         loadComponent: () => import('./state/state').then(m => m.State)
     },
     {
-        path: ':dataId',
+        path: 'city/:slug',
         loadComponent: () => import('./city/city').then(m => m.City)
     },
 ];

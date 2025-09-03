@@ -1,13 +1,17 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   ElementRef,
+  Inject,
   input,
   OnDestroy,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
+import { isPlatformBrowser } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -27,7 +31,23 @@ export class Charts implements AfterViewInit, OnDestroy {
   // console.log('Chart called: ', this.chartConfig());
   // }
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    effect(() => {
+      const config = this.chartConfig(); // access the signal
+      console.log('Chart config changed:', config);
+      if (this.chartInstance) {
+        // this.chart.config = config;
+        // this.chartInstance.update();
+        setTimeout(() => {
+          this.createChart();
+        }, 100);
+      }
+    });
+  }
+
+
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     setTimeout(() => {
       this.createChart();
     }, 100);
@@ -35,7 +55,6 @@ export class Charts implements AfterViewInit, OnDestroy {
 
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
-
     if (!this.chartCanvas) {
       console.error(
         'Canvas element not found for chart:',
@@ -114,6 +133,15 @@ export class Charts implements AfterViewInit, OnDestroy {
           },
           options: config.options,
           plugins,
+        });
+        break;
+      case 'scatterChart':
+        this.chartInstance = new Chart(ctx, {
+          type: 'scatter',
+          data: {
+            datasets: config.datasets, // No labels for scatter
+          },
+          options: config.options,
         });
         break;
       default:

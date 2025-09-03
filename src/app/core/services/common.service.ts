@@ -134,7 +134,7 @@ export class CommonService {
     return this.http.get<BondIssuances>(url);
   }
 
-  public fetchStateList() {
+  public fetchStateList(): Observable<IState[]> {
     return this.http
       .get<{ data: IState[] }>(environment.api.url + 'state')
       .pipe(map((res) => res.data));
@@ -233,5 +233,17 @@ export class CommonService {
     return this.http.get<{ data: FileMetadata[] }>(
       `${environment.api.url}annual-accounts/datasets?year=${year}&type=${type}&category=${category}&state=${state}&ulb=${ulb}&ulbId=${ulbId}&globalName=${globalName}&skip=${skip}`
     );
+  }
+
+  // Downlaod excel;
+  downloadExcel(blob: Blob, filename: string = 'City_Finance_Data.xlsx') {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   }
 }

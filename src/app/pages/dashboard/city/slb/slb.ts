@@ -90,7 +90,7 @@ export class Slb implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private dashboardService: DashboardService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initializeForm();
@@ -264,6 +264,8 @@ export class Slb implements OnInit, OnDestroy {
 
       return chartConfig;
     });
+
+    console.log(this.chartData)
 
     this.isLoading = false;
   }

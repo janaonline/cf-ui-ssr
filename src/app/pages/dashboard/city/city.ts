@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   catchError,
   forkJoin,
@@ -55,6 +55,7 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
   selector: 'app-city',
   imports: [
     CommonModule,
+    RouterModule,
     StateSearch,
     Map,
     MatTabsModule,
@@ -104,7 +105,7 @@ export class City {
     this.activatedRoute.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        const citySlugName = params.get('dataId') || '';
+        const citySlugName = params.get('slug') || '';
         // const citySlugName = params.get('cityId') || '';
         this.selectedLedgerYear.set('');
 
@@ -119,8 +120,9 @@ export class City {
   setSeo() {
     const ulbName = this._commonService.toTitleCase(this.ulbSlugName());
     const title = `${ulbName} Financial Statements and Budgets | City Finance`
-    const url = `${environment.baseUrl}/municipal-data/${this.ulbSlugName()}`;
-    const keywords = `${this.ulbSlugName()} audited financial statements, municipal finance, ${this.ulbSlugName()} budget, ${this.ulbSlugName()} service level benchmarks`;
+    const url = `${environment.baseUrl}/municipal-data/city/${this.ulbSlugName()}`;
+    const keywordsJsonLD = `${this.ulbSlugName()} audited financial statements, municipal finance, ${this.ulbSlugName()} budget`;
+    const keywords = `${keywordsJsonLD}, ${this.ulbSlugName()} service level benchmarks`;
     const desc = `Explore comprehensive municipal finance data of ${ulbName} including revenue sources, property tax collection, expenditure patterns, debt profile, credit ratings and other fiscal indicators`
 
     this.seoService.updateTitle(title);
@@ -137,9 +139,13 @@ export class City {
 
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "Dataset",
       "name": title,
-      "url": url
+      "url": url,
+      "keywords": keywordsJsonLD,
+      "description": desc,
+      "spatial": `${this.cityDetails().ulbName}, ${this.cityDetails().state.name}, India`,
+      "temporalCoverage": "2021/2024",
     });
   }
 
@@ -194,7 +200,7 @@ export class City {
           this.cityDetails.set(res);
           this.ulbIdSignal.set(res.ulbId);
           this.setSeo();
-          // console.log(res);
+          // console.log(res, 'res');
         },
         error: (error: Error) => {
           console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
@@ -378,7 +384,7 @@ export class City {
 
   // Navigate to other ulb.
   private updateUlbIdAndNavigate(slug: string): void {
-    this.router.navigate(['/municipal-data', slug]);
+    this.router.navigate(['/municipal-data/city', slug]);
   }
 
   // On tab changes call the chid components.
