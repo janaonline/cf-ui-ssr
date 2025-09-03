@@ -138,6 +138,15 @@ export interface IFinancialIndicatorInfo {
   text: 'success' | 'danger'
 }
 
+export interface TableColumns {
+  key: string;
+  value: string;
+  class?: string;
+  number?: boolean;
+  width?: string;
+  mergeCell?: boolean;
+}
+
 export interface CreateExcelParams {
   addLogo: boolean,
   addContactUsNote: boolean,
@@ -148,14 +157,6 @@ export interface CreateExcelParams {
   header: { index: number, fontSize: number, fontFamily: string }
 }
 
-export interface TableColumns {
-  key: string;
-  value: string;
-  class?: string;
-  number?: boolean;
-  width?: string;
-  mergeCell?: boolean;
-}
 
 // export interface ChartResponse {
 //   success: boolean;

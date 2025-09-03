@@ -263,7 +263,7 @@ input::-webkit-inner-spin-button {
 }
 
 .custom-font-size-8 {
-    font-size: var(--fs-8);
+    font-size: var(--fs-8) !important;
 }
 
 // Custom text shadow.
