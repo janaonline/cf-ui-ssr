@@ -1,0 +1,4 @@
+@if (ledgerYears().length > 0 && ulb()._id) {
+<app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type" [ulbName]="ulb().name"
+  [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+}
