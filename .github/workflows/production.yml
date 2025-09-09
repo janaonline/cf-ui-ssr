@@ -1,44 +1,65 @@
-name: Deploy Angular SSR App on Staging
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - staging # or your default branch
+      - "production"
+  pull_request:
+    branches:
+      - "production"
+
+env:
+  AWS_REGION: ap-south-1
+  S3BUCKET: cityfinance-frontend
+  ZIP_FILE: cf-ui-ssr
+  GITHUB_REF: production
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        node-version: [22]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-      - name: 📥 Checkout repo
-        uses: actions/checkout@v3
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      - name: Build Angular project
+        run: npm run build
 
-      - name: 📦 Install dependencies
-        run: npm ci --force
+      - name: Archive build folder
+        run: |
+          zip -r ${{ env.ZIP_FILE }} dist/ appspec.yml scripts/
 
-      - name: 🛠️ Build Angular SSR
-        run: npm run build:dev
-
-      - name: 🚀 Deploy to Server via SSH
-        uses: appleboy/scp-action@v0.1.4
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/"
-          target: "/var/www/html/seo-cicd/cf-ui-ssr"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Copy to s3 bucket
+        run: |
+          aws s3 cp ${{ env.ZIP_FILE }}.zip s3://${{ env.S3BUCKET }}/
 
-      - name: 🔄 Restart PM2 on Server
-        uses: appleboy/ssh-action@v1.0.0
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /var/www/html/staging-cicd/cf-ui-ssr
-            pm2 reload ecosystem.config.js --only cf-ui-ssr || pm2 start ecosystem.config.js --only cf-ui-ssr
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: |
+          echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ github.event.inputs.environment }}"
+          commit_hash=`git rev-parse HEAD`
+          aws deploy create-deployment --application-name CF-CodeDeployment-Application --deployment-group-name CF-DeploymentGroup-UI-SSR --s3-location bucket=cityfinance-frontend,bundleType=zip,key=${{ env.ZIP_FILE }}.zip --ignore-application-stop-failures --file-exists-behavior OVERWRITE
