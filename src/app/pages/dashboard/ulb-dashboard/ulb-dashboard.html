@@ -1,4 +1,51 @@
 @if (ledgerYears().length > 0 && ulb()._id) {
-<app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type || ''"
-  [ulbName]="ulb().name" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+<div class="container mt-4">
+  <a [href]="redirectionUrl()">
+    Go To XVFC Grants
+  </a>
+
+  <h1 class="fs-4 fw-bold mt-4">Revenue Dashboard</h1>
+  <p class="m-0">Your city's revenue data is displayed below. Click the tabs below to analyze per capita performance and
+    break
+    down of your revenue sources.</p>
+
+
+  <div class="row">
+    <div class="col-lg-8">
+      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type || ''"
+        [ulbName]="ulb().name" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+    </div>
+
+    <div class="col-lg-4 p-3 h-100 border rounded margin-top">
+      <h2 class="fs-5 fw-bold my-4">Insights</h2>
+      <p>Get a walkthrough of your city’s financial performance. We’ll help you make sense of the numbers</p>
+      <p>Get a walkthrough of your city’s financial performance. We’ll help you make sense of the numbers</p>
+      <p>Get a walkthrough of your city’s financial performance. We’ll help you make sense of the numbers</p>
+    </div>
+  </div>
+
+  <div class="my-4 mb-5">
+    <h2 class="fw-bold my-4">Next Steps</h2>
+    <div class="d-flex flex-wrap gap-2 justify-content-evenly my-4">
+      <div class="webinar-alert lh-sm">
+        <!-- <img src="./assets/webinar/sep-11-calendar.png" width="80" height="80" /> -->
+        <div>
+          <p class="fw-bold p-0 mb-2">Understand your data</p>
+          Get a walkthrough of your city’s financial performance. We’ll help you make sense of the numbers and show how
+          they compare with peer cities.
+          <div role="button" class="webinar-btn" (click)="registerForEvent()">Send request →</div>
+        </div>
+      </div>
+      <div class="webinar-alert lh-sm">
+        <!-- <img src="./assets/webinar/coming-soon.png" width="70" height="80" /> -->
+        <div>
+          <p class="fw-bold p-0 mb-2">Attend a webinar</p>
+          Join live sessions for a step-by-step tour of CityFinance. Learn to read revenue data and benchmark with peer
+          cities.
+          <div role="button" class="webinar-btn" (click)="joinWaitlist()">Register Now →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 }
