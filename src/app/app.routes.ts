@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -23,7 +24,8 @@ export const routes: Routes = [
     },
     {
         path: 'ulb/:ulbId/:indicatoName',
-        loadComponent: () => import('./pages/dashboard/ulb-dashboard/ulb-dashboard').then(m => m.UlbDashboard)
+        loadComponent: () => import('./pages/dashboard/ulb-dashboard/ulb-dashboard').then(m => m.UlbDashboard),
+        canActivate: [authGuard]
     },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
 
