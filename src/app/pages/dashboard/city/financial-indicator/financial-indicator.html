@@ -17,15 +17,7 @@
     }
 
     <!-- Common component is used for revenue dashboard (ulb login - XVFC), city page.D -->
-    @if(isDashboard()) {
-    <a [href]="redirectionUrl()">
-      Go To XVFC Grants
-    </a>
-
-    <h1 class="fs-4 fw-bold mt-4">Revenue Dashboard</h1>
-    <p>Your city's revenue data is displayed below. Click the tabs below to analyze per capita performance and break
-      down of your revenue sources.</p>
-    } @else {
+    @if(!isDashboard()) {
     <!-- Main Buttons -->
     <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
     </app-tab-buttons>
@@ -51,7 +43,8 @@
       <mat-spinner></mat-spinner>
     </div>
     }
-    <div class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2" id="chartContainer">
+    <div class="rounded bg-light d-flex flex-column col-sm-12 p-3 mb-2"
+      [ngClass]="isDashboard() ? 'col-lg-12' : 'col-lg-8'" id="chartContainer">
       <p class="">
         {{ ulbName() }} <b>{{ buttonType() }}</b> v/s <b>{{ getCompType() }}</b>
       </p>

@@ -95,5 +95,13 @@ export class UlbDashboard {
     })
   }
 
+  registerForEvent() {
+
+  }
+
+  joinWaitlist() {
+
+  }
+
 }
 
