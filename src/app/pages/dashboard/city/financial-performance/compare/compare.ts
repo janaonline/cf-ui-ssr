@@ -238,7 +238,7 @@ export class Compare implements OnInit {
   ngOnInit() {
     if (isPlatformServer(this.platformId)) return;
     this.isBrowser = isPlatformBrowser(this.platformId);
-    console.log("isBrowser: ", this.isBrowser);
+    console.log("isBrowser:sd ", this.isBrowser);
     this.setYearsArr();
     this.setIndicatorsArr();
 
