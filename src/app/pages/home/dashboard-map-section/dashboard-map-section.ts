@@ -34,11 +34,8 @@ import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { StateSearch } from '../../../shared/components/state-search/state-search';
 import { NationalDashboard } from '../../../shared/services/national-dashboard';
 
-const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 const STATE_LIST_KEY = makeStateKey<any>('stateList');
-// const BONDS_KEY = makeStateKey<any>('fetchBondIssuances');
 const ULB_DATA_KEY = makeStateKey<any>('fetchUlbData');
-const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 
 @Component({
   selector: 'app-dashboard-map-section',

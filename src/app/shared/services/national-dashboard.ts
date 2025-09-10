@@ -23,7 +23,7 @@ export class NationalDashboard {
   totalCreditRating: number = 0;
   cr_above_BBB_minus: number = 0;
   cr_above_a: number = 0;
-  private readonly ELIGIBLE_RATINGS = [
+  private readonly ABOVE_BBB_MINUS = [
     'A',
     'A+',
     'AA',
@@ -36,6 +36,16 @@ export class NationalDashboard {
     'BBB',
     'BBB+',
     'BBB-',
+  ];
+  private readonly ABOVE_A = [
+    'A',
+    'A+',
+    'AA',
+    'AA+',
+    'AA-',
+    'AAA',
+    'AAA+',
+    'AAA-',
   ];
 
   constructor(
@@ -75,7 +85,7 @@ export class NationalDashboard {
   // Helper: Compute total, creditRatingAboveBBB_Minus count.
   private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
     const computedData: CreditRatingMap = {
-      India: { total: 0, creditRatingAboveBBB_Minus: 0 },
+      India: { total: 0, creditRatingAboveBBB_Minus: 0, creditRatingAboveA: 0 },
     };
 
     for (const data of res) {
@@ -83,15 +93,20 @@ export class NationalDashboard {
       const rating = data.creditrating;
 
       if (!computedData[stateName]) {
-        computedData[stateName] = { total: 0, creditRatingAboveBBB_Minus: 0 };
+        computedData[stateName] = { total: 0, creditRatingAboveBBB_Minus: 0, creditRatingAboveA: 0 };
       }
 
       computedData[stateName]['total'] += 1;
       computedData['India']['total'] += 1;
 
-      if (this.ELIGIBLE_RATINGS.includes(rating)) {
+      if (this.ABOVE_BBB_MINUS.includes(rating)) {
         computedData[stateName]['creditRatingAboveBBB_Minus'] += 1;
         computedData['India']['creditRatingAboveBBB_Minus'] += 1;
+      }
+
+      if (this.ABOVE_A.includes(rating)) {
+        computedData[stateName]['creditRatingAboveA'] += 1;
+        computedData['India']['creditRatingAboveA'] += 1;
       }
     }
 
@@ -103,14 +118,16 @@ export class NationalDashboard {
     const ratingData = this.creditRating()['India'] || {
       total: 0,
       creditRatingAboveBBB_Minus: 0,
+      creditRatingAboveA: 0,
     };
 
     this.totalCreditRating = ratingData['total'];
     this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
+    this.cr_above_a = ratingData['creditRatingAboveA'];
     this.fetchExploreSectionData(stateCode, stateId);
   }
 
-  fetchExploreSectionData(stateCode: string = '', stateId: string = ''): void {
+  private fetchExploreSectionData(stateCode: string = '', stateId: string = ''): void {
     this.isLoading.set(true);
     if (
       isPlatformBrowser(this.platformId) &&
