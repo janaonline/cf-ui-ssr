@@ -215,7 +215,8 @@ export class DashboardMapSection {
     this.updateUlbsOfSelectedState();
     this.nationalDashboardService.updateRatingSummary(
       this.selectedStateCodeSignal(),
-      this.selectedStateIdSignal()
+      this.selectedStateIdSignal(),
+      this.selectedStateNameSignal()
     );
   }
 

@@ -114,8 +114,9 @@ export class NationalDashboard {
   }
 
   // Helper: Update credit ratings summary.
-  updateRatingSummary(stateCode: string = '', stateId: string = ''): void {
-    const ratingData = this.creditRating()['India'] || {
+  updateRatingSummary(stateCode: string = '', stateId: string = '', stateName: string = ''): void {
+    const key = stateName ? stateName : 'India';
+    const ratingData = this.creditRating()[key] || {
       total: 0,
       creditRatingAboveBBB_Minus: 0,
       creditRatingAboveA: 0,
@@ -141,7 +142,13 @@ export class NationalDashboard {
         .getExploreSectionData(stateCode, stateId)
         .subscribe({
           next: (res: ExploreSectionResponse) => {
-            let result: any = [
+            // Ticker above search bar - homepage.
+            this._commonService.setDataForVisualizationCount(
+              res.gridDetails[0].value?.toString()
+            );
+            this.isLoading.set(false);
+
+            let result: ExploresectionTable[] = [
               ...res.gridDetails,
               {
                 sequence: 3,
@@ -171,19 +178,11 @@ export class NationalDashboard {
               result[4] = obj;
             }
 
-            // Ticker above search bar - homepage.
-            this._commonService.setDataForVisualizationCount(
-              result[0].value?.toString()
-            );
-
-            this.isLoading.set(false);
-
-            const expRes = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
+            const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
+            this.exploreData.set(data);
             if (isPlatformServer(this.platformId)) {
-              this.transferState.set(GRID_DATA_KEY, expRes);
+              this.transferState.set(GRID_DATA_KEY, data);
             }
-
-            this.exploreData.set(expRes);
           },
           error: (error: any) => console.error('Error in loading explore section data: ', error),
         });
