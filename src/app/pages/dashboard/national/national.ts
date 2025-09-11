@@ -94,10 +94,10 @@ export class National implements OnInit {
     this.getLedgerYears();
   }
 
-  private loadData() {
-    this.getMoneyInfo();
-    this.fetchExploreSectionData();
-  }
+  // private loadData() {
+  //   this.getMoneyInfo();
+  //   this.fetchExploreSectionData();
+  // }
 
   setSeo() {
     const title = 'Municipal Financial Data of Indian Cities | City Finance';
@@ -136,7 +136,7 @@ export class National implements OnInit {
         this.selectedLedgerYear.set(this.ledgerYears()[1]);
       },
       error: () => console.error('Failed to get years'),
-      complete: () => this.loadData()
+      complete: () => this.getMoneyInfo()
     });
   }
 
@@ -157,14 +157,8 @@ export class National implements OnInit {
         .getExploreSectionData()
         .subscribe({
           next: (res: ExploreSectionResponse) => {
-            this.exploreData.set(res);
-          },
-          error: (error: any) =>
-            console.error('Error in loading explore section data: ', error),
-          complete: () => {
-            // Combine all the data - grid section (National and state filter)
-            this.exploreData().gridDetails = [
-              ...this.exploreData().gridDetails,
+            let result: any = [
+              ...res.gridDetails,
               {
                 sequence: 3,
                 label: 'ULBs Credit Rating Reports',
@@ -180,12 +174,7 @@ export class National implements OnInit {
                 src: '',
               },
             ];
-
-            this.exploreData().gridDetails.sort(
-              (a, b) => a.sequence - b.sequence
-            );
-
-            // TODO: make this dynamic.
+            result.sort((a: any, b: any) => a.sequence - b.sequence);
             const obj = {
               sequence: 5,
               label: 'ULBs With Rating A & Above',
@@ -193,14 +182,43 @@ export class National implements OnInit {
               info: '',
               src: ''
             }
-
             this.exploreData().gridDetails[4] = obj;
 
             this.isLoading.set(false);
 
+            const expRes = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
             if (isPlatformServer(this.platformId)) {
-              this.transferState.set(GRID_DATA_KEY, this.exploreData());
+              this.transferState.set(GRID_DATA_KEY, expRes);
             }
+
+            this.exploreData.set(expRes);
+          },
+          error: (error: any) =>
+            console.error('Error in loading explore section data: ', error),
+          complete: () => {
+            // Combine all the data - grid section (National and state filter)
+            // this.exploreData().gridDetails =
+
+            // this.exploreData().gridDetails.sort(
+            //   (a, b) => a.sequence - b.sequence
+            // );
+
+            // TODO: make this dynamic.
+            // const obj = {
+            //   sequence: 5,
+            //   label: 'ULBs With Rating A & Above',
+            //   value: 22,
+            //   info: '',
+            //   src: ''
+            // }
+
+            // this.exploreData().gridDetails[4] = obj;
+
+            // this.isLoading.set(false);
+
+            // if (isPlatformServer(this.platformId)) {
+            //   this.transferState.set(GRID_DATA_KEY, this.exploreData());
+            // }
           },
         });
     }
@@ -209,37 +227,37 @@ export class National implements OnInit {
   // Get credit rating data - Card 3, 4.
   private fetchCreditRatingsData(): void {
     this.isLoading.set(true);
+    // console.log('Fetching credit rating data...', this.transferState.hasKey(CREDIT_RATINGS_KEY));
+    // if (
+    //   isPlatformBrowser(this.platformId) &&
+    //   this.transferState.hasKey(CREDIT_RATINGS_KEY)
+    // ) {
+    //   const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
+    //   this.creditRating.set(data);
+    //   this.transferState.remove(CREDIT_RATINGS_KEY);
+    //   this.isLoading.set(false);
+    // } else {
+    this.assetService
+      .fetchCreditRatingReport()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ICreditRatingData[]) => {
+          const computedData = this.computeRatings(res);
+          this.creditRating.set(computedData);
 
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(CREDIT_RATINGS_KEY)
-    ) {
-      const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
-      this.creditRating.set(data);
-      this.transferState.remove(CREDIT_RATINGS_KEY);
-      this.isLoading.set(false);
-    } else {
-      this.assetService
-        .fetchCreditRatingReport()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: ICreditRatingData[]) => {
-            const computedData = this.computeRatings(res);
-            this.creditRating.set(computedData);
+          if (isPlatformServer(this.platformId)) {
+            this.transferState.set(CREDIT_RATINGS_KEY, computedData);
+          }
 
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(CREDIT_RATINGS_KEY, computedData);
-            }
-
-            this.isLoading.set(false);
-          },
-          error: (error: any) => {
-            console.error('Error fetching credit rating report:', error);
-            this.isLoading.set(false);
-          },
-          complete: () => this.updateRatingSummary(),
-        });
-    }
+          this.isLoading.set(false);
+        },
+        error: (error: any) => {
+          console.error('Error fetching credit rating report:', error);
+          this.isLoading.set(false);
+        },
+        complete: () => this.updateRatingSummary(),
+      });
+    // }
   }
 
   // Helper: Compute total, creditRatingAboveBBB_Minus count.
@@ -278,6 +296,7 @@ export class National implements OnInit {
 
     this.totalCreditRating = ratingData['total'];
     this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
+    this.fetchExploreSectionData();
   }
 
   // Drop down selection.
