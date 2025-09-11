@@ -18,6 +18,7 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../../shared/com
 import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 import { ActivatedRoute } from '@angular/router';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", '#f43f5e', '#B388FF'];
+import { SelectionModel } from '@angular/cdk/collections';
 interface RadioOption {
   key: string;
   label: string;
@@ -457,9 +458,36 @@ export class Compare implements OnInit {
     // }, 1000);
   }
 
+  selection = new SelectionModel<any>(true, []);
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource().length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource());
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: any): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
+
   private getTableData(resData: any) {
     this.headers.set(resData.headers);
-    this.displayedColumns = resData.headers.map((item: any) => item.key);
+    this.displayedColumns = ['select', ...resData.headers.map((item: any) => item.key)];
     this.dataSource.set(resData.data);
   }
 

@@ -150,7 +150,20 @@
     <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
         <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 border border-bg-light">
-
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef class="bg-table-header">
+                    <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+                    </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
             @for (item of headers(); track $index) {
             <ng-container [matColumnDef]="item.key">
                 <th mat-header-cell *matHeaderCellDef class="fw-bold bg-table-header">
