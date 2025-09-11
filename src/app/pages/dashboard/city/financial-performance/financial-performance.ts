@@ -18,6 +18,7 @@ import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/compon
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { InrFormatPipe } from "../../../../core/pipes/inr-format.pipe";
+import { Router } from '@angular/router';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
@@ -77,6 +78,7 @@ export class FinancialPerformance {
   graphPayload = signal<any[]>([]);
   optionsAxis = signal<any>('');
   ulbPopulation = input.required<string>();
+  ulbSlugName = input.required<string>();
   stateName = input.required<string>();
   currentSelectedButtonKey = signal<string>('overview');
   chartData = signal<ChartConfig>({
@@ -103,6 +105,7 @@ export class FinancialPerformance {
     private _dashboardService: DashboardService,
     private _globalLoaderService: GlobalLoaderService,
     private _uitityService: UtilityService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
@@ -331,21 +334,6 @@ export class FinancialPerformance {
     if (!item || !Array.isArray(item.yearData)) {
       return null;
     }
-
-    // // Convert yearData strings/numbers into actual numbers
-    // interface YearDataItem {
-    //   yearData: (string | number)[];
-    // }
-
-    // const values: number[] = (item as YearDataItem).yearData
-    //   .map((v: string | number) => Number(v))
-    //   .filter((v: number) => !isNaN(v));
-
-    // if (values.length === 0) return null;
-
-    // Pick the latest year value (or you can loop all values if needed)
-    // const latest = values[values.length - 1];
-
     const latest = item.yearData[item.yearData.length - 1]
 
     // console.log(latest, 'this is latest iscr');
@@ -472,7 +460,7 @@ export class FinancialPerformance {
 
   // Download Excel
   downlaodExcel() {
-    console.log(this.dataSource())
+    // console.log(this.dataSource())
 
     // Create columns array.
     const columns = [];
@@ -571,7 +559,15 @@ export class FinancialPerformance {
 
     return rows;
   }
-
+  navigatePage() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const slug = this.ulbSlugName();
+    const ulbId = this.ulbIdSignal(); // your signal
+    this.router.navigate(
+      ['/municipal-data', 'city', slug, 'compareby'],
+      { queryParams: { ulbId } }
+    );
+  }
 
   // Show info alert.
   showInfoAlert() {

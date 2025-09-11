@@ -99,8 +99,8 @@
       <!-- <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
         [ulbName]="cityDetails().ulbName"></app-financial-indicator> -->
       <app-financial-performance [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
-        [ulbName]="cityDetails().ulbName" [stateName]="cityDetails().state?.name"
-        [ulbPopulation]="cityDetails().popCat"></app-financial-performance>
+        [ulbName]="cityDetails().ulbName" [stateName]="cityDetails().state?.name" [ulbPopulation]="cityDetails().popCat"
+        [ulbSlugName]="ulbSlugName()"></app-financial-performance>
       }
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
