@@ -32,6 +32,22 @@
     </app-tab-buttons>
   </div>
 
+  @if(infoMsg() && infoMsg().msg) {
+  <div [ngClass]="
+          'alert alert-' + infoMsg().text + ' d-flex align-items-start p-3 '
+        " style="font-size: 0.75rem" role="alert">
+    <i [ngClass]="
+            'bi bi-circle-fill ' +
+            'text- ' +
+            infoMsg().text +
+            'custom-font-size-7'
+          "></i>
+    &nbsp;{{ infoMsg().msg }}
+  </div>
+  } @else {
+  <app-pre-loader></app-pre-loader>
+  }
+
   @if(!isChartDataAvailable()) {
   <app-no-data-found></app-no-data-found>
   } @else {
@@ -141,7 +157,7 @@
     <!-- Rigth side: Fyi -->
     @if(!isDashboard()){
     <div class="col-sm-12 col-lg-4 rounded accordion-padding">
-      @if(isChartLoading()) {
+      <!-- @if(isChartLoading()) {
       <app-pre-loader></app-pre-loader>
       } @else { @if(infoMsg() && infoMsg().msg) {
       <div [ngClass]="
@@ -155,7 +171,7 @@
           "></i>
         &nbsp;{{ infoMsg().msg }}
       </div>
-      }}
+      }} -->
 
       <!-- Accordion -->
       <!-- TODO: Clean the code -->
