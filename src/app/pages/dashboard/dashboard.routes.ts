@@ -8,7 +8,8 @@ export const DASHBOARD_ROUTES: Route[] = [
     {
         path: 'state/:slug',
         loadComponent: () => import('./state/state').then(m => m.State)
-    }, {
+    },
+    {
         path: 'city/:slug',
         children: [
             {
