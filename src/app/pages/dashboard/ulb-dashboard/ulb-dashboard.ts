@@ -7,10 +7,11 @@ import { IULB } from '../../../core/models/ulb';
 import { ulbType } from '../../../core/models/ulbTypes';
 import { CommonService } from '../../../core/services/common.service';
 import { FinancialIndicator } from '../city/financial-indicator/financial-indicator';
+import { NoDataFound } from "../../../shared/components/no-data-found/no-data-found";
 
 @Component({
   selector: 'app-ulb-dashboard',
-  imports: [FinancialIndicator],
+  imports: [FinancialIndicator, NoDataFound],
   templateUrl: './ulb-dashboard.html',
   styleUrl: './ulb-dashboard.scss'
 })
