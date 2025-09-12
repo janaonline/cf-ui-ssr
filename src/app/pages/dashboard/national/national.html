@@ -9,7 +9,7 @@
                     Summary of key national-level demographics and municipal (urban) indicators
                 </p>
                 <!-- Grid -->
-                @if (isLoading()) {
+                @if (nationalDashboardService.isLoading()) {
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
@@ -22,7 +22,7 @@
 
         <!-- Money Cards -->
         <!-- @if (this.isLoading2) { -->
-        @if (this.isLoading()) {
+        @if (nationalDashboardService.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else {
         @if(this.selectedLedgerYear()) {

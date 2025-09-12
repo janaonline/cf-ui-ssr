@@ -21,8 +21,7 @@ import {
 } from '../../../core/models/creditRating/creditRatingResponse';
 import {
   BondIssuances,
-  ExploreSectionResponse,
-  ExploresectionTable,
+  ExploreSectionResponse
 } from '../../../core/models/interfaces';
 import { IState } from '../../../core/models/state/state';
 import { IULB } from '../../../core/models/ulb';

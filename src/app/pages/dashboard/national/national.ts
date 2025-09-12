@@ -38,7 +38,7 @@ import { Resources } from "./resources/resources";
 export class National implements OnInit {
   readonly v1Url = environment.v1Url;
   selectedIndex = 0;
-  isLoading = signal(false);
+  // isLoading = signal(false);
   loadedTabs: boolean[] = [true, false, false, false];
   moneyInfo = signal<any[]>([]);
   ledgerYears = signal<string[]>([]);
