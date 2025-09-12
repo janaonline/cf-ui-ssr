@@ -146,7 +146,6 @@ export class NationalDashboard {
             this._commonService.setDataForVisualizationCount(
               res.gridDetails[0].value?.toString()
             );
-            this.isLoading.set(false);
 
             let result: ExploresectionTable[] = [
               ...res.gridDetails,
@@ -180,6 +179,7 @@ export class NationalDashboard {
 
             const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
             this.exploreData.set(data);
+            this.isLoading.set(false);
             if (isPlatformServer(this.platformId)) {
               this.transferState.set(GRID_DATA_KEY, data);
             }

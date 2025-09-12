@@ -106,7 +106,6 @@ export class DashboardMapSection {
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
-  // One time functions.
   ngOnInit(): void {
     this.nationalDashboardService.fetchCreditRatingsData('home', true);
     this.fetchStateList();
