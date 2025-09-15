@@ -17,6 +17,8 @@ import { Charts } from "../../../../../shared/components/charts/charts";
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../../shared/components/charts/constants';
 import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom, map } from 'rxjs';
+import { ViewportScroller } from '@angular/common';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", '#f43f5e', '#B388FF'];
 interface RadioOption {
   key: string;
@@ -64,6 +66,11 @@ export class Compare implements OnInit {
       src: './assets/images/export.png'
     },
   ]
+  readonly sampleComparisons = [
+    { line1: '3Y Own Revenue Data', line2: 'for Mumbai-Bangalore-Pune', cities: ['5eb5844f76a3b61f40ba0695', '5f5610b3aab0f778b2d2cac0', '5eb5844f76a3b61f40ba0694'] },
+    { line1: '3Y Proerty Tax', line2: 'of Ahmedabad-Surat-Indore', cities: ['5e4a75dc47cb2749e5a56bdf', '5eb5844f76a3b61f40ba0693', '5e4a75dc47cb2749e5a56be0'] },
+    { line1: '3Y Debt Data', line2: 'of Mumbai-Indore-Hyderabad ', cities: ['5eb5844f76a3b61f40ba0695', '5e4a75dc47cb2749e5a56be0', '5eb5844f76a3b61f40ba069a'] },
+  ];
   readonly introCheckBoxText = [
     'Standardized data',
     'Shaped by investor feedback',
@@ -233,6 +240,7 @@ export class Compare implements OnInit {
   constructor(
     private utilityService: UtilityService,
     private route: ActivatedRoute,
+    private viewportScroller: ViewportScroller,
     private globalLoaderService: GlobalLoaderService,
     private dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: object
@@ -293,6 +301,7 @@ export class Compare implements OnInit {
    *    - Defaults to the inverse of `this.isYearsActive()` if not provided.
    */
   modifyYears(index: number, activeStatus: boolean = !this.isYearsActive()) {
+    // console.log(index, activeStatus);
     if (index === -1) {
       this.years().forEach(item => item.isActive = activeStatus);
     } else {
@@ -302,6 +311,35 @@ export class Compare implements OnInit {
     // console.log("modify year: ", index, this.years());
   }
 
+  async onComparisonClick(ids: string[], index: number): Promise<void> {
+    this.selectedCities.set([]); // reset
+    this.years().forEach(item => item.isActive = false); // reset
+    this.indicators().forEach(item => item.isActive = false); // reset
+    // console.log('onComparisonClick ids:', ids, index);
+    const promises = ids.map(id =>
+      firstValueFrom(
+        this.dashboardService.getUlbDetailsById(id).pipe(
+          map(res => res?.ulb ?? res?.ulbDetails ?? null)
+        )
+      )
+    );
+
+    const results = await Promise.allSettled(promises);
+    const ulbs = results
+      .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled' && !!r.value)
+      .map(r => r.value);
+
+    this.selectedCities.set(ulbs); // update once with all results
+    this.modifyYears(-1, true);
+    if (index === 0) this.modifyIndicators(1, true);
+    else if (index === 1) this.modifyIndicators(2, true);
+    else if (index === 2) this.modifyIndicators(6, true);
+    this.applyFilter();
+    this.scrollToTop();
+  }
+  private scrollToTop(): void {
+    this.viewportScroller.scrollToPosition([0, 800]);
+  }
   // Update isYearsActive variable if all years are active.
   private isYearsActiveFn() {
     const isActive = this.years().every(item => item.isActive);
@@ -317,6 +355,7 @@ export class Compare implements OnInit {
    *    - Defaults to the inverse of `this.isIndicatorsActive()` if not provided.
    */
   modifyIndicators(index: number, activeStatus: boolean = !this.isIndicatorsActive()) {
+    // console.log(index, activeStatus);
     if (index === -1) {
       this.indicators().forEach(item => item.isActive = activeStatus);
     } else {
@@ -445,7 +484,7 @@ export class Compare implements OnInit {
     // console.log("filters = ", years, ulbIds, indicators);
     this.dashboardService.getCompareByIndicators(ulbIds, years, indicators).subscribe({
       next: (res: any) => {
-        console.log("compare by res: ", res[0]);
+        // console.log("compare by res: ", res[0]);
         this.res = res[0];
         this.getTableData(this.res);
         this.createChartData(this.res);
