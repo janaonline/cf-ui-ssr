@@ -15,31 +15,26 @@ import {
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, of, Subject, takeUntil } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import {
-  CreditRatingMap,
-  ICreditRatingData,
+  CreditRatingMap
 } from '../../../core/models/creditRating/creditRatingResponse';
 import {
   BondIssuances,
-  ExploreSectionResponse,
-  ExploresectionTable,
+  ExploreSectionResponse
 } from '../../../core/models/interfaces';
 import { IState } from '../../../core/models/state/state';
 import { IULB } from '../../../core/models/ulb';
-import { AssetsService } from '../../../core/services/assets/assets.service';
 import { CommonService } from '../../../core/services/common.service';
 import { CitySearch } from '../../../shared/components/city-search/city-search';
 import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { Map } from '../../../shared/components/map/map';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
 import { StateSearch } from '../../../shared/components/state-search/state-search';
-import { environment } from '../../../../environments/environment';
+import { NationalDashboard } from '../../../shared/services/national-dashboard';
 
-const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 const STATE_LIST_KEY = makeStateKey<any>('stateList');
-// const BONDS_KEY = makeStateKey<any>('fetchBondIssuances');
 const ULB_DATA_KEY = makeStateKey<any>('fetchUlbData');
-const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
 
 @Component({
   selector: 'app-dashboard-map-section',
@@ -54,7 +49,6 @@ export class DashboardMapSection {
 
   myForm!: FormGroup;
   noDataFound: boolean = true;
-  isLoading = signal<boolean>(true);
   showMap = signal<boolean>(false);
 
   selectedState = signal<IState>({ _id: '', name: '' });
@@ -102,157 +96,23 @@ export class DashboardMapSection {
     startYear: '2015-16',
     endYear: '2022-23',
   };
-  // exploreData!: ExploresectionTable[];
-  exploreData = signal<{
-    gridDetails: ExploresectionTable[];
-    lastModifiedAt: string | null;
-  }>({ gridDetails: [], lastModifiedAt: null });
-
-  // exploreData = [
-  //   { label: 'ULBs with atleast 1 Year of Financial Data', value: '4,309', info: '' },
-  //   { label: 'Financial Statements for FYs 2015-16 to 22-23', value: '15,384', info: 'test' },
-  //   { label: 'ULBs Credit Rating Reports', value: '223', info: '' },
-  //   { label: 'ULBs With Investment Grade Rating', value: '95', info: '' },
-  //   { label: 'Highest Financial Data Availability is in FY 2021-22', value: '77%', info: '' },
-  //   { label: 'Municipal Bond Issuances Of Rs. 6,833 Cr With Details', value: '50', info: '' },
-  // ];
-
   private destroy$ = new Subject<void>();
 
   constructor(
     protected _commonService: CommonService,
-    private assetService: AssetsService,
+    public nationalDashboardService: NationalDashboard,
     private router: Router,
+    private transferState: TransferState,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState
   ) { }
 
-  // One time functions.
   ngOnInit(): void {
-    this.fetchCreditRatingsData();
+    this.nationalDashboardService.fetchCreditRatingsData('home', true);
     this.fetchStateList();
-    setTimeout(() => {
-      this.loadData('state');
-    }, 10);
   }
 
   ngAfterViewInit() {
     this.showMap.set(true);
-  }
-
-  // On filter - API calls.
-  private loadData(getUlbData: string = 'state'): void {
-    // this.fetchBondIssuances();
-    this.updateRatingSummary();
-    getUlbData === 'ulb' ? this.fetchUlbData() : this.fetchExploreSectionData();
-  }
-
-  // Added bonds data response in home-page api.
-  // // Get municipal bonds data - card 5.
-  // private fetchBondIssuances(): void {
-  //   this.isLoading.set(true);
-
-  //   if (
-  //     isPlatformBrowser(this.platformId) &&
-  //     this.transferState.hasKey(BONDS_KEY)
-  //   ) {
-  //     const data = this.transferState.get(BONDS_KEY, []);
-  //     this.bondIssuances.set(data);
-  //     this.transferState.remove(BONDS_KEY);
-
-  //     this.isLoading.set(false);
-  //   } else {
-  //     this._commonService
-  //       .getBondIssuerItemAmount(this.selectedStateIdSignal())
-  //       .pipe(takeUntil(this.destroy$))
-  //       .subscribe({
-  //         next: (res: BondIssuances) => {
-  //           const data = { ...res, inProgress: false };
-  //           this.bondIssuances.set(data);
-  //           this.isLoading.set(false);
-
-  //           if (isPlatformServer(this.platformId)) {
-  //             this.transferState.set(BONDS_KEY, data);
-  //           }
-  //         },
-  //         error: (error: any) =>
-  //           console.error('Error in fetching bonds data: ', error),
-  //       });
-  //   }
-  // }
-
-  // Get credit rating data - Card 3, 4.
-  private fetchCreditRatingsData(): void {
-    this.isLoading.set(true);
-
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(CREDIT_RATINGS_KEY)
-    ) {
-      const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
-      this.creditRating.set(data);
-      this.transferState.remove(CREDIT_RATINGS_KEY);
-      this.isLoading.set(false);
-    } else {
-      this.assetService
-        .fetchCreditRatingReport()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res: ICreditRatingData[]) => {
-            const computedData = this.computeRatings(res);
-            this.creditRating.set(computedData);
-
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(CREDIT_RATINGS_KEY, computedData);
-            }
-
-            this.isLoading.set(false);
-          },
-          error: (error: any) => {
-            console.error('Error fetching credit rating report:', error);
-            this.isLoading.set(false);
-          },
-          complete: () => this.updateRatingSummary(),
-        });
-    }
-  }
-
-  // Helper: Compute total, creditRatingAboveBBB_Minus count.
-  private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
-    const computedData: CreditRatingMap = {
-      India: { total: 0, creditRatingAboveBBB_Minus: 0 },
-    };
-
-    for (const data of res) {
-      const stateName = data.state;
-      const rating = data.creditrating;
-
-      if (!computedData[stateName]) {
-        computedData[stateName] = { total: 0, creditRatingAboveBBB_Minus: 0 };
-      }
-
-      computedData[stateName]['total'] += 1;
-      computedData['India']['total'] += 1;
-
-      if (this.ELIGIBLE_RATINGS.includes(rating)) {
-        computedData[stateName]['creditRatingAboveBBB_Minus'] += 1;
-        computedData['India']['creditRatingAboveBBB_Minus'] += 1;
-      }
-    }
-
-    return computedData;
-  }
-
-  // Helper: Update credit ratings summary.
-  private updateRatingSummary(): void {
-    const selected = this.selectedStateNameSignal() || 'India';
-    const ratingData = this.creditRating()[selected] || {
-      total: 0,
-      creditRatingAboveBBB_Minus: 0,
-    };
-
-    this.totalCreditRating = ratingData['total'];
-    this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
   }
 
   // Get states list.
@@ -298,28 +158,28 @@ export class DashboardMapSection {
 
   // Explore section data - ULB filter.
   private fetchUlbData(): void {
-    this.isLoading.set(true);
+    this.nationalDashboardService.isLoading.set(true);
 
     if (
       isPlatformBrowser(this.platformId) &&
       this.transferState.hasKey(ULB_DATA_KEY)
     ) {
-      this.exploreData.set({ gridDetails: [], lastModifiedAt: null });
+      this.nationalDashboardService.exploreData.set({ gridDetails: [], lastModifiedAt: null });
       const data = this.transferState.get(ULB_DATA_KEY, []);
-      this.exploreData.set(data);
+      this.nationalDashboardService.exploreData.set(data);
       this.transferState.remove(ULB_DATA_KEY);
 
-      this.isLoading.set(false);
+      this.nationalDashboardService.isLoading.set(false);
     } else {
       if (this.ulbSlugName()) {
-        this.isLoading.set(true);
+        // this.nationalDashboardService.isLoading.set(true);
         this._commonService
           .getCityData(this.ulbSlugName())
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (res: ExploreSectionResponse) => {
-              this.exploreData.set(res);
-              this.isLoading.set(false);
+              this.nationalDashboardService.exploreData.set(res);
+              this.nationalDashboardService.isLoading.set(false);
 
               if (isPlatformServer(this.platformId)) {
                 this.transferState.set(ULB_DATA_KEY, res);
@@ -329,76 +189,6 @@ export class DashboardMapSection {
               console.error('Error in fetching ulbData: ', error),
           });
       }
-    }
-  }
-
-  // Explore section data - State + National.
-  private fetchExploreSectionData(): void {
-    this.isLoading.set(true);
-
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(GRID_DATA_KEY)
-    ) {
-      this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
-      this.transferState.remove(GRID_DATA_KEY);
-      this.isLoading.set(false);
-    } else {
-      this._commonService
-        .getExploreSectionData(
-          this.selectedStateCodeSignal(),
-          this.selectedStateIdSignal()
-        )
-        .subscribe({
-          next: (res: ExploreSectionResponse) => {
-            this.exploreData.set(res);
-          },
-          error: (error: any) =>
-            console.error('Error in loading explore section data: ', error),
-          complete: () => {
-            // Combine all the data - grid section (National and state filter)
-            this.exploreData().gridDetails = [
-              ...this.exploreData().gridDetails,
-              {
-                sequence: 3,
-                label: 'ULBs Credit Rating Reports',
-                value: `${this.totalCreditRating}`,
-                info: '',
-                src: '',
-              },
-              {
-                sequence: 4,
-                label: 'ULBs With Investment Grade Rating',
-                value: `${this.cr_above_BBB_minus}`,
-                info: '',
-                src: '',
-              },
-              // {
-              //   sequence: 6,
-              //   label: `Municipal Bond Issuances Of Rs. ${this.bondIssuances().bondIssueAmount
-              //     } Cr With Details`,
-              //   value: `${this.bondIssuances().totalMunicipalBonds}`,
-              //   info: '',
-              //   src: '',
-              // },
-            ];
-
-            this.exploreData().gridDetails.sort(
-              (a, b) => a.sequence - b.sequence
-            );
-
-            // Ticker above search bar - homepage.
-            this._commonService.setDataForVisualizationCount(
-              this.exploreData().gridDetails[0].value?.toString()
-            );
-
-            this.isLoading.set(false);
-
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(GRID_DATA_KEY, this.exploreData());
-            }
-          },
-        });
     }
   }
 
@@ -421,7 +211,11 @@ export class DashboardMapSection {
     this.selectedStateNameSignal.set(name);
 
     this.updateUlbsOfSelectedState();
-    this.loadData('state');
+    this.nationalDashboardService.updateRatingSummary(
+      this.selectedStateCodeSignal(),
+      this.selectedStateIdSignal(),
+      this.selectedStateNameSignal()
+    );
   }
 
   // ulb object sent by child - Drop down selection.
@@ -440,7 +234,7 @@ export class DashboardMapSection {
     this.selectedCityNameSignal.set(name);
     this.ulbSlugName.set(slug);
 
-    this.loadData('ulb');
+    this.fetchUlbData()
   }
 
   // ----- Map changes -----
@@ -473,12 +267,6 @@ export class DashboardMapSection {
     if (this.ulbSlugName()) {
       this.router.navigateByUrl(`/municipal-data/city/${this.ulbSlugName()}`);
     } else {
-      // console.log(this.selectedState());
-      // this.router.navigateByUrl(
-      //   `/dashboard/state/${this.selectedStateIdSignal()}`,
-      // );
-      // window.location.href =
-      //   `${this.v1Url}/dashboard/state?stateId=${this.selectedStateIdSignal()}`;
       this.router.navigateByUrl(`/municipal-data/state/${this.selectedState().slug}`);
     }
   }
