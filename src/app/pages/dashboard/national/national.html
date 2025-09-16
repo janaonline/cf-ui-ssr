@@ -9,12 +9,12 @@
                     Summary of key national-level demographics and municipal (urban) indicators
                 </p>
                 <!-- Grid -->
-                @if (isLoading()) {
+                @if (nationalDashboardService.isLoading()) {
                 <app-pre-loader></app-pre-loader>
                 <app-pre-loader></app-pre-loader>
                 } @else {
                 <!-- @if(this.selectedLedgerYear()) { -->
-                <app-grid-view [gridData]="exploreData().gridDetails"></app-grid-view>
+                <app-grid-view [gridData]="nationalDashboardService.exploreData().gridDetails"></app-grid-view>
                 <!-- } -->
                 }
             </div>
@@ -22,7 +22,7 @@
 
         <!-- Money Cards -->
         <!-- @if (this.isLoading2) { -->
-        @if (this.isLoading()) {
+        @if (nationalDashboardService.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else {
         @if(this.selectedLedgerYear()) {
@@ -34,7 +34,7 @@
         <p class="text-secondary text-end mt-3 mb-0 d-flex justify-content-end align-items-center gap-1 flex-wrap"
             style="font-size: 0.75rem">
             Last updated on:
-            {{ exploreData().lastModifiedAt | date : "mediumDate" }}; Source:
+            {{ nationalDashboardService.exploreData().lastModifiedAt | date : "mediumDate" }}; Source:
             financial statements for the year <select class="form-select form-select-sm w-auto d-inline-block"
                 [value]="selectedLedgerYear()" (change)="onMoneyInfoYearChange($event)" id="national_years">
                 @for (year of ledgerYears(); track $index) {

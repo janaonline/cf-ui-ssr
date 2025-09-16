@@ -1,25 +1,22 @@
-import { DatePipe, isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, Inject, makeStateKey, OnInit, PLATFORM_ID, signal, TransferState } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { CreditRatingMap, ICreditRatingData } from '../../../core/models/creditRating/creditRatingResponse';
-import { ExploreSectionResponse, ExploresectionTable } from '../../../core/models/interfaces';
-import { AssetsService } from '../../../core/services/assets/assets.service';
+import { Subject } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { CommonService } from '../../../core/services/common.service';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { GridView } from '../../../shared/components/grid-view/grid-view';
 import { InfoCards } from '../../../shared/components/info-cards/info-cards';
 import { PreLoader } from '../../../shared/components/pre-loader/pre-loader';
+import { NationalDashboard } from '../../../shared/services/national-dashboard';
 import { DashboardService } from '../dashboard-service';
 import { DataAvailability } from "./data-availability/data-availability";
 import { FinancialIndicators } from "./financial-indicators/financial-indicators";
-import { Resources } from "./resources/resources";
 import { NationalService } from './national.service';
-import { environment } from '../../../../environments/environment';
+import { Resources } from "./resources/resources";
 
-const GRID_DATA_KEY = makeStateKey<any>('fetchExploreSectionData');
-const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
+// const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
 
 
 @Component({
@@ -39,65 +36,30 @@ const CREDIT_RATINGS_KEY = makeStateKey<any>('creditRatings');
   styleUrl: './national.scss'
 })
 export class National implements OnInit {
-
   readonly v1Url = environment.v1Url;
-
   selectedIndex = 0;
-  isLoading = signal(false);
+  // isLoading = signal(false);
   loadedTabs: boolean[] = [true, false, false, false];
   moneyInfo = signal<any[]>([]);
-  exploreData = signal<{
-    gridDetails: ExploresectionTable[];
-    lastModifiedAt: string | null;
-  }>({ gridDetails: [], lastModifiedAt: null });
-
-  creditRating = signal<CreditRatingMap>({});
-  totalCreditRating: number = 0;
-  cr_above_BBB_minus: number = 0;
-  private readonly ELIGIBLE_RATINGS = [
-    'A',
-    'A+',
-    'AA',
-    'AA+',
-    'AA-',
-    'AAA',
-    'AAA+',
-    'AAA-',
-    'A-',
-    'BBB',
-    'BBB+',
-    'BBB-',
-  ];
-
   ledgerYears = signal<string[]>([]);
   selectedLedgerYear = signal<string>('');
-
-  private destroy$ = new Subject<void>();
-
   dashboardTabs = signal<any[]>([]);
-
+  private destroy$ = new Subject<void>();
 
   constructor(
     private _commonService: CommonService,
     private dashboardService: DashboardService,
     private seoService: SeoService,
-    private assetService: AssetsService,
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private transferState: TransferState,
-    private nationalService: NationalService
+    private nationalService: NationalService,
+    public nationalDashboardService: NationalDashboard,
   ) { }
 
   ngOnInit() {
     this.setSeo();
     this.getDashboardTabData();
-    this.fetchCreditRatingsData();
+    this.nationalDashboardService.fetchCreditRatingsData('national');
     this.getLedgerYears();
   }
-
-  // private loadData() {
-  //   this.getMoneyInfo();
-  //   this.fetchExploreSectionData();
-  // }
 
   setSeo() {
     const title = 'Municipal Financial Data of Indian Cities | City Finance';
@@ -138,165 +100,6 @@ export class National implements OnInit {
       error: () => console.error('Failed to get years'),
       complete: () => this.getMoneyInfo()
     });
-  }
-
-  // TODO: Reuse code/ add service - dashboard-map-section.ts
-  // Explore section data - State + National.
-  private fetchExploreSectionData(): void {
-    this.isLoading.set(true);
-
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(GRID_DATA_KEY)
-    ) {
-      this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
-      this.transferState.remove(GRID_DATA_KEY);
-      this.isLoading.set(false);
-    } else {
-      this._commonService
-        .getExploreSectionData()
-        .subscribe({
-          next: (res: ExploreSectionResponse) => {
-            let result: any = [
-              ...res.gridDetails,
-              {
-                sequence: 3,
-                label: 'ULBs Credit Rating Reports',
-                value: `${this.totalCreditRating}`,
-                info: '',
-                src: '',
-              },
-              {
-                sequence: 4,
-                label: 'ULBs With Investment Grade Rating',
-                value: `${this.cr_above_BBB_minus}`,
-                info: '',
-                src: '',
-              },
-            ];
-            result.sort((a: any, b: any) => a.sequence - b.sequence);
-            const obj = {
-              sequence: 5,
-              label: 'ULBs With Rating A & Above',
-              value: 22,
-              info: '',
-              src: ''
-            }
-            this.exploreData().gridDetails[4] = obj;
-
-            this.isLoading.set(false);
-
-            const expRes = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(GRID_DATA_KEY, expRes);
-            }
-
-            this.exploreData.set(expRes);
-          },
-          error: (error: any) =>
-            console.error('Error in loading explore section data: ', error),
-          complete: () => {
-            // Combine all the data - grid section (National and state filter)
-            // this.exploreData().gridDetails =
-
-            // this.exploreData().gridDetails.sort(
-            //   (a, b) => a.sequence - b.sequence
-            // );
-
-            // TODO: make this dynamic.
-            // const obj = {
-            //   sequence: 5,
-            //   label: 'ULBs With Rating A & Above',
-            //   value: 22,
-            //   info: '',
-            //   src: ''
-            // }
-
-            // this.exploreData().gridDetails[4] = obj;
-
-            // this.isLoading.set(false);
-
-            // if (isPlatformServer(this.platformId)) {
-            //   this.transferState.set(GRID_DATA_KEY, this.exploreData());
-            // }
-          },
-        });
-    }
-  }
-
-  // Get credit rating data - Card 3, 4.
-  private fetchCreditRatingsData(): void {
-    this.isLoading.set(true);
-    // console.log('Fetching credit rating data...', this.transferState.hasKey(CREDIT_RATINGS_KEY));
-    // if (
-    //   isPlatformBrowser(this.platformId) &&
-    //   this.transferState.hasKey(CREDIT_RATINGS_KEY)
-    // ) {
-    //   const data = this.transferState.get(CREDIT_RATINGS_KEY, []);
-    //   this.creditRating.set(data);
-    //   this.transferState.remove(CREDIT_RATINGS_KEY);
-    //   this.isLoading.set(false);
-    // } else {
-    this.assetService
-      .fetchCreditRatingReport()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: ICreditRatingData[]) => {
-          const computedData = this.computeRatings(res);
-          this.creditRating.set(computedData);
-
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(CREDIT_RATINGS_KEY, computedData);
-          }
-
-          this.isLoading.set(false);
-        },
-        error: (error: any) => {
-          console.error('Error fetching credit rating report:', error);
-          this.isLoading.set(false);
-        },
-        complete: () => this.updateRatingSummary(),
-      });
-    // }
-  }
-
-  // Helper: Compute total, creditRatingAboveBBB_Minus count.
-  private computeRatings(res: ICreditRatingData[]): CreditRatingMap {
-    const computedData: CreditRatingMap = {
-      India: { total: 0, creditRatingAboveBBB_Minus: 0 },
-    };
-
-    for (const data of res) {
-      const stateName = data.state;
-      const rating = data.creditrating;
-
-      if (!computedData[stateName]) {
-        computedData[stateName] = { total: 0, creditRatingAboveBBB_Minus: 0 };
-      }
-
-      computedData[stateName]['total'] += 1;
-      computedData['India']['total'] += 1;
-
-      if (this.ELIGIBLE_RATINGS.includes(rating)) {
-        computedData[stateName]['creditRatingAboveBBB_Minus'] += 1;
-        computedData['India']['creditRatingAboveBBB_Minus'] += 1;
-      }
-    }
-
-    return computedData;
-  }
-
-  // Helper: Update credit ratings summary.
-  private updateRatingSummary(): void {
-    // const selected = this.selectedStateNameSignal() || 'India';
-    const ratingData = this.creditRating()['India'] || {
-      total: 0,
-      creditRatingAboveBBB_Minus: 0,
-    };
-
-    this.totalCreditRating = ratingData['total'];
-    this.cr_above_BBB_minus = ratingData['creditRatingAboveBBB_Minus'];
-    this.fetchExploreSectionData();
   }
 
   // Drop down selection.
