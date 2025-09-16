@@ -155,11 +155,12 @@ export class Compare implements OnInit {
     chartType: 'barChart',
     datasets: []
   });
-
   headers = signal<any[]>([]);
   displayedColumns: string[] = [];
   dataSource = signal<any[]>([]);
   res = {}
+  cityHeaders: string[] = []; //, 'emptyCol','city-name','city-name1']; // will be dynamic based on selected cities.
+  selectedYears: any = signal<string[]>([]);
   // {
   //   headers: [
   //     { key: 'indicator', label: 'Indicator' },
@@ -302,12 +303,14 @@ export class Compare implements OnInit {
    *    - Defaults to the inverse of `this.isYearsActive()` if not provided.
    */
   modifyYears(index: number, activeStatus: boolean = !this.isYearsActive()) {
+
     // console.log(index, activeStatus);
     if (index === -1) {
       this.years().forEach(item => item.isActive = activeStatus);
     } else {
       this.years()[index].isActive = !this.years()[index].isActive;
     }
+    this.selectedYears.set(this.years().filter(item => item.isActive).map(i => i.label));
     this.isYearsActiveFn();
     // console.log("modify year: ", index, this.years());
   }
@@ -380,6 +383,8 @@ export class Compare implements OnInit {
       this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
     } else {
       this.selectedCities.update(cities => [...cities, city]);
+      this.cityHeaders = ['emptyCol', 'emptyCol', ...this.selectedCities().map(c => c.name)];
+      console.log('this.cityHeaders,', this.cityHeaders);
     }
   };
 
@@ -593,6 +598,7 @@ export class Compare implements OnInit {
 
   onReset() {
     this.selectedCities.set([]);
+    this.cityHeaders = [];
     this.modifyIndicators(-1, false);
     this.modifyYears(-1, false);
     this.consolidatedIndicators.set([]);

@@ -151,6 +151,15 @@
         <small class="small text-danger fw-bold">All the values are in Crores*</small>
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
         <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 border border-bg-light">
+            <!-- Item Description Column -->
+            <ng-container matColumnDef="emptyCol">
+                <th mat-header-cell *matHeaderCellDef></th>
+            </ng-container>
+            @for (item of selectedCities(); track $index) {
+            <ng-container matColumnDef="{{item.name}}">
+                <th mat-header-cell *matHeaderCellDef [attr.colspan]="selectedYears().length">{{item.name}}</th>
+            </ng-container>
+            }
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
                 <th mat-header-cell *matHeaderCellDef class="bg-table-header">
@@ -182,7 +191,8 @@
                 </td>
             </ng-container>
             }
-
+            <tr mat-header-row *matHeaderRowDef="cityHeaders" class="example-second-header-row">
+            </tr>
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
