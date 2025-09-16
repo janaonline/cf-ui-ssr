@@ -143,9 +143,12 @@ export class NationalDashboard {
       .subscribe({
         next: (res: ExploreSectionResponse) => {
           // Ticker above search bar - homepage.
-          this._commonService.setDataForVisualizationCount(
-            res.gridDetails[0].value?.toString()
-          );
+          if (!stateId && !stateCode) {
+            this._commonService.setDataForVisualizationCount(
+              res.gridDetails[0].value?.toString()
+            );
+          }
+
 
           let result: ExploresectionTable[] = [
             ...res.gridDetails,

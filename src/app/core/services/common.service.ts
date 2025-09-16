@@ -4,6 +4,7 @@ import {
   Injectable,
   makeStateKey,
   PLATFORM_ID,
+  signal,
   TransferState,
 } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
@@ -17,12 +18,14 @@ import { IState } from '../models/state/state';
 import { environment } from './../../../environments/environment';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 
-const VISUALIZATION_COUNT_KEY = makeStateKey<number>('visualizationCount ');
+// const VISUALIZATION_COUNT_KEY = makeStateKey<number>('visualizationCount ');
+const DEFAULT_ULB_COUNT = 4321;
 @Injectable({
   providedIn: 'root',
 })
 export class CommonService {
-  dataForVisualizationCount = new BehaviorSubject<number>(0);
+  // dataForVisualizationCount = new BehaviorSubject<number>(0);
+  totalUlbs = signal<number>(DEFAULT_ULB_COUNT);
   private searchItem: BehaviorSubject<any> = new BehaviorSubject([]);
   castSearchItem = this.searchItem.asObservable();
 
@@ -32,14 +35,14 @@ export class CommonService {
     private transferState: TransferState
   ) {
     // Read from transfer state - Client.
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(VISUALIZATION_COUNT_KEY)
-    ) {
-      const count = this.transferState.get(VISUALIZATION_COUNT_KEY, 0);
-      this.dataForVisualizationCount.next(count);
-      this.transferState.remove(VISUALIZATION_COUNT_KEY);
-    }
+    // if (
+    //   isPlatformBrowser(this.platformId) &&
+    //   this.transferState.hasKey(VISUALIZATION_COUNT_KEY)
+    // ) {
+    //   const count = this.transferState.get(VISUALIZATION_COUNT_KEY, 0);
+    //   this.dataForVisualizationCount.next(count);
+    //   this.transferState.remove(VISUALIZATION_COUNT_KEY);
+    // }
   }
 
   // eg: "firstname-lastname" to "Firstname Lastname"
@@ -54,14 +57,14 @@ export class CommonService {
   setDataForVisualizationCount(VisualizationCount: string) {
     if (VisualizationCount) {
       const count = parseFloat(VisualizationCount.replace(/,/g, ''));
-
       // Save to BehaviorSubject
-      this.dataForVisualizationCount.next(count);
+      // this.dataForVisualizationCount.next(count);
+      this.totalUlbs.set(count);
 
       // Store in TransferState on server.
-      if (isPlatformServer(this.platformId)) {
-        this.transferState.set(VISUALIZATION_COUNT_KEY, count);
-      }
+      // if (isPlatformServer(this.platformId)) {
+      //   this.transferState.set(VISUALIZATION_COUNT_KEY, count);
+      // }
     }
   }
 
