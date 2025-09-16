@@ -85,7 +85,7 @@ export class SearchBar {
     if (isPlatformBrowser(this.platFormId)) {
       // Get the number.
       this._commonService.dataForVisualizationCount
-        .pipe(take(1))
+        // .pipe(take(1))
         .subscribe((res) => {
           console.log('this.coveredUlbCount()', this.coveredUlbCount(), this.DEFAULT_VALUE, res);
           if (this.coveredUlbCount() === this.DEFAULT_VALUE)
