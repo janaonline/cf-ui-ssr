@@ -7,13 +7,14 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatTooltipModule } from '@angular/material/tooltip';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
-import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
+import { ButtonObj, IFinancialIndicatorInfo, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
 import { IULB } from '../../../../core/models/ulb';
 import { CommonService } from '../../../../core/services/common.service';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants';
 import { CitySearch } from "../../../../shared/components/city-search/city-search";
+import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { compraeByOptions, IndicatorDetails } from '../../city/financial-indicator/constants';
@@ -23,8 +24,6 @@ import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { stateDashboardSubTabsList } from './constant';
 import { MixChart } from "./mix-chart/mix-chart";
 import { PopulationTable } from "./population-table/population-table";
-import { NoDataFound } from "../../../../shared/components/no-data-found/no-data-found";
-import { get } from 'http';
 
 @Component({
   selector: 'app-financial-indicator',
@@ -47,12 +46,10 @@ export class FinancialIndicator {
   readonly compraeByOptions = compraeByOptions;
 
   readonly stateIdSignal = signal('');
-  // readonly ulbIdSignal = signal('');
   readonly stateDetails = input.required<any>();
   readonly dashboardTabData = input.required<any>();
   readonly tabName = input.required<any>();
   selectedLedgerYear = signal('');
-  // @Input() tabName = 'Financial Indicators';
 
   currentSelectedButtonKey = signal<string>('Revenue');
   subButton = signal<string>('');
@@ -128,7 +125,6 @@ export class FinancialIndicator {
   barDataNotFound: boolean = false;
 
   constructor(
-    // private fb: FormBuilder,
     private commonService: CommonService,
     private dashboardService: DashboardService,
     private chartService: ChartService,
@@ -138,8 +134,6 @@ export class FinancialIndicator {
   ngOnInit() {
     if (this.tabName() === 'Service Level Benchmark') {
       this.stateServiceLabel = true;
-      // this.getSLBYears();
-      // this.getServiceDropDown();
     }
 
     this.yearList.set(this.years());
@@ -151,13 +145,6 @@ export class FinancialIndicator {
     // this.myForm = this.fb.group({ year: [this.years()[0]] });
 
     this.isLoading.set(false);
-
-    // this.myForm.get('year')?.valueChanges
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe({
-    //     next: () => this.getChartData()
-    //   })
-    // this.getStateGroupPopulation();
 
   }
 
@@ -199,9 +186,6 @@ export class FinancialIndicator {
   }
 
   onChangeCategory(event: any) {
-    // console.log('event', event);
-    // this.compareCategory = event.target.value;
-    // this.getChartData();
     this.getRevenueChart();
   }
 
@@ -288,14 +272,14 @@ export class FinancialIndicator {
   }
 
   // Get calcType based on sub button selected.
-  private getcalcType(): CalcType {
-    const subBtn = this.subButton();
+  // private getcalcType(): CalcType {
+  //   const subBtn = this.subButton();
 
-    if (['totRev', 'totOwnRev', 'totRevex', 'capex',].includes(subBtn)) return 'total';
-    else if (['revPerCapita', 'ownRevPerCapita', 'revexPerCapita', 'capexPerCapita',].includes(subBtn)) return 'perCapita';
-    // else if (['revMix', 'ownRevMix', 'revexMix'].includes(subBtn)) return 'mix';
-    return 'mix';
-  }
+  //   if (['totRev', 'totOwnRev', 'totRevex', 'capex',].includes(subBtn)) return 'total';
+  //   else if (['revPerCapita', 'ownRevPerCapita', 'revexPerCapita', 'capexPerCapita',].includes(subBtn)) return 'perCapita';
+  //   // else if (['revMix', 'ownRevMix', 'revexMix'].includes(subBtn)) return 'mix';
+  //   return 'mix';
+  // }
 
   getLabel(data: any, label: string) {
     if (this.stateServiceLabel) {
@@ -305,8 +289,8 @@ export class FinancialIndicator {
     }
     return label;
   }
+
   updateBarChartData(data: any, unitType: string = 'Percent'): void {
-    // console.log('updateBarChartData data', data);
     let countKey = 'sum';
 
     switch (this.subButton()) {
@@ -344,30 +328,18 @@ export class FinancialIndicator {
       { labels: [], values: [] }
     );
 
-    // console.log('labels', labels);
-    // console.log('values---', values);
     const yAxisLabel = this.stateServiceLabel ? unitType : `Amount ${this.isDataInCrore ? '(in Cr.)' : '(in INR)'}`;
     const options = JSON.parse(JSON.stringify(baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', yAxisLabel)));
 
-    // this.barChartOptions["scales"]["yAxes"][0]["scaleLabel"]["labelString"] = yAxisLabel;
     options.plugins!.legend!.display = false;
     options.plugins!.datalabels!.display = true;
     options.plugins!.datalabels!.formatter = (value: any, ctx: any) => {
-      // console.log('ctx', ctx.chart.data.datasets?.[ctx.dataIndex]);
-      // const label = ctx.chart.data.labels?.[ctx.dataIndex] || '';
       const label = this.isDataInCrore ? 'Cr' : '';
-      // const label = ctx.chart.data.label || '';
       return this.getLabel(value, label);
     }
     options.plugins!.tooltip!.callbacks = {
       label: (tooltipItem: any) => {
         let label = tooltipItem.dataset.label || '';
-        // if (this.stateServiceLabel) {
-        //   label = ` ${(tooltipItem.parsed.y).toLocaleString()} ${this.isPercentage ? '%' : ''}`;
-        // } else {
-        //   label = `₹ ${(tooltipItem.parsed.y).toLocaleString()} ${label}`;
-        // }
-        // return label;
         return this.getLabel(tooltipItem.parsed.y, label);
       }
     };
@@ -386,28 +358,11 @@ export class FinancialIndicator {
           // borderRadius: 5
         }],
       options
-      // options: {
-      //   plugins: {
-      //     legend: {
-      //       display: false
-      //     }
-      //   }
-
-      // }
-      // options: baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Cities', 'Amount in ₹ Cr')
     };
     this.barChart.set(config);
   }
 
   updateScatterChartData(data: any): void {
-
-
-    // const options = baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Population(in Thousands)', `Total Revenue ${this.isDataInCrore ? '(in Cr.)' : ''}`);
-    // const options = {};
-    // options.plugins!.legend!.labels!.usePointStyle = true;
-    // options.plugins!.legend!.labels!.padding = 20;
-    // options.plugins!.legend!.position = 'bottom';
-
     let config: any = this.chartService.setScatterConfig(data, this.subButton(), this.stateServiceLabel, this.compareCategory);
     this.scatterChart.set(config);
   }
@@ -439,13 +394,7 @@ export class FinancialIndicator {
     }
   }
 
-  //  changeActiveBtn(i) {
-
-  // }
   onChangeFilterName() {
-    // this.filterName = event.target.value;
-    // console.log('this.filterName', this.filterName);
-    // this.getRevenueChart();
     this.getChartData();
   }
 
@@ -455,6 +404,7 @@ export class FinancialIndicator {
     }
     return this.sortBy;
   }
+
   onChangeLinteItem(event: any) {
     this.code = event.target.value;
     // console.log('this.code', this.code);
@@ -484,17 +434,6 @@ export class FinancialIndicator {
       // code: this.code ? this.code.join(',') : undefined
       code: this.code
     };
-    // console.log('payload---', payload, this.filterName);
-    // let p = {
-    //   "financialYear": "2019-20",
-    //   "stateId": "5dcf9d7416a06aed41c748f0",
-    //   "sortBy": "top10",
-    //   "filterName": "Extent of non-revenue water (NRW)",
-    //   "apiEndPoint": "state-slb",
-    //   "apiMethod": "get", "chartType": "bar",
-    //   "stateServiceLabel": true,
-    //   "chartTitle": "Top 10 performing ULBs on Extent Of Non-revenue Water (nrw) in Maharashtra"
-    // }
 
     if (csv) payload['csv'] = true;
     else if ('csv' in payload) delete payload['csv'];
@@ -533,43 +472,16 @@ export class FinancialIndicator {
     });
   }
 
-  // getSlb(chartType = 'scatter', sortBy = 'top10') {
-  //   const params = {
-  //     stateId: this.stateIdSignal(),
-  //     financialYear: this.selectedLedgerYear(),
-  //     headOfAccount: this.currentSelectedButtonKey(),
-  //     filterName: this.getFilterName(),
-  //     'chartType': chartType,
-  //     'isPerCapita': '',
-  //     'compareType': '',
-  //     'compareCategory': '',
-  //     ulb: this.dialogResult?.compareUlbs || [],
-  //     sortBy,
-  //     // 'ulb': this.dialogResult.ulbId,
-  //   };
-  //   // console.log('this.dialogResult', this.dialogResult)
-  //   const apiEndpoint = this.tabName() === 'Financial Indicators' ? 'state-revenue' : 'state-slb';
-  //   // const apiEndpoint = 'state-revenue';
-  //   return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
-  //     next: (res) => {
-  //       console.log('res', res);
-  //       // this.updateScatterChartData(res.data);
-  //       this.isChartLoading.set(false);
-  //     }, error: (err) => {
-  //       this.isChartLoading.set(false);
-  //       console.error(err);
-  //     }
-  //   });
-  // }
-
   onSelectCompareType(type: string) {
     this.compareType = type;
     this.getRevenueChart();
   }
+
   getPerCapita() {
     this.isPerCapita = this.subButton().toLocaleLowerCase().split(" ").join("").includes('percapita');
     return this.isPerCapita;
   }
+
   getRevenueChart() {
     this.isChartLoading.set(true);
     const params: any = {
@@ -603,7 +515,6 @@ export class FinancialIndicator {
       }
     }
 
-    // const apiEndpoint = 'state-revenue';
     return this.dashboardService.getStateRevenue(params, apiEndpoint).subscribe({
       next: (res) => {
         if (this.isMixBtn) {
@@ -613,12 +524,6 @@ export class FinancialIndicator {
             const firstKey = 'state'; // default to state if compareType is not set
             const firstObj = this.responseData[firstKey];
             this.compareTypeList = firstObj;
-
-            // if (this.compareType === 'ulbType') {
-            //   this.compareTypeList = firstObj[0];
-            // } else {
-            //   this.compareTypeList = firstObj;
-            // }
           } else {
             if (this.mixChartObj.length === 2) { // if state and ulb are selected
               this.responseData = res;
@@ -645,138 +550,6 @@ export class FinancialIndicator {
       }
     });
   }
-
-
-  // getAverageScatterData() {
-  //   const tabType = this.getTabType();
-  //   this.multiChart = false;
-  //   this._loaderService.showLoader();
-
-  //   // this.initializeScatterData();
-  //   let apiEndPoint = "state-dashboard-averages";
-
-  //   this.scatterChartPayload = {
-  //     state: this.stateId,
-  //     financialYear: this.financialYear ? this.financialYear : "",
-  //     headOfAccount: this.stateServiceLabel ? undefined : this.headOfAccount,
-  //     filterName: this.filterName ? this.filterName : "",
-  //     isPerCapita: this.isPerCapita ? this.isPerCapita : "",
-  //     compareType: this.compType ? this.compType : "",
-  //     compareCategory: this.selectedRadioBtnValue
-  //       ? this.selectedRadioBtnValue
-  //       : "",
-  //     ulb: this.ulbId ? [this.ulbId] : this.ulbArr ? this.ulbArr : "",
-  //     chartType: !this.filterName.includes("mix") ? "scatter" : "doughnut",
-  //     apiEndPoint: apiEndPoint,
-  //     apiMethod: "post",
-  //     stateServiceLabel: this.stateServiceLabel,
-  //     sortBy: "",
-  //     chartTitle: "",
-  //     which: this.selectedRadioBtnValue ? this.selectedRadioBtnValue : "",
-  //     TabType: tabType ? tabType?.code : "",
-  //   };
-
-  //   if (this.selectedRadioBtnValue == "nationalAvg") {
-  //     this.scatterData.data.datasets.push(
-  //       this.stateFilterDataService.nationLevelScatterDataSet
-  //     );
-  //   }
-  //   console.log("scatterChartPayload", this.scatterChartPayload);
-
-  //   this.stateFilterDataService
-  //     .getAvgScatterdData(this.scatterChartPayload, apiEndPoint)
-  //     .subscribe(
-  //       (res) => {
-  //         this.notfound = false;
-  //         console.log("response data", res);
-  //         //scatter plots center
-
-  //         if (!this.filterName.includes("mix")) {
-  //           this._loaderService.stopLoader();
-  //           this.notfound = false;
-  //           // if (this.selectedRadioBtnValue == "populationAvg") {
-  //           //   this.scatterData = this.stateFilterDataService.populationWiseScatterData(res['data']);
-  //           //   console.log(this.scatterData);
-  //           // } else {
-  //           let scatterChartObj: any = {
-  //             // cluster of ULBs under these 3 categories
-  //             mCorporation:
-  //               res["data"] && res["data"]["mCorporation"]
-  //                 ? res["data"]["mCorporation"]
-  //                 : [],
-  //             municipality:
-  //               res["data"] && res["data"]["municipality"]
-  //                 ? res["data"]["municipality"]
-  //                 : [],
-  //             townPanchayat:
-  //               res["data"] && res["data"]["townPanchayat"]
-  //                 ? res["data"]["townPanchayat"]
-  //                 : [],
-  //             // average of ULBs, state, national
-  //             mCorporationAvg:
-  //               res["data"] && res["data"]["Municipal Corporation"]
-  //                 ? parseFloat(res["data"]["Municipal Corporation"])
-  //                 : 0,
-  //             municipalityAvg:
-  //               res["data"] && res["data"]["Municipality"]
-  //                 ? parseFloat(res["data"]["Municipality"])
-  //                 : 0,
-  //             townPanchayatAvg:
-  //               res["data"] && res["data"]["Town Panchayat"]
-  //                 ? parseFloat(res["data"]["Town Panchayat"])
-  //                 : 0,
-  //             stateAvg:
-  //               res["data"] && res["data"]["stateAvg"]
-  //                 ? parseFloat(res["data"]["stateAvg"])
-  //                 : 0,
-  //             nationalAvg:
-  //               res["data"] && res["data"]["national"]
-  //                 ? parseFloat(res["data"]["national"])
-  //                 : 0,
-  //             // average of population under these categories
-  //             lessThan100k:
-  //               res["data"] && res["data"]["< 100 Thousand"]
-  //                 ? parseFloat(res["data"]["< 100 Thousand"])
-  //                 : 0,
-  //             bwt100kTo500k:
-  //               res["data"] && res["data"]["100 Thousand - 500 Thousand"]
-  //                 ? parseFloat(res["data"]["100 Thousand - 500 Thousand"])
-  //                 : 0,
-  //             bwt500kTo1m:
-  //               res["data"] && res["data"]["500 Thousand - 1 Million"]
-  //                 ? parseFloat(res["data"]["500 Thousand - 1 Million"])
-  //                 : 0,
-  //             bwt1mTo4m:
-  //               res["data"] && res["data"]["1 Million - 4 Million"]
-  //                 ? parseFloat(res["data"]["1 Million - 4 Million"])
-  //                 : 0,
-  //             greaterThan4m:
-  //               res["data"] && res["data"]["4 Million+"]
-  //                 ? parseFloat(res["data"]["4 Million+"])
-  //                 : 0,
-  //           };
-  //           scatterChartObj["stateLevelMaxPopuCount"] =
-  //             this.stateFilterDataService.getMaximumPopulationCount(
-  //               scatterChartObj?.mCorporation,
-  //               scatterChartObj?.townPanchayat,
-  //               scatterChartObj?.municipality
-  //             );
-
-  //           this.scatterData = this.stateFilterDataService.plotScatterChart(
-  //             scatterChartObj,
-  //             this.selectedRadioBtnValue
-  //           );
-
-  //           console.log(this.scatterData);
-  //           this.generateRandomId("scatterChartId123");
-  //           // }
-  //         }
-  //       },
-  //       (err:any) => {
-  //         console.log(err.message);
-  //       }
-  //     );
-  // }
 
   getChartData(): void {
     this.getRevenueChart();

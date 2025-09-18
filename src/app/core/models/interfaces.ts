@@ -1,6 +1,6 @@
 import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 import { IState } from './state/state';
-import { IULB } from './ulb';
+import { IULB, UlbType } from './ulb';
 
 export interface BondIssuances {
   bondIssueAmount: number;
@@ -26,6 +26,7 @@ export interface ExploreSectionResponse {
   state: IState;
   ulbId: string;
   ulbName: string;
+  ulbType: UlbType;
 }
 
 export interface ExploresectionTable {
