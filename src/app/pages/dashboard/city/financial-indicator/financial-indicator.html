@@ -32,24 +32,6 @@
     </app-tab-buttons>
   </div>
 
-  @if(this.isDashboard()){
-  @if(infoMsg() && infoMsg().msg) {
-  <div [ngClass]="
-          'alert alert-' + infoMsg().text + ' d-flex align-items-start p-3 '
-        " style="font-size: 0.75rem" role="alert">
-    <i [ngClass]="
-            'bi bi-circle-fill ' +
-            'text- ' +
-            infoMsg().text +
-            'custom-font-size-7'
-          "></i>
-    &nbsp;{{ infoMsg().msg }}
-  </div>
-  } @else {
-  <app-pre-loader></app-pre-loader>
-  }
-  }
-
   @if(!isChartDataAvailable()) {
   <app-no-data-found></app-no-data-found>
   } @else {
