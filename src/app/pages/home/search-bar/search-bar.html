@@ -7,8 +7,9 @@
   <!-- Ticker -->
   <div class="text-white fs-4">
     <span>Standardised, timely and credible financial information for
-      <span class="text-cfPrimary fw-bold countup-span" appCountUp [start]="3800" [end]="coveredUlbCount()"
-        [duration]="3000" [useEasing]="true" [smartEasingThreshold]="1000" [smartEasingAmount]="300">
+      <span class="text-cfPrimary fw-bold countup-span" appCountUp [start]="3800"
+        [end]="this._commonService.totalUlbs()" [duration]="3000" [useEasing]="true" [smartEasingThreshold]="1000"
+        [smartEasingAmount]="300">
       </span>
       <!-- <span class="cities-count" [countUp]="coveredUlbCount ? coveredUlbCount : 4000"
         [options]="{ startVal: 3800, duration: 5 }">

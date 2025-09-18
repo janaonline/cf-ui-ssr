@@ -130,62 +130,65 @@ export class NationalDashboard {
 
   private fetchExploreSectionData(stateCode: string = '', stateId: string = ''): void {
     this.isLoading.set(true);
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(GRID_DATA_KEY)
-    ) {
-      this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
-      this.transferState.remove(GRID_DATA_KEY);
-      this.isLoading.set(false);
-    } else {
-      this._commonService
-        .getExploreSectionData(stateCode, stateId)
-        .subscribe({
-          next: (res: ExploreSectionResponse) => {
-            // Ticker above search bar - homepage.
+    // if (
+    //   isPlatformBrowser(this.platformId) &&
+    //   this.transferState.hasKey(GRID_DATA_KEY)
+    // ) {
+    //   this.exploreData.set(this.transferState.get(GRID_DATA_KEY, []));
+    //   this.transferState.remove(GRID_DATA_KEY);
+    //   this.isLoading.set(false);
+    // } else {
+    this._commonService
+      .getExploreSectionData(stateCode, stateId)
+      .subscribe({
+        next: (res: ExploreSectionResponse) => {
+          // Ticker above search bar - homepage.
+          if (!stateId && !stateCode) {
             this._commonService.setDataForVisualizationCount(
               res.gridDetails[0].value?.toString()
             );
+          }
 
-            let result: ExploresectionTable[] = [
-              ...res.gridDetails,
-              {
-                sequence: 3,
-                label: 'ULBs Credit Rating Reports',
-                value: `${this.totalCreditRating}`,
-                info: '',
-                src: '',
-              },
-              {
-                sequence: 4,
-                label: 'ULBs With Investment Grade Rating',
-                value: `${this.cr_above_BBB_minus}`,
-                info: '',
-                src: '',
-              },
-            ];
-            result.sort((a: any, b: any) => a.sequence - b.sequence);
 
-            if (this.page() === 'national') {
-              const obj = {
-                sequence: 5,
-                label: 'ULBs With Rating A & Above',
-                value: `${this.cr_above_a}`,
-                info: '',
-                src: ''
-              }
-              result[4] = obj;
+          let result: ExploresectionTable[] = [
+            ...res.gridDetails,
+            {
+              sequence: 3,
+              label: 'ULBs Credit Rating Reports',
+              value: `${this.totalCreditRating}`,
+              info: '',
+              src: '',
+            },
+            {
+              sequence: 4,
+              label: 'ULBs With Investment Grade Rating',
+              value: `${this.cr_above_BBB_minus}`,
+              info: '',
+              src: '',
+            },
+          ];
+          result.sort((a: any, b: any) => a.sequence - b.sequence);
+
+          if (this.page() === 'national') {
+            const obj = {
+              sequence: 5,
+              label: 'ULBs With Rating A & Above',
+              value: `${this.cr_above_a}`,
+              info: '',
+              src: ''
             }
+            result[4] = obj;
+          }
 
-            const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
-            this.exploreData.set(data);
-            this.isLoading.set(false);
-            if (isPlatformServer(this.platformId)) {
-              this.transferState.set(GRID_DATA_KEY, data);
-            }
-          },
-          error: (error: any) => console.error('Error in loading explore section data: ', error),
-        });
-    }
+          const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
+          this.exploreData.set(data);
+          this.isLoading.set(false);
+          if (isPlatformServer(this.platformId)) {
+            this.transferState.set(GRID_DATA_KEY, data);
+          }
+        },
+        error: (error: any) => console.error('Error in loading explore section data: ', error),
+      });
   }
+  // }
 }
