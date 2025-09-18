@@ -97,13 +97,12 @@ export class UlbDashboard {
   }
 
   sendRequest() {
-    window.open("https://tally.so/r/mBvPZA", "_blank", "noopener,noreferrer");
+    window.open("https://tally.so/r/3jKOL6", "_blank", "noopener,noreferrer");
     return;
-
   }
 
   registerNow() {
-    window.open("https://tally.so/r/3jKOL6", "_blank", "noopener,noreferrer");
+    window.open("https://tally.so/r/mBvPZA", "_blank", "noopener,noreferrer");
     return;
   }
 
