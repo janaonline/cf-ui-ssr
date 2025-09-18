@@ -16,19 +16,21 @@
     <div class="custom-spinner-overlay"></div>
     }
 
+    <!-- Common component is used for revenue dashboard (ulb login - XVFC), city page.D -->
+    @if(!isDashboard()) {
     <!-- Main Buttons -->
     <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
     </app-tab-buttons>
 
     <!-- Info about line item -->
     <p>{{ subButtons[currentSelectedButtonKey()].text }}</p>
+    }
 
     <!-- Sub Buttons -->
     <app-tab-buttons [buttons]="subButtons[currentSelectedButtonKey()].buttons"
       (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
     </app-tab-buttons>
   </div>
-
 
   @if(!isChartDataAvailable()) {
   <app-no-data-found></app-no-data-found>
@@ -41,9 +43,10 @@
       <mat-spinner></mat-spinner>
     </div>
     }
-    <div class="rounded bg-light d-flex flex-column col-sm-12 col-lg-8 p-3 mb-2" id="chartContainer">
+    <div class="rounded bg-light d-flex flex-column col-sm-12 p-3 mb-2"
+      [ngClass]="isDashboard() ? 'col-lg-12' : 'col-lg-8'" id="chartContainer">
       <p class="">
-        {{ulbName()}} <b>{{buttonType()}}</b> v/s <b>{{getCompType()}}</b>
+        {{ ulbName() }} <b>{{ buttonType() }}</b> v/s <b>{{ getCompType() }}</b>
       </p>
 
       <div class="row justify-content-between align-items-center">
@@ -52,7 +55,9 @@
           <!-- <input class="rounded border px-2 py-2 custom-font-size-6 w-100" id="filterInput"
             value="State Municipal Corporation Average" #input disabled /> -->
           <button class="takeActionBtn rounded border px-2 py-2 text-dark custom-font-size-6 w-100"
-            (click)="openCompareByDialog()">Compare by: {{getCompType()}}</button>
+            (click)="openCompareByDialog()">
+            Compare by: {{ getCompType() }}
+          </button>
 
           <!-- Filter: years-->
           <form [formGroup]="myForm" class="w-50">
@@ -87,14 +92,19 @@
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
       <app-pre-loader></app-pre-loader>
-      }
-      @else {
+      } @else {
       <!-- Chart -->
       <div class="d-flex flex-wrap justify-content-center gap-1">
         @for (chartData of chartsData(); track $index) {
-        <div [ngClass]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
+        <div [ngClass]="
+            chartData.chartType === 'barChart'
+              ? 'flex-grow-1 overflow-x-auto'
+              : ''
+          ">
           @if(chartData.chartType ==='gaugeChart') {
-          <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
+          <p class="custom-font-size-7 m-0 text-center">
+            {{ chartData.datasets[0].label }}
+          </p>
           }
           <div class="" [ngClass]="chartData.chartType">
             <app-charts [chartConfig]="chartData"></app-charts>
@@ -115,9 +125,9 @@
         }
       </div>
       <i class="custom-font-size-7 m-0 text-end text-secondary">Line items contributing less than 1% have been excluded
-        to enhance readability</i>
-      }
-      }
+        to enhance
+        readability</i>
+      } }
 
       <!-- @for (chartData of chartsData; track $index) {
       <div class="overflow-x-auto flex-grow-1">
@@ -126,17 +136,23 @@
         </div>
       </div>
       } -->
-
     </div>
+
     <!-- Rigth side: Fyi -->
+    @if(!isDashboard()){
     <div class="col-sm-12 col-lg-4 rounded accordion-padding">
       @if(isChartLoading()) {
       <app-pre-loader></app-pre-loader>
-      } @else {
-      @if(infoMsg() && infoMsg().msg) {
-      <div [ngClass]="'alert alert-' + infoMsg().text + ' d-flex align-items-start p-2'" style="font-size: 0.65rem;"
-        role="alert">
-        <i [ngClass]="'bi bi-circle-fill ' + 'text- ' + infoMsg().text + 'custom-font-size-7'"></i>
+      } @else { @if(infoMsg() && infoMsg().msg && !this.isDashboard()) {
+      <div [ngClass]="
+          'alert alert-' + infoMsg().text + ' d-flex align-items-start p-2'
+        " style="font-size: 0.65rem" role="alert">
+        <i [ngClass]="
+            'bi bi-circle-fill ' +
+            'text- ' +
+            infoMsg().text +
+            'custom-font-size-7'
+          "></i>
         &nbsp;{{ infoMsg().msg }}
       </div>
       }}
@@ -177,6 +193,7 @@
         </ng-container>
       </div>
     </div>
+    }
   </div>
   } } }
 </section>
