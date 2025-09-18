@@ -96,12 +96,15 @@ export class UlbDashboard {
     })
   }
 
-  registerForEvent() {
+  sendRequest() {
+    window.open("https://tally.so/r/mBvPZA", "_blank", "noopener,noreferrer");
+    return;
 
   }
 
-  joinWaitlist() {
-
+  registerNow() {
+    window.open("https://tally.so/r/3jKOL6", "_blank", "noopener,noreferrer");
+    return;
   }
 
 }

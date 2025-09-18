@@ -51,6 +51,7 @@ export class SearchBar {
   ];
   private destroy$ = new Subject<void>();
   v1Url = environment.v1Url;
+  searchKey: string = '';
 
   constructor(
     protected _commonService: CommonService,
@@ -63,34 +64,36 @@ export class SearchBar {
   ngOnInit() {
     // this.loadRecentSearchValue();
     this.globaSearch();
-    this.getCoverULBCount();
+    // this.getCoverULBCount();
   }
 
-  getCoverULBCount(): void {
-    // --- TransferState check for client-side hydration ---
-    if (
-      isPlatformBrowser(this.platFormId) &&
-      this.transferState.hasKey(ULB_COUNT_KEY)
-    ) {
-      // Retrieve and set data from transfer state.
-      this.coveredUlbCount.set(this.transferState.get(ULB_COUNT_KEY, 0));
+  // getCoverULBCount(): void {
+  // --- TransferState check for client-side hydration ---
+  // if (
+  //   isPlatformBrowser(this.platFormId) &&
+  //   this.transferState.hasKey(ULB_COUNT_KEY)
+  // ) {
+  //   console.log('this.transferState.hasKey(ULB_COUNT_KEY)', this.transferState.hasKey(ULB_COUNT_KEY));
+  //   // Retrieve and set data from transfer state.
+  //   this.coveredUlbCount.set(this.transferState.get(ULB_COUNT_KEY, 0));
 
-      // Remove keys to avoid leaks.
-      this.transferState.remove(ULB_COUNT_KEY);
+  //   // Remove keys to avoid leaks.
+  //   this.transferState.remove(ULB_COUNT_KEY);
 
-      return;
-    }
+  //   return;
+  // }
+  // if (isPlatformBrowser(this.platFormId)) {
+  //   // Get the number.
+  //   this._commonService.dataForVisualizationCount
+  //     // .pipe(take(1))
+  //     .subscribe((res) => {
+  //       console.log('this.coveredUlbCount()', this.coveredUlbCount(), this.DEFAULT_VALUE, res);
+  //       if (this.coveredUlbCount() === this.DEFAULT_VALUE)
+  //         this.coveredUlbCount.set(res);
+  //     });
+  // }
+  // }
 
-    // Get the number.
-    this._commonService.dataForVisualizationCount
-      .pipe(take(1))
-      .subscribe((res) => {
-        if (this.coveredUlbCount() === this.DEFAULT_VALUE)
-          this.coveredUlbCount.set(res);
-      });
-  }
-
-  searchKey: string = '';
   globaSearch() {
     this.globalFormControl.valueChanges
       .pipe(

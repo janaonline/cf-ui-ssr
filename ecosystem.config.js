@@ -2,7 +2,7 @@ module.exports = {
     apps: [
         {
             name: 'cf-ui-ssr',
-            script: 'dist_ssr/cf-ui-ssr/server/server.mjs',
+            script: 'dist/cf-ui-ssr/server/server.mjs',
             instances: 1,
             exec_mode: 'fork',
             env: {
