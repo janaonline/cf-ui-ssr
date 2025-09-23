@@ -1,5 +1,5 @@
 import { IState } from './state/state';
-import { ulbType } from './ulbTypes';
+export type UlbType = 'Municipality' | 'Town Panchayat' | 'Municipal Corporation';
 export interface IULB {
   location: { lat: number | string | null; lng: number | string | null };
   amrut: 'Yes' | 'No' | undefined;
@@ -12,7 +12,7 @@ export interface IULB {
   name: string;
   natureOfUlb: string;
   population: number;
-  type?: ulbType;
+  type?: UlbType;
   wards: number;
   state: string;
   stateInfo?: IState;

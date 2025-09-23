@@ -67,6 +67,8 @@ export class FinancialIndicator {
   readonly ulbIdSignal = input.required<string>();
   readonly ulbName = input.required<string>();
   readonly ulbType = input.required<string>();
+  readonly isDashboard = input<boolean>(false);
+  readonly redirectionUrl = input<string>('');
 
   currentSelectedButtonKey = signal<LineItemType>('revenue');
   subButton = signal<string>('');
@@ -214,7 +216,7 @@ export class FinancialIndicator {
               if (res.chartType === 'barChart') {
                 const structureData = this.buildBarChartConfigurations(res);
                 this.chartsData.set(structureData);
-                console.log(this.chartsData())
+                // console.log(this.chartsData())
               }
               else if (res.chartType === 'gaugeChart' && this.getcalcType() === 'mix') {
                 const structureData = this.buildGaugeChartConfigurations(res);

@@ -35,7 +35,7 @@ export class Charts implements AfterViewInit, OnDestroy {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     effect(() => {
       const config = this.chartConfig(); // access the signal
-      console.log('Chart config changed:', config);
+      // console.log('Chart config changed:', config);
       if (this.chartInstance) {
         // this.chart.config = config;
         // this.chartInstance.update();

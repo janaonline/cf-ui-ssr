@@ -11,7 +11,6 @@ import { CommonService } from '../../../core/services/common.service';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { ChartConfig } from '../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../shared/components/charts/charts";
-import { gaugeChartOptions } from '../../../shared/components/charts/constants';
 import { CitySearch } from "../../../shared/components/city-search/city-search";
 import { GridView } from "../../../shared/components/grid-view/grid-view";
 import { InfoCards } from "../../../shared/components/info-cards/info-cards";
@@ -20,8 +19,8 @@ import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
 import { StateSearch } from "../../../shared/components/state-search/state-search";
 import { DashboardService } from '../dashboard-service';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
-import { FinancialIndicator } from './financial-indicator/financial-indicator';
 import { gaugeChartConfig } from './chart-constant';
+import { FinancialIndicator } from './financial-indicator/financial-indicator';
 
 @Component({
   selector: 'app-state',

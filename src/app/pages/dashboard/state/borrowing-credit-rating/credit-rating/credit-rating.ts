@@ -1,9 +1,7 @@
-import { ChangeDetectorRef, Component, input, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, input } from '@angular/core';
 import { AssetsService } from '../../../../../core/services/assets/assets.service';
-import { CommonService } from '../../../../../core/services/common.service';
 import { CreditScale, ratingGrades } from '../../../../../core/util/creditReportUtil';
 import { ULBRatings } from '../models/ratings';
-import { creditRatingModalHeaders } from '../models/tableHeaders';
 
 @Component({
   selector: 'app-credit-rating',

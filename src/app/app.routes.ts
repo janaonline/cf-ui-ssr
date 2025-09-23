@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -21,18 +22,11 @@ export const routes: Routes = [
         path: 'municipal-data',
         loadChildren: () => import('./pages/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
     },
-    // {
-    //     path: 'municipal-data/:dataId',
-    //     loadComponent: () => import('./pages/dashboard/city/city').then(m => m.City)
-    // },
+    {
+        path: 'ulb/:ulbId/:indicatoName',
+        loadComponent: () => import('./pages/dashboard/ulb-dashboard/ulb-dashboard').then(m => m.UlbDashboard),
+        canActivate: [authGuard]
+    },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
-    // {
-    //     path: 'dashboard',
-    //     children: [
-    //         { path: '', redirectTo: 'national', pathMatch: 'full' },
-    //         { path: 'national/india', loadComponent: () => import('./pages/dashboard/national/national').then(m => m.National) },
-    //         { path: 'city/:cityId', loadComponent: () => import('./pages/dashboard/city/city').then(m => m.City) },
-    //         { path: 'state/:stateId', loadComponent: () => import('./pages/dashboard/state/state').then(m => m.State) },
-    //     ]
-    // },    
+
 ];
