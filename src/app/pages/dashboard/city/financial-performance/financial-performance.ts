@@ -561,11 +561,24 @@ export class FinancialPerformance {
   }
   navigatePage() {
     if (!isPlatformBrowser(this.platformId)) return;
-    const slug = this.ulbSlugName();
-    const ulbId = this.ulbIdSignal(); // your signal
+
+    const slug = this.ulbSlugName();     // e.g. 'bengaluru'
+    // keep ulbId too if your API needs it, but drive UI from 'cities'
+    // const ulbId = this.ulbIdSignal();
+
     this.router.navigate(
       ['/municipal-data', 'city', slug, 'compareby'],
-      { queryParams: { ulbId } }
+      {
+        queryParams: {
+          cities: [slug],     // array form => deep-linkable & easy to extend later
+          // keep if you still need it for backend calls:
+          // ulbId,              // optional
+          // you can also set defaults:
+          // indicator: 'receipts',
+          // year: [2022]      // array form recommended
+        },
+        replaceUrl: true,     // optional: avoid duplicating history
+      }
     );
   }
 

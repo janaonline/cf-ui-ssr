@@ -156,6 +156,10 @@ export interface CreateExcelParams {
   rows: any[],
   columns: any[],
   header: { index: number, fontSize: number, fontFamily: string }
+  logoUrl?: string;   // assets/logo/cityfinance-logo.png
+  contactText?: string;
+  yearHeaders?: string[];          // e.g. ['Indicator','2020-21','2021-22',...]
+  cityGroups?: { name: string; startCol: number; endCol: number }[];
 }
 
 

@@ -47,16 +47,6 @@
     text-decoration: underline;
 }
 
-.margin-top {
-    margin-top: 5.5rem;
-}
-
-@media (max-width: 991px) {
-    .margin-top {
-        margin-top: 8px
-    }
-}
-
 @keyframes fadeInUp {
     from {
         opacity: 0;
