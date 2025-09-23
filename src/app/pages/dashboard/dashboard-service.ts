@@ -159,10 +159,10 @@ export class DashboardService {
       { params }
     );
   }
-  getUlbDetailsById(ulbId: string): Observable<any> {
+  getUlbDetailsById(slug: string): Observable<any> {
     return this.http.get<any>(
       `${environment.api.url}ledger/getUlbDetailsById`,
-      { params: { ulbId } }
+      { params: { slug } }
     );
   }
   // // Get state details.

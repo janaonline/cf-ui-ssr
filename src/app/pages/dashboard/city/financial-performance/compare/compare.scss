@@ -46,35 +46,19 @@ tr:hover {
   background-color: white;
 }
 
-// .ulb-badge {
-//   background-color: #12326b;
-//   cursor: pointer;
-//   color: #fff;
-// }
+/* horizontal scroll + wide table */
+.table-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
 
-// .ulb-badge i {
-//   font-size: 0.85rem;
-// }
+.mat-table-wide {
+  width: max-content; /* let table grow wider than container */
+  table-layout: fixed;
+}
 
-// ::ng-deep .mat-mdc-checkbox .mdc-checkbox {
-//   display: none; // hide default square box
-// }
-
-// .checkbox-pill {
-//   border-radius: 50px;
-//   padding: 4px 12px;
-//   cursor: pointer;
-//   transition: all 0.2s ease-in-out;
-//   background-color: #d1dbf0;
-//   font-weight: 500;
-// }
-
-// .checkbox-pill.mat-mdc-checkbox-checked {
-//   background-color: #1b4965; // same as your earlier selected color
-//   color: #fff;
-// }
-
-// ::ng-deep .mat-mdc-checkbox-checked label {
-//   color: #fff !important;
-//   cursor: pointer;
-// }
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  white-space: nowrap;
+}
