@@ -18,7 +18,7 @@ export const serverRoutes: ServerRoute[] = [
     // },
   },
   {
-    path: 'ulb/:ulbId/:indicatoName',
+    path: 'ulb/:ulbId/:indicatorName',
     renderMode: RenderMode.Client,
   },
   // {

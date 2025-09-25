@@ -1,0 +1,96 @@
+<!-- Page wrapper -->
+<div class="container px-3 py-4 my-4 bg-light rounded">
+    <!-- Top row: title + Reset -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="m-0 fw-semibold">Select scope</h5>
+        <button class="btn btn-outline-cfSecondary" aria-label="Reset selections">
+            Reset
+        </button>
+    </div>
+
+    <!-- Scope selectors -->
+    <form class="w-100" [formGroup]="downloadForm">
+
+        <div class="row align-items-end mb-3">
+
+            <!-- State -->
+            <div class="col-12 col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>State</mat-label>
+                    <mat-select formControlName="states">
+                        @for (item of statesList; track $index) {
+                        <mat-option [value]="item.name">{{ item.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Ulbs  -->
+            <div class="col-12 col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Select cities</mat-label>
+                    <mat-select formControlName="ulbs">
+                        @for (item of ulbsList; track $index) {
+                        <mat-option [value]="item.name">{{ item.name }}</mat-option>
+                        }
+                    </mat-select>
+                    <!-- <mat-hint>Select one or more</mat-hint> -->
+                </mat-form-field>
+            </div>
+
+            <!-- FY -->
+            <div class="col-12 col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Financial year</mat-label>
+                    <mat-select formControlName="year">
+                        @for (item of yearsList; track $index) {
+                        <mat-option [value]="item">{{item }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Choose data format -->
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="m-0 fw-semibold">Choose data format</h5>
+            <a class="small text-decoration-underline" href="javascript:void(0)">Help me choose</a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <mat-radio-group formControlName="downloadType" class="row g-3 w-100">
+                @for (option of downloadOptions; track $index) {
+                <div class="col-12 col-md-4">
+                    <mat-card class="h-100">
+                        <mat-card-content class="d-flex gap-2 align-items-center h-100">
+                            <mat-radio-button [value]="option.value" class="pt-1">
+                            </mat-radio-button>
+                            <div class="px-0">
+                                <div class="fw-semibold">{{ option.label }}</div>
+                                <div class="text-muted small">{{ option.description }}</div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+                }
+            </mat-radio-group>
+        </div>
+
+
+        <!-- Selection summary -->
+        <div class="rounded p-3 px-4 mb-4 bg-success-subtle border border-success">
+            <div class="text-center fw-bold">114 files selected</div>
+            <div class="text-center text-muted small">Estimated size: 38&nbsp;MB</div>
+            <div class="text-center text-muted small fw-semibold mt-2">You’ll receive your dataset by email in about 20
+                minutes.</div>
+        </div>
+
+        <!-- Primary CTA -->
+        <div class="text-center">
+            <button class="btn btn-cfSecondary px-4 py-2">
+                Email me the files
+            </button>
+        </div>
+
+    </form>
+</div>

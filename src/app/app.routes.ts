@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
 import { authGuard } from './core/guards/auth.guard';
+import { Home } from './pages/home/home';
 
 export const routes: Routes = [
     {
@@ -23,9 +23,13 @@ export const routes: Routes = [
         loadChildren: () => import('./pages/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
     },
     {
-        path: 'ulb/:ulbId/:indicatoName',
+        path: 'ulb/:ulbId/:indicatorName',
         loadComponent: () => import('./pages/dashboard/ulb-dashboard/ulb-dashboard').then(m => m.UlbDashboard),
         canActivate: [authGuard]
+    },
+    {
+        path: 'resources',
+        loadChildren: () => import('./pages/resources-section/resources-section.routes').then(m => m.RESOURCES_SECTION_ROUTES),
     },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
 

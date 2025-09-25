@@ -50,7 +50,7 @@ export class UlbDashboard {
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         this.ulbId.set(params.get('ulbId') || '');
-        this.indicatorName.set(params.get('indicatoName') || 'revenue');
+        this.indicatorName.set(params.get('indicatorName') || 'revenue');
         this.getLedgerYears(this.ulbId());
         this.getUlbData(this.ulbId());
       })
