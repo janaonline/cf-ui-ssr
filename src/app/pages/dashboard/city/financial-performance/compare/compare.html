@@ -29,7 +29,7 @@
             <div class=" mt-4 p-1">
                 <p class="fw-bold mb-2">01 Select up to three cities</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    <app-city-search [selectCity]="onUlbSelected" #citySearch>
+                    <app-city-search (onUlbSelect)="onUlbSelected($event)" [resetOnChange]='true' #citySearch>
                     </app-city-search>
 
                     <!-- Selected city chips -->

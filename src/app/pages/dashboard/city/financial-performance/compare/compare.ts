@@ -537,13 +537,12 @@ export class Compare implements OnInit {
   }
 
   // When ULB is selected from drop down - update selectedCities()
-  onUlbSelected = (city: IULB) => {
+  onUlbSelected(city: IULB) {
     if (this.selectedCities().length >= 3) {
       this.utilityService.triggerSnackbar('Maximum 3 cities can be selected.', 'snackbar-danger');
     } else if (this.selectedCities().find(c => c._id === city._id)) {
       this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
     } else {
-      console.log('Selected city:', city);
       this.selectedCities.update(cities => [...cities, city]);
       this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
       // this.cityHeaders = ['emptyCol', 'emptyCol', ...this.selectedCities().map(c => c.name)];
