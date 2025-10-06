@@ -524,7 +524,9 @@ export class Compare implements OnInit {
     if (index === -1) {
       this.indicators().forEach(item => item.isActive = activeStatus);
     } else {
-      this.indicators()[index].isActive = !this.indicators()[index].isActive;
+      const currIndicatorStatus = !this.indicators()[index].isActive;
+      this.indicators().forEach(item => item.isActive = false);
+      this.indicators()[index].isActive = currIndicatorStatus;
     }
     this.isIndicatorsActiveFn();
     // console.log("addIndicator: ", index, this.indicators())
@@ -668,7 +670,8 @@ export class Compare implements OnInit {
   }
 
   private createChartData(resData: any = this.res) {
-    // console.log('Create chart called');
+    if (Object.keys(resData).length === 0) return;
+
     // Create chart labels.
     const labelsWithDup: string[] = resData.headers
       .filter((item: any) => item.key !== 'indicator')
@@ -680,6 +683,8 @@ export class Compare implements OnInit {
       .find(({ key }) => key === this.selectedIndicator.value)
       ?.label;
     const indicatorsData = resData.data.find((item: any) => item.indicator === indicatorLabel);
+
+    if (!indicatorsData) return;
 
     const datasets: ChartDataSet[] = [];
     this.selectedCities().forEach((city: IULB, idx: number) => {
