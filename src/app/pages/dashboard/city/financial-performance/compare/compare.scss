@@ -62,3 +62,24 @@ tr:hover {
 .mat-mdc-header-cell {
   white-space: nowrap;
 }
+
+.table-scroll-container {
+  height: 300px; /* Set a fixed height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling when content exceeds height */
+  /* Optional: Add padding, background-color, or border-radius for styling */
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+/* Ensure sticky headers stay above rows and keep a solid background */
+.mat-mdc-table .mat-mdc-header-row.cdk-sticky {
+  background: #fff; /* or your theme surface color */
+  z-index: 2; /* above body rows */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06); /* subtle divider */
+}
+
+/* Put the top (grouped) header slightly above the second header */
+.mat-mdc-table tr.mat-mdc-header-row.cdk-sticky:first-of-type {
+  z-index: 3;
+}

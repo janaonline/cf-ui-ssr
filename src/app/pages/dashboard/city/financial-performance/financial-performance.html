@@ -16,7 +16,7 @@
 
         <!-- Filter: Years Dropdown -->
         <form [formGroup]="myForm" class="col-sm-12 col-md-4">
-            <label for="years" class="d-block fw-bold mb-2">Financial years</label>
+            <label for="years" class="d-block fw-bold mb-2">Financial Year</label>
             <select id="years" formControlName="year" class="form-select w-100">
                 @for (year of years(); track year) {
                 <option [value]="year">{{ year }}</option>
@@ -47,54 +47,62 @@
         <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
             <!-- {{dataSource().length}} -->
             @if(dataSource().length > 0){
-            <mat-tree #tree [dataSource]="dataSource()" [childrenAccessor]="childrenAccessor" class="border rounded">
-                <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
-                    (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
-                    class="ps-0 border-bottom onHover" [ngClass]="{
+            <div class="table-scroll-y overflow-auto" style="max-height: 65vh;">
+                <mat-tree #tree [dataSource]="dataSource()" [childrenAccessor]="childrenAccessor"
+                    class="border rounded">
+                    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                        (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
+                        class="ps-0 border-bottom onHover" [ngClass]="{
                       'bg-table-header ': node.isHeader,
                       'no-pointer': node.isHeader,
                       'selected': node.isSelected,
+                       'sticky-top': node.isHeader,         
+                       'bg-white': node.isHeader,             
+                       'shadow-sm': node.isHeader            
                     }">
-                    <!-- expand icon -->
-                    @if (hasChild(0, node)) {
-                    <button class="p-0 m-0" matIconButton [attr.aria-label]="'Toggle ' + node.name">
-                        <i [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
-                    </button>
-                    }
-                    @else {
-                    <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
-                    }
+                        <!-- expand icon -->
+                        @if (hasChild(0, node)) {
+                        <button class="p-0 m-0" matIconButton [attr.aria-label]="'Toggle ' + node.name">
+                            <i
+                                [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
+                        </button>
+                        }
+                        @else {
+                        <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
+                        }
 
-                    <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
+                        <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
 
-                        <div [class.selected]="node.isSelected" [class]=" node.className "
-                            [ngClass]="{ 'no-pointer': node.disableEvents }" style=" width: 300px;">
-                            {{node.name}}
-                        </div>
+                            <div [class.selected]="node.isSelected" [class]=" node.className "
+                                [ngClass]="{ 'no-pointer': node.disableEvents }" style=" width: 300px;">
+                                {{node.name}}
+                            </div>
 
-                        <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
-                            @for(year of node.yearData; track $index) {
-                            <div [class]="'text-end w-100 justify-content-center '" [class.selected]="node.isSelected">
-                                <!-- {{year}} -->
-                                @if (getFormattedValue(year,node.graphKey)) {
-                                {{(year | inrFormat : 'inr' : currencyOptions )}}
-                                }
-                                @else {
-                                {{year}}
-                                }
-                                <!-- {{year| inrFormat:'inr':currencyOptions}} -->
-                                @if (node.yearGrowth?.[$index]) {
-                                <br>
-                                <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
-                                    ({{ node.yearGrowth?.[$index] }}%)
+                            <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
+                                @for(year of node.yearData; track $index) {
+                                <div [class]="'text-end w-100 justify-content-center '"
+                                    [class.selected]="node.isSelected">
+                                    <!-- {{year}} -->
+                                    @if (getFormattedValue(year,node.graphKey)) {
+                                    {{(year | inrFormat : 'inr' : currencyOptions )}}
+                                    }
+                                    @else {
+                                    {{year}}
+                                    }
+                                    <!-- {{year| inrFormat:'inr':currencyOptions}} -->
+                                    @if (node.yearGrowth?.[$index]) {
+                                    <br>
+                                    <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                                        ({{ node.yearGrowth?.[$index] }}%)
+                                    </div>
+                                    }
                                 </div>
                                 }
                             </div>
-                            }
                         </div>
-                    </div>
-                </mat-tree-node>
-            </mat-tree>
+                    </mat-tree-node>
+                </mat-tree>
+            </div>
             }
 
         </div>

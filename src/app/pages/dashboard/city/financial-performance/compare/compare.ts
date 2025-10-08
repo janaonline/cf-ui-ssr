@@ -95,7 +95,7 @@ export class Compare implements OnInit {
     {
       line1: '3Y Property Tax',
       line2: 'of Ahmedabad–Surat–Indore',
-      cities: ['ahmedabad', 'surat', 'indore'],
+      cities: ['amdavad', 'surat', 'indore'],
       indicatorKey: 'taxRevenue',
       yearsCount: 3
     },
@@ -459,7 +459,7 @@ export class Compare implements OnInit {
     const years = this.lastNYearsLabels(preset.yearsCount ?? 3);
 
     await this.router.navigate(
-      ['/municipal-data', 'city', slugInPath, 'compareby'],
+      ['/municipal-data', 'city', 'compareby'],
       {
         queryParams: {
           cities: slugs,            // -> ?cities=mumbai&cities=bengaluru&cities=pune
@@ -503,7 +503,7 @@ export class Compare implements OnInit {
   //   this.scrollToTop();
   // }
   private scrollToTop(): void {
-    this.viewportScroller.scrollToPosition([0, 800]);
+    this.viewportScroller.scrollToPosition([0, 500]);
   }
   // Update isYearsActive variable if all years are active.
   private isYearsActiveFn() {
@@ -593,7 +593,7 @@ export class Compare implements OnInit {
     };
     console.log('navigating to compareby with', ulbs, yearsArr, indicators[0].key);
     this.router.navigate(
-      ['/municipal-data', 'city', slug, 'compareby'],
+      ['/municipal-data', 'city', 'compareby'],
       { queryParams: qp, replaceUrl: true }
     );
     // this.loadData(yearsArr, ulbs, indicators);
@@ -668,7 +668,27 @@ export class Compare implements OnInit {
     // this.displayedColumns = ['select', ...resData.headers.map((item: any) => item.key)];
     this.dataSource.set(resData.data);
   }
+  private toCrOrSame<
 
+    T extends string | number | bigint | null | undefined
+
+  >(value: T, decimals = 2): number | T {
+
+    if (typeof value === 'string' && value.trim().toUpperCase() === 'N/A') return value;
+
+
+
+    const n = typeof value === 'bigint' ? Number(value) : Number(value);
+
+    if (Number.isFinite(n)) {
+
+      return Number((n / 1e7).toFixed(decimals)); // crores
+
+    }
+
+    return value; // preserves original (e.g., '', null, undefined, '—', etc.)
+
+  }
   private createChartData(resData: any = this.res) {
     if (Object.keys(resData).length === 0) return;
 
@@ -692,7 +712,7 @@ export class Compare implements OnInit {
       const data: number[] = [];
       for (const year of this.years()) {
         const key = cityId + '_' + year.key;
-        data.push(indicatorsData[key]);
+        data.push(this.toCrOrSame(indicatorsData[key]));
       }
       const obj = {
         label: city.name,
