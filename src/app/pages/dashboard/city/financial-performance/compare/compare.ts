@@ -95,7 +95,7 @@ export class Compare implements OnInit {
     {
       line1: '3Y Property Tax',
       line2: 'of Ahmedabad–Surat–Indore',
-      cities: ['ahmedabad', 'surat', 'indore'],
+      cities: ['amdavad', 'surat', 'indore'],
       indicatorKey: 'taxRevenue',
       yearsCount: 3
     },
@@ -459,7 +459,7 @@ export class Compare implements OnInit {
     const years = this.lastNYearsLabels(preset.yearsCount ?? 3);
 
     await this.router.navigate(
-      ['/municipal-data', 'city', slugInPath, 'compareby'],
+      ['/municipal-data', 'city', 'compareby'],
       {
         queryParams: {
           cities: slugs,            // -> ?cities=mumbai&cities=bengaluru&cities=pune
@@ -503,7 +503,7 @@ export class Compare implements OnInit {
   //   this.scrollToTop();
   // }
   private scrollToTop(): void {
-    this.viewportScroller.scrollToPosition([0, 800]);
+    this.viewportScroller.scrollToPosition([0, 500]);
   }
   // Update isYearsActive variable if all years are active.
   private isYearsActiveFn() {
@@ -524,7 +524,9 @@ export class Compare implements OnInit {
     if (index === -1) {
       this.indicators().forEach(item => item.isActive = activeStatus);
     } else {
-      this.indicators()[index].isActive = !this.indicators()[index].isActive;
+      const currIndicatorStatus = !this.indicators()[index].isActive;
+      this.indicators().forEach(item => item.isActive = false);
+      this.indicators()[index].isActive = currIndicatorStatus;
     }
     this.isIndicatorsActiveFn();
     // console.log("addIndicator: ", index, this.indicators())
@@ -537,13 +539,12 @@ export class Compare implements OnInit {
   }
 
   // When ULB is selected from drop down - update selectedCities()
-  onUlbSelected = (city: IULB) => {
+  onUlbSelected(city: IULB) {
     if (this.selectedCities().length >= 3) {
       this.utilityService.triggerSnackbar('Maximum 3 cities can be selected.', 'snackbar-danger');
     } else if (this.selectedCities().find(c => c._id === city._id)) {
       this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
     } else {
-      console.log('Selected city:', city);
       this.selectedCities.update(cities => [...cities, city]);
       this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
       // this.cityHeaders = ['emptyCol', 'emptyCol', ...this.selectedCities().map(c => c.name)];
@@ -592,7 +593,7 @@ export class Compare implements OnInit {
     };
     console.log('navigating to compareby with', ulbs, yearsArr, indicators[0].key);
     this.router.navigate(
-      ['/municipal-data', 'city', slug, 'compareby'],
+      ['/municipal-data', 'city', 'compareby'],
       { queryParams: qp, replaceUrl: true }
     );
     // this.loadData(yearsArr, ulbs, indicators);
@@ -667,9 +668,30 @@ export class Compare implements OnInit {
     // this.displayedColumns = ['select', ...resData.headers.map((item: any) => item.key)];
     this.dataSource.set(resData.data);
   }
+  private toCrOrSame<
 
+    T extends string | number | bigint | null | undefined
+
+  >(value: T, decimals = 2): number | T {
+
+    if (typeof value === 'string' && value.trim().toUpperCase() === 'N/A') return value;
+
+
+
+    const n = typeof value === 'bigint' ? Number(value) : Number(value);
+
+    if (Number.isFinite(n)) {
+
+      return Number((n / 1e7).toFixed(decimals)); // crores
+
+    }
+
+    return value; // preserves original (e.g., '', null, undefined, '—', etc.)
+
+  }
   private createChartData(resData: any = this.res) {
-    // console.log('Create chart called');
+    if (Object.keys(resData).length === 0) return;
+
     // Create chart labels.
     const labelsWithDup: string[] = resData.headers
       .filter((item: any) => item.key !== 'indicator')
@@ -682,13 +704,15 @@ export class Compare implements OnInit {
       ?.label;
     const indicatorsData = resData.data.find((item: any) => item.indicator === indicatorLabel);
 
+    if (!indicatorsData) return;
+
     const datasets: ChartDataSet[] = [];
     this.selectedCities().forEach((city: IULB, idx: number) => {
       const cityId = city._id;
       const data: number[] = [];
       for (const year of this.years()) {
         const key = cityId + '_' + year.key;
-        data.push(indicatorsData[key]);
+        data.push(this.toCrOrSame(indicatorsData[key]));
       }
       const obj = {
         label: city.name,

@@ -29,7 +29,7 @@
             <div class=" mt-4 p-1">
                 <p class="fw-bold mb-2">01 Select up to three cities</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    <app-city-search [selectCity]="onUlbSelected" #citySearch>
+                    <app-city-search (onUlbSelect)="onUlbSelected($event)" [resetOnChange]='true' #citySearch>
                     </app-city-search>
 
                     <!-- Selected city chips -->
@@ -98,9 +98,9 @@
 
         </form>
 
-        <div class="mt-4">
+        <!-- <div class="mt-4">
             <a href="#">Not sure where to begin? Try a sample comparison →</a>
-        </div>
+        </div> -->
     </div>
 
     @if(selectedIndicator.value) {
@@ -138,7 +138,7 @@
         }
     </div>
 
-    <div
+    <!-- <div
         class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
         <p class="col-sm-12 col-md-9 custom-mb px-0">
             Check the boxes for the rows you want to download. If all rows are selected, the full table will be
@@ -156,14 +156,14 @@
         </button>
 
 
-    </div>
+    </div> -->
 
 
     <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
-        <small class="small text-danger fw-bold">All the values are in Crores*</small>
+        <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in Crores*</small>
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
-        <div class="table-scroll-x">
-            <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 mat-table-wide">
+        <div class="table-scroll-x overflow-auto" style="max-height: 60vh;">
+            <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 mat-table-wide  ">
 
                 <!-- empty corner for the first grouped header row -->
                 <ng-container matColumnDef="emptyCol">
@@ -219,8 +219,8 @@
                 }
 
                 <!-- header rows -->
-                <tr mat-header-row *matHeaderRowDef="cityHeaders"></tr>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="cityHeaders;sticky: true"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
 
                 <!-- body -->
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -229,35 +229,48 @@
 
 
         } @else {
-        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+        <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
             <i class=" bi bi-table"></i>&nbsp;
             Build your comparison
+        </div> -->
+        <div class="rounded-4 p-4 bg-secondary-subtle my-4">
+            <p class="fs-3 mb-4">What you'll get </p>
+            <div class="row text-start">
+                @for (item of whatYouWillGet; track $index) {
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <img [src]="item.src" [alt]="item.header">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
+                            <p class="m-0 p-0 lh-sm">{{item.label}}</p>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
         </div>
         }
     </div>
     }
 
-    <div class="rounded-4 p-4 bg-secondary-subtle my-4">
-        <p class="fs-3 mb-4">What you'll get </p>
-        <div class="row text-start">
-            @for (item of whatYouWillGet; track $index) {
-            <div class="col-md-4">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img [src]="item.src" [alt]="item.header">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
-                        <p class="m-0 p-0 lh-sm">{{item.label}}</p>
-                    </div>
-                </div>
-            </div>
-            }
-        </div>
+    <div class="d-flex justify-content-end my-4">
+        <button type="button" class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3"
+            (click)="downloadExcel()" [disabled]="isExporting" aria-label="Download as Excel">
+            <ng-container *ngIf="!isExporting; else exportingTpl">
+                Download as XLSX&nbsp;<i class="bi bi-download"></i>
+            </ng-container>
+            <ng-template #exportingTpl>
+                Preparing…&nbsp;<i class="bi bi-arrow-repeat spin"></i>
+            </ng-template>
+        </button>
     </div>
 
 </div>
 }
+
+
 <div class="container-fluid bg-light" style="background-color: #D9D9D9;">
     <div class="text-primary text-center p-3">
         <h5 class="mb-1">Not sure where to begin</h5>
