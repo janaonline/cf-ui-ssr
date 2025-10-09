@@ -46,7 +46,7 @@ export class Footer {
     },
     {
       href: environment.blogUrl,
-      title: 'Blogs',
+      title: 'Blog',
       target: '_blank',
     },
   ];
