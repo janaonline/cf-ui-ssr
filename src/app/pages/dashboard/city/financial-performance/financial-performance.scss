@@ -90,3 +90,9 @@
   pointer-events: none;
   cursor: default; /* Optional: change cursor to default */
 }
+.table-scroll-y .sticky-top {
+  z-index: 1020;
+} /* Bootstrap-like */
+.table-scroll-y .bg-table-header {
+  background: #fff;
+} /* ensure solid background */

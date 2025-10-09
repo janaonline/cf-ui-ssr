@@ -6,6 +6,7 @@ import { MatAccordion } from '@angular/material/expansion';
 import html2canvas from 'html2canvas';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonObj, CalcType, IFinancialIndicatorInfo, IFinancialIndicatorRes, IFinancialIndicatorsChart, LineItemType } from '../../../../core/models/interfaces';
+import { IULB } from '../../../../core/models/ulb';
 import { MaterialModule } from '../../../../material.module';
 import { ChartConfig, ChartResStruct } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
@@ -19,9 +20,6 @@ import { TabButtons } from '../../../../shared/components/tab-buttons/tab-button
 import { DashboardService } from '../../dashboard-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, compraeByOptions, IndicatorDetails, subButtons } from './constants';
-import { resStruct } from './temp';
-import { IULB } from '../../../../core/models/ulb';
-import { TreeTable } from './tree-table/tree-table';
 
 export interface ChartResponse {
   success: boolean;
@@ -49,7 +47,6 @@ export interface ChartSeries {
     MaterialModule,
     TabButtons,
     PreLoader,
-    TreeTable
   ],
   templateUrl: './financial-indicator.html',
   styleUrl: './financial-indicator.scss',

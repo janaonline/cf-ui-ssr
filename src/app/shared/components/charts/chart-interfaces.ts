@@ -19,6 +19,7 @@ export interface ChartDataSet {
   label: string;
   // data: (number | null)[];
   data: (number | null)[] | { x: number, y: number }[];
+  stack?: string;
   backgroundColor?: string | string[];
   borderColor?: string;
   borderWidth?: number;

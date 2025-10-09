@@ -113,14 +113,14 @@ export class DashboardService {
         params = params.append('years[]', year); // Append 'years[]' multiple times
       });
     }
-    return this.http.get(`${environment.api.url}/ledger/getCityDasboardIndicators`, { params })
+    return this.http.get(`${environment.api.url}ledger/getCityDasboardIndicators`, { params })
   }
   getYearsDynamic(ulbId: string): Observable<any> {
     let params = new HttpParams();
     if (ulbId) {
       params = params.set('ulbId', ulbId);
     }
-    return this.http.get(`${environment.api.url}/ledger/getYearsDynamic`, { params })
+    return this.http.get(`${environment.api.url}ledger/getYearsDynamic`, { params })
 
   }
   getFaqs(ulbId: string, year: string, state: string, populationType: string): Observable<any> {
@@ -138,30 +138,55 @@ export class DashboardService {
       params = params.set('populationType', populationType);
     }
 
-    return this.http.get(`${environment.api.url}/ledger/getFaqs`, { params })
+    return this.http.get(`${environment.api.url}ledger/getFaqs`, { params })
   }
-  // Get state details.
-  getHomeData(): Observable<any> {
-    return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
-    // .pipe(
-    //   map((response: any) => {
-    //     const data = response.data;
-    //     const result: { key: string; label: string; value: number }[] = [];
 
-    //   //     for (const key in data) {
-    //   //       if (Array.isArray(data[key])) continue;
-
-    //   //       result.push({
-    //   //         key,
-    //   //         label: key,
-    //   //         value: data[key].toLocaleString('en-IN')
-    //   //       });
-    //   //     }
-
-    //   //     return result;
-    //   //   })
-    //   // );
+  getIndicatorsListCompareBy(): Observable<any> {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getIndicatorsNameCompareByPage`
+    );
   }
+  getCompareByIndicators(ulbIds: string[], years: string[], keyTypes: string[]): Observable<any> {
+    const params = new HttpParams({
+      fromObject: {
+        ulbIds,
+        years,
+        keyType: keyTypes
+      }
+    });
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getCompareByIndicators`,
+      { params }
+    );
+  }
+  getUlbDetailsById(slug: string): Observable<any> {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getUlbDetailsById`,
+      { params: { slug } }
+    );
+  }
+  // // Get state details.
+  // getHomeData(): Observable<any> {
+  //   return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)
+  //   // .pipe(
+  //   //   map((response: any) => {
+  //   //     const data = response.data;
+  //   //     const result: { key: string; label: string; value: number }[] = [];
+
+  //   //     for (const key in data) {
+  //   //       if (Array.isArray(data[key])) continue;
+
+  //   //       result.push({
+  //   //         key,
+  //   //         label: key,
+  //   //         value: data[key].toLocaleString('en-IN')
+  //   //       });
+  //   //     }
+
+  //   //     return result;
+  //   //   })
+  //   // );
+  // }
 
   // Get state details.
   getStateDetails(params: { slug: string; year: string }): Observable<ExploreSectionResponse> {

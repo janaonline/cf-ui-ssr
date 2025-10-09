@@ -8,16 +8,17 @@ export const DASHBOARD_ROUTES: Route[] = [
     {
         path: 'state/:slug',
         loadComponent: () => import('./state/state').then(m => m.State)
-    }, {
-        path: ':dataId',
+    },
+    {
+        path: 'city',
         children: [
-            {
-                path: '',
-                loadComponent: () => import('./city/city').then(m => m.City),
-            },
             {
                 path: 'compareby',
                 loadComponent: () => import('./city/financial-performance/compare/compare').then(m => m.Compare),
+            },
+            {
+                path: ':slug',
+                loadComponent: () => import('./city/city').then(m => m.City),
             }
         ]
     }
