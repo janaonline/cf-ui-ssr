@@ -1,5 +1,6 @@
 export const environment = {
   baseUrl: '',
+  blogUrl: 'https://blog.cityfinance.in',
   api: {
     url: 'http://localhost:8080/api/v1/',
     // url: 'https://dev.cityfinance.in/api/v1/',
