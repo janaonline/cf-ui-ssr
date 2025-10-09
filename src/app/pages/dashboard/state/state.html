@@ -20,10 +20,10 @@
                 <app-pre-loader></app-pre-loader>
                 } @else {
                 <app-grid-view [gridData]="stateDetails().gridData"></app-grid-view>
-                <p class="text-secondary custom-font-size-7">
+                <!-- <p class="text-secondary custom-font-size-7">
                     *To enable standardization of nomenclature across states, we have reclassified all ULBs into one of
                     the three categories - Municipal Corporation, Municipality or Town Panchayat
-                </p>
+                </p> -->
                 }
             </div>
 
@@ -55,12 +55,13 @@
         @if (this.isLoading()) {
         <app-pre-loader></app-pre-loader>
         } @else if (selectedLedgerYear()) {
-        <div class="row justify-content-center">
-            <div class="col-md-10 rounded border shadow-sm py-4 px-3 mx-auto">
-                <h6 class="fw-bold">Standardized Data Availability</h6>
+        <div class="row justify-content-center my-4">
+            <div class="col-md-11 rounded border shadow-sm p-3 mx-auto">
                 <div class="row">
-                    <div class="col-sm-12 col-md-8 pt-3">
-                        <p class="text-secondary">Of the financial statements submitted by the ULBs,
+                    <div class="col-sm-12 col-md-8 mt-4">
+                        <h6 class="fw-bold">Standardized Data Availability</h6>
+
+                        <p class="text-secondary custom-font-size-6 ">Of the financial statements submitted by the ULBs,
                             {{ dataAvailablePerc() }}%
                             have been changed to a comparable, standardized, and digitized format for the year
                             {{selectedLedgerYear()}}.
@@ -76,17 +77,18 @@
                     </div>
 
                     <div class="charts-container col-sm-12 col-md-4">
-                        @for (item of chartData; track $index) {
-                        <div class="chart-wrapper rounded border">
+                        @if(!isDataLoading()) {
+                        <div class="chart-wrapper">
                             <div class="chart-container">
-                                <app-charts [chartConfig]="item"></app-charts>
+                                <app-charts [chartConfig]="chartData()"></app-charts>
                             </div>
                             <div class="chart-title">
                                 <p class="m-0 p-0 fw-bold">
-                                    {{ item.additionalInfo?.value }}{{ item.additionalInfo?.unit }}
+                                    {{ chartData().additionalInfo?.value }}{{ chartData().additionalInfo?.unit }}
                                 </p>
                                 <p class="m-0 p-0 custom-font-size-7 text-center">
-                                    {{ item.additionalInfo?.indicatorName }}
+                                    <!-- {{ chartData().additionalInfo?.indicatorName }} -->
+                                    Data Standardized <br>({{selectedLedgerYear()}})
                                 </p>
                                 <!-- <mat-icon [class]="showThumbUp(item)">thumb_up_alt</mat-icon> -->
                                 <!-- <i class="bi bi-hand-thumbs-up-fill fs-5" [class]="showThumbUp(item)"></i> -->

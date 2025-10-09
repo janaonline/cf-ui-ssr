@@ -3,10 +3,11 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 
-import { IBondIssuer } from "./models/bondIssuerResponse";
+import { environment } from "../../../../../environments/environment";
+import { TableColumns } from "../../../../core/models/interfaces";
+import { IBondIssuer, IBondsData } from "./models/bondIssuerResponse";
 import { IBondIssureItemResponse } from "./models/bondIssureItemResponse";
 import { Filter, IULBResponse, MouProjectsByUlbResponse, ProjectsResponse } from "./models/ulbsResponse";
-import { environment } from "../../../../../environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -184,5 +185,14 @@ export class MunicipalBondsService {
         return response;
       })
     );
+  }
+
+  // Get bonds data - State dashboard.
+  getBondsData(stateId: string): Observable<{ headers: TableColumns[]; data: IBondsData[] }> {
+    const url = stateId
+      ? `${environment.api.url}bond-issuances/get-bonds/${stateId}`
+      : `${environment.api.url}bond-issuances/get-bonds`;
+
+    return this._http.get<{ headers: TableColumns[]; data: IBondsData[] }>(url);
   }
 }

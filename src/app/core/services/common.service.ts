@@ -1,12 +1,14 @@
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   Inject,
   Injectable,
   makeStateKey,
   PLATFORM_ID,
+  signal,
   TransferState,
 } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
 import {
   AfsPopupData,
   BondIssuances,
@@ -14,15 +16,17 @@ import {
   FileMetadata,
 } from '../models/interfaces';
 import { IState } from '../models/state/state';
+import { IULB } from '../models/ulb';
 import { environment } from './../../../environments/environment';
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 
-const VISUALIZATION_COUNT_KEY = makeStateKey<number>('visualizationCount ');
+// const VISUALIZATION_COUNT_KEY = makeStateKey<number>('visualizationCount ');
+const DEFAULT_ULB_COUNT = 4321;
 @Injectable({
   providedIn: 'root',
 })
 export class CommonService {
-  dataForVisualizationCount = new BehaviorSubject<number>(0);
+  // dataForVisualizationCount = new BehaviorSubject<number>(0);
+  totalUlbs = signal<number>(DEFAULT_ULB_COUNT);
   private searchItem: BehaviorSubject<any> = new BehaviorSubject([]);
   castSearchItem = this.searchItem.asObservable();
 
@@ -32,14 +36,14 @@ export class CommonService {
     private transferState: TransferState
   ) {
     // Read from transfer state - Client.
-    if (
-      isPlatformBrowser(this.platformId) &&
-      this.transferState.hasKey(VISUALIZATION_COUNT_KEY)
-    ) {
-      const count = this.transferState.get(VISUALIZATION_COUNT_KEY, 0);
-      this.dataForVisualizationCount.next(count);
-      this.transferState.remove(VISUALIZATION_COUNT_KEY);
-    }
+    // if (
+    //   isPlatformBrowser(this.platformId) &&
+    //   this.transferState.hasKey(VISUALIZATION_COUNT_KEY)
+    // ) {
+    //   const count = this.transferState.get(VISUALIZATION_COUNT_KEY, 0);
+    //   this.dataForVisualizationCount.next(count);
+    //   this.transferState.remove(VISUALIZATION_COUNT_KEY);
+    // }
   }
 
   // eg: "firstname-lastname" to "Firstname Lastname"
@@ -54,14 +58,14 @@ export class CommonService {
   setDataForVisualizationCount(VisualizationCount: string) {
     if (VisualizationCount) {
       const count = parseFloat(VisualizationCount.replace(/,/g, ''));
-
       // Save to BehaviorSubject
-      this.dataForVisualizationCount.next(count);
+      // this.dataForVisualizationCount.next(count);
+      this.totalUlbs.set(count);
 
       // Store in TransferState on server.
-      if (isPlatformServer(this.platformId)) {
-        this.transferState.set(VISUALIZATION_COUNT_KEY, count);
-      }
+      // if (isPlatformServer(this.platformId)) {
+      //   this.transferState.set(VISUALIZATION_COUNT_KEY, count);
+      // }
     }
   }
 
@@ -134,7 +138,7 @@ export class CommonService {
     return this.http.get<BondIssuances>(url);
   }
 
-  public fetchStateList() {
+  public fetchStateList(): Observable<IState[]> {
     return this.http
       .get<{ data: IState[] }>(environment.api.url + 'state')
       .pipe(map((res) => res.data));
@@ -148,10 +152,13 @@ export class CommonService {
 
   // Based on Ulb id return population, area, pop density, wards, yrs of data, UA
   public getCityData(
-    citySlugName: string = ''
+    citySlugName: string = '',
+    cityId: string = ''
   ): Observable<ExploreSectionResponse> {
-    // if (!ulbId) this._uitlity.swalPopup('Error', 'ULB Id is mandatory!', 'error');
-    const params = { citySlugName };
+    let params = new HttpParams();
+    if (citySlugName) params = params.set('citySlugName', citySlugName);
+    if (cityId) params = params.set('cityId', cityId);
+
     return this.http.get<ExploreSectionResponse>(
       `${environment.api.url}dashboard/city/city-details`,
       { params }
@@ -245,5 +252,18 @@ export class CommonService {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  }
+
+  // Get ulb details.
+  getSingleUlbList(_id: string, keys: string[]): Observable<IULB | null> {
+    if (!_id) {
+      console.error('ULB ID is required.');
+      return of(null);
+    }
+
+    let params = new HttpParams();
+    if (_id) params = params.set('_id', _id);
+    if (keys.length > 0) params = params.set('keys', JSON.stringify(keys));
+    return this.http.get<IULB>(`${environment.api.url}`, { params });
   }
 }

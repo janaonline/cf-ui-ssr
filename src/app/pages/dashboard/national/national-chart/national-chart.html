@@ -1,17 +1,31 @@
+@if (nationalService.selectedButtonKey() !== 'Deficit or Surplus' && this.chartType === 'barChart') {
+<div class="text-end mt-4">
+    <mat-form-field appearance="outline" class="col-md-4">
+        <mat-label>Choose option</mat-label>
+        <mat-select [(ngModel)]="selectedGraphValue" (selectionChange)="selectGraphMode($event.value)">
+            @for (option of barChartOptions; track $index) {
+            <mat-option [value]="option.value">
+                {{ option.name }}
+            </mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+</div>
+}
 <div class="d-flex flex-wrap justify-content-center gap-1">
     @for (chartData of chartsData(); track $index) {
-    <div [ngClass]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
+    <div [class]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
         @if(chartData.chartType ==='gaugeChart') {
         <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
         }
-        <div class="" [ngClass]="chartData.chartType">
+        <div class="" [class]="chartData.chartType">
             <app-charts [chartConfig]="chartData"></app-charts>
         </div>
     </div>
     }
 </div>
 <div class="legends">
-    <ul class="list-unstyled d-flex flex-wrap justify-content-between">
+    <ul class="list-unstyled d-flex flex-wrap">
         @for (item of responseData.colourArray; track $index) {
         <li style="display: flex; align-items: center; padding: 0.6rem">
             <div style="width: 30px; height: 16px; display: inline-block" [style.background-color]="item.colour"></div>

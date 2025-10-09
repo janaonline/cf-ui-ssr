@@ -11,7 +11,6 @@ import { CommonService } from '../../../core/services/common.service';
 import { SeoService } from '../../../core/services/seo/seo.service';
 import { ChartConfig } from '../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../shared/components/charts/charts";
-import { gaugeChartOptions } from '../../../shared/components/charts/constants';
 import { CitySearch } from "../../../shared/components/city-search/city-search";
 import { GridView } from "../../../shared/components/grid-view/grid-view";
 import { InfoCards } from "../../../shared/components/info-cards/info-cards";
@@ -20,6 +19,7 @@ import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
 import { StateSearch } from "../../../shared/components/state-search/state-search";
 import { DashboardService } from '../dashboard-service';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
+import { gaugeChartConfig } from './chart-constant';
 import { FinancialIndicator } from './financial-indicator/financial-indicator';
 
 @Component({
@@ -110,30 +110,9 @@ export class State implements OnInit {
   buttons: any;
   tabs: any[] = [];
 
-  chartData: ChartConfig[] = [
-    {
-      "chartId": "slb0",
-      "chartType": "gaugeChart",
-      "labels": [""],
-      "datasets": [
-        {
-          "label": "Data available",
-          "data": [135, 20],
-          "backgroundColor": ["rgba(51, 96, 219, 1)", "rgba(218, 226, 253, 1)"],
-          "borderWidth": 1,
-          "borderRadius": 5,
-          cutout: '70%',
-        }
-      ],
-      "options": gaugeChartOptions,
-      "additionalInfo": {
-        "value": 95,
-        "indicatorName": "Data Standardized (2021-22)",
-        "nationalAvg": 0,
-        "unit": "%"
-      }
-    }
-  ];
+  chartDataCongfig: ChartConfig = gaugeChartConfig;
+  chartData = signal<ChartConfig>(this.chartDataCongfig);
+  isDataLoading = signal<boolean>(false);
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -168,14 +147,20 @@ export class State implements OnInit {
   }
 
   setSeo() {
-    this.seoService.updateTitle('Municipal Financial Data of AP Cities | City Finance ');
+    const state = this.stateDetails().state;
+    const title = `Municipal Financial Data of ${state.name} Cities | City Finance`;
+    const url = `${environment.baseUrl}/municipal-data/state/${state.slug}`;
+    const desc = `View aggregated municipal finance data availability for ${state.name} cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure.`
+    const keywords = `${state.name} audited financial statements, municipal finance, ${state.name} budget`;
+
+    this.seoService.updateTitle(title);
 
     this.seoService.updateMetaTags([
-      { name: 'description', content: `View aggregated municipal finance data availability for Andhra Pradesh cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure. ` },
-      { name: 'keywords', content: ' municipal finance, city data, ULB performance, revenue trends, expenditure analysis, city benchmarking,  cities, financial dashboard, urban governance' },
-      { property: 'og:title', content: 'Municipal Financial Data of Ap Cities | City Finance ' },
-      { property: 'og:description', content: 'View aggregated municipal finance data availability for Andhra Pradesh cities. Benchmark financial performance of ULBs and explore trends in revenue and expenditure. ' },
-      { property: 'og:url', content: `https://cityfinance.in/dashboard/slb` },
+      { name: 'description', content: desc },
+      { name: 'keywords', content: keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:url', content: url },
       { property: 'og:type', content: 'website' },
       //{ property: 'robotsrobots', content: 'index, follow' }
     ]);
@@ -183,8 +168,12 @@ export class State implements OnInit {
     this.seoService.setJsonLd({
       "@context": "https://schema.org",
       "@type": "Dataset",
-      "name": "City Finance",
-      "url": `https://cityfinance.in/dashboard/slb`
+      "name": title,
+      "url": url,
+      "keywords": keywords,
+      "description": desc,
+      "spatial": `${state.name}, India`,
+      "temporalCoverage": "2021/2024",
     });
   }
 
@@ -222,6 +211,11 @@ export class State implements OnInit {
     })
   }
 
+  loadTopPanelData() {
+    this.getMoneyInfo();
+    this.getDataAvailable();
+  }
+
   private getLedgerYears() {
     const stateCode = this.stateDetails()?.state?.code;
     if (!stateCode) {
@@ -231,25 +225,25 @@ export class State implements OnInit {
     this._commonService.getLedgerYears(stateCode).subscribe({
       next: (res) => {
         this.ledgerYears.set(res.ledgerYears);
-        this.selectedLedgerYear.set(this.ledgerYears()[0]);
+        this.selectedLedgerYear.set(this.ledgerYears()[1]);
       },
       error: () => console.error("Failed to get ledger years."),
       complete: () => {
-        this.getMoneyInfo();
-        this.getDataAvailable();
+        this.loadTopPanelData();
       }
 
     })
   }
 
   // Money info cards.
-  private getMoneyInfo(yearSelected: string = this.selectedLedgerYear()) {
+  private getMoneyInfo() {
     this.isMoneyInfoLoading.set(true);
     const stateId = this.stateDetails()?.state?._id;
     if (!stateId) {
       console.error("State id not found: money info");
       return;
     }
+    const yearSelected = this.selectedLedgerYear();
     return this.dashboardService.getMoneyInfo(yearSelected, stateId).subscribe({
       next: (res) => {
         this.moneyInfoRes.set(res)
@@ -265,25 +259,33 @@ export class State implements OnInit {
   // "Standardized Data Availability" section
   private getDataAvailable(csv: boolean = false) {
     const payload: { financialYear: string; stateId: any; csv?: boolean } = { financialYear: this.selectedLedgerYear(), stateId: this.stateDetails().state._id };
-
     if (csv) payload.csv = true;
-    else if ('csv' in payload) delete payload.csv;
+    else {
+      if ('csv' in payload) delete payload.csv;
+      this.isDataLoading.set(true);
+    }
 
     this.dashboardService.getDataAvailable(payload).subscribe({
       next: (res: any) => {
         if (csv) {
-          console.log('test',)
+          // console.log('test',)
           this._commonService.downloadExcel(res, 'DataAvailable');
         } else {
           this.dataAvailablePerc.set(Math.round(res.data?.percent));
           this.dataAvailableUlbs.set(res.data?.names);
-          if (this.chartData[0].additionalInfo) {
-            this.chartData[0].additionalInfo.value = this.dataAvailablePerc();
-            this.chartData[0].additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
+          this.chartDataCongfig.datasets[0].data = [this.dataAvailablePerc(), 100 - this.dataAvailablePerc()];
+          if (this.chartDataCongfig.additionalInfo) {
+            this.chartDataCongfig.additionalInfo.value = this.dataAvailablePerc();
+            this.chartDataCongfig.additionalInfo.indicatorName = `Data Standardized (${this.selectedLedgerYear()})`;
           }
+          this.chartData.set(this.chartDataCongfig);
+          this.isDataLoading.set(false);
         }
       },
-      error: (err) => console.error('Failed to get data availability', err),
+      error: (err) => {
+        console.error('Failed to get data availability', err)
+        this.isDataLoading.set(false);
+      },
     });
   }
 
@@ -306,7 +308,7 @@ export class State implements OnInit {
     const yearSelected = ($event.target as HTMLSelectElement).value;
     if (this.selectedLedgerYear() !== yearSelected) {
       this.selectedLedgerYear.set(yearSelected);
-      this.getMoneyInfo(yearSelected);
+      this.loadTopPanelData();
     }
   }
 

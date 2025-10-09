@@ -21,6 +21,7 @@ declare module 'leaflet' {
 export class MapService {
   private readonly cfPrimary = '#e57d15';
   private readonly cfSecondary = '#3e5db1';
+  private readonly fallbackColor = '#e0e3ecff';
   private readonly FLY_TO_DELAY_MS = 400;
 
   public map: Leaflet.Map | null = null;
@@ -202,9 +203,9 @@ export class MapService {
   }
 
   // Get state color.
-  private getStateLayerStyle(feature: any, stateColorCode: StateDataByCode, fallbackColor = this.cfSecondary): any {
+  private getStateLayerStyle(feature: any, stateColorCode: StateDataByCode, fallbackColor = this.fallbackColor): any {
     if (!feature || !stateColorCode) {
-      return this.defaultStateLayerStyle(fallbackColor);
+      return this.defaultStateLayerStyle(this.cfSecondary);
     }
 
     const stateFeatureCode = feature.properties?.ST_CODE;

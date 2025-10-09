@@ -1,0 +1,66 @@
+@if (ledgerYears().length > 0 && ulb()._id) {
+<div class="container mt-4">
+  <a [href]="redirectionUrl()">
+    Go To XVFC Grants
+  </a>
+
+  <h1 class="fs-4 fw-bold mt-4">Welcome to your Revenue Dashboard, {{ulb().name}}.</h1>
+  <p class="mt-3 my-0">Explore your city's revenue trends from FY {{ledgerYears()[ledgerYears().length - 1]}} to FY
+    {{ledgerYears()[0]}}.
+    <br />Use the tabs to view Total Revenue, Revenue per Capita, or Revenue Mix.
+  </p>
+  <div class="my-3 w-75 p-2 custom-font-size-6 border-3 border-start border-primary bg-info-subtle">
+    <i class="bi bi-lightbulb text-cfPrimary"></i> Tip: Use the Compare by menu to benchmark your city against peer
+    cities,
+    the state
+    average, or the national average.
+  </div>
+
+
+  <div class="row">
+    <div class="col-lg-8">
+      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type || ''"
+        [ulbName]="ulb().name" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+    </div>
+
+    <div class="col-lg-4 p-3 h-100">
+      <!-- <h2 class="fw-bold my-4">Next Steps</h2> -->
+      <div class="d-flex flex-wrap gap-3 justify-content-evenly my-4">
+        <div class="webinar-alert lh-sm">
+          <!-- <img src="./assets/webinar/sep-11-calendar.png" width="80" height="80" /> -->
+          <div>
+            <p class="fw-bold p-0 mb-2">Understand your data</p>
+            Get a walkthrough of your city’s financial performance. We’ll help you make sense of the numbers and show
+            how
+            they compare with peer cities.
+            <div role="button" class="webinar-btn" (click)="sendRequest()">Send request →</div>
+          </div>
+        </div>
+        <div class="webinar-alert lh-sm">
+          <!-- <img src="./assets/webinar/coming-soon.png" width="70" height="80" /> -->
+          <div>
+            <p class="fw-bold p-0 mb-2">Attend a webinar</p>
+            Join live sessions for a step-by-step tour of CityFinance. Learn to read revenue data and benchmark with
+            peer
+            cities.
+            <div role="button" class="webinar-btn" (click)="registerNow()">Register Now →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="mb-5 custom-font-size-6"><strong>Disclaimer:</strong> The data that you see for other cities is based on
+    submissions made
+    directly by them to the
+    XV Finance Commission. We make best efforts to verify the data before cleaning and standardization. If you notice
+    data
+    that's unusual or vastly out-of-range, please exercise caution.</p>
+</div>
+
+
+} @else {
+<div class="my-4">
+  <app-no-data-found></app-no-data-found>
+</div>
+}

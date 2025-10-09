@@ -30,10 +30,14 @@ import {
 } from 'rxjs';
 import { IState } from '../../../core/models/state/state';
 import { CommonService } from '../../../core/services/common.service';
+import { MaterialModule } from "../../../material.module";
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormField } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: 'app-state-search',
-  imports: [MatAutocompleteModule, ReactiveFormsModule, AsyncPipe],
+  imports: [MatAutocompleteModule, ReactiveFormsModule, AsyncPipe, MatIconModule, MatFormField, MatInputModule],
   templateUrl: './state-search.html',
   styleUrl: './state-search.scss',
 })
@@ -51,7 +55,7 @@ export class StateSearch implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   readonly myForm: FormGroup = this.fb.group({
-    stateName: [{ value: '', disabled: false }],
+    stateName: [{ value: '', disabled: this.isStateReadonly() }],
   });
 
   readonly noDataFound = signal<boolean>(false);
@@ -146,6 +150,11 @@ export class StateSearch implements OnInit, OnDestroy {
   // Helper to patch state value.
   private patchStateName(name: string): void {
     this.myForm.patchValue({ stateName: name }, { emitEvent: true });
+  }
+
+  // When close button is clicked.
+  public resetFilter() {
+    this.stateNameControl?.patchValue('');
   }
 
   ngOnDestroy(): void {

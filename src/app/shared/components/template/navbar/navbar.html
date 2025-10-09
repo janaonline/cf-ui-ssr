@@ -1,4 +1,4 @@
-<nav #stickyMenu [class.sticky]="isSticky" [class]="{ 'position-relative': !isSticky }" class="bg-white shadow-bottom">
+<nav #stickyMenu [class]="{ 'position-relative': !isSticky, 'sticky': isSticky }" class="bg-white shadow-bottom">
   <div class="container d-flex justify-content-between align-items-center bg-white">
     <button class="mobile-nav-ham" aria-controls="primary-navigation" [attr.aria-expanded]="showMobileNav"
       (click)="showMobileNav = !showMobileNav">
@@ -32,9 +32,15 @@
         </li>
         <mat-menu #DashboardMenu="matMenu">
           @for (childMenu of menu.child; track childMenu) {
+          @if (childMenu.link) {
+          <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.link"
+            routerLinkActive="active">{{childMenu.name}}</a>
+          } @else {
           <a mat-menu-item [href]="childMenu.href" [class.border-bottom]="!$last" routerLinkActive="active">
             {{ childMenu.name }}
           </a>
+          }
+
           }
         </mat-menu>
         } @else {
@@ -63,6 +69,9 @@
           <mat-menu #loginMenu="matMenu">
             <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
               <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
+            </button>
+            <button mat-menu-item class="border-bottom" (click)="loginLogout('state-dashboard')">
+              <i class="bi bi-box-arrow-in-right"></i> State Dashboard
             </button>
             <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
               <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection

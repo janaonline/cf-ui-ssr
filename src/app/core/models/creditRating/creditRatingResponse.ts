@@ -13,6 +13,7 @@ export interface ICreditRatingData {
 export interface CreditRatingData {
   total: number;
   creditRatingAboveBBB_Minus: number;
+  creditRatingAboveA: number;
 }
 
 export interface CreditRatingMap {

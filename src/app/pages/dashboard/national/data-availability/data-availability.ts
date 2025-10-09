@@ -1,11 +1,12 @@
-import { Component, input, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, input, signal, ViewChild } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { ButtonObj } from '../../../../core/models/interfaces';
 import { IState } from '../../../../core/models/state/state';
 import { StateDataByCode } from '../../../../shared/components/map/interfaces';
 import { Map } from "../../../../shared/components/map/map";
 import { NationalTable } from "../national-table/national-table";
-import { NationalChart } from "../national-chart/national-chart";
+import { NationalService } from '../national.service';
+import { CommonService } from '../../../../core/services/common.service';
 
 type StateInput = {
   _id: string;
@@ -20,81 +21,6 @@ export interface PeriodicElement {
   weight: number;
   symbol: string;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  { popCat: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { popCat: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { popCat: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { popCat: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { popCat: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { popCat: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-];
-
-const RES = {
-  "success": true,
-  "data": {
-    "columns": [
-      {
-        "key": "populationCategory",
-        "display_name": "Population Category",
-      },
-      {
-        "key": "numberOfULBs",
-        "display_name": "Number Of ULBs",
-      },
-      {
-        "key": "ulbsWithData",
-        "display_name": "ULBs With Data",
-      },
-      {
-        "key": "DataAvailPercentage",
-        "display_name": "Data Availability Percentage",
-      }
-    ],
-    "rows": [
-      // {},
-      {
-        "populationCategory": "4M+",
-        "numberOfULBs": 8,
-        "ulbsWithData": 7,
-        "DataAvailPercentage": "88 %"
-      },
-      {
-        "populationCategory": "1M-4M",
-        "numberOfULBs": 37,
-        "ulbsWithData": 35,
-        "DataAvailPercentage": "95 %"
-      },
-      {
-        "populationCategory": "500K-1M",
-        "numberOfULBs": 46,
-        "ulbsWithData": 41,
-        "DataAvailPercentage": "89 %"
-      },
-      {
-        "populationCategory": "100K-500K",
-        "numberOfULBs": 382,
-        "ulbsWithData": 326,
-        "DataAvailPercentage": "85 %"
-      },
-      {
-        "populationCategory": "<100K",
-        "numberOfULBs": 4445,
-        "ulbsWithData": 3395,
-        "DataAvailPercentage": "76 %"
-      },
-      {
-        "populationCategory": "All ULBs",
-        "numberOfULBs": 4918,
-        "ulbsWithData": 3804,
-        "DataAvailPercentage": "77 %"
-      }
-    ]
-  },
-  "dataAvailability": 77,
-  "fromCache": true
-}
-
 @Component({
   selector: 'app-data-availability',
   imports: [Map, MatTableModule, NationalTable],
@@ -103,9 +29,16 @@ const RES = {
 })
 export class DataAvailability {
   @ViewChild('map') mapComponent!: Map;
-  selectedStateName = signal<string>('');
-  selectedStateCode = signal<string>('');
-  selectedStateId = signal<string>('');
+  readonly GRAPH_LEGEND =
+    [
+      { label: '81%-100%', min: 81, max: 100, color: "#2c448c" },
+      { label: '61%-80%', min: 61, max: 80, color: "#3e5db1" },
+      { label: '26%-60%', min: 26, max: 60, color: "#7a91d1" },
+      { label: '1%-25%', min: 1, max: 25, color: "#c3cdee" },
+      { label: '0%', min: 0, max: 0, color: "#e0e3ecff" },
+    ]
+  selectedstateObj = signal<IState>({ _id: '', name: '', code: '' });
+  type = signal<string>('populationCategory');
 
   selectedLedgerYear = signal<string>('');
   readonly ledgerYears = input.required<string[]>();
@@ -114,194 +47,85 @@ export class DataAvailability {
     { label: 'Population Category', key: 'popCat' },
     { label: 'ULB Type', key: 'ulbType' },
   ]);
-  tableData = RES;
   headers!: any[];
   displayedColumns!: string[];
   dataSource!: any[];
 
   showMap = signal<boolean>(false);
-  mapData!: any;
+  mapData = signal<StateDataByCode>({});
+
+  // isResetFilter = signal<boolean>(false);
+  stateList: any = {};
+
+  constructor(
+    private nationalService: NationalService,
+    private commonService: CommonService,
+  ) { }
 
   ngOnInit() {
-    this.fetchTableData();
-    this.fetchMapData();
+    this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    this.getStatesList();
   }
 
-  private fetchTableData() {
-    this.tableData = RES;
-    this.headers = this.tableData.data.columns;
-    this.displayedColumns = this.tableData.data.columns.map(ele => ele.key);
-    this.dataSource = this.tableData.data.rows;
+  private getStatesList() {
+    this.commonService.fetchStateList().subscribe({
+      next: (statesArr) => {
+        for (const state of statesArr) {
+          const stateCode = state.code;
+          if (stateCode) {
+            if (!(stateCode in this.stateList)) this.stateList[stateCode] = {};
+            this.stateList[stateCode] = state;
+          }
+        }
+      },
+      error: () => console.error("Failed to fetch states list"),
+    })
+  }
+
+  private loadData() {
+    if (!this.selectedstateObj()._id)
+      this.fetchMapData();
   }
 
   private fetchMapData() {
     this.showMap.set(false);
-
-
-    setTimeout(() => {
-      const apiRes = {
-        "success": true,
-        "data": [
-          {
-            "_id": "Bihar",
-            "stateId": "5dcf9d7216a06aed41c748e0",
-            "code": "BR",
-            "percentage": 93
+    // console.log("selected state = ", abc, "---", this.selectedstateObj())
+    if (this.selectedLedgerYear()) {
+      this.nationalService
+        .getDataAvailabilityMapData(
+          this.selectedLedgerYear(),
+          this.type(),
+          this.selectedstateObj()._id
+        ).subscribe({
+          next: (res) => {
+            // console.log(res)
+            const data = this.transformStateData(res.data);
+            this.mapData.set(data);
+            this.showMap.set(true);
           },
-          {
-            "_id": "Tripura",
-            "stateId": "5dcf9d7516a06aed41c748fc",
-            "code": "TR",
-            "percentage": 70
-          },
-          {
-            "_id": "Uttar Pradesh",
-            "stateId": "5dcf9d7516a06aed41c748fe",
-            "code": "UP",
-            "percentage": 84
-          },
-          {
-            "_id": "Tamil Nadu",
-            "stateId": "5dcf9d7516a06aed41c748fa",
-            "code": "TN",
-            "percentage": 83
-          },
-          {
-            "_id": "Rajasthan",
-            "stateId": "5dcf9d7516a06aed41c748f8",
-            "code": "RJ",
-            "percentage": 51
-          },
-          {
-            "_id": "Odisha",
-            "stateId": "5dcf9d7416a06aed41c748f5",
-            "code": "OD",
-            "percentage": 93
-          },
-          {
-            "_id": "Madhya Pradesh",
-            "stateId": "5dcf9d7416a06aed41c748ef",
-            "code": "MP",
-            "percentage": 94
-          },
-          {
-            "_id": "Gujarat",
-            "stateId": "5dcf9d7316a06aed41c748e7",
-            "code": "GJ",
-            "percentage": 92
-          },
-          {
-            "_id": "Mizoram",
-            "stateId": "5dcf9d7416a06aed41c748f3",
-            "code": "MZ",
-            "percentage": 50
-          },
-          {
-            "_id": "Kerala",
-            "stateId": "5dcf9d7316a06aed41c748ed",
-            "code": "KL",
-            "percentage": 96
-          },
-          {
-            "_id": "Andhra Pradesh",
-            "stateId": "5dcf9d7216a06aed41c748dd",
-            "code": "AP",
-            "percentage": 91
-          },
-          {
-            "_id": "Haryana",
-            "stateId": "5dcf9d7316a06aed41c748e8",
-            "code": "HR",
-            "percentage": 13
-          },
-          {
-            "_id": "Himachal Pradesh",
-            "stateId": "5dcf9d7316a06aed41c748e9",
-            "code": "HP",
-            "percentage": 42
-          },
-          {
-            "_id": "Sikkim",
-            "stateId": "5dcf9d7516a06aed41c748f9",
-            "code": "SK",
-            "percentage": 29
-          },
-          {
-            "_id": "Uttarakhand",
-            "stateId": "5dcf9d7516a06aed41c748fd",
-            "code": "UK",
-            "percentage": 83
-          },
-          {
-            "_id": "Telangana",
-            "stateId": "5dcf9d7516a06aed41c748fb",
-            "code": "TS",
-            "percentage": 74
-          },
-          {
-            "_id": "West Bengal",
-            "stateId": "5dcf9d7616a06aed41c748ff",
-            "code": "WB",
-            "percentage": 64
-          },
-          {
-            "_id": "Assam",
-            "stateId": "5dcf9d7216a06aed41c748df",
-            "code": "AS",
-            "percentage": 89
-          },
-          {
-            "_id": "Maharashtra",
-            "stateId": "5dcf9d7416a06aed41c748f0",
-            "code": "MH",
-            "percentage": 74
-          },
-          {
-            "_id": "Meghalaya",
-            "stateId": "5dcf9d7416a06aed41c748f2",
-            "code": "ML",
-            "percentage": 14
-          },
-          {
-            "_id": "Punjab",
-            "stateId": "5dcf9d7516a06aed41c748f7",
-            "code": "PB",
-            "percentage": 54
-          },
-          {
-            "_id": "Jharkhand",
-            "stateId": "5dcf9d7316a06aed41c748eb",
-            "code": "JH",
-            "percentage": 98
-          },
-          {
-            "_id": "Chhattisgarh",
-            "stateId": "5dcf9d7216a06aed41c748e2",
-            "code": "CG",
-            "percentage": 100
-          },
-          {
-            "_id": "Karnataka",
-            "stateId": "5dcf9d7316a06aed41c748ec",
-            "code": "KA",
-            "percentage": 95
-          }
-        ],
-        "fromCache": true
-      }
-
-      this.mapData = this.transformStateData(apiRes.data)
-      this.showMap.set(true);
-    }, 10);
+          error: () => console.error('Failed to fetch map data, data availabilty section.')
+        })
+    }
   }
 
   // Get map shade
   private getShade(percentage: number): string {
-    if (percentage >= 85) return "#2c448c";
-    if (percentage >= 70) return "#3e5db1";
-    if (percentage >= 50) return "#7a91d1";
-    return "#c3cdee";
+    for (const obj of this.GRAPH_LEGEND) {
+      if (percentage >= obj.min && percentage <= obj.max)
+        return obj.color;
+    }
+    return "#e0e3ecff";
   }
+
+  // private getShade(percentage: number): string {
+  //   if (percentage === 0) return "#e0e3ecff";
+  //   if (percentage >= 1 && percentage <= 25) return "#c3cdee";
+  //   if (percentage >= 26 && percentage <= 60) return "#7a91d1";
+  //   if (percentage >= 61 && percentage <= 80) return "#3e5db1";
+  //   if (percentage >= 81 && percentage <= 100) return "#2c448c";
+  //   return "#e0e3ecff";
+  // }
+
 
   // Restructure api res.
   private transformStateData(data: StateInput[]): StateDataByCode {
@@ -316,45 +140,42 @@ export class DataAvailability {
     }, {} as StateDataByCode);
   }
 
-  // When state is selected from drop down.
-  onStateSelection = (stateObj: IState) => {
-    console.log("state selection", stateObj)
-    this.setStateData(stateObj.code, stateObj._id, stateObj.name)
-  }
+  // Filter changed from national-table.
+  filterChanged(data: { reset: boolean, year: string, stateObj: IState, type: string }) {
+    if (data.reset) {
+      this.resetFilter();
+      // this.mapComponent?.resetMap();
+    } else {
+      this.selectedLedgerYear.set(data.year);
+      this.selectedstateObj.set(data.stateObj);
+      this.type.set(data.type);
 
-  // Helper: Update signal values with latest state data.
-  private setStateData(code: string = '', _id: string = '', name: string = ''): void {
-    this.selectedStateCode.set(code);
-    this.selectedStateName.set(name);
-    this.selectedStateId.set(_id);
+      this.loadData();
+    }
   }
 
   // When state is selected from map.
   selectedStateCodeChange(stateCode: string) {
-    console.log("State changed from map: ", stateCode);
-    this.setStateData(stateCode)
+    const stateObj = this.stateList[stateCode];
+    this.selectedstateObj.set(stateObj);
   }
 
   // Year changed from Drop down.
   public onYearChange($event: Event): void {
     const yearSelected = ($event.target as HTMLSelectElement).value;
     if (this.selectedLedgerYear() !== yearSelected) {
+      this.resetFilter()
       this.selectedLedgerYear.set(yearSelected);
     }
-
-    console.log("year changed", this.selectedLedgerYear())
-  }
-
-  // Reset filters.
-  resetFilter() {
-    console.log("resetFilter called")
-    this.selectedLedgerYear.set(this.ledgerYears()[0]);
-    this.resetMap();
+    this.loadData();
   }
 
   // Reset map to india.
-  public resetMap(): void {
+  public resetFilter(): void {
     this.mapComponent?.resetMap();
-    this.setStateData();
+    this.selectedstateObj.set({ _id: '', code: '', name: '' });
+    this.nationalService.stateSlugName.set('');
+    // this.selectedLedgerYear.set(this.ledgerYears()[0]);
+    // this.loadData('reset filter');
   }
 }

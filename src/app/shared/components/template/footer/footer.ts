@@ -29,7 +29,7 @@ export class Footer {
   public readonly footerLinks = [
     { href: '/home', title: 'Home' },
     {
-      href: this.v1Url + '/dashboard/national/61e150439ed0e8575c881028',
+      href: '/municipal-data/national',
       title: 'Financial',
     },
     {

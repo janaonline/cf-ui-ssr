@@ -8,3 +8,12 @@ export interface IBondIssuer {
   advisors: string[];
   documentsAvailable: string[];
 }
+
+export interface IBondsData {
+  ulb: string;
+  ulbType: string;
+  yearOfBondIssued: string;
+  rating: string;
+  issueSizeAmount: string;
+  couponRate: string;
+}

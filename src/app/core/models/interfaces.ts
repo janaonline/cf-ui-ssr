@@ -1,6 +1,6 @@
 import { ChartResStruct } from '../../shared/components/charts/chart-interfaces';
 import { IState } from './state/state';
-import { IULB } from './ulb';
+import { IULB, UlbType } from './ulb';
 
 export interface BondIssuances {
   bondIssueAmount: number;
@@ -26,6 +26,7 @@ export interface ExploreSectionResponse {
   state: IState;
   ulbId: string;
   ulbName: string;
+  ulbType: UlbType;
 }
 
 export interface ExploresectionTable {
@@ -138,6 +139,15 @@ export interface IFinancialIndicatorInfo {
   text: 'success' | 'danger'
 }
 
+export interface TableColumns {
+  key: string;
+  value: string;
+  class?: string;
+  number?: boolean;
+  width?: string;
+  mergeCell?: boolean;
+}
+
 // export interface ChartResponse {
 //   success: boolean;
 //   data: ChartData;
@@ -154,3 +164,14 @@ export interface IFinancialIndicatorInfo {
 //   label: string;
 //   data: number[];
 // }
+
+export interface BsCompareUlbs {
+  [_id: string]: BsCompareUlbsValue
+}
+
+export interface BsCompareUlbsValue {
+  _id: string;
+  name: string;
+  stateName: string;
+  population: number;
+}

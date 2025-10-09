@@ -9,33 +9,35 @@
         <p>{{ currentSelectedButton().subButtons.text }}</p>
         <!-- Filters -->
         <div class="row container mx-auto p-0">
-            <div class="col-md-7">
-                @if(stateServiceLabel) {
-                <div class="mb-3" style="padding-right: 1rem">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Choose one</mat-label>
-                        <mat-select [(ngModel)]="filterName" (change)="onChangeFilterName()">
-                            <!-- <mat-option>None</mat-option> -->
-                            @for (item of serviceTabList; track item) {
-                            <mat-option [value]="item">{{item}}</mat-option>
-                            }
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                } @else {
+
+            @if(stateServiceLabel) {
+            <div class="col-md-5 col-sm-12 mt-4 px-4">
+                <mat-form-field appearance="outline">
+                    <mat-label>Choose one</mat-label>
+                    <mat-select [(ngModel)]="filterName" (selectionChange)="onChangeFilterName()">
+                        <!-- <mat-option>None</mat-option> -->
+                        @for (item of serviceTabList; track item) {
+                        <mat-option [value]="item">{{item}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            } @else {
+            <div class="col-auto">
                 <!-- Sub Buttons -->
                 <app-tab-buttons [buttons]="currentSelectedButton().subButtons.buttons"
                     (selectedButtonKeyChange)="onSelectedSubButtonChange($event)">
                 </app-tab-buttons>
-                }
             </div>
-            <div class="border rounded bg-light p-3 col-md-5">
-                <div class="d-flex gap-2 justify-content-between align-items-center my-2">
+            }
+
+            <div class="border rounded bg-light pt-3 col-md-7 col-sm-12 ms-auto">
+                <div class="d-flex gap-2 justify-content-between align-items-end ">
                     @if(!stateServiceLabel && !isMixBtn) {
-                    <div class="my-2" [matTooltip]="'Select an option to view average data'">
-                        <select class="form-select text-capitalize" (change)="onChangeCategory($event)"
-                            style="opacity: 0.6; border: 1px solid gray; width: auto">
-                            <option value="none" selected hidden [disabled]="">
+                    <!-- <div class="custom-margin w-100">
+                        <select class="form-select text-capitalize custom-class" [(ngModel)]="compareCategory"
+                            (change)="onChangeCategory($event)">
+                            <option value="" selected [disabled]="">
                                 Select an Option
                             </option>
                             @for (item of categoryAvgArray; track $index) {
@@ -45,19 +47,49 @@
                             }
 
                         </select>
-                    </div>
+                    </div> -->
+                    <mat-form-field appearance="outline" [matTooltip]="'Select an option to view average data'">
+                        <mat-label>Category</mat-label>
+                        <mat-select [(ngModel)]="compareCategory" (selectionChange)="onChangeCategory($event)"
+                            name="compareCategory" (change)="onChangeCategory($event)">
+                            <mat-option value="" selected [disabled]="">
+                                Select an Option
+                            </mat-option>
+                            @for (item of categoryAvgArray; track $index) {
+                            <mat-option [value]="item?.value">
+                                {{ item?.title }}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
                     }
-                    <select class="form-select form-select-sm" [(ngModel)]="selectedLedgerYear"
-                        (change)="onYearChange($event)" id="state_years" style="padding-block: 11px;width:100px">
-                        @for (year of years(); track $index) {
-                        <option [value]="year" [selected]="year === selectedLedgerYear()">
-                            {{ year }}
-                        </option>
-                        }
-                    </select>
-                    <app-city-search (onUlbSelect)="onUlbSelect($event)"
+
+
+                    <mat-form-field appearance="outline" class="w-50">
+                        <mat-label>Year</mat-label>
+                        <mat-select [(ngModel)]="selectedLedgerYear" (selectionChange)="onYearChange($event)"
+                            name="year">
+                            @for (year of years(); track $index) {
+                            <mat-option [value]="year">
+                                {{ year }}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <mat-form-field appearance="outline">
+                        <select class="form-select custom-margin custom-class w-50" [(ngModel)]="selectedLedgerYear"
+                            (change)="onYearChange($event)" id="chart_years">
+                            @for (year of years(); track $index) {
+                            <option [value]="year" [selected]="year === selectedLedgerYear()">
+                                {{ year }}
+                            </option>
+                            }
+                        </select>
+                    </mat-form-field> -->
+                    <app-city-search (onUlbSelect)="onUlbSelect($event)" [cityName]="ulbObj()?.name || ''"
                         [stateId]="stateDetails().state._id"></app-city-search>
-                    <div role="button" class="d-flex flex-column align-items-center custom-font-size-6"
+
+                    <div role="button" class="d-flex custom-margin flex-column align-items-center custom-font-size-6"
                         (click)="resetFilter()">
                         <i class="bi bi-arrow-clockwise inline-block"></i>
                         Reset
@@ -75,20 +107,36 @@
             <app-tab-buttons [buttons]="compareTypeButtons()" (selectedButtonKeyChange)="onSelectCompareType($event)">
             </app-tab-buttons>
         </div>
-        <div class="p-3 mb-2 col-md-12 bg-light rounded">
-            <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+        <div class="p-3 mb-2 col-md-12 bg-light rounded" id="mixChart">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+                </div>
+                <!-- Expand, download, Share/ Embed -->
+                <div
+                    class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
+                    @for (item of items; track $index) {
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'mixChart')">
+                        <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
+                    </button>
+                    }
+                </div>
+            </div>
             @if(this.isChartLoading()) {
             <app-pre-loader></app-pre-loader>
             } @else {
-            <app-mix-chart [compareType]="compareType" [responseData]="responseData"></app-mix-chart>
+            <app-mix-chart [compareType]="compareType" [responseData]="responseData"
+                [mixChartObj]="mixChartObj"></app-mix-chart>
             }
         </div>
     </div>
     }
     @else {
     <div class="row justify-content-between my-4 position-relative" id="scatterChartContainer">
-        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2">
+        <div class="rounded bg-light d-flex flex-column col-sm-12 col-md-12 p-3 mb-2" id="scatterChart">
+            @if(!stateServiceLabel) {
             <p>{{`${subButton()} of all ULBs in ${stateDetails().state.name} vs State `}}</p>
+            }
             <div class="row justify-content-between align-items-center">
                 <!-- Filters -->
                 <div class="col-sm-12 col-md-8 mb-4 flex-grow-1 d-flex justify-content-start align-items-center gap-3">
@@ -102,7 +150,7 @@
                 <div
                     class="col-sm-12 col-md-4 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
                     @for (item of items; track $index) {
-                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label)">
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'scatterChart')">
                         <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
                     </button>
                     }
@@ -116,7 +164,7 @@
                 <app-pre-loader></app-pre-loader>
                 }
                 @else {
-                <div class="row" style="height: 500px;">
+                <div class="row">
                     <div class="col-12">
                         @if(scatterChart().datasets.length !== 0) {
                         <app-charts [chartConfig]="scatterChart()"></app-charts>
@@ -136,7 +184,7 @@
                 @if(isMixBtn) {
                 <div class="mx-2">
                     <select class="form-select form-select-sm" (change)="onChangeLinteItem($event)">
-                        @for (item of responseData; track $index) {
+                        @for (item of compareTypeList; track $index) {
                         <option [value]="item?.code">
                             {{ item?._id }}
                         </option>
@@ -160,14 +208,33 @@
         <app-pre-loader></app-pre-loader>
         }
         @else {
-        <div class="row bg-light p-3 rounded" style="height: 500px;">
-            @if(stateServiceLabel) {
-            <p>{{sortBy}} 10 performing ULBs on {{ this.filterName }} in {{ stateDetails().state.name }}</p>
-            } @else {
-            <p>Compare ULBs on various financial indicators .</p>
-            }
+        <div class="row bg-light p-3 rounded" style="height: 500px;" id="barChart">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    @if(stateServiceLabel) {
+                    <p>{{this.sortBy | titlecase}} 10 performing ULBs on {{ this.filterName }} in {{
+                        stateDetails().state.name
+                        }}</p>
+                    } @else {
+                    <p>Compare ULBs on various financial indicators .</p>
+                    }
+                </div>
+                <!-- Expand, download, Share/ Embed -->
+                <div
+                    class="col-sm-12 col-md-2 mb-4 d-flex justify-content-end gap-3 text-cfSecondary hide-while-download">
+                    @for (item of items; track $index) {
+                    <button class="btn takeActionBtn" role="button" (click)="takeAction(item.label, 'barChart')">
+                        <i [class]="item.icon + ' custom-font-size-6'"></i> {{ item.label }}
+                    </button>
+                    }
+                </div>
+            </div>
+
             <div class="col-12 ">
-                @if(barChart().datasets.length !== 0) {
+                <!-- @if(barChart().datasets.length !== 0) { -->
+                @if(barDataNotFound) {
+                <app-no-data-found></app-no-data-found>
+                } @else {
                 <app-charts [chartConfig]="barChart()"></app-charts>
                 }
             </div>
