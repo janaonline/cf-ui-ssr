@@ -66,7 +66,7 @@ export class Navbar {
       href: this.v1Url + '/resources-dashboard/data-sets/income_statement',
     },
     {
-      name: 'Blogs',
+      name: 'Blog',
       href: environment.blogUrl,
       target: '_blank',
     },
