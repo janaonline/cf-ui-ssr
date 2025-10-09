@@ -1,13 +1,7 @@
 <footer class="bg-cfSecondary p-3 text-white-50">
   <div class="container footer">
     <div class="p-1">
-      <a
-        tabindex="0"
-        style="text-decoration: none"
-        href="/home"
-        routerLink="/home"
-        routerLinkActive="active"
-      >
+      <a tabindex="0" style="text-decoration: none" href="/home" routerLink="/home" routerLinkActive="active">
         <span class="fw-bold fs-4 text-info">city</span>
         <span class="fw-bold fs-4 text-white">finance.in</span>
       </a>
@@ -20,7 +14,7 @@
     </div>
     <div class="p-1 d-flex flex-column gap-2">
       @for (link of footerLinks; track $index) {
-        <a class="text-cfPrimary" [href]="link.href">{{ link.title }}</a>
+      <a class="text-cfPrimary" [href]="link.href" [target]="link.target || '_self'">{{ link.title }}</a>
       }
     </div>
     <div class="p-1">
@@ -37,14 +31,9 @@
       <div>
         <p class="mb-0">Connect With Us:</p>
         @for (media of socialMediaInfo; track $index) {
-          <a [href]="media['link']" target="blank" class="me-2">
-            <img
-              [src]="media['imgSrc']"
-              [alt]="media['key']"
-              width="30"
-              height="30"
-            />
-          </a>
+        <a [href]="media['link']" target="blank" class="me-2">
+          <img [src]="media['imgSrc']" [alt]="media['key']" width="30" height="30" />
+        </a>
         }
       </div>
     </div>
