@@ -345,6 +345,12 @@ export class FinancialPerformance {
 
     return null; // no alert
   }
+  private isNegativeValue(val: unknown): boolean {
+    const n = typeof val === 'number'
+      ? val
+      : (typeof val === 'string' ? Number(val.replace(/,/g, '').trim()) : NaN);
+    return Number.isFinite(n) && n < 0;
+  }
   private getIndicators(years: string[], ulbId: string, keyType: string): void {
     this._globalLoaderService.showLoader();
     this.isWarningMessage = false;
@@ -387,7 +393,11 @@ export class FinancialPerformance {
               .find((i: any) => i.name === "Total Expenditure (Cr)")
               .children[1]
               .yearData;
-
+            // console.log(capex[2], 'this is capexxx')
+            if (this.isNegativeValue(capex[2])) {
+              this.isWarningMessage = true;
+              this.warningMessage = `As per the methodology applied, the calculation for capital expenditure resulted in a negative value. Since negative values are invalid, capex has been marked as not available. `;
+            }
             const len = capex.length;
             if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
               this.isWarningMessage = true;
@@ -565,7 +575,7 @@ export class FinancialPerformance {
     const slug = this.ulbSlugName(); // 'bengaluru' etc.
 
     this.router.navigate(
-      ['/municipal-data', 'city', 'compareby'],
+      ['/municipal-data', 'city', 'comparewith'],
       {
         queryParams: {
           cities: slug, // <-- pass STRING (not array) to get ?cities=mumbai

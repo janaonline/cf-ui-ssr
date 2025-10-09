@@ -122,7 +122,8 @@
             Download as PNG&nbsp;
             <i class="bi bi-download"></i>
         </button> -->
-        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3" (click)="downloadImg()">
+        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
+            (click)="downloadImg('sampleData')">
             Download as PNG&nbsp;<i class="bi bi-download"></i>
         </button>
     </div>
@@ -253,8 +254,6 @@
         </div>
         }
     </div>
-    }
-
     <div class="d-flex justify-content-end my-4">
         <button type="button" class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3"
             (click)="downloadExcel()" [disabled]="isExporting" aria-label="Download as Excel">
@@ -266,6 +265,9 @@
             </ng-template>
         </button>
     </div>
+    }
+
+
 
 </div>
 }

@@ -13,7 +13,7 @@ export const DASHBOARD_ROUTES: Route[] = [
         path: 'city',
         children: [
             {
-                path: 'compareby',
+                path: 'comparewith',
                 loadComponent: () => import('./city/financial-performance/compare/compare').then(m => m.Compare),
             },
             {

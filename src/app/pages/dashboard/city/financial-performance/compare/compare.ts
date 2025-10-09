@@ -459,7 +459,7 @@ export class Compare implements OnInit {
     const years = this.lastNYearsLabels(preset.yearsCount ?? 3);
 
     await this.router.navigate(
-      ['/municipal-data', 'city', 'compareby'],
+      ['/municipal-data', 'city', 'comparewith'],
       {
         queryParams: {
           cities: slugs,            // -> ?cities=mumbai&cities=bengaluru&cities=pune
@@ -593,7 +593,7 @@ export class Compare implements OnInit {
     };
     console.log('navigating to compareby with', ulbs, yearsArr, indicators[0].key);
     this.router.navigate(
-      ['/municipal-data', 'city', 'compareby'],
+      ['/municipal-data', 'city', 'comparewith'],
       { queryParams: qp, replaceUrl: true }
     );
     // this.loadData(yearsArr, ulbs, indicators);
@@ -733,11 +733,11 @@ export class Compare implements OnInit {
       "options": baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in Cr')
     })
   }
-  downloadImg() {
-    // downloadImg(selectedIndicator: string = 'CityPageChart') {
+  // Download chart as img.
+  downloadImg(selectedIndicator: string = 'CityPageChart') {
     this.globalLoaderService.showLoader();
+
     setTimeout(() => {
-      console.log('capture chart process started');
       const chartContainer = document.getElementById('chartContainer');
       if (!chartContainer) return;
 
@@ -766,8 +766,7 @@ export class Compare implements OnInit {
             // Download the image
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
-            link.download = 'abc.png';
-            // link.download = `${selectedIndicator}.png`;
+            link.download = `${selectedIndicator}.png`;
             link.click();
           })
           .catch(err => {
@@ -776,7 +775,6 @@ export class Compare implements OnInit {
             console.error('Error capturing chart:', err);
           })
           .finally(() => {
-            // console.log('capture chart process completed');
             this.globalLoaderService.hideLoader();
           });
       }, 100);
