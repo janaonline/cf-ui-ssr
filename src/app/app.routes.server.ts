@@ -3,6 +3,10 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
+    path: 'home',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: 'municipal-data/**',
     // renderMode: RenderMode.Prerender,
     renderMode: RenderMode.Server,
@@ -13,10 +17,10 @@ export const serverRoutes: ServerRoute[] = [
     //   return ids.map(id => ({ cityId:id })); // Generates paths like: /post/1, /post/2, /post/3
     // },
   },
-  // {
-  //   path: 'municipal-data/state/:slug',
-  //   renderMode: RenderMode.Client,
-  // },
+  {
+    path: 'ulb/:ulbId/:indicatoName',
+    renderMode: RenderMode.Client,
+  },
   // {
   //   path: 'municipal-data/national',
   //   renderMode: RenderMode.Client,

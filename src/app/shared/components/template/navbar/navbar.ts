@@ -116,7 +116,7 @@ export class Navbar {
     const loggedin_menus = [
       // ...this.menus,
       // (role === USER_TYPE.PMU && { name: 'State resources', href: '/mohua-form/state-resource-manager' }),
-      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && { name: '15<sup>th</sup> FC Grants', href: environment.v1Url + '/fc-home-page' }),
+      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) && { name: '15<sup>th</sup> FC Grants', href: environment.v1Url + '/fc-home-page' }),
       // role === USER_TYPE.ULB && {
       //   name: `15<sup>th</sup> FC Grants`,
       //   href: environment.v1Url + '/fc-home-page',
@@ -124,6 +124,10 @@ export class Navbar {
       role === USER_TYPE.ULB && {
         name: `XVI FC Data Collection`,
         href: environment.v2Url + '/xvifc-form',
+      },
+      role === USER_TYPE.STATE_DASHBOARD && {
+        name: `State Dashboard`,
+        href: environment.v1Url + '/state-dashboard',
       },
       // role === USER_TYPE.ULB && {
       //   name: `User Manual`,
@@ -135,7 +139,7 @@ export class Navbar {
         href: environment.v2Url + '/admin/xvi-fc-review',
       },
       // (this.notInRole([USER_TYPE.ULB, USER_TYPE.XVIFC_STATE]) && { name: `Rankings'22 Dashboard`, href: '/cfr/review-rankings-ulbform' }),
-      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE]) && this.isReadonlyUser() && { name: 'Users', href: environment.v1Url + '/user/list/ULB' }),
+      (this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) && this.isReadonlyUser() && { name: 'Users', href: environment.v1Url + '/user/list/ULB' }),
     ];
     this.menus = this.menus.concat(loggedin_menus.filter((menu) => menu));
   }
@@ -203,6 +207,8 @@ export class Navbar {
     } else if (type == 'XVIFC') {
       // this._router.navigateByUrl("/login/xvi-fc");
       window.location.href = this.v1Url + '/login/xvi-fc';
+    } else if (type == 'state-dashboard') {
+      window.location.href = this.v1Url + '/login/state-dashboard';
     } else if (type == 'ranking') {
       // this._router.navigateByUrl("/rankings/login");
       window.location.href = this.v1Url + '/rankings/login';
