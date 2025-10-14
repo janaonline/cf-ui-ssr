@@ -179,7 +179,7 @@ export class Compare implements OnInit {
   consolidatedIndicators = signal<RadioOption[]>([]);
   selectedIndicator: FormControl = new FormControl('');
   years = signal<RadioOption[]>([]);
-
+  conditionCheckFilterName: any;
   isYearsActive = signal<boolean>(false);
   isIndicatorsActive = signal<boolean>(false);
   isBrowser: boolean = false;
@@ -572,7 +572,7 @@ export class Compare implements OnInit {
     const yearsArr = this.years().filter(item => item.isActive);
     const ulbs = this.selectedCities();
     const indicators = this.indicators().filter(item => item.isActive);
-    // console.log(indicators, 'this is blah')
+    console.log(indicators, 'this is blah')
 
 
     if (ulbs.length < 2) {
@@ -606,8 +606,8 @@ export class Compare implements OnInit {
     var years = yearsArr.map(item => item.label);
     var ulbIds = ulbs.map(item => item._id);
     var indicators = consolidatedIndicators.map(item => item.key);
-
-    // console.log("filters = ", years, ulbIds, indicators);
+    this.conditionCheckFilterName = indicators
+    console.log("filters = ", years, ulbIds, indicators);
     this.dashboardService.getCompareByIndicators(ulbIds, years, indicators).subscribe({
       next: (res: any) => {
         // console.log("compare by res: ", res[0]);
