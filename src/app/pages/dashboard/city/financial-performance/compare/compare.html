@@ -161,7 +161,11 @@
 
 
     <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
+        @if (this.conditionCheckFilterName=="keyNumbers") {
+        <small class="small d-flex justify-content-end text-danger fw-bold">Some values are crores*</small>
+        }@else {
         <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in Crores*</small>
+        }
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
         <div class="table-scroll-x overflow-auto" style="max-height: 60vh;">
             <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 mat-table-wide  ">
