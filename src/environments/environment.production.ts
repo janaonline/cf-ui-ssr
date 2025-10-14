@@ -2,6 +2,7 @@ const baseUrl = 'https://www.cityfinance.in';
 
 export const environment = {
   baseUrl,
+  blogUrl: 'https://blog.cityfinance.in',
   api: {
     url: baseUrl + '/api/v1/',
   },
