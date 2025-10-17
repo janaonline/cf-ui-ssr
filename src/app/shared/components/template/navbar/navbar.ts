@@ -125,7 +125,7 @@ export class Navbar {
         name: `XVI FC Data Collection`,
         href: environment.v2Url + '/xvifc-form',
       },
-      role === USER_TYPE.STATE_DASHBOARD && {
+      [USER_TYPE.STATE_DASHBOARD, USER_TYPE.STATE].includes(role) && {
         name: `State Dashboard`,
         href: environment.v1Url + '/state-dashboard',
       },
