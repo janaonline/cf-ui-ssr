@@ -23,7 +23,10 @@ import { ViewportScroller } from '@angular/common';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", '#f43f5e', '#B388FF'];
 import { SelectionModel } from '@angular/cdk/collections';
 import html2canvas from 'html2canvas';
+import { TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateExcelParams } from '../../../../../core/models/interfaces';
+import { CommonService } from '../../../../../core/services/common.service';
 const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
   font: { name: 'Aptos', size: 10 },
@@ -59,12 +62,15 @@ interface RadioOption {
     CitySearch,
     MatSelectModule,
     Charts,
-    InrFormatPipe
+    InrFormatPipe,
+    MatDialogModule,
+    MatButtonModule
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss'
 })
 export class Compare implements OnInit {
+  @ViewChild('helpDialog') helpDialogTemplate!: TemplateRef<any>;
   private destroyRef = inject(DestroyRef);
   readonly currencyOptions = { showSymbol: true, showUnit: false };
   readonly whatYouWillGet = [
@@ -183,9 +189,23 @@ export class Compare implements OnInit {
   isYearsActive = signal<boolean>(false);
   isIndicatorsActive = signal<boolean>(false);
   isBrowser: boolean = false;
-
+  isSearching = signal<boolean>(false);
+  ulbNameControl = new FormControl('');
+  filteredUlbs = signal<any[]>([]);
+  noDataFound = signal<boolean>(false);
   selectedCities = signal<IULB[]>([]);
-
+  scrollingIcons = signal(new Array(15));
+  iconUrl = 'https://cdn-icons-png.flaticon.com/128/17345/17345420.png';
+  popularCities = signal<any[]>([
+    { _id: 'bengaluru', name: 'Bengaluru' },
+    { _id: 'mumbai', name: 'Mumbai' },
+    { _id: 'pune', name: 'Pune' },
+    { _id: 'hyderabad', name: 'Hyderabad' },
+    { _id: 'chennai', name: 'Chennai' },
+    { _id: 'kolkata', name: 'Kolkata' },
+    { _id: 'ahmedabad', name: 'Ahmedabad' },
+    { _id: 'indore', name: 'Indore' }
+  ]);
   chartConfig = signal<ChartConfig>({
     chartId: '',
     chartType: 'barChart',
@@ -200,6 +220,7 @@ export class Compare implements OnInit {
   selectedRowIndices: any;
   excelData: any;
   isExporting = false;
+  openCitySearchModal: any;
   // {
   //   headers: [
   //     { key: 'indicator', label: 'Indicator' },
@@ -279,12 +300,15 @@ export class Compare implements OnInit {
 
 
   constructor(
+    public dialog: MatDialog,
     private utilityService: UtilityService,
+    private commonService: CommonService,
     private route: ActivatedRoute,
     private router: Router,
     private viewportScroller: ViewportScroller,
     private globalLoaderService: GlobalLoaderService,
     private dashboardService: DashboardService,
+
     @Inject(PLATFORM_ID) private platformId: object
   ) { }
 
@@ -399,7 +423,16 @@ export class Compare implements OnInit {
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe(() => this.createChartData());
   }
-
+  openHelpDialog(): void {
+    if (this.helpDialogTemplate) {
+      this.dialog.open(this.helpDialogTemplate, {
+        width: '550px',       // Set a comfortable width
+        autoFocus: 'dialog'   // Keep focus within the dialog
+      });
+    } else {
+      console.error('Help dialog template could not be found!');
+    }
+  }
   // Based on yearsArr: string[] create years: RadioOption[] which has isActive etc..
   private setYearsArr() {
     const years = this.yearsArr().map((item: string) => {

@@ -1,66 +1,68 @@
-@use './styles/bootstrap-custom' as *;
-@use './styles/material-custom';
+@use "./styles/bootstrap-custom" as *;
+@use "./styles/material-custom";
 // $cfPrimary: hsla(30, 83%, 49%, 1);
 // $cfSecondary: hsla(220, 62%, 25%, 1);
 
 // Import fonts.
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+// src/styles.scss
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
 // ----- Remove default styling.----- //
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 * {
-    margin: 0;
+  margin: 0;
 
-    --clr-primary: #{$cfPrimary};
-    --clr-secondary: #{$cfSecondary};
-    --clr-neutral-300: hsla(30, 83%, 49%, 0.55);
+  --clr-primary: #{$cfPrimary};
+  --clr-secondary: #{$cfSecondary};
+  --clr-neutral-300: hsla(30, 83%, 49%, 0.55);
 
-    --ff-base: 'Montserrat', sans-serif;
+  --ff-base: "Montserrat", sans-serif;
 
-    // --fw-thin: 100;
-    // --fw-extra-light: 200;
-    --fw-light: 300;
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-semi-bold: 600;
-    --fw-bold: 700;
-    // --fw-extra-bold: 800;
-    // --fw-black: 900;
+  // --fw-thin: 100;
+  // --fw-extra-light: 200;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi-bold: 600;
+  --fw-bold: 700;
+  // --fw-extra-bold: 800;
+  // --fw-black: 900;
 
-    --fs-1: 3rem;
-    --fs-2: 2.5rem;
-    --fs-3: 2rem;
-    --fs-4: 1.5rem;
-    --fs-5: 1.125rem;
-    --fs-6: 0.8125rem;
-    --fs-7: 0.75rem;
-    --fs-8: 0.625rem;
+  --fs-1: 3rem;
+  --fs-2: 2.5rem;
+  --fs-3: 2rem;
+  --fs-4: 1.5rem;
+  --fs-5: 1.125rem;
+  --fs-6: 0.8125rem;
+  --fs-7: 0.75rem;
+  --fs-8: 0.625rem;
 
-    // font-weight: var(--fw-medium);
+  // font-weight: var(--fw-medium);
 }
 
 html,
 body {
-    height: 100%;
-    font-weight: var(--fw-medium);
+  height: 100%;
+  font-weight: var(--fw-medium);
 }
 
 body {
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
 }
 
 input,
 button,
 textarea,
 select {
-    font: inherit;
+  font: inherit;
 }
 
 p,
@@ -70,41 +72,40 @@ h3,
 h4,
 h5,
 h6 {
-    overflow-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 h1,
 h2,
 h3 {
-    line-height: 1;
+  line-height: 1;
 }
 
 a {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 // ----- Scroll Bar. ----- //
 ::-webkit-scrollbar {
-    width: 13px;
-    height: 10px;
+  width: 13px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 3px #57647e;
-    border-radius: 10px;
+  box-shadow: inset 0 0 3px #57647e;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: hsl(0, 0%, 53%);
-    border-radius: 10px;
+  background: hsl(0, 0%, 53%);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: hsl(0, 0%, 66%);
+  background: hsl(0, 0%, 66%);
 }
 
 // ----- Accessibility Text Controls.----- //
-
 
 // // ----- Common buttons. ----- //
 // .primary-btn-1 {
@@ -156,7 +157,7 @@ a {
 // Remove default spin buttons from number input fields
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 // .btn-check:focus+.btn-outline-primary,
@@ -164,7 +165,6 @@ input::-webkit-inner-spin-button {
 //     box-shadow: none !important;
 //     outline: none !important;
 // }
-
 
 // // ----- Utilities ----- //
 // .dotted-border-bottom-primary {
@@ -191,17 +191,17 @@ input::-webkit-inner-spin-button {
 // }
 
 .cursor-pointer {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
 .cursor-not-allowed {
-    cursor: not-allowed !important;
+  cursor: not-allowed !important;
 }
 
 .custom-readonly-input {
-    background-color: rgba(211, 211, 211, 0.503) !important;
-    border: 1px solid gray !important;
-    cursor: not-allowed !important;
+  background-color: rgba(211, 211, 211, 0.503) !important;
+  border: 1px solid gray !important;
+  cursor: not-allowed !important;
 }
 
 // // ----- Add button group ----- //
@@ -241,121 +241,120 @@ input::-webkit-inner-spin-button {
 
 // Custom spinner overlay.
 .custom-spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 // Custom font size.
 .custom-font-size-6 {
-    font-size: var(--fs-6) !important;
+  font-size: var(--fs-6) !important;
 }
 
 .custom-font-size-7 {
-    font-size: var(--fs-7) !important;
+  font-size: var(--fs-7) !important;
 }
 
 .custom-font-size-8 {
-    font-size: var(--fs-8) !important;
+  font-size: var(--fs-8) !important;
 }
 
 // Custom text shadow.
 .custom-text-shadow {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .bg-table-header {
-    background-color: #e9edf5 !important;
+  background-color: #e9edf5 !important;
 }
 
 .bg-light-primary {
-    background-color: #f1f8ff;
+  background-color: #f1f8ff;
 }
-
 
 // Common search box.
 .input-box-style {
-    border: none;
-    padding: 0.5rem 1rem;
-    background: #f8f9ff;
-    border-radius: 0.25rem;
-    border: 1px solid #dee2e6;
-    // box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.075);
-    width: 100%;
-    font-weight: 600;
-    // margin-bottom: 0.5rem;
+  border: none;
+  padding: 0.5rem 1rem;
+  background: #f8f9ff;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+  // box-shadow: 0 .125rem .25rem rgba(0, 0, 0, 0.075);
+  width: 100%;
+  font-weight: 600;
+  // margin-bottom: 0.5rem;
 }
 
 // Grid view.
 .explore-data-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 @media (max-width: 767px) {
-    .explore-data-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .explore-data-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 // Unselected button style.
 // cfPrimary
 .unselected-btn {
-    background-color: #F7DBBF;
-    color: black;
-    border-radius: 23px;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    // font-size: 16px;
+  background-color: #f7dbbf;
+  color: black;
+  border-radius: 23px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  // font-size: 16px;
 }
 
 .unselected-btn:hover {
-    background-color: #eac8a4;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: #eac8a4;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .unselected-btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(247, 219, 191, 0.6);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(247, 219, 191, 0.6);
 }
 
 .unselected-btn:active {
-    background-color: #d9b58f;
-    transform: scale(0.97);
+  background-color: #d9b58f;
+  transform: scale(0.97);
 }
 
 // cfSecondary.
 .unselected-secondary-btn {
-    background-color: hsla(220, 62%, 92%, 1);
-    color: hsla(220, 62%, 25%, 1);
-    border-radius: 23px;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    // font-size: 16px;
+  background-color: hsla(220, 62%, 92%, 1);
+  color: hsla(220, 62%, 25%, 1);
+  border-radius: 23px;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  // font-size: 16px;
 }
 
 .unselected-secondary-btn:hover {
-    background-color: hsla(220, 62%, 85%, 1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: hsla(220, 62%, 85%, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .unselected-secondary-btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px hsla(220, 62%, 60%, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 3px hsla(220, 62%, 60%, 0.4);
 }
 
 .unselected-secondary-btn:active {
-    background-color: hsla(220, 62%, 80%, 1);
-    transform: scale(0.97);
+  background-color: hsla(220, 62%, 80%, 1);
+  transform: scale(0.97);
 }
