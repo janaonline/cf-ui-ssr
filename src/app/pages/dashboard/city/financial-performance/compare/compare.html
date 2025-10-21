@@ -4,39 +4,48 @@
 </div>
 
 <div class="container position-relative">
-    <div class="mb-4 pt-5">
-        <h1 class="mx-auto text-center w-50 mb-3 fs-1">
+    <div class="mb-4 pt-2">
+        <h1 class="mx-auto text-center w-100 mb-3 fs-2 fw-bold">
             Customize and compare city finance data
         </h1>
-        <p class="mx-auto text-center w-75 mb-4 fs-5 lh-sm ">
+        <p class="mx-auto text-center w-75 mb-1 lh-sm" style="font-size: 0.9rem;">
             Reduce your research time and compare financial data of India's top cities in minutes. Standardized for your
             convenience.
         </p>
         <div class="mx-auto d-flex justify-content-center gap-2">
             @for (item of introCheckBoxText; track $index) {
-            <div class="d-flex gap-1 flex-wrap align-items-center justify-content-center">
+            <div class="d-flex gap-1 flex-wrap align-items-center justify-content-center fw-bold"
+                style="font-size: 0.9rem;">
                 <i class="bi bi-check-square-fill text-success"></i>
-                <p class="text-center lh-sm p-0 m-0">{{item}}</p>
+                <p class="text-center lh-sm p-0 m-0 fw-bold">{{item}}</p>
             </div>
             }
         </div>
     </div>
 
-    <div class="shadow-sm p-4 rounded my-4 bg-light">
+    <div class=" shadow-sm p-4 rounded my-4 bg-light">
         <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
         <form>
             <!-- Ulbs -->
-            <div class=" mt-4 p-1">
-                <p class="fw-bold mb-2">01 Select up to three cities</p>
+            <div class=" mt-2 p-1">
+                <p class="fw-bold mb-0" style="font-size: 0.9rem;">01 Select up to three cities</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    <app-city-search (onUlbSelect)="onUlbSelected($event)" [resetOnChange]='true' #citySearch>
-                    </app-city-search>
+                    <!-- <app-city-search (onUlbSelect)="onUlbSelected($event)" [resetOnChange]='true' #citySearch>
+                    </app-city-search> -->
+                    <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
+                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                        style="max-width: 80vw;font-size: 0.8rem;">
+                        Add City
+                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
+                    </small>
 
                     <!-- Selected city chips -->
                     @for (item of selectedCities(); track item._id) {
                     <small [title]="item.name" class="rounded-5 text-truncate py-1 px-2 bg-cfSecondary text-white"
-                        style="max-width: 80vw;">
-                        {{ item.name }}
+                        style="max-width: 80vw;font-size: 0.8rem;">
+
+                        {{ (item.name.length > 15) ? (item.name | slice:0:15) + '...' : item.name }}
+
                         <i class="bi bi-x ms-1" role="button" (click)="removeCity(item)"></i>
                     </small>
                     }
@@ -45,19 +54,19 @@
 
             <!-- Years -->
             @if(years().length > 0) {
-            <div class="mb-4 p-1">
-                <p class="fw-bold mb-2">02 Select Years</p>
-                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+            <div class="mb-0 p-1">
+                <p class="fw-bold m-0" style="font-size: 0.9rem;">02 Select Years</p>
+                <div class="p-1 d-flex align-items-center flex-wrap gap-1 m-0">
                     <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
                         [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;">
+                        style="max-width: 80vw;font-size: 0.8rem;">
                         All Years
                         <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
                     </small>
                     @for (item of years(); track $index) {
                     <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
                         [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;" (click)="modifyYears($index)">
+                        style="max-width: 80vw;font-size: 0.8rem;" (click)="modifyYears($index)">
                         {{ item.label }}&nbsp;
                         <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
                     </small>
@@ -75,8 +84,8 @@
             </small> -->
             <!-- Indicators -->
             @if (indicators().length > 0) {
-            <div class=" my-4 p-1">
-                <p class="fw-bold mb-2">03 Select Indicators</p>
+            <div class=" my-0 p-1">
+                <p class="fw-bold mb-2" style="font-size: 0.9rem;">03 Select Indicators</p>
                 <div class="p-1 d-flex align-items-center flex-wrap gap-1">
                     @for (item of indicators(); track $index) {
                     <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
@@ -164,7 +173,8 @@
         @if (this.conditionCheckFilterName=="keyNumbers") {
         <small class="small d-flex justify-content-end text-danger fw-bold">Some values are crores*</small>
         }@else {
-        <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in Crores*</small>
+        <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in
+            Crores*</small>
         }
         @if (dataSource().length > 0 && displayedColumns.length > 0) {
         <div class="table-scroll-x overflow-auto" style="max-height: 60vh;">
