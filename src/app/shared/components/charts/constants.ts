@@ -50,6 +50,21 @@ export const baseChartOptions = (
     tooltip: {
       titleFont: { family: fontFamily },
       bodyFont: { family: fontFamily },
+      callbacks: {
+        label: (context: any) => {
+          // Check if dataset has custom hover labels
+          const dataset = context.dataset;
+          const index = context.dataIndex;
+
+          // console.log({ dataset })
+          if (dataset.customHoverLabels && dataset.customHoverLabels[index]) {
+            return `${dataset.label}: ${dataset.customHoverLabels[index]}`;
+          }
+
+          // Default fallback
+          return `${dataset.label}: ${context.formattedValue}`;
+        }
+      }
     },
   },
   layout: { padding: 5 },
