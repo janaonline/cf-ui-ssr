@@ -307,6 +307,7 @@ export class FinancialIndicator {
         type: chart.type,
         label: chart.label,
         data: chart.data,
+        customHoverLabels: chart.customHoverLabels,
       };
 
       if (chart.type === 'line') {
