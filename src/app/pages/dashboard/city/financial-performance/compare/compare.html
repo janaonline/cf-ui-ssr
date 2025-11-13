@@ -128,7 +128,7 @@
         </button>
     </div>
 
-    <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
+    <div class="chart-container ps-3 pb-4 chart-wrapper" id="chartContainer">
         @if (chartConfig().datasets.length > 0) {
         <app-charts [chartConfig]="chartConfig()"></app-charts>
         } @else {
