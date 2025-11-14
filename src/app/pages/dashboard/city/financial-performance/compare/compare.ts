@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Component, DestroyRef, inject, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, DestroyRef, effect, EventEmitter, inject, Inject, Input, input, OnInit, Output, PLATFORM_ID, signal, TemplateRef, ViewChild, NgZone } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,21 +15,21 @@ import { DashboardService } from '../../../dashboard-service';
 import { ChartConfig, ChartDataSet } from '../../../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../../../shared/components/charts/charts";
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../../shared/components/charts/constants';
-import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, combineLatest, distinctUntilChanged, firstValueFrom, from, map, mergeMap, of, switchMap, toArray } from 'rxjs';
+import { catchError, combineLatest, debounceTime, distinctUntilChanged, filter, firstValueFrom, from, map, mergeMap, of, Subject, switchMap, takeUntil, toArray } from 'rxjs';
 import { ViewportScroller } from '@angular/common';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743", '#f43f5e', '#B388FF'];
 import { SelectionModel } from '@angular/cdk/collections';
 import html2canvas from 'html2canvas';
-import { CreateExcelParams } from '../../../../../core/models/interfaces';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { CommonService } from '../../../../../core/services/common.service';
 const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
   font: { name: 'Aptos', size: 10 },
 }
 type HeaderItem = { key: string; label: string };
-type RowItem = Record<string, string | number>;
 type ApiBlock = { keyType: string; headers: HeaderItem[]; data: any[] };
 interface CityGroup {
   name: string;          // city name (from selectedCities)
@@ -56,15 +56,17 @@ interface RadioOption {
     MatInputModule,
     MatTableModule,
     MatCheckboxModule,
-    CitySearch,
     MatSelectModule,
     Charts,
-    InrFormatPipe
+    InrFormatPipe,
+    MatButtonToggleModule,
+    MatAutocompleteModule
   ],
   templateUrl: './compare.html',
   styleUrl: './compare.scss'
 })
 export class Compare implements OnInit {
+  @ViewChild('helpDialog') helpDialogTemplate!: TemplateRef<any>;
   private destroyRef = inject(DestroyRef);
   readonly currencyOptions = { showSymbol: true, showUnit: false };
   readonly whatYouWillGet = [
@@ -84,11 +86,12 @@ export class Compare implements OnInit {
       src: './assets/images/export.png'
     },
   ]
+  applybutton: boolean = false;
   readonly sampleComparisons = [
     {
       line1: '3Y Own Revenue Data',
       line2: 'for Mumbai–Bengaluru–Pune',
-      cities: ['mumbai', 'bengaluru', 'pune'],   // <-- slugs here
+      cities: ['mumbai', 'bengaluru', 'pune'],
       indicatorKey: 'receipts',
       yearsCount: 3
     },
@@ -113,67 +116,19 @@ export class Compare implements OnInit {
     'Shaped by investor feedback',
     'No logins necessary',
   ]
-  readonly indicatorsArr = signal<RadioOption[]>([
-    // { label: "All Indicators", isActive: false },
-    // {
-    //   key: 'totExpenditureByTotRevenue',
-    //   label: "Total Expenditure to Total Revenue (%)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'totOwnRevenueByTotRevenue',
-    //   label: "Own Source Revenue to Total Revenue (%)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'grantsByTotRevenue',
-    //   label: "Grants to Total Revenue (%)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'totExpenditureByTotOwnRevenue',
-    //   label: "Own Source Revenue to Total Expenditure (%)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'capitalExpenditureByTotExpenditure',
-    //   label: "Capital Expenditure to Total Expenditure (%)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'operatingSurplus',
-    //   label: "Operating Surplus (Cr)",
-    //   isActive: false
-    // },
-    // {
-    //   key: 'totRevenue',
-    //   label: "Total Revenue (Cr)",
-    //   isActive: false,
-    //   children: [
-    //     {
-    //       key: 'totOwnRevenue',
-    //       label: 'Own Source Revenue (Cr)',
-    //       isActive: false,
-    //     },
-    //     {
-    //       key: '120',
-    //       label: 'Assigned Revenue (Cr)',
-    //       isActive: false,
-    //     },
-    //     {
-    //       key: '160',
-    //       label: 'Revenue Grants (Cr)',
-    //       isActive: false,
-    //     },
-    //     {
-    //       key: '100',
-    //       label: 'Others (Cr)',
-    //       isActive: false,
-    //     },
-    //   ]
-    // }
-  ]); // Will be sent from parent/ api call
-  yearsArr = signal<string[]>(['2020-21', '2021-22', '2022-23']); // Will be sent from parent/ api call
+  popularCities = signal<any[]>([
+    { _id: 'bengaluru', name: 'Bengaluru' },
+    { _id: 'mumbai', name: 'Mumbai' },
+    { _id: 'pune', name: 'Pune' },
+    { _id: 'hyderabad', name: 'Hyderabad' },
+    { _id: 'chennai', name: 'Chennai' },
+    { _id: 'kolkata', name: 'Kolkata' },
+    { _id: 'ahmedabad', name: 'Ahmedabad' },
+    { _id: 'indore', name: 'Indore' }
+  ]);
+  comparisonMode: string = 'compareWith';
+  readonly indicatorsArr = signal<RadioOption[]>([]);
+  yearsArr = signal<string[]>(['2020-21', '2021-22', '2022-23']);
   slug!: string;
   indicators = signal<RadioOption[]>([]);
   consolidatedIndicators = signal<RadioOption[]>([]);
@@ -183,9 +138,7 @@ export class Compare implements OnInit {
   isYearsActive = signal<boolean>(false);
   isIndicatorsActive = signal<boolean>(false);
   isBrowser: boolean = false;
-
   selectedCities = signal<IULB[]>([]);
-
   chartConfig = signal<ChartConfig>({
     chartId: '',
     chartType: 'barChart',
@@ -195,107 +148,45 @@ export class Compare implements OnInit {
   displayedColumns: string[] = [];
   dataSource = signal<any[]>([]);
   res = {}
-  cityHeaders: string[] = []; //, 'emptyCol','city-name','city-name1']; // will be dynamic based on selected cities.
+  cityHeaders: string[] = [];
   selectedYears: any = signal<string[]>([]);
   selectedRowIndices: any;
   excelData: any;
   isExporting = false;
-  // {
-  //   headers: [
-  //     { key: 'indicator', label: 'Indicator' },
-  //     { key: "5e4a75dc47cb2749e5a56be0_2020_21", label: '2020-21' },
-  //     { key: "5e4a75dc47cb2749e5a56be0_2021_22", label: '2021-22' },
-  //     { key: "5e4a75dc47cb2749e5a56be0_2022_23", label: '2022-23' },
-  //     { key: "5eb5844f76a3b61f40ba0697_2020_21", label: '2020-21' },
-  //     { key: "5eb5844f76a3b61f40ba0697_2021_22", label: '2021-22' },
-  //     { key: "5eb5844f76a3b61f40ba0697_2022_23", label: '2022-23' },
-  //     { key: "5f5610b3aab0f778b2d2cac0_2020_21", label: '2020-21' },
-  //     { key: "5f5610b3aab0f778b2d2cac0_2021_22", label: '2021-22' },
-  //     { key: "5f5610b3aab0f778b2d2cac0_2022_23", label: '2022-23' },
-  //   ],
-  //   data: [
-  //     {
-  //       indicator: "Capital Expenditure to Total Expenditure (%)",
-  //       "5e4a75dc47cb2749e5a56be0_2020_21": 2000,
-  //       "5e4a75dc47cb2749e5a56be0_2021_22": 1000,
-  //       "5e4a75dc47cb2749e5a56be0_2022_23": "800",
-  //       "5eb5844f76a3b61f40ba0697_2020_21": "1510",
-  //       "5eb5844f76a3b61f40ba0697_2021_22": "1050",
-  //       "5eb5844f76a3b61f40ba0697_2022_23": "570",
-  //       "5f5610b3aab0f778b2d2cac0_2020_21": "200",
-  //       "5f5610b3aab0f778b2d2cac0_2021_22": "100",
-  //       "5f5610b3aab0f778b2d2cac0_2022_23": "400",
-  //     },
-  //     {
-  //       indicator: "Own Source Revenue (Cr)",
-  //       "5e4a75dc47cb2749e5a56be0_2020_21": "2000",
-  //       "5e4a75dc47cb2749e5a56be0_2021_22": "1000",
-  //       "5e4a75dc47cb2749e5a56be0_2022_23": "800",
-  //       "5eb5844f76a3b61f40ba0697_2020_21": "1510",
-  //       "5eb5844f76a3b61f40ba0697_2021_22": "1050",
-  //       "5eb5844f76a3b61f40ba0697_2022_23": "570",
-  //       "5f5610b3aab0f778b2d2cac0_2020_21": "200",
-  //       "5f5610b3aab0f778b2d2cac0_2021_22": "100",
-  //       "5f5610b3aab0f778b2d2cac0_2022_23": "400",
-  //     },
-  //     {
-  //       indicator: "Assigned Revenue (Cr)",
-  //       "5e4a75dc47cb2749e5a56be0_2020_21": "800",
-  //       "5e4a75dc47cb2749e5a56be0_2021_22": "780",
-  //       "5e4a75dc47cb2749e5a56be0_2022_23": "660",
-  //       "5eb5844f76a3b61f40ba0697_2020_21": "550",
-  //       "5eb5844f76a3b61f40ba0697_2021_22": "470",
-  //       "5eb5844f76a3b61f40ba0697_2022_23": "590",
-  //       "5f5610b3aab0f778b2d2cac0_2020_21": "400",
-  //       "5f5610b3aab0f778b2d2cac0_2021_22": "480",
-  //       "5f5610b3aab0f778b2d2cac0_2022_23": "800",
-  //     },
-  //     {
-  //       indicator: "Revenue Grants (Cr)",
-  //       "5e4a75dc47cb2749e5a56be0_2020_21": "920",
-  //       "5e4a75dc47cb2749e5a56be0_2021_22": "810",
-  //       "5e4a75dc47cb2749e5a56be0_2022_23": "780",
-  //       "5eb5844f76a3b61f40ba0697_2020_21": "298",
-  //       "5eb5844f76a3b61f40ba0697_2021_22": "100",
-  //       "5eb5844f76a3b61f40ba0697_2022_23": "200",
-  //       "5f5610b3aab0f778b2d2cac0_2020_21": "920",
-  //       "5f5610b3aab0f778b2d2cac0_2021_22": "100",
-  //       "5f5610b3aab0f778b2d2cac0_2022_23": "200",
-  //     },
-  //     {
-  //       indicator: "Others (Cr)",
-  //       "5e4a75dc47cb2749e5a56be0_2020_21": "800",
-  //       "5e4a75dc47cb2749e5a56be0_2021_22": "100",
-  //       "5e4a75dc47cb2749e5a56be0_2022_23": "10",
-  //       "5eb5844f76a3b61f40ba0697_2020_21": "400",
-  //       "5eb5844f76a3b61f40ba0697_2021_22": "100",
-  //       "5eb5844f76a3b61f40ba0697_2022_23": "70",
-  //       "5f5610b3aab0f778b2d2cac0_2020_21": "264",
-  //       "5f5610b3aab0f778b2d2cac0_2021_22": "300",
-  //       "5f5610b3aab0f778b2d2cac0_2022_23": "220",
-  //     },
-  //   ]
-  // }
+  private fb = inject(FormBuilder);
+  private destroy$ = new Subject<void>();
+  readonly myForm: FormGroup = this.fb.group({ ulbName: [''], year: [''], compareBy: [''], indicator: [''] });
+  readonly noDataFound = signal<boolean>(false);
+  readonly selectCity = input<(city: IULB) => void>();
+  readonly stateId = input<string>('');
+  readonly cityName = input<string>('');
 
+  @Input() resetOnChange: boolean = false;
+
+  @Output() onUlbSelect = new EventEmitter<IULB>();
+
+  get ulbNameControl(): FormControl {
+    return this.myForm.get('ulbName') as FormControl;
+  }
+  readonly filteredUlbs = signal<IULB[]>([]);
 
   constructor(
+    private ngZone: NgZone,
     private utilityService: UtilityService,
     private route: ActivatedRoute,
     private router: Router,
     private viewportScroller: ViewportScroller,
     private globalLoaderService: GlobalLoaderService,
     private dashboardService: DashboardService,
+    private CommonService: CommonService,
     @Inject(PLATFORM_ID) private platformId: object
   ) { }
-
 
   ngOnInit() {
     if (isPlatformServer(this.platformId)) return;
     this.isBrowser = isPlatformBrowser(this.platformId);
-
-    const destroyRef = this.destroyRef ?? inject(DestroyRef); // ensure injected at class field ideally
-
-    // 1) streams
+    this.setupSearchEffect();
+    const destroyRef = this.destroyRef ?? inject(DestroyRef);
     const slug$ = this.route.parent!.paramMap.pipe(
       map(pm => pm.get('slug') ?? ''),
       distinctUntilChanged()
@@ -303,10 +194,10 @@ export class Compare implements OnInit {
 
     const qp$ = this.route.queryParamMap.pipe(
       map(pm => {
-        // ✅ Use the SAME names you write into the URL
         const cities = pm.getAll('cities');      // ULB IDs (or slugs if you switch API)
         const years = pm.getAll('years');       // ['2020-21','2021-22',...]
         const indicator = pm.get('indicator') ?? '';
+        console.log(cities, years, indicator, 'query param map');
         return { cities, years, indicator };
       }),
       // de-dup identical query states
@@ -350,9 +241,6 @@ export class Compare implements OnInit {
       )
 
     ).subscribe(({ ulbs, years, indicator }) => {
-      // 4) hydrate UI state BEFORE load
-
-      // cities
       this.selectedCities.set(ulbs);
 
       // years: set isActive for exactly those present in URL
@@ -382,10 +270,19 @@ export class Compare implements OnInit {
       // headers dependent on cities:
       this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
 
+
       // 5) build payload your API expects & load ONCE
       const yearsArr = this.years().filter(y => y.isActive);          // RadioOption[]
       const activeIndicators = updatedIndicators.filter(i => i.isActive);
-
+      console.log('activeIndicators', activeIndicators, 'yearsArr', yearsArr);
+      if (yearsArr.length === 3) {
+        this.modifyYears(-1, true);
+      }
+      if (yearsArr && activeIndicators.length > 0 && ulbs.length > 0) {
+        this.applybutton = true;
+      } else {
+        this.applybutton = false;
+      }
       // microtask avoids NG0100 on first render
       queueMicrotask(() => this.loadData(yearsArr, ulbs, activeIndicators));
     });
@@ -398,8 +295,149 @@ export class Compare implements OnInit {
     this.selectedIndicator!.valueChanges
       .pipe(takeUntilDestroyed(destroyRef))
       .subscribe(() => this.createChartData());
+
+  }
+  private setupSearchEffect(): void {
+    this.ulbNameControl.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(400),
+        distinctUntilChanged(),
+        filter((value) => value?.length > 1),
+        switchMap((value) => {
+          if (!value?.trim()) {
+            return of({ data: [] });
+          }
+          return this.CommonService.postGlobalSearchDataMarketDashboard(
+            value.trim(),
+            'ulb',
+            this.stateId()
+          );
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          const ulbs = res?.['data'] ?? [];
+
+          // Fix ExpressionChangedAfterItHasBeenCheckedError
+          this.ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+              this.filteredUlbs.set(ulbs);
+              this.noDataFound.set(ulbs.length === 0);
+            });
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching ULBs:', err);
+
+          this.ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+              this.filteredUlbs.set([]);
+              this.noDataFound.set(true);
+            });
+          });
+        },
+      });
+  }
+  applyFilter1() {
+    this.globalLoaderService.showLoader();
+    const { ulbName, year, indicator, compareBy } = this.myForm.value;
+
+    if (!ulbName || !year || !indicator || !compareBy) {
+      this.utilityService.triggerSnackbar('Please select all filters', 'snackbar-danger');
+      return;
+    }
+    const yearsArray = this.getLastThreeYears(year);
+
+    this.CommonService.postAverageCompareByIndicators(yearsArray, compareBy, ulbName._id, indicator)
+      .subscribe((res: any) => {
+        if (res && res.success) {
+          this.createCompareByChart(res.data);
+          this.globalLoaderService.hideLoader();
+        }
+      });
+  }
+  private getLastThreeYears(selectedYear: string): string[] {
+    // expected format: "2021-22"
+    const [startStr, endStr] = selectedYear.split('-');
+    let startYear = parseInt(startStr);
+
+    const years: string[] = [];
+    for (let i = 2; i >= 0; i--) {
+      const from = startYear - i;
+      const to = (from + 1).toString().slice(-2); // keep last 2 digits for next year
+      years.push(`${from}-${to}`);
+    }
+    return years;
   }
 
+  private createCompareByChart(resData: any) {
+    if (!resData) return;
+
+    const labels = resData.labels;
+    const datasets = resData.data.map((d: any) => ({
+      type: d.type,
+      label: d.label,
+      data: d.data,
+      backgroundColor: d.backgroundColor,
+      borderColor: d.borderColor,
+      fill: d.fill || false,
+      borderWidth: 2,
+      borderRadius: 6,
+      barThickness: 50
+    }));
+
+    this.chartConfig.set({
+      chartId: 'bar-compare-1',
+      chartType: 'barChart',
+      labels,
+      datasets,
+      options: baseChartOptions('DEFAULT_FONT_FAMILY', true, 'Years', resData.axes.y)
+    });
+  }
+
+  // private baseChartOptions(font: string, responsive: boolean, xLabel: string, yLabel: string) {
+  //   return {
+  //     responsive,
+  //     plugins: {
+  //       legend: { position: 'bottom' },
+  //       tooltip: {
+  //         callbacks: {
+  //           label: (context: any) => {
+  //             return `${context.dataset.label}: ${context.parsed.y} Cr`;
+  //           }
+  //         }
+  //       }
+  //     },
+  //     scales: {
+  //       x: { title: { display: true, text: xLabel, font: { family: font } } },
+  //       y: { title: { display: true, text: yLabel, font: { family: font } } }
+  //     }
+  //   };
+  // }
+
+
+  onReset1() {
+    this.myForm.reset();
+    this.chartConfig.set({
+      chartId: '',
+      chartType: 'barChart',
+      datasets: []
+    });
+  }
+
+  onCitySelection(city: IULB): void {
+    this.onUlbSelect.emit(city);
+    const callback = this.selectCity();
+    if (callback) callback(city);
+    // console.log('this.myForm.value---', this.myForm.value);
+    if (this.resetOnChange) {
+      this.myForm.patchValue({ ulbName: '' }, { emitEvent: false });
+      this.filteredUlbs.set([]);
+      // console.log('after', this.myForm.value);
+    }
+    // console.log('ULB obj is sent from child to parent: ', city);
+  }
   // Based on yearsArr: string[] create years: RadioOption[] which has isActive etc..
   private setYearsArr() {
     const years = this.yearsArr().map((item: string) => {
@@ -435,7 +473,6 @@ export class Compare implements OnInit {
    *    - Defaults to the inverse of `this.isYearsActive()` if not provided.
    */
   modifyYears(index: number, activeStatus: boolean = !this.isYearsActive()) {
-
     console.log("called", index, activeStatus);
     if (index === -1) {
       this.years().forEach(item => item.isActive = activeStatus);
@@ -473,35 +510,6 @@ export class Compare implements OnInit {
     this.scrollToTop?.();
   }
 
-  // async onComparisonClick(ids: string[], index: number): Promise<void> {
-  //   this.selectedCities.set([]); // reset
-  //   this.years().forEach(item => item.isActive = false); // reset
-  //   this.indicators().forEach(item => item.isActive = false); // reset
-  //   // console.log('onComparisonClick ids:', ids, index);
-  //   const promises = ids.map(id =>
-  //     firstValueFrom(
-  //       this.dashboardService.getUlbDetailsById(id).pipe(
-  //         map(res => res?.ulb ?? res?.ulbDetails ?? null)
-  //       )
-  //     )
-  //   );
-
-  //   const results = await Promise.allSettled(promises);
-  //   const ulbs = results
-  //     .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled' && !!r.value)
-  //     .map(r => r.value);
-
-  //   this.selectedCities.set(ulbs); // update once with all results
-  //   this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
-  //   // this.cityHeaders = ['emptyCol', 'emptyCol', ...this.selectedCities().map(c => c.name)];
-
-  //   this.modifyYears(-1, true);
-  //   if (index === 0) this.modifyIndicators(1, true);
-  //   else if (index === 1) this.modifyIndicators(2, true);
-  //   else if (index === 2) this.modifyIndicators(6, true);
-  //   this.applyFilter();
-  //   this.scrollToTop();
-  // }
   private scrollToTop(): void {
     this.viewportScroller.scrollToPosition([0, 500]);
   }
@@ -537,20 +545,28 @@ export class Compare implements OnInit {
     const isActive = this.indicators().every(item => item.isActive);
     this.isIndicatorsActive.set(isActive);
   }
-
-  // When ULB is selected from drop down - update selectedCities()
+  displayUlbName(ulb: any): string {
+    return ulb?.name || '';
+  }
   onUlbSelected(city: IULB) {
     if (this.selectedCities().length >= 3) {
       this.utilityService.triggerSnackbar('Maximum 3 cities can be selected.', 'snackbar-danger');
-    } else if (this.selectedCities().find(c => c._id === city._id)) {
-      this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
-    } else {
-      this.selectedCities.update(cities => [...cities, city]);
-      this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
-      // this.cityHeaders = ['emptyCol', 'emptyCol', ...this.selectedCities().map(c => c.name)];
-      // console.log('this.cityHeaders,', this.cityHeaders);
+      return;
     }
-  };
+
+    if (this.selectedCities().find(c => c._id === city._id)) {
+      this.utilityService.triggerSnackbar(`${city.name} is already selected.`, 'snackbar-danger');
+      return;
+    }
+
+    this.selectedCities.update(cities => [...cities, city]);
+    this.cityHeaders = ['emptyCol', ...this.selectedCities().map(c => c.name)];
+
+    // ✅ Reset input back to text state
+    this.myForm.get('ulbName')?.setValue('');
+  }
+
+
 
   isNumber(value: number | string) {
     return !isNaN(+value);
@@ -569,6 +585,7 @@ export class Compare implements OnInit {
       this.utilityService.triggerSnackbar('Kindly ensure all filter options are selected before applying the filter.', 'snackbar-danger');
       return;
     }
+    this.applybutton = true;
     const yearsArr = this.years().filter(item => item.isActive);
     const ulbs = this.selectedCities();
     const indicators = this.indicators().filter(item => item.isActive);
@@ -733,6 +750,7 @@ export class Compare implements OnInit {
       "options": baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Years', 'Amt in Cr')
     })
   }
+
   // Download chart as img.
   downloadImg(selectedIndicator: string = 'CityPageChart') {
     this.globalLoaderService.showLoader();
@@ -924,8 +942,14 @@ export class Compare implements OnInit {
     }
     return consolidatedIndicators;
   }
-
+  onComparisonModeChange(event: any) {
+    this.comparisonMode = event.value;
+    console.log('Selected Mode:', this.comparisonMode);
+    this.onReset();
+    this.onReset1();
+  }
   onReset() {
+    this.applybutton = false;
     this.selectedCities.set([]);
     this.cityHeaders = [];
     this.modifyIndicators(-1, false);
@@ -939,4 +963,5 @@ export class Compare implements OnInit {
     this.dataSource.set([]);
     this.selectedIndicator.setValue('');
   }
+
 }

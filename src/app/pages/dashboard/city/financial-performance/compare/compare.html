@@ -4,151 +4,183 @@
 </div>
 
 <div class="container position-relative">
-    <div class="mb-4 pt-2">
-        <h1 class="mx-auto text-center w-100 mb-3 fs-2 fw-bold">
+    <div class="mb-4 pt-3">
+        <h1 class="mx-auto text-center w-100 mb-3 fs-3 fw-bold">
             Customize and compare city finance data
         </h1>
         <p class="mx-auto text-center w-75 mb-1 lh-sm" style="font-size: 0.9rem;">
             Reduce your research time and compare financial data of India's top cities in minutes. Standardized for your
-            convenience.
+            convenience
         </p>
-        <div class="mx-auto d-flex justify-content-center gap-2">
-            @for (item of introCheckBoxText; track $index) {
-            <div class="d-flex gap-1 flex-wrap align-items-center justify-content-center fw-bold"
-                style="font-size: 0.9rem;">
-                <i class="bi bi-check-square-fill text-success"></i>
-                <p class="text-center lh-sm p-0 m-0 fw-bold">{{item}}</p>
-            </div>
-            }
+        <div>
         </div>
     </div>
 
     <div class=" shadow-sm p-4 rounded my-4 bg-light">
-        <h2 class="fs-5 fw-bold text-center mb-4">Build your comparison</h2>
-        <form>
-            <!-- Ulbs -->
-            <div class=" mt-2 p-1">
-                <p class="fw-bold mb-0" style="font-size: 0.9rem;">01 Select up to three cities</p>
-                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    <!-- <app-city-search (onUlbSelect)="onUlbSelected($event)" [resetOnChange]='true' #citySearch>
-                    </app-city-search> -->
-                    <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
-                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;font-size: 0.8rem;">
-                        Add City
-                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
-                    </small>
+        <div class="custom-segmented-buttons-container">
+            <mat-button-toggle-group name="comparisonMode" aria-label="Comparison Mode" [(ngModel)]="comparisonMode"
+                (change)="onComparisonModeChange($event)" class="custom-button-toggle-group">
 
-                    <!-- Selected city chips -->
-                    @for (item of selectedCities(); track item._id) {
-                    <small [title]="item.name" class="rounded-5 text-truncate py-1 px-2 bg-cfSecondary text-white"
-                        style="max-width: 80vw;font-size: 0.8rem;">
+                <mat-button-toggle value="compareWith" class="custom-button-toggle">
+                    Compare with Cities
+                </mat-button-toggle>
 
-                        {{ (item.name.length > 15) ? (item.name | slice:0:15) + '...' : item.name }}
+                <mat-button-toggle value="compareWithAverages" class="custom-button-toggle">
+                    Compare with Cities Averages
+                </mat-button-toggle>
 
-                        <i class="bi bi-x ms-1" role="button" (click)="removeCity(item)"></i>
-                    </small>
-                    }
+            </mat-button-toggle-group>
+        </div>
+        <!-- Content Toggle -->
+        @if(comparisonMode === 'compareWith') {
+        <div>
+            <h2 class="fs-5 fw-bold text-center mb-3">Build your comparison with Different Cities</h2>
+            <form>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="p-1">
+                            <p class="fw-bold mb-0 fs-6">01 Select up to three cities</p>
+                            <form [formGroup]="myForm">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Search for ULB</mat-label>
+                                    <input matInput type="text" formControlName="ulbName" [matAutocomplete]="auto" />
+                                    <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
+                                        (optionSelected)="onUlbSelected($event.option.value)"
+                                        [displayWith]="displayUlbName">
+
+                                        @for (option of filteredUlbs(); track option._id) {
+                                        <mat-option [value]="option">
+                                            <small>{{ option.name }}</small>
+                                        </mat-option>
+
+                                        }
+
+                                        @if (noDataFound()) {
+                                        <mat-option disabled>No results found.</mat-option>
+                                        }
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </form>
+                            <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                                @for (item of selectedCities(); track item._id) {
+                                <small [title]="item.name"
+                                    class="rounded-5 text-truncate py-1 px-2 bg-cfSecondary text-white"
+                                    style="max-width: 80vw;font-size: 0.8rem;">
+
+                                    {{ (item.name.length > 15) ? (item.name | slice:0:15) + '...' : item.name }}
+
+                                    <i class="bi bi-x ms-1" role="button" (click)="removeCity(item)"></i>
+                                </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-1">
+                            @if(years().length > 0) {
+                            <div class="mb-0 p-1">
+                                <p class="fw-bold m-0 fs-6">02 Choose Years</p>
+                                <div class="p-1 d-flex align-items-center flex-wrap gap-1 m-0">
+                                    <small (click)="modifyYears(-1)" title="All years"
+                                        class="rounded-5 text-truncate py-1 px-2 m-1"
+                                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                                        style="max-width: 80vw;font-size: 0.8rem;">
+                                        All Years
+                                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
+                                    </small>
+                                    @for (item of years(); track $index) {
+                                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                                        style="max-width: 80vw;font-size: 0.8rem;" (click)="modifyYears($index)">
+                                        {{ item.label }}&nbsp;
+                                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
+                                    </small>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        @if (indicators().length > 0) {
+                        <div class=" my-0 p-1">
+                            <p class="fw-bold mb-2 fs-6">03 Select Indicators</p>
+                            <div class="p-1 d-flex align-items-center flex-wrap gap-1">
+                                @for (item of indicators(); track $index) {
+                                <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
+                                    [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
+                                    style="max-width: 80vw;" (click)="modifyIndicators($index)">
+                                    {{ item.label }}&nbsp;
+                                    <!-- <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i> -->
+                                </small>
+                                }
+                            </div>
+                        </div>
+                        }
+
+                    </div>
                 </div>
-            </div>
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                    <button class="btn btn-cfPrimary" type="submit" (click)="applyFilter()">Apply</button>
+                    <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
+                </div>
 
-            <!-- Years -->
-            @if(years().length > 0) {
-            <div class="mb-0 p-1">
-                <p class="fw-bold m-0" style="font-size: 0.9rem;">02 Select Years</p>
-                <div class="p-1 d-flex align-items-center flex-wrap gap-1 m-0">
-                    <small (click)="modifyYears(-1)" title="All years" class="rounded-5 text-truncate py-1 px-2 m-1"
-                        [class]="isYearsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;font-size: 0.8rem;">
-                        All Years
-                        <i [class]=" isYearsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
-                    </small>
-                    @for (item of years(); track $index) {
-                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
-                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;font-size: 0.8rem;" (click)="modifyYears($index)">
-                        {{ item.label }}&nbsp;
-                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
-                    </small>
+            </form>
+            @if(this.applybutton===false) {
+            <div class="container-fluid bg-light" style="background-color: #D9D9D9;">
+                <div class="text-primary text-center p-3">
+                    <h5 class="mb-1">Not sure where to begin</h5>
+                    <h5 class="mb-0">Try a sample comparison below or build your own</h5>
+                </div>
+
+                <div class="d-flex justify-content-center flex-wrap gap-3 p-4">
+                    @for (comparison of sampleComparisons; track comparison.line2;let i = $index) {
+                    <button class="btn btn-outline-cfPrimary rounded-3 shadow-sm p-3 text-start"
+                        (click)="onComparisonClick(comparison.cities,i)">
+                        <div class="fw-bold text-center">{{ comparison.line1 }}</div>
+                        <div class="fw-bold">{{ comparison.line2 }}</div>
+                    </button>
                     }
                 </div>
             </div>
             }
-
-            <!-- <small (click)="modifyIndicators(-1)" title="All years"
-                class="rounded-5 text-truncate py-1 px-2 m-1"
-                [class]="isIndicatorsActive() ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                style="max-width: 80vw;">
-                All Indicators
-                <i [class]=" isIndicatorsActive() ? 'bi bi-check2' : 'bi bi-plus'"></i>
-            </small> -->
-            <!-- Indicators -->
-            @if (indicators().length > 0) {
-            <div class=" my-0 p-1">
-                <p class="fw-bold mb-2" style="font-size: 0.9rem;">03 Select Indicators</p>
-                <div class="p-1 d-flex align-items-center flex-wrap gap-1">
-                    @for (item of indicators(); track $index) {
-                    <small [title]="item.label" class="rounded-5 text-truncate py-1 px-2 m-1"
-                        [class]="item.isActive ? ' bg-cfSecondary text-white' : 'unselected-secondary-btn'"
-                        style="max-width: 80vw;" (click)="modifyIndicators($index)">
-                        {{ item.label }}&nbsp;
-                        <i [class]=" item.isActive ? 'bi bi-x' : 'bi bi-plus'"></i>
-                    </small>
-                    }
-                </div>
-            </div>
-            }
-
-            <!-- Buttons -->
-            <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                <button class="btn btn-cfPrimary" type="submit" (click)="applyFilter()">Apply</button>
-                <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset()">Reset</button>
-            </div>
-
-        </form>
-
-        <!-- <div class="mt-4">
-            <a href="#">Not sure where to begin? Try a sample comparison →</a>
-        </div> -->
-    </div>
-
-    @if(selectedIndicator.value) {
-    <div
-        class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
-        <p class="col-sm-12 col-lg-6 custom-mb px-0">
-            Use the dropdown to view charts for individual indicators within the selected group.
-        </p>
-        <!-- @if (consolidatedIndicators().length > 0) { -->
-        <mat-form-field appearance="outline" class="col-sm-12 col-lg-3 px-0">
-            <mat-select [formControl]="selectedIndicator">
-                @for (indicator of consolidatedIndicators(); track $index) {
-                <mat-option [value]=indicator.key>{{indicator.label}}</mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-        <!-- } -->
-        <!-- <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3" (click)="downloadImg()">
+            @if(selectedIndicator.value) {
+            <div
+                class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
+                <p class="col-sm-12 col-lg-6 custom-mb px-0">
+                    Use the dropdown to view charts for individual indicators within the selected group.
+                </p>
+                <!-- @if (consolidatedIndicators().length > 0) { -->
+                <mat-form-field appearance="outline" class="col-sm-12 col-lg-3 px-0">
+                    <mat-select [formControl]="selectedIndicator">
+                        @for (indicator of consolidatedIndicators(); track $index) {
+                        <mat-option [value]=indicator.key>{{indicator.label}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <!-- } -->
+                <!-- <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3" (click)="downloadImg()">
             Download as PNG&nbsp;
             <i class="bi bi-download"></i>
         </button> -->
-        <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
-            (click)="downloadImg('sampleData')">
-            Download as PNG&nbsp;<i class="bi bi-download"></i>
-        </button>
-    </div>
+                <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
+                    (click)="downloadImg('sampleData')">
+                    Download as PNG&nbsp;<i class="bi bi-download"></i>
+                </button>
+            </div>
 
-    <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
-        @if (chartConfig().datasets.length > 0) {
-        <app-charts [chartConfig]="chartConfig()"></app-charts>
-        } @else {
-        <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
-            <i class=" bi bi-bar-chart"></i>&nbsp;
-            Build your comparison
-        </div>
-        }
-    </div>
+            <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
+                @if (chartConfig().datasets.length > 0) {
+                <app-charts [chartConfig]="chartConfig()"></app-charts>
+                } @else {
+                <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+                    <i class=" bi bi-bar-chart"></i>&nbsp;
+                    Build your comparison
+                </div> -->
+                }
+            </div>
 
-    <!-- <div
+            <!-- <div
         class="container mx-auto row flex-wrap align-items-center justify-content-between pt-3 px-3 border rounded bg-light my-4">
         <p class="col-sm-12 col-md-9 custom-mb px-0">
             Check the boxes for the rows you want to download. If all rows are selected, the full table will be
@@ -169,36 +201,37 @@
     </div> -->
 
 
-    <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
-        @if (this.conditionCheckFilterName=="keyNumbers") {
-        <small class="small d-flex justify-content-end text-danger fw-bold">Some values are crores*</small>
-        }@else {
-        <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in
-            Crores*</small>
-        }
-        @if (dataSource().length > 0 && displayedColumns.length > 0) {
-        <div class="table-scroll-x overflow-auto" style="max-height: 60vh;">
-            <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 mat-table-wide  ">
-
-                <!-- empty corner for the first grouped header row -->
-                <ng-container matColumnDef="emptyCol">
-                    <th mat-header-cell *matHeaderCellDef class="bg-table-header border border-bg-light text-center">
-                    </th>
-                </ng-container>
-
-                <!-- grouped city headers (row #1) -->
-                @for (item of selectedCities(); track item._id) {
-                <ng-container matColumnDef="{{ item.name }}">
-                    <th mat-header-cell *matHeaderCellDef
-                        class="bg-table-header border border-bg-light text-center fw-bold"
-                        [attr.colspan]="activeYearCount()">
-                        {{ item.name }}
-                    </th>
-                </ng-container>
+            <div class="my-4" [ngClass]="dataSource().length ? 'table-container' : 'chart-container'">
+                @if (this.conditionCheckFilterName=="keyNumbers") {
+                <small class="small d-flex justify-content-end text-danger fw-bold">Some values are crores*</small>
+                }@else {
+                <small class="small d-flex justify-content-end text-danger fw-bold">All the values are in
+                    Crores*</small>
                 }
-                //checkboxLabel function do Nott delete
-                <!-- sticky-left Checkbox column -->
-                <!-- <ng-container matColumnDef="select">
+                @if (dataSource().length > 0 && displayedColumns.length > 0) {
+                <div class="table-scroll-x overflow-auto" style="max-height: 60vh;">
+                    <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 mat-table-wide  ">
+
+                        <!-- empty corner for the first grouped header row -->
+                        <ng-container matColumnDef="emptyCol">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="bg-table-header border border-bg-light text-center">
+                            </th>
+                        </ng-container>
+
+                        <!-- grouped city headers (row #1) -->
+                        @for (item of selectedCities(); track item._id) {
+                        <ng-container matColumnDef="{{ item.name }}">
+                            <th mat-header-cell *matHeaderCellDef
+                                class="bg-table-header border border-bg-light text-center fw-bold"
+                                [attr.colspan]="activeYearCount()">
+                                {{ item.name }}
+                            </th>
+                        </ng-container>
+                        }
+                        //checkboxLabel function do Nott delete
+                        <!-- sticky-left Checkbox column -->
+                        <!-- <ng-container matColumnDef="select">
                     <th mat-header-cell *matHeaderCellDef class="bg-table-header border border-bg-light text-center">
                         <mat-checkbox (change)="$event ? toggleAllRows() : null"
                             [checked]="selection.hasValue() && isAllSelected()"
@@ -212,94 +245,172 @@
                         </mat-checkbox>
                     </td>
                 </ng-container> -->
-                <!-- city-year columns (headers row #2 + body) -->
-                @for (item of headers(); track item.key;let i = $index) {
-                <ng-container [matColumnDef]="item.key">
-                    <th mat-header-cell *matHeaderCellDef class="bg-table-header border border-bg-light fw-bold"
-                        [class.city-divider-right]="item.endOfCity">
+                        <!-- city-year columns (headers row #2 + body) -->
+                        @for (item of headers(); track item.key;let i = $index) {
+                        <ng-container [matColumnDef]="item.key">
+                            <th mat-header-cell *matHeaderCellDef class="bg-table-header border border-bg-light fw-bold"
+                                [class.city-divider-right]="item.endOfCity">
 
-                        {{ item.label }}
-                    </th>
-                    <td mat-cell *matCellDef="let element" [class.city-divider-right]="item.endOfCity"
-                        class="border border-bg-light">
-                        @if (isNumber(element[item.key]) && (element[item.key] % 1 === 0)) {
-                        {{ element[item.key] | inrFormat : 'cr' : currencyOptions }}
-                        } @else if (isNumber(element[item.key]) && (element[item.key] % 1 !== 0)) {
-                        {{ element[item.key] }}%
-                        } @else {
-                        {{ element[item.key] }}
+                                {{ item.label }}
+                            </th>
+                            <td mat-cell *matCellDef="let element" [class.city-divider-right]="item.endOfCity"
+                                class="border border-bg-light">
+                                @if (isNumber(element[item.key]) && (element[item.key] % 1 === 0)) {
+                                {{ element[item.key] | inrFormat : 'cr' : currencyOptions }}
+                                } @else if (isNumber(element[item.key]) && (element[item.key] % 1 !== 0)) {
+                                {{ element[item.key] }}%
+                                } @else {
+                                {{ element[item.key] }}
+                                }
+                            </td>
+                        </ng-container>
                         }
-                    </td>
-                </ng-container>
-                }
 
-                <!-- header rows -->
-                <tr mat-header-row *matHeaderRowDef="cityHeaders;sticky: true"></tr>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
+                        <!-- header rows -->
+                        <tr mat-header-row *matHeaderRowDef="cityHeaders;sticky: true"></tr>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
 
-                <!-- body -->
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </div>
+                        <!-- body -->
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </div>
 
 
-        } @else {
-        <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+                } @else {
+                <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
             <i class=" bi bi-table"></i>&nbsp;
             Build your comparison
         </div> -->
-        <div class="rounded-4 p-4 bg-secondary-subtle my-4">
-            <p class="fs-3 mb-4">What you'll get </p>
-            <div class="row text-start">
-                @for (item of whatYouWillGet; track $index) {
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <img [src]="item.src" [alt]="item.header">
+                <div class="rounded-4 p-4 bg-secondary-subtle my-4">
+                    <p class="fs-3 mb-4">What you'll get </p>
+                    <div class="row text-start">
+                        @for (item of whatYouWillGet; track $index) {
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img [src]="item.src" [alt]="item.header">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
+                                    <p class="m-0 p-0 lh-sm">{{item.label}}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="fw-semibold fs-4 m-0 p-0">{{item.header}}</p>
-                            <p class="m-0 p-0 lh-sm">{{item.label}}</p>
-                        </div>
+                        }
                     </div>
                 </div>
+                }
+            </div>
+            <div class="d-flex justify-content-end my-4">
+                <button type="button" class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3"
+                    (click)="downloadExcel()" [disabled]="isExporting" aria-label="Download as Excel">
+                    <ng-container *ngIf="!isExporting; else exportingTpl">
+                        Download as XLSX&nbsp;<i class="bi bi-download"></i>
+                    </ng-container>
+                    <ng-template #exportingTpl>
+                        Preparing…&nbsp;<i class="bi bi-arrow-repeat spin"></i>
+                    </ng-template>
+                </button>
+            </div>
+            }
+        </div>
+        }
+        @if(comparisonMode === 'compareWithAverages') {
+        <div>
+            <h2 class="fs-5 fw-bold text-center mb-4 mt-2">Build your comparison with City Averages</h2>
+            <form [formGroup]="myForm">
+                <div class="row mb-4">
+
+                    <!-- ULB Search -->
+                    <div class="col-sm-3">
+                        <div class="mt-2 p-1">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Search for ULBs</mat-label>
+                                <input matInput type="text" formControlName="ulbName" [matAutocomplete]="auto" />
+                                <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption
+                                    [displayWith]="displayUlbName">
+                                    @for (option of filteredUlbs(); track option._id) {
+                                    <mat-option [value]="option">{{ option.name }}</mat-option>
+                                    }
+                                    @if (noDataFound()) {
+                                    <mat-option disabled>No results found.</mat-option>
+                                    }
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Year -->
+                    <div class="col-sm-3">
+                        <div class="mt-2 p-1">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Select Year</mat-label>
+                                <mat-select formControlName="year">
+                                    <mat-option value="2021-22">2021-22</mat-option>
+                                    <mat-option value="2020-21">2020-21</mat-option>
+                                    <mat-option value="2019-20">2019-20</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Indicator -->
+                    <div class="col-sm-3">
+                        <div class="mt-2 p-1">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Select Indicator</mat-label>
+                                <mat-select formControlName="indicator">
+                                    <mat-option value="totRevenue">Total revenue</mat-option>
+                                    <mat-option value="totExpenditure">Total expenditure</mat-option>
+                                    <mat-option value="totDebt">Total debt</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Compare By -->
+                    <div class="col-sm-3">
+                        <div class="mt-2 p-1">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Compare by</mat-label>
+                                <mat-select formControlName="compareBy">
+                                    <mat-option value="state">State Average</mat-option>
+                                    <mat-option value="national">National Average</mat-option>
+                                    <mat-option value="popCat">Population Category Average</mat-option>
+                                    <mat-option value="ulbType">Municipal Corporation Average</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-center align-items-center gap-3 mt-1">
+                    <button class="btn btn-cfPrimary" type="button" (click)="applyFilter1()">Apply</button>
+                    <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset1()">Reset</button>
+                </div>
+            </form>
+
+            <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
+
+                @if (chartConfig().datasets.length > 0) {
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
+                        (click)="downloadImg('sampleData')">
+                        Download as PNG&nbsp;<i class="bi bi-download"></i>
+                    </button>
+                </div>
+                <app-charts [chartConfig]="chartConfig()"></app-charts>
+                } @else {
+                <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+                    <i class=" bi bi-bar-chart"></i>&nbsp;
+                    Build your comparison
+                </div> -->
                 }
             </div>
         </div>
         }
     </div>
-    <div class="d-flex justify-content-end my-4">
-        <button type="button" class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-md-3"
-            (click)="downloadExcel()" [disabled]="isExporting" aria-label="Download as Excel">
-            <ng-container *ngIf="!isExporting; else exportingTpl">
-                Download as XLSX&nbsp;<i class="bi bi-download"></i>
-            </ng-container>
-            <ng-template #exportingTpl>
-                Preparing…&nbsp;<i class="bi bi-arrow-repeat spin"></i>
-            </ng-template>
-        </button>
-    </div>
-    }
-
-
-
 </div>
 }
-
-
-<div class="container-fluid bg-light" style="background-color: #D9D9D9;">
-    <div class="text-primary text-center p-3">
-        <h5 class="mb-1">Not sure where to begin</h5>
-        <h5 class="mb-0">Try a sample comparison below or build your own</h5>
-    </div>
-
-    <div class="d-flex justify-content-center flex-wrap gap-3 p-4">
-        @for (comparison of sampleComparisons; track comparison.line2;let i = $index) {
-        <button class="btn btn-outline-cfPrimary rounded-3 shadow-sm p-3 text-start"
-            (click)="onComparisonClick(comparison.cities,i)">
-            <div class="fw-bold text-center">{{ comparison.line1 }}</div>
-            <div class="fw-bold">{{ comparison.line2 }}</div>
-        </button>
-        }
-    </div>
-</div>
