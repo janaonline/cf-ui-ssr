@@ -74,6 +74,7 @@ export interface ChartResStruct {
     label: string;
     data: (number | null)[];
     backgroundColor?: string[];
+    customHoverLabels?: string[];
   }[];
 }
 
