@@ -169,14 +169,14 @@
                 </button>
             </div>
 
-            <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
+            <div class="chart-container ps-3 pb-4 chart-wrapper" id="chartContainer">
                 @if (chartConfig().datasets.length > 0) {
                 <app-charts [chartConfig]="chartConfig()"></app-charts>
                 } @else {
-                <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+                <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
                     <i class=" bi bi-bar-chart"></i>&nbsp;
                     Build your comparison
-                </div> -->
+                </div>
                 }
             </div>
 

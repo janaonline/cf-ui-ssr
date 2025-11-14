@@ -771,16 +771,13 @@ export class Compare implements OnInit {
       // Append to chart container
       chartContainer.appendChild(cfLogo);
 
-      const elementsToHide = chartContainer.querySelectorAll('.hide-while-download');
-      elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'hidden');
-
       // Wait briefly to render new DOM changes
       setTimeout(() => {
         html2canvas(chartContainer)
           .then(canvas => {
             // Remove logo divs
             chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
-            elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'visible');
+
             // Download the image
             const link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
@@ -789,7 +786,6 @@ export class Compare implements OnInit {
           })
           .catch(err => {
             chartContainer.querySelectorAll('.cfLogo').forEach(el => el.remove());
-            elementsToHide.forEach(el => (el as HTMLElement).style.visibility = 'visible');
             console.error('Error capturing chart:', err);
           })
           .finally(() => {
