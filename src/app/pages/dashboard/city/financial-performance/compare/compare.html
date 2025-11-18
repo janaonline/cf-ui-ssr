@@ -391,24 +391,35 @@
                     <button class="btn btn-outline-cfPrimary" type="button" (click)="onReset1()">Reset</button>
                 </div>
             </form>
-
-            <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
+            @if(chartConfig().datasets.length > 0) {
+            <div>
+                <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
+                    (click)="downloadImg('datasets')">
+                    Download as PNG&nbsp;<i class="bi bi-download"></i>
+                </button>
+                <div class="chart-container ps-3 pb-4 chart-wrapper" id="chartContainer">
+                    @if (chartConfig().datasets.length > 0) {
+                    <app-charts [chartConfig]="chartConfig()"></app-charts>
+                    } @else {
+                    <div
+                        class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
+                        <i class=" bi bi-bar-chart"></i>&nbsp;
+                        Build your comparison
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+            <!-- <div class="my-4 chart-container chart-wrapper" #chartContainer id="chartContainer">
 
                 @if (chartConfig().datasets.length > 0) {
+
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-outline-cfPrimary w-auto custom-mb col-sm-12 col-lg-3"
-                        (click)="downloadImg('sampleData')">
-                        Download as PNG&nbsp;<i class="bi bi-download"></i>
-                    </button>
+
                 </div>
                 <app-charts [chartConfig]="chartConfig()"></app-charts>
-                } @else {
-                <!-- <div class="bg-light border fs-3 w-100 h-100 rounded d-flex justify-content-center align-items-center">
-                    <i class=" bi bi-bar-chart"></i>&nbsp;
-                    Build your comparison
-                </div> -->
                 }
-            </div>
+            </div> -->
         </div>
         }
     </div>
