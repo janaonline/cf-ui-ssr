@@ -16,22 +16,22 @@
 
     <!-- City search -->
     <div class="col-sm-12 col-md-2">
-      <label for="cityName" class="d-block fw-bold mb-2">
+      <p class="d-block fw-bold mb-2">
         Compare by
         <i class="bi bi-arrow-clockwise" tabindex="0" role="button" aria-label="Reset search" (click)="resetSearch()"
           (keyup.enter)="resetSearch()"></i>
-      </label>
+      </p>
       <app-city-search id="cityName" [selectCity]="onUlbSelected" [cityName]="compareUlbName()"></app-city-search>
     </div>
 
     <!-- Filter: Years Dropdown -->
     <div class="col-sm-12 col-md-2">
-      <label for="slbYears" class="d-block fw-bold mb-2">
+      <p class="d-block fw-bold mb-2">
         Financial years
-      </label>
+      </p>
       <mat-form-field [formGroup]="myForm" class="w-100" appearance="outline">
         <!-- <mat-label for="slbYears" class="">Financial years</mat-label> -->
-        <mat-select id="slbYears" formControlName="year" class="" style="">
+        <mat-select formControlName="year">
           @for (year of years(); track year) {
           <mat-option [value]="year">{{ year }}</mat-option>
           }
