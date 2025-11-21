@@ -29,7 +29,18 @@ export class DashboardService {
 
     return this.http.get<IMoneyInfoRes>(`${environment.api.url}dashboard/financial-info/get-data`, { params });
   }
+  downloadMarketExcel(ulbId: string, year: string) {
+    let params = new HttpParams();
 
+    if (ulbId) params = params.set('ulbId', ulbId);
+    if (year) params = params.set('year', year);
+
+    return this.http.get(`${environment.api.url}ledger/downloadMarketDashboardExcel`, {
+      params,
+      responseType: 'blob',
+      observe: 'response'
+    });
+  }
   // City page: balance sheet and income statement table.
   getBsIsData(selectedUlb: string, ulbIds: string[], btnKey: string = 'incomeStatement', years: string[]) {
     let params = new HttpParams();

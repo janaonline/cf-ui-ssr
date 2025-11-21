@@ -340,7 +340,6 @@ export class Compare implements OnInit {
       });
   }
   applyFilter1() {
-    this.globalLoaderService.showLoader();
     const { ulbName, year, indicator, compareBy } = this.myForm.value;
 
     if (!ulbName || !year || !indicator || !compareBy) {
@@ -348,6 +347,7 @@ export class Compare implements OnInit {
       return;
     }
     const yearsArray = this.getLastThreeYears(year);
+    this.globalLoaderService.showLoader();
 
     this.CommonService.postAverageCompareByIndicators(yearsArray, compareBy, ulbName._id, indicator)
       .subscribe((res: any) => {
