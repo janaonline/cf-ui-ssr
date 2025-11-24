@@ -16,23 +16,28 @@
 
     <!-- City search -->
     <div class="col-sm-12 col-md-2">
-      <label for="cityName" class="d-block fw-bold mb-2">
+      <p class="d-block fw-bold mb-2">
         Compare by
         <i class="bi bi-arrow-clockwise" tabindex="0" role="button" aria-label="Reset search" (click)="resetSearch()"
           (keyup.enter)="resetSearch()"></i>
-      </label>
+      </p>
       <app-city-search id="cityName" [selectCity]="onUlbSelected" [cityName]="compareUlbName()"></app-city-search>
     </div>
 
     <!-- Filter: Years Dropdown -->
-    <form [formGroup]="myForm" class="col-sm-12 col-md-2">
-      <label for="slbYears" class="d-block fw-bold mb-2">Financial years</label>
-      <select id="slbYears" formControlName="year" class="form-select w-100" style="padding-block: 0.6rem">
-        @for (year of years(); track year) {
-        <option [value]="year">{{ year }}</option>
-        }
-      </select>
-    </form>
+    <div class="col-sm-12 col-md-2">
+      <p class="d-block fw-bold mb-2">
+        Financial years
+      </p>
+      <mat-form-field [formGroup]="myForm" class="w-100" appearance="outline">
+        <!-- <mat-label for="slbYears" class="">Financial years</mat-label> -->
+        <mat-select formControlName="year">
+          @for (year of years(); track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
 
   @if (isLoading) {
@@ -56,7 +61,7 @@
   }
 
   <!-- Charts -->
-  <div class="charts-container">
+  <div class="slbs-container">
     @for (item of chartData; track $index) {
     <div class="chart-wrapper bg-light rounded border">
       <div class="chart-container">

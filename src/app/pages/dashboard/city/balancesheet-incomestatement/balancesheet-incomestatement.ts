@@ -410,7 +410,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(dialogData => {
-        // console.log("---------", dialogData)
+        if (!dialogData) return;
         const ulbs = dialogData.citiesArr.map((e: IULB) => e._id);
         const years = dialogData.years;
 
