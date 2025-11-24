@@ -35,6 +35,7 @@ export interface ExploresectionTable {
   value: string | number;
   info: string;
   src: string;
+  tooltip: string;
 }
 
 export interface BsIsDataBase {

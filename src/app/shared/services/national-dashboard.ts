@@ -158,6 +158,7 @@ export class NationalDashboard {
               value: `${this.totalCreditRating}`,
               info: '',
               src: '',
+              "tooltip": ""
             },
             {
               sequence: 4,
@@ -165,6 +166,7 @@ export class NationalDashboard {
               value: `${this.cr_above_BBB_minus}`,
               info: '',
               src: '',
+              "tooltip": ""
             },
           ];
           result.sort((a: any, b: any) => a.sequence - b.sequence);
@@ -175,9 +177,10 @@ export class NationalDashboard {
               label: 'ULBs With Rating A & Above',
               value: `${this.cr_above_a}`,
               info: '',
-              src: ''
+              src: '',
+              "tooltip": ""
             }
-            result[4] = obj;
+            result[5] = obj;
           }
 
           const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
