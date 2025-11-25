@@ -48,7 +48,9 @@
   } @else {
   <!-- Chart legend -->
   @if (legendItems.length){
-  <div class="d-flex flex-wrap mt-3 py-1 gap-2">
+  <p class="custom-font-size-7 m-0 text-end text-secondary"><i>{{message}}</i></p>
+
+  <div class="d-flex flex-wrap py-1 gap-2">
     @for (item of legendItems; track $index) {
     <div class="custom-font-size-7 m-0 p-0 d-flex align-items-center">
       <i class="{{ item.icon }} fs-5" [ngStyle]="item.color ? { color: item.color } : {}"
