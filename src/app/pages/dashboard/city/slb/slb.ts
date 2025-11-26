@@ -87,7 +87,7 @@ export class Slb implements OnInit, OnDestroy {
   chartData!: ChartConfig[];
   isCompareUlb: boolean = false;
   message: string = '';
-  isLoading: boolean = true;
+  isLoading = signal<boolean>(true);
 
   constructor(
     private fb: FormBuilder,
@@ -166,7 +166,7 @@ export class Slb implements OnInit, OnDestroy {
     const compareUlbId = this.isCompareUlb ? this.compareUlbObj._id : '';
 
     if (this.currentSelectedButtonKey()) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.dashboardService
         .fetchCitySlbChartData(
           this.currentSelectedButtonKey(),
@@ -280,7 +280,7 @@ export class Slb implements OnInit, OnDestroy {
 
       return chartConfig;
     });
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   showThumbUp(item: ChartConfig): 'text-success' | 'text-light' {
