@@ -67,10 +67,10 @@ export class Footer {
       key: 'linkedin-mohua',
     },
   ];
-  public address = `Director, AMRUT <br />
-    Ministry of Housing and Urban Affairs <br />
-    210 C, Nirman Bhawan, Maulana Azad Road <br />
-    New Delhi-110011`;
+  public address = `Ministry of Housing and Urban Affairs<br />
+Sankalp Bhawan, GPOA-2<br />
+Pt. Ravi Shankar Shukla Lane<br />
+New Delhi-110001`;
   public mailId = 'mailto:contact@cityfinance.in';
   public mailLabel = 'contact@cityfinance.in';
   private destroy$ = new Subject<void>();
