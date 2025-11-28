@@ -68,7 +68,7 @@ export class Footer {
     },
   ];
   public address = `Ministry of Housing and Urban Affairs<br />
-Sankalp Bhavan, GPOA-2<br />
+Sankalp Bhawan, GPOA-2<br />
 Pt. Ravi Shankar Shukla Lane<br />
 New Delhi-110001`;
   public mailId = 'mailto:contact@cityfinance.in';
