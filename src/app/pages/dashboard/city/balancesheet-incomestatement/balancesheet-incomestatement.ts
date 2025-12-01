@@ -32,6 +32,7 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
+import { Column } from 'exceljs';
 
 type DownloadReportElement = {
   type: string;
@@ -423,7 +424,108 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
 
   // Download the table data as an Excel file.
   downloadExcel() {
-    const columns = this.headers.map((item) => { return { header: item.value, key: item.key } });
+    const CURRENCY_FORMAT = '_-₹* #,##,##0.00_-;[Red]-₹* #,##,##0.00_-;_-* "-"??_-;_-@_-';
+    // const columns: Array<Partial<Column>> = [
+    //   {
+    //     "header": "Account Code",
+    //     "key": "code",
+    //     "width": 13,
+    //     style: {
+    //       alignment: {
+    //         horizontal: 'center',
+    //         wrapText: true,
+    //       }
+    //     }
+    //   },
+    //   {
+    //     "header": "Major Group/Minor Group",
+    //     "key": "lineItem",
+    //     "width": 45,
+    //     style: {
+    //       alignment: {
+    //         wrapText: true
+    //       }
+    //     }
+    //   },
+    //   {
+    //     "header": "2021-22",
+    //     "key": "202122_5f5610b3aab0f778b2d2cac0",
+    //     "width": 23,
+    //     style: {
+    //       alignment: {
+    //         wrapText: true
+    //       },
+    //       numFmt: CURRENCY_FORMAT,
+
+    //     }
+    //   },
+    //   {
+    //     "header": "2020-21",
+    //     "key": "202021_5f5610b3aab0f778b2d2cac0",
+    //     "width": 23,
+    //     style: {
+    //       alignment: {
+    //         wrapText: true
+    //       },
+    //       numFmt: CURRENCY_FORMAT,
+    //     }
+    //   },
+    //   {
+    //     "header": "2019-20",
+    //     "key": "201920_5f5610b3aab0f778b2d2cac0",
+    //     "width": 23,
+    //     style: {
+    //       alignment: {
+    //         wrapText: true
+    //       },
+    //       numFmt: CURRENCY_FORMAT,
+    //     }
+    //   },
+    //   {
+    //     "header": "2017-18",
+    //     "key": "201718_5f5610b3aab0f778b2d2cac0",
+    //     "width": 23,
+    //     style: {
+    //       alignment: {
+    //         wrapText: true
+    //       },
+    //       numFmt: CURRENCY_FORMAT,
+    //     }
+    //   }
+
+    // ];
+
+    const columns: Array<Partial<Column>> = this.headers.map((obj) => {
+      const item: any = { header: obj.value, key: obj.key };
+      if (item.key === 'code') {
+        item.width = 13;
+        item.style = {
+          alignment: {
+            horizontal: 'center',
+            wrapText: true,
+          }
+        }
+        return item;
+      } else if (item.key === 'lineItem') {
+        item.width = 45;
+        item.style = {
+          alignment: {
+            wrapText: true
+          }
+        }
+        return item;
+      } else {
+        item.width = 23;
+        item.style = {
+          alignment: {
+            wrapText: true
+          },
+          numFmt: CURRENCY_FORMAT,
+        }
+        return item;
+      }
+    })
+
     const fileName = `${this.titleCasePipe.transform(this.reportType())}_${this.buttonLabel()}_${this.utilityService.getTimeStamp()}`;
     this.utilityService.generateExcel(columns, this.dataSource, fileName);
   }

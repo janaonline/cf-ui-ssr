@@ -39,7 +39,74 @@ export class UtilityService {
       const worksheet = workbook.addWorksheet('My Sheet');
 
       worksheet.columns = columns, rows;
-      worksheet.addRows(rows)
+      worksheet.addRows(rows);
+
+      // Get the row you want to color (e.g., the third row)
+      const totalCells = columns.length;
+      const colorRows = [];
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].isHeader) {
+          // +2 because 1 is header and this uses 1 based indexing
+          colorRows.push(i + 2)
+        }
+      }
+      for (const idx of colorRows) {
+        const row = worksheet.getRow(idx);
+        for (let col = 1; col <= totalCells; col++) {
+          const cell = row.getCell(col);
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFDDEBF7' },
+          };
+        }
+      }
+
+      const boldRows: number[] = [1];
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].class?.includes('fw-bold')) {
+          boldRows.push(i + 2); // +2 = header offset
+        }
+      }
+
+      for (const idx of boldRows) {
+        const row = worksheet.getRow(idx);
+
+        // Only bold the row if it really exists & has values
+        if (!row || !row.hasValues) {
+          continue;
+        }
+
+        for (let col = 1; col <= totalCells; col++) {
+          const cell = row.getCell(col);
+
+          cell.font = {
+            ...(cell.font ?? {}),
+            bold: true,
+          };
+        }
+      }
+
+
+      const startRow = 1;
+      const endRow = rows.length + 1;
+      for (let rowIndex = startRow; rowIndex <= endRow; rowIndex++) {
+        const row = worksheet.getRow(rowIndex);
+
+        for (let colIndex = 1; colIndex <= totalCells; colIndex++) {
+          const cell = row.getCell(colIndex);
+
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FF808080' } },
+            left: { style: 'thin', color: { argb: 'FF808080' } },
+            bottom: { style: 'thin', color: { argb: 'FF808080' } },
+            right: { style: 'thin', color: { argb: 'FF808080' } },
+          };
+        }
+      }
+
+
+
 
       workbook.xlsx.writeBuffer().then((data) => {
         const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -50,6 +117,7 @@ export class UtilityService {
 
     } catch (error) {
       this.triggerSnackbar('Failed to Download!', 'snackbar-danger');
+      console.error("Failed to download excel", error)
       this._globalLoaderService.hideLoader();
     }
   }
