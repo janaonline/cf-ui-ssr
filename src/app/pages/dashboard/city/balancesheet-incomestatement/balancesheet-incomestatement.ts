@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import {
   Component,
   effect,
@@ -52,6 +52,7 @@ type DownloadReportElement = {
     MatProgressSpinner,
     NoDataFound,
   ],
+  providers: [TitleCasePipe],
   templateUrl: './balancesheet-incomestatement.html',
   styleUrl: './balancesheet-incomestatement.scss',
 })
@@ -135,7 +136,8 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private commonService: CommonService,
     private utilityService: UtilityService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private titleCasePipe: TitleCasePipe,
   ) { }
 
   ngOnInit(): void {
@@ -417,6 +419,13 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
         this.compareUlbs(ulbs, years);
 
       });
+  }
+
+  // Download the table data as an Excel file.
+  downloadExcel() {
+    const columns = this.headers.map((item) => { return { header: item.value, key: item.key } });
+    const fileName = `${this.titleCasePipe.transform(this.reportType())}_${this.buttonLabel()}_${this.utilityService.getTimeStamp()}`;
+    this.utilityService.generateExcel(columns, this.dataSource, fileName);
   }
 
   // Reset filter

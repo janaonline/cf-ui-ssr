@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { GlobalLoaderService } from './loaders/global-loader.service';
 
@@ -29,6 +30,28 @@ export class UtilityService {
         this._globalLoaderService.hideLoader();
         this.triggerSnackbar('Failed to download the file!', 'snackbar-danger');
       });
+  }
+
+  public generateExcel(columns: Array<Partial<ExcelJS.Column>>, rows: any[], fileName: string) {
+    try {
+      this._globalLoaderService.showLoader();
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('My Sheet');
+
+      worksheet.columns = columns, rows;
+      worksheet.addRows(rows)
+
+      workbook.xlsx.writeBuffer().then((data) => {
+        const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(blob, `${fileName}.xlsx`);
+        this.triggerSnackbar('File Downloaded Successfully!');
+        this._globalLoaderService.hideLoader();
+      });
+
+    } catch (error) {
+      this.triggerSnackbar('Failed to Download!', 'snackbar-danger');
+      this._globalLoaderService.hideLoader();
+    }
   }
 
   // Helper: Trigger snack-bar.
