@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Column } from 'exceljs';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -26,18 +27,37 @@ import {
 import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
-import { UtilityService } from '../../../../core/services/utility-service';
+import { EXCEL_CURRENCY_FORMAT, UtilityService } from '../../../../core/services/utility-service';
 import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs-pdfs-dialog';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
-import { Column } from 'exceljs';
 
 type DownloadReportElement = {
   type: string;
   key: string;
   [year: string]: string;
+};
+
+// Centralized configuration for Excel column styling.
+const COLUMN_CONFIG: Record<
+  string,
+  { width: number; alignment?: any; numFmt?: string }
+> = {
+  code: {
+    width: 13,
+    alignment: { horizontal: 'center', wrapText: true },
+  },
+  lineItem: {
+    width: 45,
+    alignment: { wrapText: true },
+  },
+  default: {
+    width: 23,
+    alignment: { wrapText: true },
+    numFmt: EXCEL_CURRENCY_FORMAT,
+  }
 };
 
 @Component({
@@ -422,42 +442,28 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       });
   }
 
+  // Helper: returns the config for a given column key.
+  private getColumnConfig(key: string) {
+    return COLUMN_CONFIG[key] ?? COLUMN_CONFIG["default"];
+  };
+
   // Download the table data as an Excel file.
   downloadExcel() {
-    const CURRENCY_FORMAT = '_-₹* #,##,##0.00_-;[Red]-₹* #,##,##0.00_-;_-* "-"??_-;_-@_-';
-    const columns: Array<Partial<Column>> = this.headers.map((obj) => {
-      const item: any = { header: obj.value, key: obj.key };
-      if (item.key === 'code') {
-        item.width = 13;
-        item.style = {
-          alignment: {
-            horizontal: 'center',
-            wrapText: true,
-          }
+    // Build final column definitions from headers.
+    const columns: Array<Partial<Column>> = this.headers.map((header) => {
+      const config = this.getColumnConfig(header.key);
+      return {
+        header: header.value,
+        key: header.key,
+        width: config.width,
+        style: {
+          alignment: config.alignment,
+          ...(config.numFmt ? { numFmt: config.numFmt } : {})
         }
-        return item;
-      } else if (item.key === 'lineItem') {
-        item.width = 45;
-        item.style = {
-          alignment: {
-            wrapText: true
-          }
-        }
-        return item;
-      } else {
-        item.width = 23;
-        item.style = {
-          alignment: {
-            wrapText: true
-          },
-          numFmt: CURRENCY_FORMAT,
-        }
-        return item;
-      }
-    })
+      };
+    });
     const fileName = `Cityfinance_${this.buttonLabel()}_${this.titleCasePipe.transform(this.reportType())}_${this.utilityService.getTimeStamp()}`;
-    const sheetName = this.buttonLabel();
-    this.utilityService.generateExcel(columns, this.dataSource, fileName, sheetName);
+    this.utilityService.generateExcel(columns, this.dataSource, fileName, this.buttonLabel());
   }
 
   // Reset filter
