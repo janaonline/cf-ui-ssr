@@ -32,11 +32,16 @@ export class UtilityService {
       });
   }
 
-  public generateExcel(columns: Array<Partial<ExcelJS.Column>>, rows: any[], fileName: string) {
+  public generateExcel(
+    columns: Array<Partial<ExcelJS.Column>>,
+    rows: any[],
+    fileName: string = 'CityFinance_Data',
+    sheetName: string = 'Data',
+  ) {
     try {
       this._globalLoaderService.showLoader();
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('My Sheet');
+      const worksheet = workbook.addWorksheet(sheetName);
 
       worksheet.columns = columns, rows;
       worksheet.addRows(rows);
@@ -105,8 +110,13 @@ export class UtilityService {
         }
       }
 
-
-
+      const lastRowCell = worksheet.getCell(`A${endRow + 2}`);
+      lastRowCell.value = {
+        text: "This is system generated excel sheet. Can't find what you are looking for? Reach out to us at contact@cityfinance.in",
+        hyperlink: 'mailto:contact@cityfinance.in',
+        tooltip: 'contact@cityfinance.in'
+      };
+      lastRowCell.alignment = { wrapText: false };
 
       workbook.xlsx.writeBuffer().then((data) => {
         const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

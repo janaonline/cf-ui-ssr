@@ -425,76 +425,6 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   // Download the table data as an Excel file.
   downloadExcel() {
     const CURRENCY_FORMAT = '_-₹* #,##,##0.00_-;[Red]-₹* #,##,##0.00_-;_-* "-"??_-;_-@_-';
-    // const columns: Array<Partial<Column>> = [
-    //   {
-    //     "header": "Account Code",
-    //     "key": "code",
-    //     "width": 13,
-    //     style: {
-    //       alignment: {
-    //         horizontal: 'center',
-    //         wrapText: true,
-    //       }
-    //     }
-    //   },
-    //   {
-    //     "header": "Major Group/Minor Group",
-    //     "key": "lineItem",
-    //     "width": 45,
-    //     style: {
-    //       alignment: {
-    //         wrapText: true
-    //       }
-    //     }
-    //   },
-    //   {
-    //     "header": "2021-22",
-    //     "key": "202122_5f5610b3aab0f778b2d2cac0",
-    //     "width": 23,
-    //     style: {
-    //       alignment: {
-    //         wrapText: true
-    //       },
-    //       numFmt: CURRENCY_FORMAT,
-
-    //     }
-    //   },
-    //   {
-    //     "header": "2020-21",
-    //     "key": "202021_5f5610b3aab0f778b2d2cac0",
-    //     "width": 23,
-    //     style: {
-    //       alignment: {
-    //         wrapText: true
-    //       },
-    //       numFmt: CURRENCY_FORMAT,
-    //     }
-    //   },
-    //   {
-    //     "header": "2019-20",
-    //     "key": "201920_5f5610b3aab0f778b2d2cac0",
-    //     "width": 23,
-    //     style: {
-    //       alignment: {
-    //         wrapText: true
-    //       },
-    //       numFmt: CURRENCY_FORMAT,
-    //     }
-    //   },
-    //   {
-    //     "header": "2017-18",
-    //     "key": "201718_5f5610b3aab0f778b2d2cac0",
-    //     "width": 23,
-    //     style: {
-    //       alignment: {
-    //         wrapText: true
-    //       },
-    //       numFmt: CURRENCY_FORMAT,
-    //     }
-    //   }
-
-    // ];
-
     const columns: Array<Partial<Column>> = this.headers.map((obj) => {
       const item: any = { header: obj.value, key: obj.key };
       if (item.key === 'code') {
@@ -525,9 +455,9 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
         return item;
       }
     })
-
-    const fileName = `${this.titleCasePipe.transform(this.reportType())}_${this.buttonLabel()}_${this.utilityService.getTimeStamp()}`;
-    this.utilityService.generateExcel(columns, this.dataSource, fileName);
+    const fileName = `Cityfinance_${this.buttonLabel()}_${this.titleCasePipe.transform(this.reportType())}_${this.utilityService.getTimeStamp()}`;
+    const sheetName = this.buttonLabel();
+    this.utilityService.generateExcel(columns, this.dataSource, fileName, sheetName);
   }
 
   // Reset filter
