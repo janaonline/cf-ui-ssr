@@ -48,7 +48,7 @@
   } @else {
   <!-- Chart legend -->
   @if (legendItems.length){
-  <p class="custom-font-size-7 m-0 text-end text-secondary"><i>{{message}}</i></p>
+  <p class="custom-font-size-7 m-0 text-secondary" [innerHTML]="message"></p>
 
   <div class="d-flex flex-wrap py-1 gap-2">
     @for (item of legendItems; track $index) {
