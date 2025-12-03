@@ -89,9 +89,11 @@ export class DashboardService {
     if (ulb) params = params.set('ulb', ulb);
     if (year) params = params.set('year', year);
 
-    return this.http.get<{ data: ISlb[] }>(`${environment.api.url}indicators`, {
-      params,
-    });
+    const parseYear = parseInt(year.split('-')[0], 10);
+    const url = parseYear <= 2020 ?
+      `${environment.api.url}indicators` :
+      `${environment.api.url}dashboard/city/slb-indicators`;
+    return this.http.get<{ data: ISlb[] }>(url, { params });
   }
 
   // Get financial indicators data.

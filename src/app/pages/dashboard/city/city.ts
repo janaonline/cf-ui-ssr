@@ -212,7 +212,7 @@ export class City {
           // getMoneyInfoObservable() needs year so use switchMap.
           forkJoin({
             distinctYearsRes: this.getLedgerYearsObservable(this.ulbIdSignal()),
-            distinctSlbYearsRes: this.getSlbYearsObservable(this.ulbIdSignal()),
+            distinctSlbYearsRes: this.getSlbYearsObservable(this.ulbIdSignal(), this.cityDetails().state.code),
             // cityDetailsRes: this.getCityDetailsObservable(cityId),
           })
             .pipe(
@@ -308,8 +308,8 @@ export class City {
     return this._commonService.getLedgerYears('', cityId);
   }
 
-  private getSlbYearsObservable(cityId: string) {
-    return this._commonService.slbYears(cityId);
+  private getSlbYearsObservable(cityId: string, stateCode: string) {
+    return this._commonService.slbYears(cityId, stateCode);
   }
 
   private getMoneyInfoObservable(year: string, cityId: string) {

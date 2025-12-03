@@ -37,15 +37,16 @@
       <!-- Right Section -->
       <div class="col-sm-12 col-md-6 my-3">
         <!-- State and ULB search -->
-        <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
-          <!-- [stateName]="selectedStateNameSignal()" -->
-          <app-state-search [stateName]="cityDetails()?.state?.name" [isStateReadonly]="true"></app-state-search>
-          <!-- @if (selectedStateNameSignal()) { -->
+        <div class="row">
+          <div class="col">
+            <app-state-search [stateName]="cityDetails()?.state?.name" [isStateReadonly]="true"></app-state-search>
+          </div>
+
           @if (cityDetails()?.state?.name) {
-          <app-city-search [selectCity]="onUlbSelected" [cityName]="cityDetails()?.ulbName"
-            [stateId]="cityDetails()?.state._id"></app-city-search>
-          <!-- [cityName]="selectedCityNameSignal()"
-            [stateId]="selectedStateIdSignal()" -->
+          <div class="col">
+            <app-city-search [selectCity]="onUlbSelected" [cityName]="cityDetails()?.ulbName"
+              [stateId]="cityDetails()?.state._id"></app-city-search>
+          </div>
           }
         </div>
 

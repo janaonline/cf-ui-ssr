@@ -19,6 +19,8 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
+const ULB_START_YEAR = 2021;
+const MESSAGE = `Data shown here is based on submissions made by the ULBs as part of the 15th Finance Commission compliance.<br>CityFinance presents the information as provided and does not undertake separate verification.`;
 
 @Component({
   selector: 'app-slb',
@@ -84,8 +86,8 @@ export class Slb implements OnInit, OnDestroy {
   slbData!: ISlb[];
   chartData!: ChartConfig[];
   isCompareUlb: boolean = false;
-
-  isLoading: boolean = true;
+  message: string = '';
+  isLoading = signal<boolean>(true);
 
   constructor(
     private fb: FormBuilder,
@@ -145,12 +147,26 @@ export class Slb implements OnInit, OnDestroy {
       this.getSlbData();
     }
   }
+  private showMessage(): boolean {
+    const { year } = this;
+
+    const parts = year.split('-');
+    if (parts.length < 2) return false;
+
+    const startYear = Number(parts[0]?.trim());
+    if (!Number.isFinite(startYear)) return false;
+
+    return startYear > ULB_START_YEAR;
+  }
 
   private getSlbData(): void {
+    if (this.showMessage()) this.message = MESSAGE;
+    else this.message = '';
+
     const compareUlbId = this.isCompareUlb ? this.compareUlbObj._id : '';
 
     if (this.currentSelectedButtonKey()) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.dashboardService
         .fetchCitySlbChartData(
           this.currentSelectedButtonKey(),
@@ -264,10 +280,7 @@ export class Slb implements OnInit, OnDestroy {
 
       return chartConfig;
     });
-
-    console.log(this.chartData)
-
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   showThumbUp(item: ChartConfig): 'text-success' | 'text-light' {
