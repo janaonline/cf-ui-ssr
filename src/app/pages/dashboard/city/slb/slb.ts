@@ -20,7 +20,7 @@ import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 const ULB_START_YEAR = 2021;
-const MESSAGE = 'This data is submitted by ULBs.';
+const MESSAGE = `Data shown here is based on submissions made by the ULBs as part of the 15th Finance Commission compliance.<br>CityFinance presents the information as provided and does not undertake separate verification.`;
 
 @Component({
   selector: 'app-slb',
