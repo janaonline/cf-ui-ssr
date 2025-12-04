@@ -27,7 +27,8 @@ import {
 import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
-import { EXCEL_CURRENCY_FORMAT, UtilityService } from '../../../../core/services/utility-service';
+import { ExcelService, EXCEL_CURRENCY_FORMAT } from '../../../../core/services/excel';
+import { UtilityService } from '../../../../core/services/utility-service';
 import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs-pdfs-dialog';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
@@ -159,6 +160,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private utilityService: UtilityService,
     private dialog: MatDialog,
     private titleCasePipe: TitleCasePipe,
+    private excelService: ExcelService,
   ) { }
 
   ngOnInit(): void {
@@ -463,7 +465,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       };
     });
     const fileName = `Cityfinance_${this.buttonLabel()}_${this.titleCasePipe.transform(this.reportType())}_${this.utilityService.getTimeStamp()}`;
-    this.utilityService.generateExcel(columns, this.dataSource, fileName, this.buttonLabel());
+    this.excelService.generateExcel(columns, this.dataSource, fileName, this.buttonLabel());
   }
 
   // Reset filter
