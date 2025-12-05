@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { CreateExcelParams } from '../models/interfaces';
 import { GlobalLoaderService } from './loaders/global-loader.service';
-export const EXCEL_CURRENCY_FORMAT = '_-₹* #,##,##0.00_-;[Red]-₹* #,##,##0.00_-;_-* "-"??_-;_-@_-';
 const DEFAULT_CONTACT =
   "This is a system-generated sheet. Can't find what you're looking for? Write to us at contact@cityfinance.in";
 
