@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import {
   Component,
   effect,
@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Column } from 'exceljs';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
@@ -26,6 +27,7 @@ import {
 import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
+import { EXCEL_CURRENCY_FORMAT, ExcelService } from '../../../../core/services/excel';
 import { UtilityService } from '../../../../core/services/utility-service';
 import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs-pdfs-dialog';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
@@ -37,6 +39,26 @@ type DownloadReportElement = {
   type: string;
   key: string;
   [year: string]: string;
+};
+
+// Centralized configuration for Excel column styling.
+const COLUMN_CONFIG: Record<
+  string,
+  { width: number; alignment?: any; numFmt?: string }
+> = {
+  code: {
+    width: 13,
+    alignment: { horizontal: 'center', wrapText: true },
+  },
+  lineItem: {
+    width: 45,
+    alignment: { wrapText: true },
+  },
+  default: {
+    width: 23,
+    alignment: { wrapText: true },
+    numFmt: EXCEL_CURRENCY_FORMAT,
+  }
 };
 
 @Component({
@@ -52,6 +74,7 @@ type DownloadReportElement = {
     MatProgressSpinner,
     NoDataFound,
   ],
+  providers: [TitleCasePipe],
   templateUrl: './balancesheet-incomestatement.html',
   styleUrl: './balancesheet-incomestatement.scss',
 })
@@ -135,7 +158,9 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private commonService: CommonService,
     private utilityService: UtilityService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private titleCasePipe: TitleCasePipe,
+    private excelService: ExcelService,
   ) { }
 
   ngOnInit(): void {
@@ -410,13 +435,37 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(dialogData => {
-        // console.log("---------", dialogData)
+        if (!dialogData) return;
         const ulbs = dialogData.citiesArr.map((e: IULB) => e._id);
         const years = dialogData.years;
 
         this.compareUlbs(ulbs, years);
 
       });
+  }
+
+  // Helper: returns the config for a given column key.
+  private getColumnConfig(key: string) {
+    return COLUMN_CONFIG[key] ?? COLUMN_CONFIG["default"];
+  };
+
+  // Download the table data as an Excel file.
+  downloadExcel() {
+    // Build final column definitions from headers.
+    const columns: Array<Partial<Column>> = this.headers.map((header) => {
+      const config = this.getColumnConfig(header.key);
+      return {
+        header: header.value,
+        key: header.key,
+        width: config.width,
+        style: {
+          alignment: config.alignment,
+          ...(config.numFmt ? { numFmt: config.numFmt } : {})
+        }
+      };
+    });
+    const fileName = `Cityfinance_${this.buttonLabel()}_${this.titleCasePipe.transform(this.reportType())}_${this.utilityService.getTimeStamp()}`;
+    this.excelService.generateExcel(columns, this.dataSource, fileName, this.buttonLabel());
   }
 
   // Reset filter

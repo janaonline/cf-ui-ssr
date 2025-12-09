@@ -225,14 +225,19 @@ export class CommonService {
     );
   }
 
-  // Get distinct years - SLBs data.
-  slbYears(ulbId: string) {
+  /**
+   * SLB data is available from two sources: data submitted by ULBs and data uploaded to the DB.
+   * When stateCode is 'TS', both sources should be returned.
+   * For all other states, only data uploaded to DB should be returned.
+   */
+  slbYears(ulbId: string, stateCode: string) {
     let params = new HttpParams();
     if (ulbId) params = params.set('ulb', ulbId);
+    if (stateCode !== 'TS') params = params.set('fetchCeptYears', true);
 
     return this.http.get<{ slbYears: string[] }>(
-      `${environment.api.url}common/get-latest-slbs-year`,
-      { params }
+      `${environment.api.url}common/get-latest-slbs-year`
+      , { params }
     );
   }
 

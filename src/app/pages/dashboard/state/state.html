@@ -30,13 +30,17 @@
             <!-- Right Section -->
             <div class="col-sm-12 col-md-6 my-3">
                 <!-- State and ULB search -->
-                <div class="d-flex justify-content-between justify-content-md-end gap-2 flex-grow-1">
-                    <app-state-search [stateName]="stateDetails().state.name" (onStateChange)="onStateSelection($event)"
-                        [stateId]="stateDetails().state._id">
-                    </app-state-search>
+                <div class="row">
+                    <div class="col">
+                        <app-state-search [stateName]="stateDetails().state.name"
+                            (onStateChange)="onStateSelection($event)" [stateId]="stateDetails().state._id">
+                        </app-state-search>
+                    </div>
 
-                    <app-city-search [cityName]="''" (onUlbSelect)="onUlbSelected($event)"
-                        [stateId]="stateDetails().state._id"></app-city-search>
+                    <div class="col">
+                        <app-city-search [cityName]="''" (onUlbSelect)="onUlbSelected($event)"
+                            [stateId]="stateDetails().state._id"></app-city-search>
+                    </div>
                 </div>
 
                 <!-- State Map -->
