@@ -1,44 +1,6 @@
 <div class="wrap-card">
     <!-- CLICKABLE CARD WRAPPER -->
-    <div class="card bg-light p-4 cursor-pointer" style="border: 3px solid #E67E15;" (click)="goToMarketDashboard()"
-        matTooltip="Click to Explore" matTooltip="Click to explore the Market Dashboard">
-
-        <div class="row align-items-center">
-
-            <!-- LEFT SIDE -->
-            <div class="col-md-5 mb-3 mb-md-0 text-start">
-
-                <!-- Announcement Button -->
-                <button class="border-0 rounded-3 px-3 py-1 fw-semibold mb-3"
-                    style="background-color: #F6D589; pointer-events: none;">
-                    ANNOUNCEMENT
-                </button>
-
-                <!-- Image -->
-                <div class="text-center">
-                    <img src="assets/images/homepage/mk-dash.png" alt="Market Dashboard" class="img-fluid"
-                        style="max-width: 90%;" />
-                </div>
-
-            </div>
-
-            <!-- RIGHT SIDE -->
-            <div class="col-md-7 mt-3 mt-md-0">
-                <h4 class="fw-bold">Introducing Market Dashboard</h4>
-                <p class="mb-1">Our new comparison tool helps you:</p>
-                <ul class="mb-0">
-                    <li>Benchmark a city's spending or revenue against peers</li>
-                    <li>Track how finances have changed over time</li>
-                    <li>Download ready-to-use charts for reports & presentations</li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-
-
-
-    <h3 class=" fw-bold  pb-3 mt-4">In the Spotlight</h3>
+    <h3 class=" fw-bold  pb-3 mt-4 text-white">In the Spotlight</h3>
     <div>
         <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
             @for (item of whatNewData; track item) {
