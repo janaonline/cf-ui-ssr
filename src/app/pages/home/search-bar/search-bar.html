@@ -1,5 +1,35 @@
 <div class="col-md-6 col-sm-12 mx-auto">
   <!-- CF logo -->
+  <div class="card bg-secondary p-4 cursor-pointer position-absolute rounded-5"
+    style=" border: 3px solid #E67E15; right: 20px; max-height: 220px; max-width: 230px;"
+    (click)="goToMarketDashboard()" matTooltip="Click to explore the Market Dashboard">
+
+    <div class="d-flex flex-column align-items-center text-center">
+
+      <!-- Icon -->
+      <img src="https://cdn-icons-png.flaticon.com/128/11502/11502196.png" alt="Market Dashboard" class="img-fluid mb-2"
+        style="max-width: 45%;" />
+
+      <!-- Heading -->
+      <span class="fw-bold" style="color:#ffffff; font-size: 1.1rem;">
+        ANNOUNCEMENT
+      </span>
+
+      <!-- Description -->
+      <p class="mt-1 mb-2" style=" font-size: 0.9rem; color: white !important;">
+        Introducing Market Dashboard
+      </p>
+
+      <!-- CTA Button -->
+      <button matButton="elevated" class="d-flex align-items-center gap-1">
+        Let’s Get Started
+        <!-- <mat-icon>arrow_forward</mat-icon> -->
+      </button>
+
+    </div>
+
+  </div>
+
   <h1 class="mt-4 mt-lg-5">
     <span class="custom-text-shadow fw-bold text-info logo">city</span>
     <span class="custom-text-shadow text-white logo">finance.in</span>
