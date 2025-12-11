@@ -44,6 +44,7 @@ export class Slb implements OnInit, OnDestroy {
   readonly success = '#198754';
 
   // Input from parent.
+  readonly ulbSlug = input.required<string>();
   readonly ulbId = input.required<string>();
   readonly years = input.required<string[]>();
 
@@ -254,9 +255,11 @@ export class Slb implements OnInit, OnDestroy {
       const nationalValue = Math.round(indicatorObj.nationalValue);
       const maxValue = indicatorObj.benchMarkValue;
 
+      const compUlb = this.isCompareUlb ? this.compareUlbObj.slug || this.compareUlbObj.name : '';
+      const ulbName = indicatorObj.ulbSlug || this.ulbSlug() || indicatorObj.ulbName;
       const datasets = [
         {
-          label: this.isCompareUlb ? this.normalizeName(this.compareUlbObj.slug) : 'Benchmark',
+          label: this.isCompareUlb ? this.normalizeName(compUlb) : 'Benchmark',
           data: [primaryValue, maxValue - primaryValue],
           backgroundColor: [this.primaryColor, this.disabledColor],
           borderWidth: 1,
@@ -270,7 +273,7 @@ export class Slb implements OnInit, OnDestroy {
           borderRadius: 5,
         },
         {
-          label: this.normalizeName(indicatorObj.ulbSlug),
+          label: this.normalizeName(ulbName),
           data: [value, maxValue - value],
           backgroundColor: [this.accentColor, this.disabledColor],
           borderWidth: 1,
