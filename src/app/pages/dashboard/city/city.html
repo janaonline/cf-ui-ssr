@@ -107,9 +107,9 @@
         [ulbName]="cityDetails().ulbName"></app-balancesheet-incomestatement>
       }
     </mat-tab>
-    <mat-tab label="Service Level BenchMark" [disabled]="slbYears().length === 0">
+    <mat-tab label="Service Level Benchmark" [disabled]="slbYears().length === 0">
       @if (loadedTabs[2]) {
-      <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()"></app-slb>
+      <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()" [ulbSlug]="ulbSlugName()"></app-slb>
       }
     </mat-tab>
     <mat-tab label="Borrowing & Credit Rating">
