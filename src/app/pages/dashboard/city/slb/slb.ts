@@ -44,6 +44,7 @@ export class Slb implements OnInit, OnDestroy {
   readonly success = '#198754';
 
   // Input from parent.
+  readonly ulbSlug = input.required<string>();
   readonly ulbId = input.required<string>();
   readonly years = input.required<string[]>();
 
