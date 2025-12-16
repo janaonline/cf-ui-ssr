@@ -5,7 +5,7 @@ import { ChartConfig } from '../../../../shared/components/charts/chart-interfac
 import { Charts } from "../../../../shared/components/charts/charts";
 import { NationalService } from '../national.service';
 import { barChartConfig, deficitBarChartData, guageChartConfig } from './chartConfig';
-
+const LINE_COLOR = '#f43f5e';
 @Component({
   selector: 'app-national-chart',
   imports: [Charts, FormsModule, MaterialModule],
@@ -123,12 +123,18 @@ export class NationalChart {
 
   creatBarChartData() {
     // console.log('this.responseData', this.selectedGraphValue);
+    const avgLabel = 'National Average';
+    let nationalAvg = 0;
 
     this.selectedGraphValue = this.selectedGraphValue || 'revenue';
     // console.log('tthis.responseData.rows', this.responseData);
     if (!this.responseData || !this.responseData.rows) return;
     // const { labels, values } = this.responseData.rows.reduce((acc: any, { ulb_pop_category, revenue }: any) => {
     const { labels, values, expenses } = this.responseData.rows.reduce((acc: any, item: any) => {
+      if (item['ulb_pop_category'] === 'Average' || item['ulbType'] === 'Average') {
+        nationalAvg = Number(item[this.selectedGraphValue]);
+      }
+
       const excludeList = ['Average', 'All ULBs'];
       if (!excludeList.includes(item['ulb_pop_category']) && !excludeList.includes(item['ulbType'])) {
         if (this.nationalService.selectedButtonKey() === 'Deficit or Surplus') {
@@ -160,6 +166,21 @@ export class NationalChart {
     barChartData.labels = labels;
     barChartData.datasets[0].label = this.nationalService.selectedButtonKey();
     barChartData.datasets[0].data = values;
+
+    if (nationalAvg && values.length) {
+      const avgData = Array(values.length).fill(nationalAvg);
+
+      // Push "line" type.
+      barChartData.datasets.unshift({
+        "type": "line",
+        "label": avgLabel,
+        "data": avgData,
+        "backgroundColor": [LINE_COLOR],
+        "borderColor": LINE_COLOR,
+        "fill": false
+      })
+    }
+
     const charts: any = [barChartData];
     // barChartData.update()
     this.chartsData.set(charts)
