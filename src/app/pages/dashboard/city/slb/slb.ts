@@ -128,7 +128,7 @@ export class Slb implements OnInit, OnDestroy {
     if (ulbObj._id) {
       this.compareUlbObj = ulbObj;
 
-      if (this.compareUlbObj._id !== this.ulbId()) {
+      if (this.compareUlbObj._id !== this.ulbId() && this.isValidCompareUlb(this.compareUlbObj, this.year)) {
         this.isCompareUlb = true;
         this.compareUlbName.set(this.compareUlbObj.name);
       } else this.isCompareUlb = false;
@@ -136,6 +136,31 @@ export class Slb implements OnInit, OnDestroy {
       this.getSlbData();
     }
   };
+
+  /**
+   * Determines whether a ULB is valid for comparison based on rules:
+   * 1. Until 2020-21 (i.e., year < 2021): all ULBs are valid.
+   * 2. From 2021-22 onwards: only TS ULBs are valid.
+   *
+   * @param compUlb - ULB object to validate
+   * @param year - Selected financial year in format "YYYY-YY"
+   */
+  private isValidCompareUlb(compUlb: any, year: string): boolean {
+    if (!compUlb || !year) return false;
+
+    const parseYear = parseInt(year.split('-')[0], 10);
+    const stateCode = compUlb.state?.code ?? compUlb.code;
+
+    // Until 2020-21 all ULBs valid
+    if (parseYear < 2021) {
+      return true;
+    }
+
+    // 2021-22 onwards only TS ULBs valid
+    return stateCode.startsWith('TS');
+  }
+
+
   get year() {
     return this.myForm.get('year')?.value;
   }
@@ -228,13 +253,13 @@ export class Slb implements OnInit, OnDestroy {
         : Math.round(indicatorObj.benchMarkValue);
       if (isNaN(primaryValue)) primaryValue = 0;
       const nationalValue = Math.round(indicatorObj.nationalValue);
-      const maxValue = Math.max(value, primaryValue, nationalValue);
+      const maxValue = indicatorObj.benchMarkValue;
 
-      // console.log('value =', [primaryValue, maxValue - primaryValue], maxValue);
-
+      const compUlb = this.isCompareUlb ? this.compareUlbObj.slug || this.compareUlbObj.name : '';
+      const ulbName = indicatorObj.ulbSlug || this.ulbSlug() || indicatorObj.ulbName;
       const datasets = [
         {
-          label: this.isCompareUlb ? this.compareUlbObj.name : 'Benchmark',
+          label: this.isCompareUlb ? this.normalizeName(compUlb) : 'Benchmark',
           data: [primaryValue, maxValue - primaryValue],
           backgroundColor: [this.primaryColor, this.disabledColor],
           borderWidth: 1,
@@ -248,7 +273,7 @@ export class Slb implements OnInit, OnDestroy {
           borderRadius: 5,
         },
         {
-          label: indicatorObj.ulbName,
+          label: this.normalizeName(ulbName),
           data: [value, maxValue - value],
           backgroundColor: [this.accentColor, this.disabledColor],
           borderWidth: 1,
@@ -293,6 +318,23 @@ export class Slb implements OnInit, OnDestroy {
 
     return 'text-light';
   }
+
+  /**
+   * Normalizes a slug/string into human-readable form.
+   * Example: "first-middle-last" → "First middle last"
+   */
+  private normalizeName(slug: string = ""): string {
+    if (!slug) return "";
+
+    const cleaned = slug
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  }
+
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());

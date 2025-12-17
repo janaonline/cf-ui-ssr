@@ -92,6 +92,7 @@ export interface ButtonObj {
 export interface ISlb {
   value: number;
   ulbName: string;
+  ulbSlug: string;
   year: string;
   unitType: string;
   benchMarkValue: number;
