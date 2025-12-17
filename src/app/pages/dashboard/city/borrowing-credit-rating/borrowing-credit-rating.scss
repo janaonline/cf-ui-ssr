@@ -1,60 +1,72 @@
 tr {
-    font-family: var(--ff-base);
-    font-weight: var(--fw-medium);
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
 }
 
 tr:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .table-container {
-    // max-height: 100px;
-    overflow-x: auto;
+  // max-height: 100px;
+  overflow-x: auto;
 }
 
 .mat-column-header {
-    min-width: 170px !important;
+  min-width: 170px !important;
 }
 
 .mat-mdc-table {
-    background-color: white;
+  background-color: white;
 }
 
 table,
 tr,
 td,
 th {
-    border-top: 1px solid #d3d3d3;
-    border-bottom: 1px solid lightgrey;
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid lightgrey;
 }
-
 
 // ----- Pagination -----
 .pagination button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    background-color: white;
-    color: #333;
-    font-size: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .pagination button:hover:not(:disabled) {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .pagination button.active {
-    background-color: #e9edf5;
-    border-color: grey;
-    color: black;
-    font-weight: bold;
+  background-color: #e9edf5;
+  border-color: grey;
+  color: black;
+  font-weight: bold;
 }
 
 .pagination button:disabled {
-    background-color: #eee;
-    color: #aaa;
-    cursor: not-allowed;
-    border-color: #ddd;
+  background-color: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+.doughnut-wrapper {
+  width: 220px;
+  height: 220px;
+  margin: auto;
+}
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.table-info {
+  background-color: #cfefff !important;
 }

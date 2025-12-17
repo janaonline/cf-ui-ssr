@@ -8,14 +8,13 @@ import { environment } from '../../../../environments/environment';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
 import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 
 const ULB_COUNT_KEY = makeStateKey<number>('ulbCount');
 
 @Component({
   standalone: true,
   selector: 'app-search-bar',
-  imports: [TitleCasePipe, FormsModule, ReactiveFormsModule, MatAutocompleteModule, CountUpDirective, MatButton, MatIcon],
+  imports: [TitleCasePipe, FormsModule, ReactiveFormsModule, MatAutocompleteModule, CountUpDirective, MatButton],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.scss',
 })
