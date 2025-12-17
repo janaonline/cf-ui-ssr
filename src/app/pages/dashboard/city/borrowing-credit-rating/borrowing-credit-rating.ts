@@ -1,7 +1,9 @@
-import { Component, effect, input, OnDestroy, signal } from '@angular/core';
+import { Component, effect, input, OnDestroy, signal, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
-import cloneDeep from 'lodash-es/cloneDeep';
+import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
+import { Charts } from '../../../../shared/components/charts/charts';
+import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants'; import cloneDeep from 'lodash-es/cloneDeep';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ICreditRatingData } from '../../../../core/models/creditRating/creditRatingResponse';
 import {
@@ -14,7 +16,11 @@ import { TabButtons } from '../../../../shared/components/tab-buttons/tab-button
 import { DashboardService } from '../../dashboard-service';
 import { TABLE_STRUCTURE } from './constants';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { isPlatformBrowser } from '@angular/common';
+const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-borrowing-credit-rating',
   imports: [
@@ -23,20 +29,84 @@ import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
     MatTableModule,
     ReactiveFormsModule,
     PreLoader,
+    MatFormFieldModule,
+    MatSelectModule,
+    Charts
   ],
   templateUrl: './borrowing-credit-rating.html',
   styleUrl: './borrowing-credit-rating.scss',
 })
-export class BorrowingCreditRating implements OnDestroy {
+
+export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
+  doughnutValues = [33, 10, 12, 40, 50];
+
+
+
+  myForm!: FormGroup;
   readonly buttons = [
     { key: 'borrowing', label: 'Borrowing' },
     { key: 'creditRating', label: 'Credit Rating' },
+    { key: 'marketReadiness', label: 'Market Readiness' },
   ];
+  chartData = signal<ChartConfig>({
+    chartId: 'borrowing-doughnut',
+    chartType: 'pieChart',
+    labels: ['Score', 'Remaining'],
+    datasets: [
+      {
+        data: [33, 67], // 33 dummy score
+        backgroundColor: ['#28c76f', '#E0E0E0'],
+        borderWidth: 0,
+        label: ''
+      }
+    ],
+    centerText: 33,                         // 👈 number inside doughnut
+    options: {
+      // cutout: '70%',
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+  indicatorTableData = [
+    {
+      section: 'REVENUE GENERATION (40%)',
+      description: 'Measures the growth, composition and efficiency of revenue income sources',
+      rows: [
+        { name: 'Own Source to Revenue Receipts', maxScore: 4, score: 3 },
+        { name: 'Y-o-Y Own Revenue Growth', maxScore: 4, score: 3 },
+        { name: 'Grants to Revenue Receipts', maxScore: 4, score: 2 },
+        { name: 'Y-o-Y Total Revenue Growth', maxScore: 4, score: 2 },
+        { name: '(TR – Net Receivables) as % of TR', maxScore: 8, score: 2 },
+        { name: 'Y-o-Y Property Tax Demand Growth', maxScore: 4, score: 3 },
+        { name: 'Y-o-Y Property Tax Collections Growth', maxScore: 4, score: 3 },
+        { name: 'Current PTax Collection Efficiency', maxScore: 4, score: 3 },
+        { name: 'Avg. PTax Arrears Collection Efficiency', maxScore: 4, score: 3 },
+      ]
+    },
+    {
+
+      section: 'EXPENDITURE MANAGEMENT (20%)',
+      description: 'Measures revenue and capital expenditure components including overspending/underspending',
+      rows: [
+        { name: 'Own Source to Revenue Receipts', maxScore: 4, score: 3 },
+        { name: 'Y-o-Y Own Revenue Growth', maxScore: 4, score: 3 },
+        { name: 'Grants to Revenue Receipts', maxScore: 4, score: 2 },
+        { name: 'Y-o-Y Total Revenue Growth', maxScore: 4, score: 2 },
+        { name: '(TR – Net Receivables) as % of TR', maxScore: 8, score: 2 },
+        { name: 'Y-o-Y Property Tax Demand Growth', maxScore: 4, score: 3 },
+        { name: 'Y-o-Y Property Tax Collections Growth', maxScore: 4, score: 3 },
+        { name: 'Current PTax Collection Efficiency', maxScore: 4, score: 3 },
+        { name: 'Avg. PTax Arrears Collection Efficiency', maxScore: 4, score: 3 },
+      ]
+    }
+  ];
+
   readonly displayedColumnsStructure: string[] = ['header'];
   currentSelectedButtonKey = signal<string>('');
   readonly ulbIdSignal = input.required<string>();
   borrowingYears = signal<string[]>([]);
-
   private readonly COLS_PER_PAGE = 3;
   currentPage = 0;
   totalPages = 0;
@@ -59,23 +129,100 @@ export class BorrowingCreditRating implements OnDestroy {
   bondsData!: BorrowingsKeys[];
 
   private destroy$ = new Subject<void>();
+  marketReadinessYears = [
+    "2020-21",
+    "2021-22",
+    "2022-23"
+  ];
+
 
   constructor(
     private dashboardService: DashboardService,
     private _commonService: CommonService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) { }
+  ngAfterViewInit() {
+
+  }
+
+
+
 
   // ngOnInit() {
   // this.getBorrowingsData();
   // this.getCreditRatingsData();
   // this.getBorrowingsYears();
   // }
+  doughnutCharts = signal<ChartConfig[]>([
+    this.createDoughnut('revenue', 33),
+    this.createDoughnut('expenditure', 10),
+    this.createDoughnut('cash', 12),
+    this.createDoughnut('debt', 40),
+    this.createDoughnut('assets', 50),
+  ]);
+  ngOnInit(): void {
+    this.yearForm = this.fb.group({
+      year: ['2020-21'],
+    });
+    this.updateScore('revenue', 75);
+  }
+  private createDoughnut(id: string, score: number): ChartConfig {
+    return {
+      chartId: `borrowing-doughnut-${id}`,
+      chartType: 'pieChart', // mapped to doughnut internally
+      labels: ['Score', 'Remaining'],
+      centerText: score,
+      datasets: [
+        {
+          data: [score, 100 - score],
+          backgroundColor: ['#28c76f', '#E0E0E0'],
+          borderWidth: 0,
+          label: '',
+        }
+      ],
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    };
+  }
+
+  // ✅ Update only ONE chart (production safe)
+  updateScore(id: string, score: number) {
+    this.doughnutCharts.update(charts =>
+      charts.map(chart =>
+        chart.chartId === `borrowing-doughnut-${id}`
+          ? {
+            ...chart,
+            centerText: score,
+            datasets: [
+              {
+                ...chart.datasets[0],
+                data: [score, 100 - score],
+              }
+            ]
+          }
+          : chart
+      )
+    );
+  }
+  navigatePage() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.router.navigate(['/municipal-data/market-readiness']);
+
+  }
+
 
   onSelectedButtonChange(key: string): void {
     this.currentSelectedButtonKey.set(key);
     // if (this.currentSelectedButtonKey() === this.buttons[1].key) this.getCreditRatingsData('onbuttonchange');
   }
+
 
   // Distinct bonds years.
   private getBorrowingsYears() {
@@ -223,7 +370,7 @@ export class BorrowingCreditRating implements OnDestroy {
   creditRatingData: ICreditRatingData[] = [];
 
   private subscriptions: Subscription[] = [];
-  myForm!: FormGroup;
+  yearForm!: FormGroup;
 
   // Watch ULB changes
   readonly ulbNameEffect = effect(() => {

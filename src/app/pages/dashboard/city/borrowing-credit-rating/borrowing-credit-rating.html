@@ -1,8 +1,5 @@
 <section class="my-4 container">
-  <app-tab-buttons
-    [buttons]="buttons"
-    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
-  ></app-tab-buttons>
+  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
 
   @if (isLoading()) {
   <app-pre-loader></app-pre-loader>
@@ -16,17 +13,11 @@
   <app-no-data-found></app-no-data-found>
   } @else {
   <p>Below are the details of Municipal Bond Issuances undertaken by the ULB</p>
-  <nav
-    class="d-flex justify-content-end align-items-center gap-2 mt-4 pagination"
-  >
+  <nav class="d-flex justify-content-end align-items-center gap-2 mt-4 pagination">
     <button (click)="prevPage()" [disabled]="currentPage === 0">Prev</button>
 
     @for (page of paginationRange; track $index) {
-    <button
-      [disabled]="page === '..'"
-      [class.active]="page === currentPage"
-      (click)="page !== '..' && goToPage(+page)"
-    >
+    <button [disabled]="page === '..'" [class.active]="page === currentPage" (click)="page !== '..' && goToPage(+page)">
       {{ page }}
     </button>
     }
@@ -47,12 +38,8 @@
       <!-- <p>{{ item | json }}</p> -->
       <ng-container [matColumnDef]="item" [sticky]="$index === 0">
         <th mat-header-cell *matHeaderCellDef>{{ item }}</th>
-        <td
-          mat-cell
-          *matCellDef="let element"
-          [class]="item === 'header' ? 'bg-table-header fw-bold' : null"
-          class="border"
-        >
+        <td mat-cell *matCellDef="let element" [class]="item === 'header' ? 'bg-table-header fw-bold' : null"
+          class="border">
           {{ element[item] || "-" }}
         </td>
       </ng-container>
@@ -72,14 +59,8 @@
   <div class="border rounded bg-light p-4 my-4 row justify-content-between">
     <!-- Filter: Years Dropdown -->
     <form [formGroup]="myForm" class="col-sm-12 col-md-3">
-      <label for="creditRatingYears" class="d-block fw-bold mb-2"
-        >Financial years</label
-      >
-      <select
-        id="creditRatingYears"
-        formControlName="year"
-        class="form-select w-100"
-      >
+      <label for="creditRatingYears" class="d-block fw-bold mb-2">Financial years</label>
+      <select id="creditRatingYears" formControlName="year" class="form-select w-100">
         @for (year of creditRatingYears; track year) {
         <option [value]="year">{{ year }}</option>
         }
@@ -105,4 +86,107 @@
     </table>
   </div>
   } } }
+
+  <!-- Market Readiness -->
+  @if (currentSelectedButtonKey() === 'marketReadiness') {
+  <button class="btn btn-outline-cfPrimary" (click)="navigatePage()">Compare with different cities </button>
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div>
+
+        <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4>
+
+        <p>
+          {{ulbName()}}’s falls in well prepared category and is ready for further assessments to avail municipal
+          borrowings.
+        </p>
+      </div>
+      <form [formGroup]=" yearForm" class="col-sm-12 col-md-3 mb-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Financial Year</mat-label>
+
+          <mat-select formControlName="year">
+            @for (year of marketReadinessYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+
+      </form>
+    </div>
+    <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
+    <div class="row align-items-start">
+      <!-- Charts section -->
+      <div class="col-12 col-lg-9">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 text-center">
+          @for (chart of doughnutCharts(); track chart.chartId) {
+          <div class="col">
+            <app-charts [chartConfig]="chartData()"></app-charts>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Optional right panel -->
+      <div class="col-12 col-lg-3">
+        <!-- filters / summary / legend -->
+      </div>
+    </div>
+
+
+  </div>
+  <div class="table-responsive mt-4 border-none">
+    <table class="table  align-middle text-center">
+      <thead class="">
+        <tr>
+          <th class="text-start table-light" style="border: 1px solid white;">Indicators</th>
+          <th style="border: 1px solid white;">Max Score</th>
+          <th style="border: 1px solid white;">Highest (4)</th>
+          <th style="border: 1px solid white;">High (3)</th>
+          <th style="border: 1px solid white;">Low (2)</th>
+          <th style="border: 1px solid white;">Lowest (1)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (section of indicatorTableData; track section.section) {
+
+        <!-- Section Header -->
+        <tr class="table-info fw-bold">
+          <td colspan="6" class="text-center" style="border: 1px solid white;">
+            {{ section.section }}
+            <div class="fw-normal small">
+              {{ section.description }}
+            </div>
+          </td>
+        </tr>
+
+        <!-- Rows -->
+        @for (row of section.rows; track row.name) {
+        <tr>
+          <td class="text-start table-light" style="border: 1px solid white;">{{ row.name }}</td>
+          <td style="border: 1px solid white;">{{ row.maxScore }}</td>
+
+          <!-- Highest -->
+          <td [class.bg-success]="row.score === 4" style="border: 1px solid white;">4</td>
+
+          <!-- High -->
+          <td [class.bg-success-subtle]="row.score === 3" style="border: 1px solid white;">3</td>
+
+          <!-- Low -->
+          <td [class.bg-warning-subtle]="row.score === 2" style="border: 1px solid white;">2</td>
+
+          <!-- Lowest -->
+          <td [class.bg-danger-subtle]="row.score === 1" style="border: 1px solid white;">1</td>
+        </tr>
+        }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  }
 </section>
