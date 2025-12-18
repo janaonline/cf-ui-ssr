@@ -102,7 +102,8 @@ export class UlbDashboard {
   }
 
   registerNow() {
-    window.open("https://tally.so/r/mBvPZA", "_blank", "noopener,noreferrer");
+    // window.open("https://tally.so/r/mBvPZA", "_blank", "noopener,noreferrer");
+    window.open("https://tally.so/r/PdpVEV", "_blank", "noopener,noreferrer");
     return;
   }
 
