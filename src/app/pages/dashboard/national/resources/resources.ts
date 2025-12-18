@@ -24,6 +24,7 @@ export class Resources {
         next: (res: any) => {
           // console.log("res", res);
           this.resourceData.set(res.data.data);
+          this.resourceData().sort((a, b) => b?.modifiedAt.localeCompare(a?.modifiedAt));
         },
         error: () => { },
         complete: () => { }
