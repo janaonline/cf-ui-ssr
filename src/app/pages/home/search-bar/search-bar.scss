@@ -35,11 +35,10 @@
 
 .centerSearchedValues {
   text-decoration: none;
-  background: #1c3555 0% 0% no-repeat padding-box;
-  color: lightblue;
-  border: 1px solid lightblue;
+  background: #2d4e7a 0% 0% no-repeat padding-box;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgb(255, 255, 255);
   border-radius: 40px;
-  opacity: 0.57;
   padding: 3px 5px;
   display: inline-block;
 }
@@ -54,8 +53,4 @@
   .centerSearchedValues {
     font-size: small;
   }
-}
-.card:hover {
-  transform: scale(1.03);
-  transition: 0.2s ease;
 }
