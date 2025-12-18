@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
+import { MatRadioModule } from '@angular/material/radio';
 import { ChartDataset } from 'chart.js';
 import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
@@ -49,6 +50,7 @@ interface DataNode {
     CommonModule,
     MatTreeModule,
     MatButtonModule,
+    MatRadioModule,
     MatIconModule,
     MatTooltipModule,
     ReactiveFormsModule,
@@ -118,7 +120,7 @@ export class FinancialPerformance {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.myForm = this.fb.group({ year: [''] });
+    this.myForm = this.fb.group({ year: [''], radioButton: ['crores'] });
     this.getYearsDynamic(this.ulbIdSignal());
 
     // Track value changes - Year changed from drop-down.
@@ -248,7 +250,7 @@ export class FinancialPerformance {
     this._dashboardService.getYearsDynamic(ulbId).subscribe({
       next: (data) => {
         this.years.set(data.years);
-        this.myForm.setValue({ year: this.years()[0] });
+        this.myForm.setValue({ year: this.years()[0], radioButton: 'crores' });
         const currentYearNum = parseInt(this.years()[0].split('-')[0]);
         this.yearsArrDyna = [
           `${currentYearNum - 2}-${(currentYearNum - 2 + 1).toString().slice(-2)}`,

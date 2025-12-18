@@ -118,21 +118,20 @@
       </form>
     </div>
     <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
-    <div class="row align-items-start">
-      <!-- Charts section -->
+    <div class="row">
       <div class="col-12 col-lg-9">
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 text-center">
+        <div class="row row-cols-2 row-cols-lg-5 g-4 text-center">
           @for (chart of doughnutCharts(); track chart.chartId) {
-          <div class="col">
-            <app-charts [chartConfig]="chartData()"></app-charts>
+          <div class="col d-flex flex-column align-items-center">
+            <app-charts [chartConfig]="chart"></app-charts>
+
+            <!-- Title -->
+            <div class="chart-title mt-2">
+              {{ chart.title }}
+            </div>
           </div>
           }
         </div>
-      </div>
-
-      <!-- Optional right panel -->
-      <div class="col-12 col-lg-3">
-        <!-- filters / summary / legend -->
       </div>
     </div>
 
@@ -152,7 +151,10 @@
       </thead>
 
       <tbody>
-        @for (section of indicatorTableData; track section.section) {
+        @if (isLoading()) {
+        <app-pre-loader></app-pre-loader>
+        }
+        @for (section of indicatorTableData(); track section.section) {
 
         <!-- Section Header -->
         <tr class="table-info fw-bold">
@@ -167,22 +169,36 @@
         <!-- Rows -->
         @for (row of section.rows; track row.name) {
         <tr>
-          <td class="text-start table-light" style="border: 1px solid white;">{{ row.name }}</td>
-          <td style="border: 1px solid white;">{{ row.maxScore }}</td>
+          <td class="text-start table-light" style="border: 1px solid white;">
+            {{ row.name }}
+          </td>
+
+          <td style="border: 1px solid white;">
+            {{ row.maxScore }}
+          </td>
 
           <!-- Highest -->
-          <td [class.bg-success]="row.score === 4" style="border: 1px solid white;">4</td>
+          <td class="text-center fw-bold" [class.bg-success]="row.score === 4" style="border: 1px solid white;">
+            @if (row.score === 4) { {{ row.score }} }
+          </td>
 
           <!-- High -->
-          <td [class.bg-success-subtle]="row.score === 3" style="border: 1px solid white;">3</td>
+          <td class="text-center fw-bold" [class.bg-success-subtle]="row.score === 3" style="border: 1px solid white;">
+            @if (row.score === 3) { {{ row.score }} }
+          </td>
 
           <!-- Low -->
-          <td [class.bg-warning-subtle]="row.score === 2" style="border: 1px solid white;">2</td>
+          <td class="text-center fw-bold" [class.bg-warning-subtle]="row.score === 2" style="border: 1px solid white;">
+            @if (row.score === 2) { {{ row.score }} }
+          </td>
 
           <!-- Lowest -->
-          <td [class.bg-danger-subtle]="row.score === 1" style="border: 1px solid white;">1</td>
+          <td class="text-center fw-bold" [class.bg-danger-subtle]="row.score === 1" style="border: 1px solid white;">
+            @if (row.score === 1) { {{ row.score }} }
+          </td>
         </tr>
         }
+
         }
       </tbody>
     </table>

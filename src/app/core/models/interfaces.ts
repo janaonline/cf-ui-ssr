@@ -185,7 +185,29 @@ export interface CreateExcelParams {
 export interface BsCompareUlbs {
   [_id: string]: BsCompareUlbsValue
 }
+export interface MarketReadinessResponse {
+  ulbId: string;
+  ulbName: string;
+  year: string;
+  sections: Section[];
+  sectionScores: SectionScore[];
+  overallScore: number;
+}
 
+export interface Section {
+  section: string;
+  description: string;
+  rows: {
+    name: string;
+    maxScore: number;
+    score: number;
+  }[];
+}
+
+export interface SectionScore {
+  section: string;
+  score: number;
+}
 export interface BsCompareUlbsValue {
   _id: string;
   name: string;
