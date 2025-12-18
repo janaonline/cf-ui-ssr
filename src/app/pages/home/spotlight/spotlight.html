@@ -2,17 +2,26 @@
     <h3 class="fw-bold text-white pb-3">In the Spotlight</h3>
     <div>
         <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
-            @for (item of whatNewData; track item) {
+            @for (item of whatNewData; track item; let i = $index) {
             <div ngxSlickItem class="card-body">
+
+                <!-- Badge only for first item AND when badge exists -->
+                @if (i === 0 && item.badge) {
+                <div class="new-badge">{{ item.badge }}</div>
+                }
+
                 <div class="card-image">
                     <img [src]="item.imageUrl" alt="carouselImage" />
                 </div>
+
                 <a class="card-text card-label" [href]="item.downloadUrl" target="_blank">
                     {{ item.name }}
                 </a>
+
             </div>
             }
         </ngx-slick-carousel>
+
         <!-- <owl-carousel-o [options]="customOptions">
             @for(img of images;track $index) {
             <ng-container>

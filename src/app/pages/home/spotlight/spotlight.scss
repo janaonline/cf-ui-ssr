@@ -1,70 +1,95 @@
 .wrap-card {
-    position: relative;
-    margin-top: -10rem;
+  position: relative;
+  margin-top: -10rem;
 }
 
 .card-label {
-    text-decoration: underline;
-    color: var(--clr-secondary);
-    padding: 0.5rem;
-    text-align: center;
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
+  text-decoration: underline;
+  color: var(--clr-secondary);
+  padding: 0.5rem;
+  text-align: center;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
-
 
 .card-image {
-    height: 200px;
-    // width: 100%;
-    margin: 0.25rem auto;
-    position: relative;
-    overflow: hidden;
+  height: 200px;
+  // width: 100%;
+  margin: 0.25rem auto;
+  position: relative;
+  overflow: hidden;
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
-
 .card-body {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem;
-    background: #ffffff 0% 0% no-repeat padding-box;
-    border: 1px solid lightgray;
-    border-radius: 1rem;
-    opacity: 1;
-    padding: 0.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border: 1px solid lightgray;
+  border-radius: 1rem;
+  opacity: 1;
+  padding: 0.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 
-    &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-    }
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
 }
 
 ::ng-deep .slick-prev:before,
 ::ng-deep .slick-next:before {
-    color: var(--clr-primary);
+  color: var(--clr-primary);
 }
 
 ::ng-deep .slick-dots li.slick-active button:before {
-    background: rgba(128, 128, 128, 0.2);
-    border-radius: 50%;
-    color: #f2991f;
-    opacity: 1;
+  background: rgba(128, 128, 128, 0.2);
+  border-radius: 50%;
+  color: #f2991f;
+  opacity: 1;
 }
 
 ::ng-deep .slick-dots li button:before {
-    font-size: 0.75rem;
-    line-height: 22px;
+  font-size: 0.75rem;
+  line-height: 22px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.new-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #d32f2f; /* Red */
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  z-index: 2;
+  animation: pulse 1.5s infinite;
 }
