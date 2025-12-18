@@ -44,13 +44,8 @@
             "ssr": {
               "entry": "src/server.ts"
             },
-            "polyfills": [
-              "@angular/localize/init"
-            ],
-            "allowedCommonJsDependencies": [
-              "file-saver",
-              "leaflet"
-            ]
+            "polyfills": ["@angular/localize/init"],
+            "allowedCommonJsDependencies": ["file-saver", "leaflet"]
           },
           "configurations": {
             "production": {
@@ -97,7 +92,13 @@
             "local": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -145,9 +146,7 @@
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/slick-carousel/slick/slick.min.js"
             ],
-            "polyfills": [
-              "@angular/localize/init"
-            ]
+            "polyfills": ["@angular/localize/init"]
           }
         }
       }
