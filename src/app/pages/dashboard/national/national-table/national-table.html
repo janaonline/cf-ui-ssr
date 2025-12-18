@@ -89,7 +89,19 @@
 <button class="btn btn-cfPrimary" (click)="navigateToState()">View State Dashboard</button>
 }
 
-<div class="my-4 text-center custom-font-size-6">
+@if(nationalService.selectedTabName() === 'Data Availability') {
+<p class="text-secondary text-center custom-font-size-7 mt-2 mb-1">
+    <i>Data shown here includes Union Territories</i>
+</p>
+}
+
+<!-- @if(nationalService.selectedTabName() === 'Capital Expenditure') {
+<p class="text-secondary text-end custom-font-size-7 my-1">
+    <i>Last updated on: Sep 10th 2025; Source: Financial statements submitted by Cities</i>
+</p>
+} -->
+
+<div class="mb-4 text-center custom-font-size-6">
     You can also download the source data in excel format
     <button class="btn btn-sm btn-outline-cfPrimary" (click)="downloadData()">
         <i class="bi bi-download"></i>
