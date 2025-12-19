@@ -7,6 +7,7 @@ export const environment = {
   },
   v1Url: 'http://localhost:4200',
   v2Url: 'http://localhost:4300',
+  vUrl: 'http://localhost:4100',
   environment: 'local',
   isProduction: false,
   googleTagID: 'G-803HPPLFMM',
