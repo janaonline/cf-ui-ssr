@@ -11,7 +11,8 @@ import {
   IFinancialIndicatorRes,
   IFinancialIndicatorsChart,
   IMoneyInfoRes,
-  ISlb
+  ISlb,
+  MarketReadinessResponse
 } from '../../core/models/interfaces';
 
 @Injectable({
@@ -54,6 +55,19 @@ export class DashboardService {
       `${environment.api.url}dashboard/city/bs-is`,
       { params }
     );
+  }
+  getMarketReadinessData(ulbId: string, year: string): Observable<MarketReadinessResponse> {
+    let params = new HttpParams()
+      .set('ulbId', ulbId)
+      .set('year', year);
+
+    return this.http.get<MarketReadinessResponse>(
+      `${environment.api.url}ledger/market-readiness-data-by-ulb`,
+      { params }
+    );
+  }
+  getAllStates(): Observable<any> {
+    return this.http.get<any>(`${environment.api.url}ledger/get-all-states`);
   }
 
   // City page: borrowings section.

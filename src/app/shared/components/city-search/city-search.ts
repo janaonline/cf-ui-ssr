@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, inject, Input, input, OnDestroy, OnInit, Output, signal, } from '@angular/core';
+import { Component, effect, ElementRef, EventEmitter, inject, Input, input, OnDestroy, OnInit, Output, signal, ViewChild, } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
@@ -22,7 +22,7 @@ import { MaterialModule } from "../../../material.module";
   styleUrl: './city-search.scss',
 })
 export class CitySearch implements OnInit, OnDestroy {
-
+  @ViewChild('cityInput') cityInput!: ElementRef<HTMLInputElement>;
   @Output() onUlbSelect = new EventEmitter<IULB>();
   @Input() resetOnChange: boolean = false;
 
@@ -35,14 +35,17 @@ export class CitySearch implements OnInit, OnDestroy {
   readonly stateId = input<string>('');
   readonly isCityReadonly = input<boolean>(false);
 
-  readonly myForm: FormGroup = this.fb.group({ ulbName: [''] });
+  myForm: FormGroup = this.fb.group({ ulbName: [''] });
   readonly noDataFound = signal<boolean>(false);
   readonly filteredUlbs = signal<IULB[]>([]);
 
   get ulbNameControl(): FormControl {
     return this.myForm.get('ulbName') as FormControl;
   }
-
+  clear(): void {
+    this.ulbNameControl.reset('', { emitEvent: false });
+    this.cityInput?.nativeElement.blur();
+  }
   ngOnInit(): void {
     this.setupSearchEffect();
   }

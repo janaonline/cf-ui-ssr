@@ -25,8 +25,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { ChangeDetectorRef } from '@angular/core';
-import { PreLoader } from "../../../../../shared/components/pre-loader/pre-loader";
-
+import { CitySearch } from "../../../../../shared/components/city-search/city-search";
+import { IULB } from '../../../../../core/models/ulb';
+import { state } from '@angular/animations';
+import { DashboardService } from '../../../dashboard-service';
 interface CityScore {
   sno: number;
   city: string;
@@ -39,12 +41,17 @@ interface CityScore {
 }
 @Component({
   selector: 'app-market-readiness',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule, PreLoader],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule, CitySearch],
   templateUrl: './market-readiness.html',
   styleUrl: './market-readiness.scss'
 })
 export class MarketReadiness implements OnInit, AfterViewInit {
   @ViewChild('scrollIndicator') scrollIndicator!: ElementRef;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  // @ViewChild('citySearch') citySearch!: any;
+  @ViewChild('citySearch') citySearch!: CitySearch;
+
   filterForm!: FormGroup;
   tableData = [
     { indicator: 'Water Supply Coverage', maxScore: 25, score: 18 },
@@ -59,14 +66,14 @@ export class MarketReadiness implements OnInit, AfterViewInit {
     band: ''
   };
 
-  states = [
-    'Karnataka',
-    'Maharashtra',
-    'Tamil Nadu',
-    'Kerala',
-    'Telangana'
-  ];
-
+  // states = [
+  //   'Karnataka',
+  //   'Maharashtra',
+  //   'Tamil Nadu',
+  //   'Kerala',
+  //   'Telangana'
+  // ];
+  states: any[] = [];
   bands = ['A', 'B', 'C'];
 
   populationBands = [
@@ -84,6 +91,7 @@ export class MarketReadiness implements OnInit, AfterViewInit {
     'score'
   ];
   isLoading = signal(true)
+  showActiveFilters = false;
   skeletonRows = Array.from({ length: 5 });
   DUMMY_CITY_DATA: CityScore[] = [
     {
@@ -149,10 +157,9 @@ export class MarketReadiness implements OnInit, AfterViewInit {
   ];
 
   dataSource = new MatTableDataSource<CityScore>([]);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef) {
+
+  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private dashboardService: DashboardService) {
     this.filterForm = this.fb.group({
       city: [''],
       state: [''],
@@ -163,26 +170,59 @@ export class MarketReadiness implements OnInit, AfterViewInit {
       this.applyFilters(values);
     });
   }
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.attachTableControls();
+  }
+  ngOnInit(): void {
+    this.filterForm = this.fb.group({
+      city: [''],
+      state: [''],
+      population: [''],
+      band: [''],
+    });
+
+    /**
+     * IMPORTANT for SSR:
+     * We update a boolean instead of using `filterForm.dirty` directly in template
+    */
+    this.filterForm.valueChanges.subscribe(() => {
+      this.showActiveFilters = this.filterForm.dirty;
+    });
+    this.dashboardService.getAllStates().subscribe({
+      next: (res) => {
+        this.states = res.states;
+      },
+      error: (err) => {
+        console.error('Failed to load states', err);
+      }
+    });
+    this.fetchTableData();
+  }
   applyFilters(filters: any) {
     // 🔌 API call will go here
     console.log('Applying filters:', filters);
   }
+  onUlbSelected = (ulb: any) => {
+    // console.log('Selected ULB:', ulb.state.name);
+    this.filterForm.patchValue({
+      city: ulb?.name || '',
+      state: ulb?.state?.name || ''
+    });
+    this.showActiveFilters = true;
+  };
 
-  clearFilters() {
+  clearFilters(): void {
     this.filterForm.reset({
       city: '',
       state: '',
       population: '',
       band: '',
     });
+    this.citySearch?.clear();
+    this.showActiveFilters = false;
   }
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.attachTableControls();
-  }
-  ngOnInit(): void {
-    this.fetchTableData();
-  }
+
   fetchTableData(): void {
     this.isLoading.set(true)
 

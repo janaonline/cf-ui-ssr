@@ -48,61 +48,9 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     { key: 'creditRating', label: 'Credit Rating' },
     { key: 'marketReadiness', label: 'Market Readiness' },
   ];
-  chartData = signal<ChartConfig>({
-    chartId: 'borrowing-doughnut',
-    chartType: 'pieChart',
-    labels: ['Score', 'Remaining'],
-    datasets: [
-      {
-        data: [33, 67], // 33 dummy score
-        backgroundColor: ['#28c76f', '#E0E0E0'],
-        borderWidth: 0,
-        label: ''
-      }
-    ],
-    centerText: 33,                         // 👈 number inside doughnut
-    options: {
-      // cutout: '70%',
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-  indicatorTableData = [
-    {
-      section: 'REVENUE GENERATION (40%)',
-      description: 'Measures the growth, composition and efficiency of revenue income sources',
-      rows: [
-        { name: 'Own Source to Revenue Receipts', maxScore: 4, score: 3 },
-        { name: 'Y-o-Y Own Revenue Growth', maxScore: 4, score: 3 },
-        { name: 'Grants to Revenue Receipts', maxScore: 4, score: 2 },
-        { name: 'Y-o-Y Total Revenue Growth', maxScore: 4, score: 2 },
-        { name: '(TR – Net Receivables) as % of TR', maxScore: 8, score: 2 },
-        { name: 'Y-o-Y Property Tax Demand Growth', maxScore: 4, score: 3 },
-        { name: 'Y-o-Y Property Tax Collections Growth', maxScore: 4, score: 3 },
-        { name: 'Current PTax Collection Efficiency', maxScore: 4, score: 3 },
-        { name: 'Avg. PTax Arrears Collection Efficiency', maxScore: 4, score: 3 },
-      ]
-    },
-    {
 
-      section: 'EXPENDITURE MANAGEMENT (20%)',
-      description: 'Measures revenue and capital expenditure components including overspending/underspending',
-      rows: [
-        { name: 'Own Source to Revenue Receipts', maxScore: 4, score: 3 },
-        { name: 'Y-o-Y Own Revenue Growth', maxScore: 4, score: 3 },
-        { name: 'Grants to Revenue Receipts', maxScore: 4, score: 2 },
-        { name: 'Y-o-Y Total Revenue Growth', maxScore: 4, score: 2 },
-        { name: '(TR – Net Receivables) as % of TR', maxScore: 8, score: 2 },
-        { name: 'Y-o-Y Property Tax Demand Growth', maxScore: 4, score: 3 },
-        { name: 'Y-o-Y Property Tax Collections Growth', maxScore: 4, score: 3 },
-        { name: 'Current PTax Collection Efficiency', maxScore: 4, score: 3 },
-        { name: 'Avg. PTax Arrears Collection Efficiency', maxScore: 4, score: 3 },
-      ]
-    }
-  ];
-
+  indicatorTableData = signal<any[]>([]);
+  doughnutCharts = signal<any[]>([]);
   readonly displayedColumnsStructure: string[] = ['header'];
   currentSelectedButtonKey = signal<string>('');
   readonly ulbIdSignal = input.required<string>();
@@ -155,31 +103,129 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
   // this.getCreditRatingsData();
   // this.getBorrowingsYears();
   // }
-  doughnutCharts = signal<ChartConfig[]>([
-    this.createDoughnut('revenue', 33),
-    this.createDoughnut('expenditure', 10),
-    this.createDoughnut('cash', 12),
-    this.createDoughnut('debt', 40),
-    this.createDoughnut('assets', 50),
-  ]);
+
+
+
+
+
   ngOnInit(): void {
     this.yearForm = this.fb.group({
       year: ['2020-21'],
     });
-    this.updateScore('revenue', 75);
+    this.loadMarketReadiness(this.yearForm.value.year);
+    this.yearForm.get('year')!
+      .valueChanges
+      .subscribe((year: string) => {
+        if (year) {
+          this.loadMarketReadiness(year);
+        }
+      });
   }
-  private createDoughnut(id: string, score: number): ChartConfig {
+
+  loadMarketReadiness(year: string) {
+    const ulbId = this.ulbIdSignal();
+
+
+    this.isLoading.set(true);
+
+    this.dashboardService.getMarketReadinessData(ulbId, year)
+      .subscribe({
+        next: (res) => {
+          /* ---------- TABLE ---------- */
+          this.indicatorTableData.set(res.sections);
+
+          /* ---------- DOUGHNUTS ---------- */
+          this.doughnutCharts.set(
+            this.buildDoughnutCharts(res.sectionScores, res.overallScore)
+          );
+
+          this.isLoading.set(false);
+        },
+        error: () => this.isLoading.set(false)
+      });
+  }
+
+  private buildDoughnutCharts(
+    sectionScores: any[],
+    overallScore: number
+  ) {
+    const charts = sectionScores.map((sec) => {
+      const color = this.getScoreColor(sec.score, sec.maxScore);
+
+      return {
+        ...this.createDoughnut(
+          sec.section,
+          sec.score,
+          sec.maxScore,
+          color
+        ),
+        title: sec.section.split('(')[0].trim()
+      };
+    });
+
+    const totalMax = sectionScores.reduce(
+      (sum, s) => sum + s.maxScore,
+      0
+    );
+
+    const overallColor = this.getScoreColor(overallScore, totalMax);
+
+    charts.push({
+      ...this.createDoughnut(
+        'overall',
+        overallScore,
+        totalMax,
+        overallColor
+      ),
+      title: 'Overall Score'
+    });
+
+    return charts;
+  }
+
+  getScoreCategory(score: number | string) {
+    if (score === 'N/A' || score == null) return 'N/A';
+
+    const numScore = Number(score);
+    if (numScore >= 8 || numScore === 4) return 'highest';
+    if (numScore >= 6 || numScore === 3) return 'high';
+    if (numScore >= 4 || numScore === 2) return 'low';
+    return 'lowest';
+  }
+
+  private getScoreColor(score: number, maxScore: number): string {
+    if (!maxScore || maxScore <= 0) {
+      return '#E6E6E6'; // fallback
+    }
+
+    const percentage = (score / maxScore) * 100;
+
+    if (percentage <= 25) return '#F9EA94';
+    if (percentage <= 50) return '#CCDF92';
+    if (percentage <= 75) return '#99CE85';
+    return '#33C075'; // >75%
+  }
+
+  private createDoughnut(
+    id: string,
+    score: number,
+    maxScore: number,
+    color: string
+  ): ChartConfig {
     return {
-      chartId: `borrowing-doughnut-${id}`,
-      chartType: 'pieChart', // mapped to doughnut internally
+      chartId: `market-readiness-${id}`,
+      chartType: 'pieChart',
       labels: ['Score', 'Remaining'],
       centerText: score,
       datasets: [
         {
-          data: [score, 100 - score],
-          backgroundColor: ['#28c76f', '#E0E0E0'],
+          data: [
+            score,
+            Math.max(0, maxScore - score)
+          ],
+          backgroundColor: [color, '#E6E6E6'],
           borderWidth: 0,
-          label: '',
+          label: ''
         }
       ],
       options: {
@@ -191,25 +237,10 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     };
   }
 
-  // ✅ Update only ONE chart (production safe)
-  updateScore(id: string, score: number) {
-    this.doughnutCharts.update(charts =>
-      charts.map(chart =>
-        chart.chartId === `borrowing-doughnut-${id}`
-          ? {
-            ...chart,
-            centerText: score,
-            datasets: [
-              {
-                ...chart.datasets[0],
-                data: [score, 100 - score],
-              }
-            ]
-          }
-          : chart
-      )
-    );
-  }
+
+
+
+
   navigatePage() {
     if (!isPlatformBrowser(this.platformId)) return;
 
