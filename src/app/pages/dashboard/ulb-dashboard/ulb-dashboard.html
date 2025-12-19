@@ -1,4 +1,4 @@
-@if (ledgerYears().length > 0 && ulb()._id) {
+@if (showDashboard() && ulb()._id) {
 <div class="container mt-4">
   <a [href]="redirectionUrl()">
     Go To XVFC Grants
@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-lg-8">
       <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type || ''"
-        [ulbName]="ulb().name" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+        [ulbName]="ulb().name || ''" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
     </div>
 
     <div class="col-lg-4 p-3 h-100">
@@ -60,7 +60,15 @@
 
 
 } @else {
+@if (message()) {
 <div class="my-4">
-  <app-no-data-found></app-no-data-found>
+  <app-no-data-found [message]="message()"></app-no-data-found>
 </div>
+} @else {
+<div class="py-3 px-5">
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+  <app-pre-loader></app-pre-loader>
+</div>
+}
 }
