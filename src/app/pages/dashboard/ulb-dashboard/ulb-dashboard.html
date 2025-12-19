@@ -20,7 +20,7 @@
   <div class="row">
     <div class="col-lg-8">
       <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbId()" [ulbType]="ulb().type || ''"
-        [ulbName]="ulb().name" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
+        [ulbName]="ulb().name || ''" [isDashboard]="true" [redirectionUrl]="redirectionUrl()"></app-financial-indicator>
     </div>
 
     <div class="col-lg-4 p-3 h-100">
