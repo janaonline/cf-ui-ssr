@@ -66,6 +66,9 @@ export class DashboardService {
       { params }
     );
   }
+  getAllStates(): Observable<any> {
+    return this.http.get<any>(`${environment.api.url}ledger/get-all-states`);
+  }
 
   // City page: borrowings section.
   getBorrowingsData(ulbId: string = '', stateId: string = '') {

@@ -149,30 +149,33 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     sectionScores: any[],
     overallScore: number
   ) {
-    const charts = sectionScores.map((sec, index) => {
+    const charts = sectionScores.map((sec) => {
+      const color = this.getScoreColor(sec.score, sec.maxScore);
+
       return {
         ...this.createDoughnut(
           sec.section,
           sec.score,
           sec.maxScore,
-          GRAPH_COLORS[index % GRAPH_COLORS.length]
+          color
         ),
         title: sec.section.split('(')[0].trim()
       };
     });
 
-    // overall (sum of all sections)
     const totalMax = sectionScores.reduce(
       (sum, s) => sum + s.maxScore,
       0
     );
+
+    const overallColor = this.getScoreColor(overallScore, totalMax);
 
     charts.push({
       ...this.createDoughnut(
         'overall',
         overallScore,
         totalMax,
-        GRAPH_COLORS[charts.length % GRAPH_COLORS.length]
+        overallColor
       ),
       title: 'Overall Score'
     });
@@ -180,6 +183,28 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     return charts;
   }
 
+  getScoreCategory(score: number | string) {
+    if (score === 'N/A' || score == null) return 'N/A';
+
+    const numScore = Number(score);
+    if (numScore >= 8 || numScore === 4) return 'highest';
+    if (numScore >= 6 || numScore === 3) return 'high';
+    if (numScore >= 4 || numScore === 2) return 'low';
+    return 'lowest';
+  }
+
+  private getScoreColor(score: number, maxScore: number): string {
+    if (!maxScore || maxScore <= 0) {
+      return '#E6E6E6'; // fallback
+    }
+
+    const percentage = (score / maxScore) * 100;
+
+    if (percentage <= 25) return '#F9EA94';
+    if (percentage <= 50) return '#CCDF92';
+    if (percentage <= 75) return '#99CE85';
+    return '#33C075'; // >75%
+  }
 
   private createDoughnut(
     id: string,
@@ -196,7 +221,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         {
           data: [
             score,
-            Math.max(0, maxScore - score) // ✅ NO hardcoded 100
+            Math.max(0, maxScore - score)
           ],
           backgroundColor: [color, '#E6E6E6'],
           borderWidth: 0,
@@ -207,11 +232,11 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         responsive: true,
         plugins: {
           legend: { display: false }
-        },
-
+        }
       }
     };
   }
+
 
 
 

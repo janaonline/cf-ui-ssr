@@ -142,11 +142,11 @@
       <thead class="">
         <tr>
           <th class="text-start table-light" style="border: 1px solid white;">Indicators</th>
-          <th style="border: 1px solid white;">Max Score</th>
-          <th style="border: 1px solid white;">Highest (4)</th>
-          <th style="border: 1px solid white;">High (3)</th>
-          <th style="border: 1px solid white;">Low (2)</th>
-          <th style="border: 1px solid white;">Lowest (1)</th>
+          <th style="border: 1px solid white; border-right: 1px solid black !important;">Max Score</th>
+          <th style="border: 1px solid white;">Highest </th>
+          <th style="border: 1px solid white;">High </th>
+          <th style="border: 1px solid white;">Low</th>
+          <th style="border: 1px solid white;">Lowest</th>
         </tr>
       </thead>
 
@@ -169,35 +169,43 @@
         <!-- Rows -->
         @for (row of section.rows; track row.name) {
         <tr>
-          <td class="text-start table-light" style="border: 1px solid white;">
+          <td class="text-start table-light border-white">
             {{ row.name }}
           </td>
 
-          <td style="border: 1px solid white;">
+          <td class="text-center border-white " style="border-right: 1px solid black !important;">
             {{ row.maxScore }}
           </td>
-
           <!-- Highest -->
-          <td class="text-center fw-bold" [class.bg-success]="row.score === 4" style="border: 1px solid white;">
-            @if (row.score === 4) { {{ row.score }} }
+          <td class="text-center fw-bold border-white" [class.text-success]="getScoreCategory(row.score) === 'highest'">
+            @if (getScoreCategory(row.score) === 'highest') {
+            {{ row.score }}
+            }
           </td>
 
           <!-- High -->
-          <td class="text-center fw-bold" [class.bg-success-subtle]="row.score === 3" style="border: 1px solid white;">
-            @if (row.score === 3) { {{ row.score }} }
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'high') {
+            {{ row.score }}
+            }
           </td>
 
           <!-- Low -->
-          <td class="text-center fw-bold" [class.bg-warning-subtle]="row.score === 2" style="border: 1px solid white;">
-            @if (row.score === 2) { {{ row.score }} }
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'low') {
+            {{ row.score }}
+            }
           </td>
 
           <!-- Lowest -->
-          <td class="text-center fw-bold" [class.bg-danger-subtle]="row.score === 1" style="border: 1px solid white;">
-            @if (row.score === 1) { {{ row.score }} }
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'lowest') {
+            {{ row.score }}
+            }
           </td>
         </tr>
         }
+
 
         }
       </tbody>
