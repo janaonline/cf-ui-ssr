@@ -33,6 +33,7 @@ export class Navbar {
   sticky: boolean = false;
   isCollapsed = true;
   v1Url = environment.v1Url;
+  vUrl = environment.vUrl;
 
   menus: any = [
     // {
@@ -56,6 +57,10 @@ export class Navbar {
         {
           name: 'Service Level Benchmarks Performance',
           href: this.v1Url + '/dashboard/slb',
+        },
+        {
+          name: 'Market Readiness Assessment',
+          href: this.vUrl + '/municipal-data/market-readiness',
         },
         // { name: 'Municipal Bonds', href: '/municipal-bonds' },
         // { name: 'Municipal Budgets', href: '/municipal-budgets' },
