@@ -1,5 +1,6 @@
 <section class="my-4 container">
-  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
+  <app-tab-buttons [buttons]="buttons" [buttonIdx]="buttonIdx()"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
 
   @if (isLoading()) {
   <app-pre-loader></app-pre-loader>

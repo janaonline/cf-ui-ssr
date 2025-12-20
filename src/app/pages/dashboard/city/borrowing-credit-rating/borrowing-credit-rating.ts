@@ -78,6 +78,9 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   bondsData!: BorrowingsKeys[];
 
+  // Input signal to receive default button index.
+  readonly buttonIdx = input(-1);
+
   private destroy$ = new Subject<void>();
   marketReadinessYears = [
     "2022-23",
