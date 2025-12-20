@@ -1,3 +1,4 @@
+
 import {
   Component,
   Input,
@@ -21,66 +22,63 @@ import { MatChipsModule } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { ChangeDetectorRef } from '@angular/core';
 import { CitySearch } from "../../../../../shared/components/city-search/city-search";
 import { IULB } from '../../../../../core/models/ulb';
 import { state } from '@angular/animations';
 import { DashboardService } from '../../../dashboard-service';
+import { MatTableModule } from '@angular/material/table';
+import { Router } from '@angular/router';
 interface CityScore {
   sno: number;
   city: string;
   populationCategory: string;
   state: string;
-  band2022: string;
-  band2023: string;
+  bandPrevYear: string | null;
+  bandCurrYear: string | null;
   score: number;
   delta: number;
 }
+
 @Component({
   selector: 'app-market-readiness',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule, CitySearch],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CitySearch, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, MatTableModule],
   templateUrl: './market-readiness.html',
   styleUrl: './market-readiness.scss'
 })
-export class MarketReadiness implements OnInit, AfterViewInit {
-  @ViewChild('scrollIndicator') scrollIndicator!: ElementRef;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  // @ViewChild('citySearch') citySearch!: any;
+export class MarketReadiness implements OnInit {
   @ViewChild('citySearch') citySearch!: CitySearch;
-
+  @ViewChild('scrollIndicator') scrollIndicator!: ElementRef;
   filterForm!: FormGroup;
-  tableData = [
-    { indicator: 'Water Supply Coverage', maxScore: 25, score: 18 },
-    { indicator: 'Sewerage Coverage', maxScore: 25, score: 20 },
-    { indicator: 'Solid Waste Collection Efficiency', maxScore: 25, score: 22 },
-    { indicator: 'Storm Water Drainage Coverage', maxScore: 25, score: 15 }
-  ];
+  dataSource: CityScore[] = [];
+  isLoading = signal(false);
+  showActiveFilters = false;
+
   filters = {
     city: '',
     state: '',
     population: '',
     band: ''
   };
+  /** Pagination */
+  currentPage = 1;
+  pageSize = 5;
+  totalRecords = 0;
+  totalPages = 0;
+  paginationWindow = 5; // how many page numbers to show
+  /** Sorting */
+  sortBy = 'marketReadinessScore.overallScore';
+  sortOrder: 'asc' | 'desc' = 'desc';
 
-  // states = [
-  //   'Karnataka',
-  //   'Maharashtra',
-  //   'Tamil Nadu',
-  //   'Kerala',
-  //   'Telangana'
-  // ];
   states: any[] = [];
-  bands = ['A', 'B', 'C'];
-
+  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)'];
   populationBands = [
-    { value: 'lt1m', label: '< 1 Million' },
-    { value: '1to5m', label: '1 – 5 Million' },
-    { value: 'gt5m', label: '> 5 Million' }
+    { value: '4M+', label: ' > 4Million' },
+    { value: '1M–4M', label: '1 – 4 Million' },
+    { value: '500K–1M', label: '500K – 1 Million' },
+    { value: '100K–500K', label: '100K – 500K' }
   ];
+
   displayedColumns = [
     'sno',
     'city',
@@ -88,158 +86,187 @@ export class MarketReadiness implements OnInit, AfterViewInit {
     'state',
     'band2022',
     'band2023',
-    'score'
-  ];
-  isLoading = signal(true)
-  showActiveFilters = false;
-  skeletonRows = Array.from({ length: 5 });
-  DUMMY_CITY_DATA: CityScore[] = [
-    {
-      sno: 1,
-      city: 'Surat Municipal Corporation',
-      populationCategory: '4M+',
-      state: 'Gujarat',
-      band2022: 'B (Moderately Performing)',
-      band2023: 'A (High Performer)',
-      score: 70,
-      delta: 10
-    },
-    {
-      sno: 2,
-      city: 'Kanpur Municipal Corporation',
-      populationCategory: '1M–4M',
-      state: 'Uttar Pradesh',
-      band2022: 'A (High Performer)',
-      band2023: 'A (High Performer)',
-      score: 70,
-      delta: 0
-    },
-    {
-      sno: 3,
-      city: 'Navi Mumbai Municipal Corporation',
-      populationCategory: '1M–4M',
-      state: 'Maharashtra',
-      band2022: 'C (Needs Intervention)',
-      band2023: 'B (Moderately Performing)',
-      score: 60,
-      delta: 12
-    },
-    {
-      sno: 4,
-      city: 'Warangal Municipal Corporation',
-      populationCategory: '500K–1M',
-      state: 'Telangana',
-      band2022: 'B (Moderately Performing)',
-      band2023: 'B (Moderately Performing)',
-      score: 52,
-      delta: 0
-    },
-    {
-      sno: 5,
-      city: 'Mangalore Corporation',
-      populationCategory: '100K–500K',
-      state: 'Karnataka',
-      band2022: 'B (Moderately Performing)',
-      band2023: 'C (Needs Intervention)',
-      score: 40,
-      delta: -5
-    },
-    {
-      sno: 6,
-      city: 'Bhubaneswar Municipal Corporation',
-      populationCategory: '500K–1M',
-      state: 'Odisha',
-      band2022: 'B (Moderately Performing)',
-      band2023: 'C (Needs Intervention)',
-      score: 35,
-      delta: -5
-    }
+    'score',
+    'stauts'
   ];
 
-  dataSource = new MatTableDataSource<CityScore>([]);
+  constructor(
+    private fb: FormBuilder,
+    private dashboardService: DashboardService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: object
 
-
-  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private dashboardService: DashboardService) {
+  ) {
     this.filterForm = this.fb.group({
       city: [''],
       state: [''],
       population: [''],
       band: [''],
     });
-    this.filterForm.valueChanges.pipe(debounceTime(400)).subscribe(values => {
-      this.applyFilters(values);
-    });
+
   }
-  ngAfterViewInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.attachTableControls();
-  }
+
   ngOnInit(): void {
     this.filterForm = this.fb.group({
       city: [''],
       state: [''],
       population: [''],
-      band: [''],
+      band: ['']
     });
 
-    /**
-     * IMPORTANT for SSR:
-     * We update a boolean instead of using `filterForm.dirty` directly in template
-    */
-    this.filterForm.valueChanges.subscribe(() => {
-      this.showActiveFilters = this.filterForm.dirty;
-    });
+    this.filterForm.valueChanges
+      .pipe(debounceTime(400))
+      .subscribe(values => {
+        this.applyFilters(values);
+      });
+
     this.dashboardService.getAllStates().subscribe({
-      next: (res) => {
-        this.states = res.states;
-      },
-      error: (err) => {
-        console.error('Failed to load states', err);
-      }
+      next: res => this.states = res.states,
+      error: err => console.error(err)
     });
+
     this.fetchTableData();
   }
-  applyFilters(filters: any) {
-    // 🔌 API call will go here
-    console.log('Applying filters:', filters);
+  get visiblePages(): number[] {
+    if (!this.totalPages) return [];
+
+    const half = Math.floor(this.paginationWindow / 2);
+
+    let start = Math.max(1, this.currentPage - half);
+    let end = start + this.paginationWindow - 1;
+
+    if (end > this.totalPages) {
+      end = this.totalPages;
+      start = Math.max(1, end - this.paginationWindow + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+  getStatus(delta: number): 'IMPROVED' | 'SAME' | 'DECLINED' {
+    if (delta > 0) return 'IMPROVED';
+    if (delta < 0) return 'DECLINED';
+    return 'SAME';
+  }
+  goToRoute(row: any): void {
+    const city = row.city;
+    // console.log('Navigating to city:', city);
+    if (!city) return;
+    this.dashboardService.getUlbSlugByName(city).subscribe({
+      next: (res) => {
+        this.router.navigate([
+          '/municipal-data/city',
+          res.slug
+        ], {
+          state: {
+            openTab: 'borrow',
+            openSubTab: 'marketReadiness'
+          }
+        });
+      },
+      error: () => {
+        console.error('Failed to fetch ULB slug');
+      }
+    });
+  }
+  applyFilters(filters: any): void {
+    this.currentPage = 1;
+    this.showActiveFilters = this.hasAnyFilter(filters);
+    this.fetchTableData();
+  }
+  private hasAnyFilter(filters: any): boolean {
+    return Object.values(filters).some(
+      v => v !== null && v !== undefined && v !== ''
+    );
   }
   onUlbSelected = (ulb: any) => {
-    // console.log('Selected ULB:', ulb.state.name);
-    this.filterForm.patchValue({
-      city: ulb?.name || '',
-      state: ulb?.state?.name || ''
-    });
-    this.showActiveFilters = true;
+    this.filterForm.patchValue(
+      {
+        city: ulb?.name || '',
+        state: ulb?.state?.name || ''
+      },
+      { emitEvent: true } // 👈 important
+    );
+    // console.log('Selected ULB:', ulb);
   };
+
+  /** Bootstrap sorting */
+  onSort(column: string): void {
+    if (this.sortBy === column) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortOrder = 'asc';
+    }
+
+    this.currentPage = 1;
+    this.fetchTableData();
+  }
+
+
+  /** API fetch */
+  fetchTableData(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const filters = this.filterForm.value;
+
+    const params = {
+      page: this.currentPage,
+      limit: this.pageSize,
+      year: '2022-23',
+
+      sortBy: this.sortBy,
+      sortOrder: this.sortOrder,
+
+      city: filters.city || '',
+      state: filters.state || '',
+      band: filters.band || '',
+      populationCategory: filters.population || ''
+    };
+
+    this.isLoading.set(true);
+
+    this.dashboardService.getMarketReadinessTable(params).subscribe({
+      next: res => {
+        this.dataSource = res.data;
+        this.totalRecords = res.totalRecords;
+        this.totalPages = res.totalPages;
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  /** Pagination */
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.fetchTableData();
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize = +size;
+    this.currentPage = 1;
+    this.fetchTableData();
+  }
 
   clearFilters(): void {
     this.filterForm.reset({
       city: '',
       state: '',
       population: '',
-      band: '',
+      band: ''
     });
-    this.citySearch?.clear();
+
+    this.citySearch?.clear();   // 👈 IMPORTANT
     this.showActiveFilters = false;
+    this.currentPage = 1;
+
+    this.fetchTableData();
   }
 
-  fetchTableData(): void {
-    this.isLoading.set(true)
-
-    setTimeout(() => {
-      this.dataSource.data = this.DUMMY_CITY_DATA; // ✅ only update data
-      this.isLoading.set(false)
-
-      this.attachTableControls();
-      this.cdr.detectChanges(); // ✅ fixes NG0100
-    }, 1500);
-  }
-
-  /* ---------------- SAFE ATTACH ---------------- */
-  attachTableControls(): void {
-    if (this.paginator && this.sort) {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 }

@@ -1,10 +1,10 @@
-import { Component, effect, input, OnDestroy, signal, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, effect, input, OnDestroy, signal, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from '../../../../shared/components/charts/charts';
 import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants'; import cloneDeep from 'lodash-es/cloneDeep';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { filter, Subject, Subscription, takeUntil } from 'rxjs';
 import { ICreditRatingData } from '../../../../core/models/creditRating/creditRatingResponse';
 import {
   BorrowingsData,
@@ -20,7 +20,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { isPlatformBrowser } from '@angular/common';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { MatTabGroup } from '@angular/material/tabs';
 @Component({
   selector: 'app-borrowing-credit-rating',
   imports: [
@@ -38,6 +39,7 @@ import { Router } from '@angular/router';
 })
 
 export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
+
   doughnutValues = [33, 10, 12, 40, 50];
 
 
@@ -78,12 +80,12 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
   marketReadinessYears = [
-    "2020-21",
+    "2022-23",
     "2021-22",
-    "2022-23"
   ];
-
-
+  intro: string | null = null;
+  // chartRenderKey = signal(0);
+  @Input() chartRenderKey!: number;
   constructor(
     private dashboardService: DashboardService,
     private _commonService: CommonService,
@@ -91,6 +93,14 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router
   ) { }
+  ngOnChanges() {
+    this.rebuildCharts();
+  }
+  private rebuildCharts() {
+    if (this.currentSelectedButtonKey() === 'marketReadiness') {
+      this.loadMarketReadiness(this.yearForm.value.year);
+    }
+  }
   ngAfterViewInit() {
 
   }
@@ -110,7 +120,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.yearForm = this.fb.group({
-      year: ['2020-21'],
+      year: ['2022-23'],
     });
     this.loadMarketReadiness(this.yearForm.value.year);
     this.yearForm.get('year')!
@@ -121,6 +131,26 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         }
       });
   }
+  getMarketReadinessIntro(
+    cityName: string,
+    marketReadinessBand: string | null | undefined
+  ) {
+    if (!marketReadinessBand) return null;
+
+    const bandKey = marketReadinessBand.split(' ')[0]; // A1, A2, A3, B, C, D 
+    const messages: Record<string, string> = {
+      A1: 'falls in the highly prepared category and is ready for further assessments to access municipal borrowings.',
+      A2: 'falls in the well-prepared category and is ready for further assessments to access municipal borrowings.',
+      A3: 'falls in the moderately prepared category and is ready for further assessments to access municipal borrowings.',
+      B: 'falls in the aspirational category and shows potential for commercial borrowings.',
+      C: 'falls in the needs intervention category and requires revenue mobilisation efforts to improve self-reliance.',
+      D: 'falls in the low category continued grant support is needed.'
+    };
+    const message = messages[bandKey];
+    if (!message) return null;
+    return `${cityName} ${message}`;
+  }
+
 
   loadMarketReadiness(year: string) {
     const ulbId = this.ulbIdSignal();
@@ -131,6 +161,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     this.dashboardService.getMarketReadinessData(ulbId, year)
       .subscribe({
         next: (res) => {
+          // console.log('Market Readiness Data:', res);
           /* ---------- TABLE ---------- */
           this.indicatorTableData.set(res.sections);
 
@@ -138,7 +169,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
           this.doughnutCharts.set(
             this.buildDoughnutCharts(res.sectionScores, res.overallScore)
           );
-
+          // this.band = res
+          this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
           this.isLoading.set(false);
         },
         error: () => this.isLoading.set(false)
@@ -180,11 +212,13 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
       title: 'Overall Score'
     });
 
-    return charts;
+    return charts.sort((a, b) =>
+      a.title === 'Overall Score' ? -1 : b.title === 'Overall Score' ? 1 : 0
+    );
   }
 
   getScoreCategory(score: number | string) {
-    if (score === 'N/A' || score == null) return 'N/A';
+    if (score === 'N/A' || score == null) return 'na';
 
     const numScore = Number(score);
     if (numScore >= 8 || numScore === 4) return 'highest';
@@ -250,6 +284,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
 
   onSelectedButtonChange(key: string): void {
+
     this.currentSelectedButtonKey.set(key);
     // if (this.currentSelectedButtonKey() === this.buttons[1].key) this.getCreditRatingsData('onbuttonchange');
   }

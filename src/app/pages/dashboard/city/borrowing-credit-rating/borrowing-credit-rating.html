@@ -94,12 +94,14 @@
     <div class="d-flex justify-content-between align-items-center w-100">
       <div>
 
-        <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4>
+        <p class="mb-2 p-0 fw-bold">{{ulbName()}}'s credit profile</p>
+        <p class="m-0 p-0">{{intro}} </p>
+        <!-- <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4> -->
 
-        <p>
+        <!-- <p class="m-0 p-0">
           {{ulbName()}}’s falls in well prepared category and is ready for further assessments to avail municipal
           borrowings.
-        </p>
+        </p> -->
       </div>
       <form [formGroup]=" yearForm" class="col-sm-12 col-md-3 mb-4">
         <mat-form-field appearance="outline" class="w-100">
@@ -118,10 +120,12 @@
       </form>
     </div>
     <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
+    @if (doughnutCharts().length > 0) {
     <div class="row">
       <div class="col-12 col-lg-9">
         <div class="row row-cols-2 row-cols-lg-5 g-4 text-center">
-          @for (chart of doughnutCharts(); track chart.chartId) {
+          @if(chartRenderKey){
+          @for (chart of doughnutCharts(); track chart.chartId ) {
           <div class="col d-flex flex-column align-items-center">
             <app-charts [chartConfig]="chart"></app-charts>
 
@@ -131,9 +135,13 @@
             </div>
           </div>
           }
+          }
+
         </div>
       </div>
     </div>
+    }
+
 
 
   </div>
@@ -176,6 +184,12 @@
           <td class="text-center border-white " style="border-right: 1px solid black !important;">
             {{ row.maxScore }}
           </td>
+          @if(getScoreCategory(row.score) === 'na') {
+          <td colspan="4" class="text-center fw-bold border-white text-white"
+            style="background-color: rgb(194, 194, 194);">
+            Data could not be sourced
+          </td>
+          } @else {
           <!-- Highest -->
           <td class="text-center fw-bold border-white" [class.text-success]="getScoreCategory(row.score) === 'highest'">
             @if (getScoreCategory(row.score) === 'highest') {
@@ -203,6 +217,7 @@
             {{ row.score }}
             }
           </td>
+          }
         </tr>
         }
 
