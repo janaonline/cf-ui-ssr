@@ -66,6 +66,27 @@ export class DashboardService {
       { params }
     );
   }
+  getMarketReadinessTable(params: any) {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/get-all-ulbs-market-readiness`,
+      { params }
+    );
+  }
+  getUlbSlugByName(cityName: string) {
+    return this.http.get<{
+      ulbId: string;
+      ulbName: string;
+      slug: string;
+    }>(
+      `${environment.api.url}ledger/get-ulb-slug-by-name`,
+      {
+        params: {
+          name: cityName
+        }
+      }
+    );
+  }
+
   getAllStates(): Observable<any> {
     return this.http.get<any>(`${environment.api.url}ledger/get-all-states`);
   }

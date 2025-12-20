@@ -10,8 +10,9 @@ import {
   PLATFORM_ID,
   signal,
   TransferState,
+  ViewChild,
 } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
@@ -73,7 +74,7 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
   styleUrl: './city.scss',
 })
 export class City {
-  v1Url = environment.v1Url;
+
   loadedTabs: boolean[] = [true, false, false, false];
   ulbIdSignal = signal('');
   ulbSlugName = signal('');
@@ -81,7 +82,7 @@ export class City {
   showMap = signal(false);
   isMoneyInfoLoading = signal(false);
   private destroy$ = new Subject<void>();
-
+  chartRenderKey = signal(0);
   hasError = signal(false);
   errorMessage = signal('');
 
@@ -91,7 +92,6 @@ export class City {
   ledgerYears = signal<string[]>([]);
   slbYears = signal<string[]>([]);
   selectedLedgerYear = signal<string>('');
-
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -389,6 +389,9 @@ export class City {
   // On tab changes call the chid components.
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
+    if (idx === 2) {
+      this.chartRenderKey.update((v) => v + 1);
+    }
   }
 
   ngDestroy(): void {

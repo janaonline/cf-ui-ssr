@@ -117,8 +117,8 @@
     </mat-tab> -->
     <mat-tab label="Borrowing & Credit Rating">
       @if (loadedTabs[2]) {
-      <app-borrowing-credit-rating [ulbIdSignal]="ulbIdSignal()"
-        [ulbName]="cityDetails().ulbName"></app-borrowing-credit-rating>
+      <app-borrowing-credit-rating [ulbIdSignal]="ulbIdSignal()" [ulbName]="cityDetails().ulbName"
+        [chartRenderKey]="chartRenderKey()"></app-borrowing-credit-rating>
       }
       <!-- [ulbName]="selectedCityNameSignal()" -->
     </mat-tab>
