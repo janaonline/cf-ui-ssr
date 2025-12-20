@@ -153,13 +153,10 @@ export class MarketReadiness implements OnInit {
     if (!city) return;
     this.dashboardService.getUlbSlugByName(city).subscribe({
       next: (res) => {
-        this.router.navigate([
-          '/municipal-data/city',
-          res.slug
-        ], {
-          state: {
-            openTab: 'borrow',
-            openSubTab: 'marketReadiness'
+        this.router.navigate(['/municipal-data/city', res.slug], {
+          queryParams: {
+            tabIndex: 2, // 'borrowing',
+            subTabIndex: 2, // 'marketReadiness'
           }
         });
       },
