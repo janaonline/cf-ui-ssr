@@ -130,10 +130,8 @@
 <!-- ================= TABLE SECTION ================= -->
 <section class="container py-4">
 
-    <div class="table-responsive table-wrapper">
-
+    <div class="table-wrapper">
         <table class="table market-table align-middle">
-
             <!-- TABLE HEADER -->
             <thead class="table-header">
                 <tr>
@@ -181,6 +179,9 @@
                         (keydown.enter)="onSort('marketReadinessScore.overallScore')">
                         Status
                     </th>
+                    <th tabindex="0">
+                        Distance to next milestone
+                    </th>
                 </tr>
             </thead>
 
@@ -189,9 +190,9 @@
 
                 <!-- 🔹 Skeleton Rows -->
                 @if (isLoading()) {
-                @for (_ of [1,2,3,4,5,6]; track _) {
+                @for (_ of [1,2,3,4,5,6,7,8]; track _) {
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="skeleton-row"></div>
                     </td>
                 </tr>
@@ -232,7 +233,17 @@
                         <span class="status-pill declined">DECLINED</span>
                         }
                     </td>
-
+                    <td class="text-center">
+                        @if (getStatus(row.delta) === 'IMPROVED') {
+                        <span class="status-pill improved">IMPROVED</span>
+                        }
+                        @else if (getStatus(row.delta) === 'SAME') {
+                        <span class="status-pill same">SAME</span>
+                        }
+                        @else {
+                        <span class="status-pill declined">DECLINED</span>
+                        }
+                    </td>
                 </tr>
                 }
                 }

@@ -113,33 +113,69 @@ mat-paginator {
     background-position: 0 50%;
   }
 }
-/* Wrapper */
+/* 1. The Container */
 .table-wrapper {
-  max-height: 520px;
-  overflow-y: auto;
+  max-height: 500px; /* Fixed height for vertical scroll */
+  overflow-y: auto; /* Vertical scroll */
+  overflow-x: auto; /* Horizontal scroll */
+  border: 1px solid #eee;
+  position: relative;
 }
 
-/* Sticky header */
+/* 2. The Table */
+.market-table {
+  width: 100%;
+  border-collapse: separate; /* Required for sticky header box-shadow */
+  border-spacing: 0;
+  /* Adjust min-width based on how many columns you want to hide off-screen. 
+     If you have 9 columns and want to see 5, set this to ~150% or a high pixel value */
+  min-width: 1200px;
+}
+
+/* 3. Sticky Header Logic */
 .table-header th {
   position: sticky;
   top: 0;
-  background: #f8f9fa;
+  background-color: #f8f9fa;
   z-index: 5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  white-space: nowrap; /* Prevents headers from stacking */
+  padding: 12px 15px;
+  border-bottom: 2px solid #dee2e6;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Shadow to separate from body */
 }
 
-/* Table */
-.market-table {
-  border-collapse: separate;
-  border-spacing: 0;
+/* 4. Column Sizing - Forcing 5-column view logic */
+.market-table th,
+.market-table td {
+  /* Approximately 20% width to show ~5 columns in the viewport */
+  width: 200px;
+  min-width: 150px;
+  max-width: 300px;
+  padding: 10px;
+  text-align: left;
+}
+.market-table th:nth-child(1),
+.market-table td:nth-child(1) {
+  width: 40px !important; /* 20px is too small for padding + text, 40px is safer */
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 8px 4px !important; /* Reduced horizontal padding */
+  text-align: center;
+  background-color: #f8f9fa; /* Match header or keep distinct */
+}
+/* Optional: Make the City column sticky so it stays visible while scrolling right */
+.market-table th:nth-child(2),
+.market-table td:nth-child(2) {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 5;
+  // box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
 }
 
-.market-table tbody tr {
-  transition: background 0.2s ease;
-}
-
-.market-table tbody tr:hover {
-  background-color: #f1f5ff;
+.market-table th:nth-child(2) {
+  z-index: 6; /* Higher than other headers */
+  background-color: #f8f9fa;
 }
 
 /* Sort icon */
