@@ -1,5 +1,6 @@
 <section class="my-4 container">
-  <app-tab-buttons [buttons]="buttons" (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
+  <app-tab-buttons [buttons]="buttons" [buttonIdx]="buttonIdx()"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
 
   @if (isLoading()) {
   <app-pre-loader></app-pre-loader>
@@ -226,6 +227,23 @@
       </tbody>
     </table>
   </div>
-
+  <p class="fw-bold mt-3">Foot Notes :</p>
+  @if(this.footNote){
+  <div class="alert alert-warning mt-3" role="alert">
+    {{this.footNote??this.footNote}}
+  </div>
   }
+  @if(this.outOfRange){
+  <div class="alert alert-dark mt-3" role="alert">
+    @for (item of outOfRange; track item.indicator) {
+    <div class="alert-item">
+      <!-- <i class="bi bi-exclamation-triangle"></i> -->
+      <p>{{ item.message }}</p>
+    </div>
+    }
+
+  </div>
+  }
+  }
+
 </section>

@@ -1,11 +1,8 @@
 import {
   Component,
   input,
-  OnChanges,
-  OnInit,
   output,
-  signal,
-  SimpleChanges,
+  signal
 } from '@angular/core';
 import { ButtonObj } from '../../../core/models/interfaces';
 
@@ -15,9 +12,12 @@ import { ButtonObj } from '../../../core/models/interfaces';
   templateUrl: './tab-buttons.html',
   styleUrl: './tab-buttons.scss',
 })
-export class TabButtons implements OnInit, OnChanges {
+export class TabButtons {
   // Input signal to receive the array of buttons from the parent.
   buttons = input.required<ButtonObj[]>();
+
+  // Input signal to receive default button index.
+  buttonIdx = input(-1);
 
   // Output signal to emit the key of the selected button to the parent.
   selectedButtonKeyChange = output<string>();
@@ -28,28 +28,18 @@ export class TabButtons implements OnInit, OnChanges {
   constructor() { }
 
   ngOnInit() {
-    this.setDefaultSelectedButton();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['buttons'] && !changes['buttons'].firstChange) {
-      this.setDefaultSelectedButton();
+    if (this.buttonIdx() > 0 && this.buttonIdx() < this.buttons().length) {
+      const key = this.buttons()[this.buttonIdx()].key;
+      this.changeSelectedButton(key);
+    } else {
+      this.changeSelectedButton(this.buttons()[0].key);
     }
   }
 
-  private setDefaultSelectedButton(): void {
-    if (this.buttons()?.length === 0) return;
-
-    const defaultKey = this.buttons()[0].key;
-
-    if (this.selectedBtnKey() !== defaultKey) {
-      this.selectedBtnKey.set(defaultKey);
-      this.selectedButtonKeyChange.emit(defaultKey);
+  changeSelectedButton(key: string): void {
+    if (key !== this.selectedBtnKey()) {
+      this.selectedBtnKey.set(key);
+      this.selectedButtonKeyChange.emit(key);
     }
-  }
-
-  buttonClick(key: string): void {
-    this.selectedBtnKey.set(key);
-    this.selectedButtonKeyChange.emit(key);
   }
 }

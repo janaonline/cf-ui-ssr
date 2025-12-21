@@ -76,6 +76,8 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
 export class City {
 
   loadedTabs: boolean[] = [true, false, false, false];
+  selectedTabIndex: number = 0;
+  selectedSubTabIndex: number = 0;
   ulbIdSignal = signal('');
   ulbSlugName = signal('');
   isLoading = signal(true);
@@ -114,7 +116,42 @@ export class City {
           this.ulbSlugName.set(citySlugName);
           this.loadData(citySlugName);
         } else if (!citySlugName) this.isLoading.set(false);
+
+        // Read query parameters to determine which tab/sub-tab should be opened on load
+        const queryParams = this.activatedRoute.snapshot.queryParams;
+
+        // Main tab if provided via query params; otherwise default tab remains
+        if (queryParams.hasOwnProperty('tabIndex')) {
+          const tabIndex = Number(queryParams['tabIndex']);
+          this.selectedTabIndex = tabIndex;
+
+          // Mark the tab as loaded to avoid lazy-loading delays
+          this.loadedTabs[tabIndex] = true;
+
+          // Set chartRenderKey.
+          this.chartRenderKey.update((v) => v + 1);
+
+          // Scroll to Dashbard.
+          setTimeout(() => {
+            this.scrollToDashboard()
+          }, 0);
+        }
+
+        // sub-tab if provided via query params
+        if (queryParams.hasOwnProperty('subTabIndex')) {
+          this.selectedSubTabIndex = Number(queryParams['subTabIndex']);
+        }
+
       });
+  }
+
+  private scrollToDashboard() {
+    const element = document.getElementById("dashboard");
+    if (element)
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
   }
 
   setSeo() {
