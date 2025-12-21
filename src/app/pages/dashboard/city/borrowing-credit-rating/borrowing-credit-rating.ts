@@ -80,7 +80,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   // Input signal to receive default button index.
   readonly buttonIdx = input(-1);
-
+  outOfRange: any[] = []
+  footNote: any
   private destroy$ = new Subject<void>();
   marketReadinessYears = [
     "2022-23",
@@ -172,7 +173,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
           this.doughnutCharts.set(
             this.buildDoughnutCharts(res.sectionScores, res.overallScore)
           );
-          // this.band = res
+          this.outOfRange = res.outOfRange ?? [];
+          this.footNote = res.footNote ?? '';
           this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
           this.isLoading.set(false);
         },

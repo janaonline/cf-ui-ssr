@@ -71,9 +71,9 @@ export class MarketReadiness implements OnInit {
   sortOrder: 'asc' | 'desc' = 'desc';
 
   states: any[] = [];
-  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)'];
+  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)', 'D (low)'];
   populationBands = [
-    { value: '4M+', label: ' > 4Million' },
+    { value: '4M+', label: ' 4Million +' },
     { value: '1M–4M', label: '1 – 4 Million' },
     { value: '500K–1M', label: '500K – 1 Million' },
     { value: '100K–500K', label: '100K – 500K' }
