@@ -92,7 +92,7 @@
 </section>
 
 <section class="container matTabGroup">
-  <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+  <h3 id="dashboard" class="fw-bold p-2 my-4 text-center">Dashboard</h3>
 
   <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
     <mat-tab label="Financial Performance" [disabled]="ledgerYears().length === 0">

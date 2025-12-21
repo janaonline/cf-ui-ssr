@@ -130,6 +130,11 @@ export class City {
 
           // Set chartRenderKey.
           this.chartRenderKey.update((v) => v + 1);
+
+          // Scroll to Dashbard.
+          setTimeout(() => {
+            this.scrollToDashboard()
+          }, 0);
         }
 
         // sub-tab if provided via query params
@@ -138,6 +143,15 @@ export class City {
         }
 
       });
+  }
+
+  private scrollToDashboard() {
+    const element = document.getElementById("dashboard");
+    if (element)
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
   }
 
   setSeo() {
