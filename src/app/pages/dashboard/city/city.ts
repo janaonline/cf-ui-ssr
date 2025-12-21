@@ -127,6 +127,9 @@ export class City {
 
           // Mark the tab as loaded to avoid lazy-loading delays
           this.loadedTabs[tabIndex] = true;
+
+          // Set chartRenderKey.
+          this.chartRenderKey.update((v) => v + 1);
         }
 
         // sub-tab if provided via query params
