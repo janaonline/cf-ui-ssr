@@ -30,35 +30,16 @@ export class TabButtons {
   ngOnInit() {
     if (this.buttonIdx() > 0 && this.buttonIdx() < this.buttons().length) {
       const key = this.buttons()[this.buttonIdx()].key;
-      this.buttonClick(key);
+      this.changeSelectedButton(key);
     } else {
-      this.buttonClick(this.buttons()[0].key);
+      this.changeSelectedButton(this.buttons()[0].key);
     }
   }
 
-  // ngOnInit() {
-  //   this.setDefaultSelectedButton();
-  // }
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes['buttons'] && !changes['buttons'].firstChange) {
-  //     this.setDefaultSelectedButton();
-  //   }
-  // }
-
-  // private setDefaultSelectedButton(): void {
-  //   if (this.buttons()?.length === 0) return;
-
-  //   const defaultKey = this.buttons()[0].key;
-
-  //   if (this.selectedBtnKey() !== defaultKey) {
-  //     this.selectedBtnKey.set(defaultKey);
-  //     this.selectedButtonKeyChange.emit(defaultKey);
-  //   }
-  // }
-
-  buttonClick(key: string): void {
-    this.selectedBtnKey.set(key);
-    this.selectedButtonKeyChange.emit(key);
+  changeSelectedButton(key: string): void {
+    if (key !== this.selectedBtnKey()) {
+      this.selectedBtnKey.set(key);
+      this.selectedButtonKeyChange.emit(key);
+    }
   }
 }
