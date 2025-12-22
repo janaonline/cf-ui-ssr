@@ -194,7 +194,8 @@ export interface MarketReadinessResponse {
   overallScore: number;
   marketReadinessBand: string;
   footNote?: string,
-  outOfRange?: []
+  outOfRange?: [],
+  message?: string
 }
 
 export interface Section {

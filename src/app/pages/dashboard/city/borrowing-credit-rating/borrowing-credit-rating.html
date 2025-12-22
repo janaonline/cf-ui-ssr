@@ -90,6 +90,7 @@
 
   <!-- Market Readiness -->
   @if (currentSelectedButtonKey() === 'marketReadiness') {
+  @if(dataThere){
   <!-- <button class="btn btn-outline-cfPrimary" (click)="navigatePage()">Compare with different cities </button> -->
   <div class="border rounded bg-light p-4 my-4 row justify-content-between">
     <div class="d-flex justify-content-between align-items-center w-100">
@@ -227,23 +228,60 @@
       </tbody>
     </table>
   </div>
+  @if(this.footNote!=''){
   <p class="fw-bold mt-3">Foot Notes :</p>
-  @if(this.footNote){
   <div class="alert alert-warning mt-3" role="alert">
     {{this.footNote??this.footNote}}
   </div>
   }
-  @if(this.outOfRange){
-  <div class="alert alert-dark mt-3" role="alert">
-    @for (item of outOfRange; track item.indicator) {
-    <div class="alert-item">
-      <!-- <i class="bi bi-exclamation-triangle"></i> -->
-      <p>{{ item.message }}</p>
-    </div>
-    }
+  @if(this.outOfRange!=[]){
 
+  @for (item of outOfRange; track item.indicator) {
+  <div class="alert alert-dark mt-3">
+    <!-- <i class="bi bi-exclamation-triangle"></i> -->
+    <p>{{ item.message }}</p>
   </div>
   }
   }
+  @else{
+  }
+  }
+  @else{
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div>
 
+        <p class="mb-2 p-0 fw-bold">{{ulbName()}}'s Data not available for the selected Year , Please choose another
+          year
+          in the dropdown </p>
+        <!-- <p class="m-0 p-0">{{intro}} </p> -->
+        <!-- <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4> -->
+
+        <!-- <p class="m-0 p-0">
+          {{ulbName()}}’s falls in well prepared category and is ready for further assessments to avail municipal
+          borrowings.
+        </p> -->
+      </div>
+      <form [formGroup]=" yearForm" class="col-sm-12 col-md-3 mb-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Financial Year</mat-label>
+
+          <mat-select formControlName="year">
+            @for (year of marketReadinessYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+
+      </form>
+    </div>
+    <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
+
+  </div>
+
+  }
+  }
 </section>
