@@ -38,8 +38,8 @@
   display: inline-block;
   width: 18px;
   height: 18px;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
   transform: rotate(45deg);
   animation: bounce 1.6s infinite;
 }
@@ -136,7 +136,7 @@ mat-paginator {
 .table-header th {
   position: sticky;
   top: 0;
-  background-color: #f8f9fa;
+  background-color: #f1f8ff;
   z-index: 5;
   white-space: nowrap; /* Prevents headers from stacking */
   padding: 12px 15px;
@@ -175,7 +175,7 @@ mat-paginator {
 
 .market-table th:nth-child(2) {
   z-index: 6; /* Higher than other headers */
-  background-color: #f8f9fa;
+  background-color: #f1f8ff;
 }
 
 /* Sort icon */
@@ -202,23 +202,15 @@ mat-paginator {
     background-position: -100% 0;
   }
 }
-
-/* Score pill */
-.score-pill {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-  background: #e9ecef;
+/* This targets the span when row.delta < 0 */
+.delta-value.danger {
+  color: #d93025 !important; /* A standard 'danger' red */
+  font-weight: bold; /* Optional: makes the red text pop more */
 }
 
-.score-pill.up {
-  color: #198754;
-  background: #e6f4ea;
-}
-
-.score-pill.down {
-  color: #dc3545;
-  background: #fdecea;
+/* Optional: You can also define a success color for positive numbers */
+.delta-value:not(.danger) {
+  color: #0d8a6b; /* The teal/green from your first image */
 }
 .status-pill {
   display: inline-block;

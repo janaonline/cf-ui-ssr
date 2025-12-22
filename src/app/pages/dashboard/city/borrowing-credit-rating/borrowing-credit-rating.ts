@@ -88,6 +88,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     "2021-22",
   ];
   intro: string | null = null;
+  dataThere: boolean = true;
+  Datamessage: string = '';
   // chartRenderKey = signal(0);
   @Input() chartRenderKey!: number;
   constructor(
@@ -158,25 +160,34 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   loadMarketReadiness(year: string) {
     const ulbId = this.ulbIdSignal();
-
-
-    this.isLoading.set(true);
-
+    // this.isLoading.set(true);
     this.dashboardService.getMarketReadinessData(ulbId, year)
       .subscribe({
         next: (res) => {
+          if (res.message === 'Data not found for the specified ULB and years') {
+
+            this.dataThere = false
+            this.isLoading.set(true);
+            this.Datamessage = res.message
+            this.isLoading.set(false);
+          }
           // console.log('Market Readiness Data:', res);
           /* ---------- TABLE ---------- */
-          this.indicatorTableData.set(res.sections);
+          else {
+            this.isLoading.set(true);
+            this.dataThere = true
+            this.indicatorTableData.set(res.sections);
 
-          /* ---------- DOUGHNUTS ---------- */
-          this.doughnutCharts.set(
-            this.buildDoughnutCharts(res.sectionScores, res.overallScore)
-          );
-          this.outOfRange = res.outOfRange ?? [];
-          this.footNote = res.footNote ?? '';
-          this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
-          this.isLoading.set(false);
+            /* ---------- DOUGHNUTS ---------- */
+            this.doughnutCharts.set(
+              this.buildDoughnutCharts(res.sectionScores, res.overallScore)
+            );
+            this.outOfRange = res.outOfRange ?? [];
+            this.footNote = res.footNote ?? '';
+            this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
+            this.isLoading.set(false);
+          }
+
         },
         error: () => this.isLoading.set(false)
       });
