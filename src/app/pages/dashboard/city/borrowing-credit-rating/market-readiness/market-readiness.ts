@@ -37,6 +37,7 @@ interface CityScore {
   bandCurrYear: string | null;
   score: number;
   delta: number;
+  nextMilestone: string
 }
 
 @Component({

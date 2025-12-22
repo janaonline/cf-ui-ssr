@@ -263,15 +263,7 @@
                         }
                     </td>
                     <td class="text-center">
-                        @if (getStatus(row.delta) === 'IMPROVED') {
-                        <span class="status-pill improved">IMPROVED</span>
-                        }
-                        @else if (getStatus(row.delta) === 'SAME') {
-                        <span class="status-pill same">SAME</span>
-                        }
-                        @else {
-                        <span class="status-pill declined">DECLINED</span>
-                        }
+                        {{row?.nextMilestone}}
                     </td>
                 </tr>
                 }
