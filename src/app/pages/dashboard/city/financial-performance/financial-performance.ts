@@ -9,7 +9,7 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatRadioModule } from '@angular/material/radio';
 import { ChartDataset } from 'chart.js';
 import html2canvas from 'html2canvas';
-import Swal from 'sweetalert2';
+// import Swal from 'sweetalert2';
 import { ButtonObj, CreateExcelParams } from '../../../../core/models/interfaces';
 import { GlobalLoaderService } from '../../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../../core/services/utility-service';
@@ -635,18 +635,18 @@ export class FinancialPerformance {
       }
     );
   }
+  showInfoAlert() { }
 
-
-  // Show info alert.
-  showInfoAlert() {
-    Swal.fire({
-      html: `${this.infoData()}`, // Use 'html' instead of 'text' to render raw HTML
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#3085d6',
-      width: '600px',  // Optional: Adjust the width of the modal
-      padding: '3em'   // Optional: Add some padding to make the content look better
-    });
-  }
+  // Show info alert. removing sweet alert due to changes
+  // showInfoAlert() {
+  //   Swal.fire({
+  //     html: `${this.infoData()}`, // Use 'html' instead of 'text' to render raw HTML
+  //     confirmButtonText: 'Close',
+  //     confirmButtonColor: '#3085d6',
+  //     width: '600px',  // Optional: Adjust the width of the modal
+  //     padding: '3em'   // Optional: Add some padding to make the content look better
+  //   });
+  // }
 
   expandedIndex: number | null = null;
 
