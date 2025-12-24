@@ -44,6 +44,7 @@ import { BalancesheetIncomestatement } from './balancesheet-incomestatement/bala
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
 import { FinancialPerformance } from './financial-performance/financial-performance';
 import { Slb } from './slb/slb';
+import { FinancialIndicator } from "./financial-indicator/financial-indicator";
 
 // --- TransferState Keys ---
 const CITY_DETAILS_KEY = makeStateKey<any>('cityDetailsKey');
@@ -68,7 +69,8 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
     BorrowingCreditRating,
     Slb,
     BalancesheetIncomestatement,
-    FinancialPerformance
+    FinancialPerformance,
+    FinancialIndicator
   ],
   templateUrl: './city.html',
   styleUrl: './city.scss',
