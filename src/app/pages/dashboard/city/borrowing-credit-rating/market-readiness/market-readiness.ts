@@ -28,6 +28,8 @@ import { state } from '@angular/animations';
 import { DashboardService } from '../../../dashboard-service';
 import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { SeoService } from '../../../../../core/services/seo/seo.service';
+import { environment } from '../../../../../../environments/environment';
 interface CityScore {
   sno: number;
   city: string;
@@ -68,11 +70,11 @@ export class MarketReadiness implements OnInit {
   totalPages = 0;
   paginationWindow = 5; // how many page numbers to show
   /** Sorting */
-  sortBy = 'marketReadinessScore.overallScore';
-  sortOrder: 'asc' | 'desc' = 'desc';
+  sortBy = 'populationCategory';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
   states: any[] = [];
-  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)', 'D (low)'];
+  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)', 'D (Low)'];
   populationBands = [
     { value: '4M+', label: ' 4Million +' },
     { value: '1M–4M', label: '1 – 4 Million' },
@@ -95,6 +97,7 @@ export class MarketReadiness implements OnInit {
     private fb: FormBuilder,
     private dashboardService: DashboardService,
     private router: Router,
+    private seoService: SeoService,
     @Inject(PLATFORM_ID) private platformId: object
 
   ) {
@@ -142,6 +145,37 @@ export class MarketReadiness implements OnInit {
     }
 
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+  setSeo() {
+    // const ulbName = this._commonService.toTitleCase(this.ulbSlugName());
+    const title = 'Market Readiness Assessment of Urban Local Bodies | City Finance'
+    const url = `${environment.baseUrl}/municipal-data/market-readiness`;
+    const keywordsJsonLD = 'market readiness assessment of urban local bodies, borrowing readiness of Indian cities, municipal borrowing assessment India, city finance borrowing indicators, municipal finance data India';
+    const keywords = 'market readiness assessment of urban local bodies, borrowing readiness of Indian cities, municipal borrowing assessment India, city finance borrowing indicators, municipal finance data India';
+    const desc = 'Assess the borrowing readiness of 4,800+ Urban Local Bodies in India using standardized City Finance data. '
+
+    this.seoService.updateTitle(title);
+
+    this.seoService.updateMetaTags([
+      { name: 'description', content: desc },
+      { name: 'keywords', content: keywords },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: desc },
+      { property: 'og:url', content: url },
+      { property: 'og:type', content: 'website' },
+      // { property: 'robotsrobots', content: 'index, follow' }
+    ]);
+
+    this.seoService.setJsonLd({
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": title,
+      "url": url,
+      "keywords": keywordsJsonLD,
+      "description": desc,
+      "spatial": `India`,
+      "temporalCoverage": "2021/2024",
+    });
   }
   getStatus(delta: number): 'IMPROVED' | 'SAME' | 'DECLINED' {
     if (delta > 0) return 'IMPROVED';
