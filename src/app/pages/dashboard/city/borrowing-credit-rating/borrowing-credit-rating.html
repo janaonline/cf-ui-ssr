@@ -131,11 +131,18 @@
           <div class="col d-flex flex-column align-items-center">
             <app-charts [chartConfig]="chart"></app-charts>
 
-            <!-- Title -->
             <div class="chart-title mt-2">
               {{ chart.title }}
+              @if (chart.isDisabled) {
+              <span class="text-muted small">*</span>
+              }
             </div>
+
+            @if (chart.isDisabled) {
+            <div class="small text-muted">ESTIMATED*</div>
+            }
           </div>
+
           }
           }
 
@@ -147,6 +154,12 @@
 
 
   </div>
+  @if(this.footNote!=''){
+  <!-- <p class="fw-bold mt-3">Foot Notes :</p> -->
+  <div class="alert alert-warning mt-3" role="alert">
+    {{this.footNote??this.footNote}}
+  </div>
+  }
   <div class="table-responsive mt-4 border-none">
     <table class="table  align-middle text-center">
       <thead class="">
@@ -179,6 +192,7 @@
         <!-- Rows -->
         @for (row of section.rows; track row.name) {
         <tr>
+
           <td class="text-start table-light border-white">
             {{ row.name }}
           </td>
@@ -228,14 +242,8 @@
       </tbody>
     </table>
   </div>
-  @if(this.footNote!=''){
-  <p class="fw-bold mt-3">Foot Notes :</p>
-  <div class="alert alert-warning mt-3" role="alert">
-    {{this.footNote??this.footNote}}
-  </div>
-  }
-  @if(this.outOfRange!=[]){
 
+  @if(this.outOfRange!=[]){
   @for (item of outOfRange; track item.indicator) {
   <div class="alert alert-dark mt-3">
     <!-- <i class="bi bi-exclamation-triangle"></i> -->

@@ -162,7 +162,7 @@
 </section>
 <!-- ================= TABLE SECTION ================= -->
 <section class="container py-4">
-
+    <p class="fw-bold">Click on a city’s name to view its detailed scores and underlying indicators.</p>
     <div class="table-wrapper">
         <table class="table market-table align-middle">
             <!-- TABLE HEADER -->
@@ -314,4 +314,60 @@
         </ul>
     </nav>
 
+</section>
+<!-- ================= Q&A SECTION ================= -->
+<section class="assessment-container">
+    <h2 class="main-title">About the Assessment</h2>
+
+    <div class="accordion-item">
+        <div class="accordion-header" (click)="toggleSection('readiness')">
+            <h3>What does market readiness mean?</h3>
+            <span class="arrow" [class.open]="sections.readiness">^</span>
+        </div>
+        <div class="accordion-content" *ngIf="sections.readiness">
+            <p>
+                Market readiness shows how prepared a city is to access market-based borrowing based on its financial
+                performance.
+                It is not a credit rating, but a precursor that can help cities and external stakeholders assess if a
+                city
+                is positioned to pursue a formal credit rating or participation in the Urban Challenge Fund.
+            </p>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" (click)="toggleSection('basis')">
+            <h3>What is the basis for this assessment and scoring logic?</h3>
+            <span class="arrow" [class.open]="sections.basis">^</span>
+        </div>
+        <div class="accordion-content" *ngIf="sections.basis">
+            <p>
+                The scoring framework has been developed in consultation with the Ministry of Housing and Urban Affairs
+                and evaluates key aspects of financial performance using standardized indicators.
+            </p>
+            <p>
+                The assessment for each city is based on audited financial statements and property tax data submitted
+                on the City Finance platform.
+            </p>
+        </div>
+    </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header" (click)="toggleSection('bands')">
+            <h3>What do the bands and scores mean?</h3>
+            <span class="arrow" [class.open]="sections.bands">^</span>
+        </div>
+        <div class="accordion-content" *ngIf="sections.bands">
+            <p>
+                Cities are grouped into six bands from A1 to D based on their score out of 100. Each band represents
+                a defined level of preparedness. The "distance to next milestone" column indicates how close a city
+                is to the next band and helps guide next steps.
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-contact">
+        <p>Have more questions? Please write to <strong>updates&#64;cityfinance.in</strong> for clarifications related
+            to this assessment.</p>
+    </div>
 </section>

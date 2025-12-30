@@ -198,16 +198,24 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     overallScore: number
   ) {
     const charts = sectionScores.map((sec) => {
-      const color = this.getScoreColor(sec.score, sec.maxScore);
+      const isDebt =
+        sec.section?.toUpperCase().includes('DEBT');
 
+      const isDisabled = isDebt && sec.derived === true;
+
+      const color = isDisabled
+        ? '#CFCFCF' // grey
+        : this.getScoreColor(sec.score, sec.maxScore);
       return {
         ...this.createDoughnut(
           sec.section,
           sec.score,
           sec.maxScore,
-          color
+          color,
+          isDisabled
         ),
-        title: sec.section.split('(')[0].trim()
+        title: sec.section.split('(')[0].trim(),
+        isDisabled
       };
     });
 
@@ -223,9 +231,12 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         'overall',
         overallScore,
         totalMax,
-        overallColor
+        overallColor,
+        false
       ),
-      title: 'Overall Score'
+      title: 'Overall Score',
+      isDisabled: ''
+
     });
 
     return charts.sort((a, b) =>
@@ -260,7 +271,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     id: string,
     score: number,
     maxScore: number,
-    color: string
+    color: string,
+    disabled = false
   ): ChartConfig {
     return {
       chartId: `market-readiness-${id}`,
@@ -273,8 +285,14 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
             score,
             Math.max(0, maxScore - score)
           ],
-          backgroundColor: [color, '#E6E6E6'],
-          borderWidth: 0,
+          backgroundColor: disabled
+            ? ['#CFCFCF', '#EFEFEF']
+            : [color, '#E6E6E6'],
+          borderWidth: disabled ? 1 : 0,
+          borderColor: disabled ? '#BDBDBD' : undefined,
+          // borderDash: disabled ? [4, 4] : undefined, // 👈 dotted ring
+          // backgroundColor: [color, '#E6E6E6'],
+          // borderWidth: 0,
           label: ''
         }
       ],
@@ -282,8 +300,10 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         responsive: true,
         plugins: {
           legend: { display: false }
-        }
+        },
+
       }
+
     };
   }
 

@@ -182,6 +182,15 @@ export class MarketReadiness implements OnInit {
     if (delta < 0) return 'DECLINED';
     return 'SAME';
   }
+  sections = {
+    readiness: true,
+    basis: false,
+    bands: false
+  };
+
+  toggleSection(sectionName: keyof typeof this.sections) {
+    this.sections[sectionName] = !this.sections[sectionName];
+  }
   goToRoute(row: any): void {
     const city = row.city;
     // console.log('Navigating to city:', city);
