@@ -74,6 +74,12 @@ app-charts {
   max-width: 120px;
   margin: 0 auto;
 }
+app-charts[disabled],
+.chart-disabled {
+  opacity: 0.6;
+  filter: grayscale(100%);
+  pointer-events: none;
+}
 
 .chart-label {
   font-size: 0.875rem;
