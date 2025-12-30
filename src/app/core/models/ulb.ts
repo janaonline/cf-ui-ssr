@@ -5,6 +5,7 @@ export interface IULB {
   amrut: 'Yes' | 'No' | undefined;
   isActive: boolean;
   _id: string;
+  id?: string;
   slug?: string;
   area: number;
   code: string;

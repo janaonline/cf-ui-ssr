@@ -61,42 +61,48 @@ export class State implements OnInit {
         "label": "Total Tax Revenue",
         "value": "29743502907",
         "info": "",
-        "src": "./assets/images/money-info/file.svg"
+        "src": "./assets/images/money-info/file.svg",
+        "tooltip": ""
       },
       {
         "sequence": 2,
         "label": "Total Own Revenue",
         "value": "38504421948",
         "info": "",
-        "src": "./assets/images/money-info/file.svg"
+        "src": "./assets/images/money-info/file.svg",
+        "tooltip": ""
       },
       {
         "sequence": 3,
         "label": "Total Grant",
         "value": "16402148000",
         "info": "",
-        "src": "./assets/images/money-info/coins.svg"
+        "src": "./assets/images/money-info/coins.svg",
+        "tooltip": ""
       },
       {
         "sequence": 4,
         "label": "Total Revenue",
         "value": "55867806918",
         "info": "",
-        "src": "./assets/images/money-info/coins.svg"
+        "src": "./assets/images/money-info/coins.svg",
+        "tooltip": ""
       },
       {
         "sequence": 5,
         "label": "Total Expenditure",
         "value": "64648653961",
         "info": "",
-        "src": "./assets/images/money-info/coins.svg"
+        "src": "./assets/images/money-info/coins.svg",
+        "tooltip": ""
       },
       {
         "sequence": 6,
         "label": "Total Balance Sheet Size",
         "value": "195642578182",
         "info": "",
-        "src": "./assets/images/money-info/group.svg"
+        "src": "./assets/images/money-info/group.svg",
+        "tooltip": ""
       }
     ],
     "year": "2021-22",

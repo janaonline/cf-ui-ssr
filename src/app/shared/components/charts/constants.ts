@@ -4,14 +4,14 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(...registerables, ChartDataLabels);
 
-declare module 'chart.js' {
-  interface PluginOptionsByType<TType extends ChartType> {
-    customDataLabel?: {
-      enabled: boolean;
-      format: string;
-    };
-  }
-}
+// declare module 'chart.js' {
+//   interface PluginOptionsByType<TType extends ChartType> {
+//     customDataLabel?: {
+//       enabled: boolean;
+//       format: string;
+//     };
+//   }
+// }
 
 export const DEFAULT_FONT_FAMILY = 'Montserrat';
 const TEXT_LIGHT = '#374151';

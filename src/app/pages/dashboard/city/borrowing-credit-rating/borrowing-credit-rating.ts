@@ -1,8 +1,10 @@
-import { Component, effect, input, OnDestroy, signal } from '@angular/core';
+import { Component, effect, input, OnDestroy, signal, AfterViewInit, ViewChild, ElementRef, ViewChildren, QueryList, Inject, PLATFORM_ID, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
-import cloneDeep from 'lodash-es/cloneDeep';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
+import { Charts } from '../../../../shared/components/charts/charts';
+import { baseChartOptions, DEFAULT_FONT_FAMILY } from '../../../../shared/components/charts/constants'; import cloneDeep from 'lodash-es/cloneDeep';
+import { filter, Subject, Subscription, takeUntil } from 'rxjs';
 import { ICreditRatingData } from '../../../../core/models/creditRating/creditRatingResponse';
 import {
   BorrowingsData,
@@ -14,7 +16,12 @@ import { TabButtons } from '../../../../shared/components/tab-buttons/tab-button
 import { DashboardService } from '../../dashboard-service';
 import { TABLE_STRUCTURE } from './constants';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { isPlatformBrowser } from '@angular/common';
+const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
+import { NavigationEnd, Router } from '@angular/router';
+import { MatTabGroup } from '@angular/material/tabs';
 @Component({
   selector: 'app-borrowing-credit-rating',
   imports: [
@@ -23,20 +30,33 @@ import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
     MatTableModule,
     ReactiveFormsModule,
     PreLoader,
+    MatFormFieldModule,
+    MatSelectModule,
+    Charts
   ],
   templateUrl: './borrowing-credit-rating.html',
   styleUrl: './borrowing-credit-rating.scss',
 })
-export class BorrowingCreditRating implements OnDestroy {
+
+export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
+
+  doughnutValues = [33, 10, 12, 40, 50];
+
+
+
+  myForm!: FormGroup;
   readonly buttons = [
     { key: 'borrowing', label: 'Borrowing' },
     { key: 'creditRating', label: 'Credit Rating' },
+    { key: 'marketReadiness', label: 'Market Readiness' },
   ];
+
+  indicatorTableData = signal<any[]>([]);
+  doughnutCharts = signal<any[]>([]);
   readonly displayedColumnsStructure: string[] = ['header'];
   currentSelectedButtonKey = signal<string>('');
   readonly ulbIdSignal = input.required<string>();
   borrowingYears = signal<string[]>([]);
-
   private readonly COLS_PER_PAGE = 3;
   currentPage = 0;
   totalPages = 0;
@@ -58,13 +78,41 @@ export class BorrowingCreditRating implements OnDestroy {
 
   bondsData!: BorrowingsKeys[];
 
+  // Input signal to receive default button index.
+  readonly buttonIdx = input(-1);
+  outOfRange: any[] = []
+  footNote: any
   private destroy$ = new Subject<void>();
-
+  marketReadinessYears = [
+    "2022-23",
+    "2021-22",
+  ];
+  intro: string | null = null;
+  dataThere: boolean = true;
+  Datamessage: string = '';
+  // chartRenderKey = signal(0);
+  @Input() chartRenderKey!: number;
   constructor(
     private dashboardService: DashboardService,
     private _commonService: CommonService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) { }
+  ngOnChanges() {
+    this.rebuildCharts();
+  }
+  private rebuildCharts() {
+    if (this.currentSelectedButtonKey() === 'marketReadiness') {
+      this.loadMarketReadiness(this.yearForm.value.year);
+    }
+  }
+  ngAfterViewInit() {
+
+  }
+
+
+
 
   // ngOnInit() {
   // this.getBorrowingsData();
@@ -72,10 +120,211 @@ export class BorrowingCreditRating implements OnDestroy {
   // this.getBorrowingsYears();
   // }
 
+
+
+
+
+  ngOnInit(): void {
+    this.yearForm = this.fb.group({
+      year: ['2022-23'],
+    });
+    this.loadMarketReadiness(this.yearForm.value.year);
+    this.yearForm.get('year')!
+      .valueChanges
+      .subscribe((year: string) => {
+        if (year) {
+          this.loadMarketReadiness(year);
+        }
+      });
+  }
+  getMarketReadinessIntro(
+    cityName: string,
+    marketReadinessBand: string | null | undefined
+  ) {
+    if (!marketReadinessBand) return null;
+
+    const bandKey = marketReadinessBand.split(' ')[0]; // A1, A2, A3, B, C, D 
+    const messages: Record<string, string> = {
+      A1: 'falls in the highly prepared category and is ready for further assessments to access municipal borrowings.',
+      A2: 'falls in the well-prepared category and is ready for further assessments to access municipal borrowings.',
+      A3: 'falls in the moderately prepared category and is ready for further assessments to access municipal borrowings.',
+      B: 'falls in the aspirational category and shows potential for commercial borrowings.',
+      C: 'falls in the needs intervention category and requires revenue mobilisation efforts to improve self-reliance.',
+      D: 'falls in the low category continued grant support is needed.'
+    };
+    const message = messages[bandKey];
+    if (!message) return null;
+    return `${cityName} ${message}`;
+  }
+
+
+  loadMarketReadiness(year: string) {
+    const ulbId = this.ulbIdSignal();
+    // this.isLoading.set(true);
+    this.dashboardService.getMarketReadinessData(ulbId, year)
+      .subscribe({
+        next: (res) => {
+          if (res.message === 'Data not found for the specified ULB and years') {
+
+            this.dataThere = false
+            this.isLoading.set(true);
+            this.Datamessage = res.message
+            this.isLoading.set(false);
+          }
+          // console.log('Market Readiness Data:', res);
+          /* ---------- TABLE ---------- */
+          else {
+            this.isLoading.set(true);
+            this.dataThere = true
+            this.indicatorTableData.set(res.sections);
+
+            /* ---------- DOUGHNUTS ---------- */
+            this.doughnutCharts.set(
+              this.buildDoughnutCharts(res.sectionScores, res.overallScore)
+            );
+            this.outOfRange = res.outOfRange ?? [];
+            this.footNote = res.footNote ?? '';
+            this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
+            this.isLoading.set(false);
+          }
+
+        },
+        error: () => this.isLoading.set(false)
+      });
+  }
+
+  private buildDoughnutCharts(
+    sectionScores: any[],
+    overallScore: number
+  ) {
+    const charts = sectionScores.map((sec) => {
+      const isDebt =
+        sec.section?.toUpperCase().includes('DEBT');
+
+      const isDisabled = isDebt && sec.derived === true;
+
+      const color = isDisabled
+        ? '#CFCFCF' // grey
+        : this.getScoreColor(sec.score, sec.maxScore);
+      return {
+        ...this.createDoughnut(
+          sec.section,
+          sec.score,
+          sec.maxScore,
+          color,
+          isDisabled
+        ),
+        title: sec.section.split('(')[0].trim(),
+        isDisabled
+      };
+    });
+
+    const totalMax = sectionScores.reduce(
+      (sum, s) => sum + s.maxScore,
+      0
+    );
+
+    const overallColor = this.getScoreColor(overallScore, totalMax);
+
+    charts.push({
+      ...this.createDoughnut(
+        'overall',
+        overallScore,
+        totalMax,
+        overallColor,
+        false
+      ),
+      title: 'Overall Score',
+      isDisabled: ''
+
+    });
+
+    return charts.sort((a, b) =>
+      a.title === 'Overall Score' ? -1 : b.title === 'Overall Score' ? 1 : 0
+    );
+  }
+
+  getScoreCategory(score: number | string) {
+    if (score === 'N/A' || score == null) return 'na';
+
+    const numScore = Number(score);
+    if (numScore >= 8 || numScore === 4) return 'highest';
+    if (numScore >= 6 || numScore === 3) return 'high';
+    if (numScore >= 4 || numScore === 2) return 'low';
+    return 'lowest';
+  }
+
+  private getScoreColor(score: number, maxScore: number): string {
+    if (!maxScore || maxScore <= 0) {
+      return '#E6E6E6'; // fallback
+    }
+
+    const percentage = (score / maxScore) * 100;
+
+    if (percentage <= 25) return '#F9EA94';
+    if (percentage <= 50) return '#CCDF92';
+    if (percentage <= 75) return '#99CE85';
+    return '#33C075'; // >75%
+  }
+
+  private createDoughnut(
+    id: string,
+    score: number,
+    maxScore: number,
+    color: string,
+    disabled = false
+  ): ChartConfig {
+    return {
+      chartId: `market-readiness-${id}`,
+      chartType: 'pieChart',
+      labels: ['Score', 'Remaining'],
+      centerText: score,
+      datasets: [
+        {
+          data: [
+            score,
+            Math.max(0, maxScore - score)
+          ],
+          backgroundColor: disabled
+            ? ['#CFCFCF', '#EFEFEF']
+            : [color, '#E6E6E6'],
+          borderWidth: disabled ? 1 : 0,
+          borderColor: disabled ? '#BDBDBD' : undefined,
+          // borderDash: disabled ? [4, 4] : undefined, // 👈 dotted ring
+          // backgroundColor: [color, '#E6E6E6'],
+          // borderWidth: 0,
+          label: ''
+        }
+      ],
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+
+      }
+
+    };
+  }
+
+
+
+
+
+  navigatePage() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.router.navigate(['/municipal-data/market-readiness']);
+
+  }
+
+
   onSelectedButtonChange(key: string): void {
+
     this.currentSelectedButtonKey.set(key);
     // if (this.currentSelectedButtonKey() === this.buttons[1].key) this.getCreditRatingsData('onbuttonchange');
   }
+
 
   // Distinct bonds years.
   private getBorrowingsYears() {
@@ -223,7 +472,7 @@ export class BorrowingCreditRating implements OnDestroy {
   creditRatingData: ICreditRatingData[] = [];
 
   private subscriptions: Subscription[] = [];
-  myForm!: FormGroup;
+  yearForm!: FormGroup;
 
   // Watch ULB changes
   readonly ulbNameEffect = effect(() => {

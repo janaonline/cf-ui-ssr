@@ -1,0 +1,304 @@
+/* HERO */
+.market-hero {
+  min-height: 400px;
+  background-color: #f1f8ff !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Overlay */
+.market-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  // background: rgba(0, 0, 0, 0.3);
+}
+
+/* Content above overlay */
+.market-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.scroll-arrow {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  transform: rotate(45deg);
+  animation: bounce 1.6s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: rotate(45deg) translateY(0);
+  }
+  40% {
+    transform: rotate(45deg) translateY(6px);
+  }
+  60% {
+    transform: rotate(45deg) translateY(3px);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-arrow {
+    animation: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .scroll-indicator {
+    display: none !important;
+  }
+}
+/* Sticky filter bar */
+// .sticky-filter {
+//   position: sticky;
+//   top: 64px; /* adjust to header height */
+//   z-index: 10;
+//   background: #ffffff;
+//   border-bottom: 1px solid #e0e0e0;
+// }
+
+/* Slight spacing polish */
+mat-form-field {
+  margin-bottom: 0;
+}
+table th {
+  white-space: nowrap;
+}
+
+mat-paginator {
+  margin-top: 1rem;
+}
+
+/* Skeleton styles */
+.skeleton {
+  display: inline-block;
+  width: 100%;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f5f5f5 37%, #e0e0e0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: 4px;
+}
+
+.skeleton-header {
+  height: 16px;
+}
+
+.skeleton-cell {
+  height: 14px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+/* 1. The Container */
+.table-wrapper {
+  max-height: 500px; /* Fixed height for vertical scroll */
+  overflow-y: auto; /* Vertical scroll */
+  overflow-x: auto; /* Horizontal scroll */
+  border: 1px solid #eee;
+  position: relative;
+}
+
+/* 2. The Table */
+.market-table {
+  width: 100%;
+  border-collapse: separate; /* Required for sticky header box-shadow */
+  border-spacing: 0;
+  /* Adjust min-width based on how many columns you want to hide off-screen. 
+     If you have 9 columns and want to see 5, set this to ~150% or a high pixel value */
+  min-width: 1200px;
+}
+
+/* 3. Sticky Header Logic */
+.table-header th {
+  position: sticky;
+  top: 0;
+  background-color: #f1f8ff;
+  z-index: 5;
+  white-space: nowrap; /* Prevents headers from stacking */
+  padding: 12px 15px;
+  border-bottom: 2px solid #dee2e6;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Shadow to separate from body */
+}
+
+/* 4. Column Sizing - Forcing 5-column view logic */
+.market-table th,
+.market-table td {
+  /* Approximately 20% width to show ~5 columns in the viewport */
+  width: 200px;
+  min-width: 150px;
+  max-width: 300px;
+  padding: 10px;
+  text-align: left;
+}
+.market-table th:nth-child(1),
+.market-table td:nth-child(1) {
+  width: 40px !important; /* 20px is too small for padding + text, 40px is safer */
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 8px 4px !important; /* Reduced horizontal padding */
+  text-align: center;
+  background-color: #f8f9fa; /* Match header or keep distinct */
+}
+/* Optional: Make the City column sticky so it stays visible while scrolling right */
+.market-table th:nth-child(2),
+.market-table td:nth-child(2) {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 5;
+  // box-shadow: 2px 0 5px -2px rgba(0, 0, 0, 0.1);
+}
+
+.market-table th:nth-child(2) {
+  z-index: 6; /* Higher than other headers */
+  background-color: #f1f8ff;
+}
+
+/* Sort icon */
+.sort-icon {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #0d6efd;
+}
+
+/* Skeleton rows */
+.skeleton-row {
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 37%, #e9ecef 63%);
+  background-size: 400% 100%;
+  animation: skeleton 1.4s ease infinite;
+}
+
+@keyframes skeleton {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+/* This targets the span when row.delta < 0 */
+.delta-value.danger {
+  color: #d93025 !important; /* A standard 'danger' red */
+  font-weight: bold; /* Optional: makes the red text pop more */
+}
+
+/* Optional: You can also define a success color for positive numbers */
+.delta-value:not(.danger) {
+  color: #0d8a6b; /* The teal/green from your first image */
+}
+.status-pill {
+  display: inline-block;
+  min-width: 90px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.4px;
+}
+
+.status-pill.improved {
+  background-color: #146c43; /* green */
+  color: #fff;
+}
+
+.status-pill.same {
+  background-color: #ffc107; /* yellow */
+  color: #000;
+}
+
+.status-pill.declined {
+  background-color: #c1121f; /* red */
+  color: #fff;
+}
+.assessment-container {
+  // font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1000px;
+  margin: 20px auto;
+  color: #333;
+}
+
+.main-title {
+  font-size: 30px;
+  margin-bottom: 30px;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.accordion-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #444;
+}
+
+.arrow {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+  color: #888;
+}
+
+.arrow.open {
+  transform: rotate(0deg);
+}
+
+.accordion-content {
+  margin-top: 15px;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #666;
+}
+
+.footer-contact {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Specific to your request for mobile view */
+@media screen and (max-width: 768px) {
+  .assessment-container {
+    padding: 0 20px;
+  }
+}

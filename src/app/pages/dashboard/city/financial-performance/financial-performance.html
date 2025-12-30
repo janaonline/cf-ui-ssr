@@ -1,0 +1,182 @@
+<section class="container">
+    <!-- <div class="border rounded bg-light p-2 my-4 d-flex justify-content-between align-items-center">
+        <p class="fw-bold mb-0">Compare {{ ulbName() }} with different cities</p>
+        <button class="btn btn-outline-cfPrimary" (click)="navigatePage()">Compare with different cities </button>
+    </div> -->
+
+    <!-- Main Buttons -->
+    <app-tab-buttons [buttons]="readonlyButtons()" (selectedButtonKeyChange)="onSelectedButtonChange($event)">
+    </app-tab-buttons>
+
+    <div class="border rounded bg-light p-4 my-4 row justify-content-between align-items-start">
+        <div class="col-sm-12 col-md-8">
+            <p class="mb-2 p-0 fw-bold">{{ ulbName() }}'s {{ titleTabs() }} </p>
+            <p class="m-0 p-0">{{intro}} </p>
+        </div>
+
+        <div class="col-sm-12 col-md-4">
+            <form [formGroup]="myForm">
+                <label for="years" class="d-block fw-bold mb-2">Financial Year</label>
+                <select id="years" formControlName="year" class="form-select w-100">
+                    @for (year of years(); track year) {
+                    <option [value]="year">{{ year }}</option>
+                    }
+                </select>
+                <!-- <label class="d-block fw-bold mb-2">Float label</label> -->
+
+                <!-- bind to formControlName so value syncs with myForm -->
+                <!-- <mat-radio-group formControlName="radioButton" aria-label="Float label options">
+                    <mat-radio-button value="crores"> <span class="fw-bold">In Crores</span></mat-radio-button>
+                    <mat-radio-button value="perCaptia" class="ms-3"><span class="fw-bold">Per
+                            Captia</span></mat-radio-button>
+                </mat-radio-group> -->
+            </form>
+        </div>
+
+        <!-- Filter: Years Dropdown -->
+
+    </div>
+    @if(isWarningMessage){
+    <div class="alert alert-info mt-3" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> {{warningMessage}}
+    </div>
+    }
+
+    <!-- Show .content class only if isTooltipVisible is true -->
+    <div class="row justify-content-between align-items-start position-relative ">
+
+        <!-- Table -->
+        <div class="d-flex flex-column col-sm-12 col-lg-8 py-3 ps-0 mb-2">
+            <!-- {{dataSource().length}} -->
+            @if(dataSource().length > 0){
+            <div class="table-scroll-y overflow-auto" style="max-height: 65vh;">
+                <mat-tree #tree [dataSource]="dataSource()" [childrenAccessor]="childrenAccessor"
+                    class="border rounded">
+                    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                        (click)="buttonClicked(node)" [cdkTreeNodeTypeaheadLabel]="node.name"
+                        class="ps-0 border-bottom onHover" [ngClass]="{
+                      'bg-table-header ': node.isHeader,
+                      'no-pointer': node.isHeader,
+                      'selected': node.isSelected,
+                       'sticky-top': node.isHeader,         
+                       'bg-white': node.isHeader,             
+                       'shadow-sm': node.isHeader            
+                    }">
+                        <!-- expand icon -->
+                        @if (hasChild(0, node)) {
+                        <button class="p-0 m-0" matIconButton [attr.aria-label]="'Toggle ' + node.name">
+                            <i
+                                [class]="tree.isExpanded(node) ? 'bi-chevron-down fw-bold' : 'bi-chevron-right fw-bold'"></i>
+                        </button>
+                        }
+                        @else {
+                        <button class="p-0 m-0" style="width: 40px;" matIconButton disabled></button>
+                        }
+
+                        <div class="px-2 py-1 d-flex gap-1 w-100 align-items-center">
+
+                            <div [class.selected]="node.isSelected" [class]=" node.className "
+                                [ngClass]="{ 'no-pointer': node.disableEvents }" style=" width: 300px;">
+                                {{node.name}}
+                            </div>
+
+                            <div class="d-flex justify-content-evenly gap-1 flex-grow-1">
+                                @for(year of node.yearData; track $index) {
+                                <div [class]="'text-end w-100 justify-content-center '"
+                                    [class.selected]="node.isSelected">
+                                    <!-- {{year}} -->
+                                    @if (getFormattedValue(year,node.graphKey)) {
+                                    {{(year | inrFormat : 'inr' : currencyOptions )}}
+                                    }
+                                    @else {
+                                    {{year}}
+                                    }
+                                    <!-- {{year| inrFormat:'inr':currencyOptions}} -->
+                                    @if (node.yearGrowth?.[$index]) {
+                                    <br>
+                                    <div [class]="getGrowthClass(node.yearGrowth?.[$index])">
+                                        ({{ node.yearGrowth?.[$index] }}%)
+                                    </div>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </mat-tree-node>
+                </mat-tree>
+            </div>
+            }
+
+        </div>
+
+        <!-- Chart -->
+        <div class="d-flex flex-column col-sm-12 col-lg-4 mb-2 mt-3 pe-0 position-relative">
+            <div id="chartContainer" class="p-3 bg-light rounded border">
+                <!-- Chart title -->
+                <div class="d-flex">
+                    <div class="flex-grow-1 text-center">
+                        <span class="fw-bold text-center mb-3 custom-font-size-6">
+                            {{chartData().chartId}}
+                        </span>
+                        <img src="https://cdn-icons-png.flaticon.com/128/157/157933.png" class="hide-while-download"
+                            matTooltip="Click to view" alt="" style="width: 4.5%;" (click)="showInfoAlert()">
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div style="height: 300px; height: 350px;">
+                    <!-- {{this.graphPayload().length}}
+                    {{this.chartData()|json}} -->
+                    @if(this.graphPayload().length>0){
+                    <app-charts [chartConfig]="chartData()"></app-charts>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-font-size-7 mb-4 text-secondary text-start"><span class="fw-bold">Source:
+        </span> <span class="custom-font-size-5">{{source}}</span>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 d-flex gap-2 ps-0">
+            <button class="btn btn-outline-cfPrimary" (click)="downloadExcel()">
+                Download as XLSX <i class="bi bi-download ms-1"></i>
+            </button>
+            <button class="btn btn-outline-cfPrimary ms-2" (click)="downloadImg(`${chartData().chartId}`)">
+                Download as PNG <i class="bi bi-download ms-1"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row justify-content-between align-items-start m-3 p-3">
+        <h2 class="fw-bold  p-2 my-4 text-center faq">Frequently Asked Questions</h2>
+
+        <div class="faq-item" *ngFor="let faq of faqs(); let i = index">
+            <button class="faq-question" (click)="toggle(i)">
+                <h3 class="fw-bold">{{ faq.question }}</h3>
+                <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
+            </button>
+            <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
+                <p>{{ faq.answer }}</p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Tooltip -->
+    <!-- @if (isTooltipVisible()) {
+    <div class="tooltip">
+        <button class="tooltip-close-btn btn close-btn border-0" (click)="toggleTooltip()">
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+        <p>{{this.infoData()}}</p>
+
+    </div>
+    }
+    </div> -->
+</section>

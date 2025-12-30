@@ -34,6 +34,7 @@ export class Navbar {
   isCollapsed = true;
   v1Url = environment.v1Url;
 
+
   menus: any = [
     // {
     //   name: `<img src="./assets/images/city-finance-ranking.png"/>`,
@@ -57,6 +58,11 @@ export class Navbar {
           name: 'Service Level Benchmarks Performance',
           href: this.v1Url + '/dashboard/slb',
         },
+        // {
+        //   name: 'Market Readiness Assessment',
+        //   href: this.vUrl + '/municipal-data/market-readiness',
+        // },
+        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
         // { name: 'Municipal Bonds', href: '/municipal-bonds' },
         // { name: 'Municipal Budgets', href: '/municipal-budgets' },
       ],

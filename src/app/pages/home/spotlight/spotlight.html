@@ -1,5 +1,6 @@
 <div class="wrap-card">
-    <h3 class="fw-bold text-white pb-3">In the Spotlight</h3>
+    <!-- CLICKABLE CARD WRAPPER -->
+    <h3 class=" fw-bold  pb-3 mt-4 text-white">In the Spotlight</h3>
     <div>
         <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
             @for (item of whatNewData; track item; let i = $index) {

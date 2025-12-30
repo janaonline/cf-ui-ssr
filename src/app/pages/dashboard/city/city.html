@@ -92,13 +92,16 @@
 </section>
 
 <section class="container matTabGroup">
-  <h3 class="fw-bold p-2 my-4 text-center">Dashboard</h3>
+  <h3 id="dashboard" class="fw-bold p-2 my-4 text-center">Dashboard</h3>
 
-  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
-    <mat-tab label="Financial Indicators" [disabled]="ledgerYears().length === 0">
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
+    <mat-tab label="Financial Performance" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[0] && this.ulbIdSignal() && this.ledgerYears().length) {
       <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
         [ulbName]="cityDetails().ulbName"></app-financial-indicator>
+      <!-- <app-financial-performance [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
+        [ulbName]="cityDetails().ulbName" [stateName]="cityDetails().state?.name" [ulbPopulation]="cityDetails().popCat"
+        [ulbSlugName]="ulbSlugName()"></app-financial-performance> -->
       }
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
@@ -107,17 +110,22 @@
         [ulbName]="cityDetails().ulbName"></app-balancesheet-incomestatement>
       }
     </mat-tab>
-    <mat-tab label="Service Level Benchmark" [disabled]="slbYears().length === 0">
+    <!-- <mat-tab label="Service Level Benchmark" [disabled]="slbYears().length === 0">
       @if (loadedTabs[2]) {
       <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()" [ulbSlug]="ulbSlugName()"></app-slb>
       }
-    </mat-tab>
+    </mat-tab> -->
     <mat-tab label="Borrowing & Credit Rating">
-      @if (loadedTabs[3]) {
-      <app-borrowing-credit-rating [ulbIdSignal]="ulbIdSignal()"
-        [ulbName]="cityDetails().ulbName"></app-borrowing-credit-rating>
+      @if (loadedTabs[2]) {
+      <app-borrowing-credit-rating [ulbIdSignal]="ulbIdSignal()" [ulbName]="cityDetails().ulbName"
+        [chartRenderKey]="chartRenderKey()" [buttonIdx]="selectedSubTabIndex"></app-borrowing-credit-rating>
       }
       <!-- [ulbName]="selectedCityNameSignal()" -->
+    </mat-tab>
+    <mat-tab label="Service Level Benchmark" [disabled]="slbYears().length === 0">
+      @if (loadedTabs[3]) {
+      <app-slb [years]="slbYears()" [ulbId]="ulbIdSignal()" [ulbSlug]="ulbSlugName()"></app-slb>
+      }
     </mat-tab>
   </mat-tab-group>
 </section>
