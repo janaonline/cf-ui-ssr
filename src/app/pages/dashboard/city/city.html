@@ -97,11 +97,11 @@
   <mat-tab-group (selectedIndexChange)="onTabChange($event)" [(selectedIndex)]="selectedTabIndex">
     <mat-tab label="Financial Performance" [disabled]="ledgerYears().length === 0">
       @if (loadedTabs[0] && this.ulbIdSignal() && this.ledgerYears().length) {
-      <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
-        [ulbName]="cityDetails().ulbName"></app-financial-indicator>
-      <!-- <app-financial-performance [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
+      <!-- <app-financial-indicator [years]="ledgerYears()" [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
+        [ulbName]="cityDetails().ulbName"></app-financial-indicator> -->
+      <app-financial-performance [ulbIdSignal]="ulbIdSignal()" [ulbType]="cityDetails().ulbType"
         [ulbName]="cityDetails().ulbName" [stateName]="cityDetails().state?.name" [ulbPopulation]="cityDetails().popCat"
-        [ulbSlugName]="ulbSlugName()"></app-financial-performance> -->
+        [ulbSlugName]="ulbSlugName()"></app-financial-performance>
       }
     </mat-tab>
     <mat-tab label="Balance Sheet & Income Statement" [disabled]="ledgerYears().length === 0">
