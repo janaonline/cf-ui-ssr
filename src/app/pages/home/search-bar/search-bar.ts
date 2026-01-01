@@ -191,7 +191,7 @@ export class SearchBar {
   }
 
   dashboardNav(option: any) {
-    console.log('option', option)
+    // console.log('option', option)
     // return;
     // this.checkType(option);
     // if (option.type != 'searchKeyword')
@@ -211,11 +211,11 @@ export class SearchBar {
     if (option.type == 'state') {
       // this.getYears(option);
       // window.location.href = `${this.v1Url}/dashboard/state?stateId=${option._id}`;
-      this.router.navigateByUrl(`/municipal-data/state/${option.slug}`);
+      this.router.navigate(['/municipal-data/state', option.slug]);
     }
 
     if (option.type == 'ulb') {
-      this.router.navigateByUrl(`/municipal-data/city/${option.slug}`);
+      this.router.navigate(['/municipal-data/city', option.slug]);
     }
 
     if (option.type == 'searchKeyword') {
