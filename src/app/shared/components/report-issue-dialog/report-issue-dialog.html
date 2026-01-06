@@ -1,0 +1,89 @@
+<h2 class="fw-bold m-0 p-4 bg-cfSecondary text-white">Report an issue</h2>
+<mat-dialog-content>
+  <form [formGroup]="reportIssueForm">
+    <div class="row">
+      <div class="col-12 m-0 px-3">
+        <p class="m-0 p-0 text-dark fw-semibold">
+          What kind of issues are you facing?<sup>*</sup>
+        </p>
+      </div>
+      <mat-radio-group class="row ms-2" formControlName="issueKind">
+        <mat-radio-button value="data_seems_wrong">
+          Data seems wrong
+        </mat-radio-button>
+        <mat-radio-button value="missing_data">Missing data</mat-radio-button>
+        <mat-radio-button value="ui_visual_bug">
+          UI/ Visual bug
+        </mat-radio-button>
+        <mat-radio-button value="suggestion">Suggestion</mat-radio-button>
+      </mat-radio-group>
+      <small>
+        <mat-error>{{ getErrorMessage("issueKind") }}</mat-error>
+      </small>
+    </div>
+
+    <div class="text-dark fw-semibold mt-2 mb-1">Description<sup>*</sup></div>
+    <mat-form-field appearance="outline">
+      <!-- <mat-label class="text-dark fw-semibold">Email Address</mat-label> -->
+      <textarea
+        matInput
+        formControlName="desc"
+        placeholder="Describe in detail what happened and what's not working."
+        required
+        rows="3"
+        #desc
+        (blur)="trimText($event)"
+      ></textarea>
+      <p
+        class="m-0 p-0 text-secondary flex-grow-1 text-end"
+        style="font-size: var(--fs-8)"
+      >
+        {{ desc.value.length }}/ {{ MAX_LEN_DESC }} characters.
+      </p>
+      <mat-error>{{ getErrorMessage("desc") }}</mat-error>
+    </mat-form-field>
+
+    <div class="text-dark fw-semibold mt-2 mb-1">Email Address<sup>*</sup></div>
+    <mat-form-field appearance="outline">
+      <!-- <mat-label class="text-dark fw-semibold">Email Address</mat-label> -->
+
+      <input
+        matInput
+        formControlName="email"
+        placeholder=""
+        required
+        (blur)="trimText($event)"
+      />
+      <mat-error>{{ getErrorMessage("email") }}</mat-error>
+    </mat-form-field>
+
+    <div class="mt-2 mb-1">
+      <label class="text-dark fw-semibold" for="file">Choose File&nbsp;</label>
+      <input
+        type="file"
+        id="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        formControlName="issueScreenshotUrl"
+      />
+      @if (getErrorMessage("issueScreenshotUrl")) {
+        <small>
+          <mat-error>{{ getErrorMessage("issueScreenshotUrl") }}</mat-error>
+        </small>
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+
+<div class="d-flex justify-content-between gap-2 p-3 px-4">
+  <i class="text-secondary flex-grow-1" style="font-size: var(--fs-8)">
+    Auto-captured context: {{ this.data.pageContext }}
+  </i>
+  <button
+    class="btn btn-sm btn-cfSecondary"
+    [disabled]="reportIssueForm.invalid"
+    (click)="submit()"
+  >
+    Submit
+  </button>
+</div>
