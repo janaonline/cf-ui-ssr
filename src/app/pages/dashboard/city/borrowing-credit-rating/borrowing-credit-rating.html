@@ -139,7 +139,7 @@
             </div>
 
             @if (chart.isDisabled) {
-            <div class="small text-muted">ESTIMATED*</div>
+            <div class="small text-muted">Data insufficient*</div>
             }
           </div>
 
@@ -177,9 +177,8 @@
         @if (isLoading()) {
         <app-pre-loader></app-pre-loader>
         }
-        @for (section of indicatorTableData(); track section.section) {
 
-        <!-- Section Header -->
+        @for (section of indicatorTableData(); track section.section) {
         <tr class="table-info fw-bold">
           <td colspan="6" class="text-center" style="border: 1px solid white;">
             {{ section.section }}
@@ -189,70 +188,79 @@
           </td>
         </tr>
 
-        <!-- Rows -->
-        @for (row of section.rows; track row.name) {
+        @if (hasDerivedRows(section)) {
         <tr>
+          <td colspan="6" class="text-center fw-semibold"
+            style="background-color: #9c9c9c; color: white; border-left: 4px solid #00a8cc;">
+            Debt data for FY {{ selectedYear }} was not reported;
+            any debt score shown is an indicative estimate.
+          </td>
+        </tr>
+        }
 
+        @if(!hasDerivedRows(section)){
+        @for (row of section.rows; track row.name; let i = $index) {
+        <tr>
           <td class="text-start table-light border-white">
             {{ row.name }}
           </td>
 
-          <td class="text-center border-white " style="border-right: 1px solid black !important;">
+          <td class="text-center border-white" style="border-right: 1px solid black !important;">
             {{ row.maxScore }}
           </td>
-          @if(getScoreCategory(row.score) === 'na') {
-          <td colspan="4" class="text-center fw-bold border-white text-white"
+
+          @if (row.score === 0) {
+          @if (getZeroRowSpan(section.rows, i) > 0) {
+          <td [attr.rowspan]="getZeroRowSpan(section.rows, i)" colspan="4" class="text-center border-white align-middle"
+            style="background-color: rgb(194, 194, 194);">
+            Not scored <br>
+            <small>Data not available for some indicators in this section</small>
+          </td>
+          }
+          }
+
+          @else if (getScoreCategory(row.score) === 'na') {
+          @if (getZeroRowSpan(section.rows, i) > 0) {
+          <td [attr.rowspan]="getZeroRowSpan(section.rows, i)" colspan="4" class="text-center border-white align-middle"
             style="background-color: rgb(194, 194, 194);">
             Data could not be sourced
           </td>
-          } @else {
-          <!-- Highest -->
+          }
+          }
+
+          @else {
           <td class="text-center fw-bold border-white" [class.text-success]="getScoreCategory(row.score) === 'highest'">
-            @if (getScoreCategory(row.score) === 'highest') {
-            {{ row.score }}
-            }
+            @if (getScoreCategory(row.score) === 'highest') { {{ row.score }} }
           </td>
-
-          <!-- High -->
           <td class="text-center fw-bold border-white">
-            @if (getScoreCategory(row.score) === 'high') {
-            {{ row.score }}
-            }
+            @if (getScoreCategory(row.score) === 'high') { {{ row.score }} }
           </td>
-
-          <!-- Low -->
           <td class="text-center fw-bold border-white">
-            @if (getScoreCategory(row.score) === 'low') {
-            {{ row.score }}
-            }
+            @if (getScoreCategory(row.score) === 'low') { {{ row.score }} }
           </td>
-
-          <!-- Lowest -->
           <td class="text-center fw-bold border-white">
-            @if (getScoreCategory(row.score) === 'lowest') {
-            {{ row.score }}
-            }
+            @if (getScoreCategory(row.score) === 'lowest') { {{ row.score }} }
           </td>
           }
+
         </tr>
         }
-
-
+        }
         }
       </tbody>
     </table>
   </div>
 
-  @if(this.outOfRange!=[]){
+  <!-- @if(this.outOfRange!=[]){
   @for (item of outOfRange; track item.indicator) {
   <div class="alert alert-dark mt-3">
-    <!-- <i class="bi bi-exclamation-triangle"></i> -->
+    
     <p>{{ item.message }}</p>
   </div>
   }
   }
   @else{
-  }
+  } -->
   }
   @else{
   <div class="border rounded bg-light p-4 my-4 row justify-content-between">

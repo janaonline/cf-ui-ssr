@@ -273,14 +273,29 @@ mat-paginator {
   color: #444;
 }
 
-.arrow {
-  transform: rotate(180deg);
-  transition: transform 0.3s ease;
-  color: #888;
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #444;
+  /* Add padding/margin as needed */
 }
 
-.arrow.open {
-  transform: rotate(0deg);
+.toggle-icon {
+  display: inline-block; /* Required for transform to work */
+  font-size: 24px; /* Adjust size of the plus sign */
+  font-weight: bold;
+  line-height: 1;
+  transition: transform 0.3s ease; /* Smooth rotation animation */
+}
+
+/* When the [class.open] is true in Angular */
+.toggle-icon.open {
+  transform: rotate(45deg); /* Rotates + to become x */
 }
 
 .accordion-content {

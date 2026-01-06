@@ -197,15 +197,28 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     sectionScores: any[],
     overallScore: number
   ) {
-    const charts = sectionScores.map((sec) => {
-      const isDebt =
-        sec.section?.toUpperCase().includes('DEBT');
+    // 1. Check if both Expenditure and Cash scores are 0
+    const isExpZero = sectionScores.find(s => s.section.toUpperCase().includes('EXPENDITURE'))?.score === 0;
+    const isCashZero = sectionScores.find(s => s.section.toUpperCase().includes('CASH'))?.score === 0;
 
-      const isDisabled = isDebt && sec.derived === true;
+    // The condition to trigger "Data Insufficient"
+    const showInsufficient = isExpZero && isCashZero;
+
+    const charts = sectionScores.map((sec) => {
+      const secName = sec.section?.toUpperCase();
+      const isDebt = secName.includes('DEBT');
+      const isExpenditure = secName.includes('EXPENDITURE');
+      const isCash = secName.includes('CASH');
+
+      // 2. Determine if this specific donut should show the "Insufficient" label
+      const isDataInsufficient = showInsufficient && (isDebt || isExpenditure || isCash);
+
+      const isDisabled = (isDebt && sec.derived === true) || isDataInsufficient;
 
       const color = isDisabled
         ? '#CFCFCF' // grey
         : this.getScoreColor(sec.score, sec.maxScore);
+
       return {
         ...this.createDoughnut(
           sec.section,
@@ -215,6 +228,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
           isDisabled
         ),
         title: sec.section.split('(')[0].trim(),
+        // 3. Add the subtitle property
+        subtitle: isDataInsufficient ? 'Data Insufficient' : '',
         isDisabled
       };
     });
@@ -235,17 +250,16 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         false
       ),
       title: 'Overall Score',
-      isDisabled: ''
-
+      subtitle: '', // Overall usually doesn't show this
+      isDisabled: false
     });
 
     return charts.sort((a, b) =>
       a.title === 'Overall Score' ? -1 : b.title === 'Overall Score' ? 1 : 0
     );
   }
-
   getScoreCategory(score: number | string) {
-    if (score === 'N/A' || score == null) return 'na';
+    if (score === 'N/A' || score == null || score === 0) return 'na';
 
     const numScore = Number(score);
     if (numScore >= 8 || numScore === 4) return 'highest';
@@ -253,7 +267,34 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
     if (numScore >= 4 || numScore === 2) return 'low';
     return 'lowest';
   }
+  getZeroRow(score: number | string) {
+    if (score === 0) return 0;
+    return '';
+  }
+  // Helper to calculate rowspan for 'na' rows
+  getZeroRowSpan(rows: any[], currentIndex: number): number {
+    const currentCategory = this.getZeroRow(rows[currentIndex].score);
 
+    // If it's not 'na', we don't need to span.
+    if (currentCategory !== 0) return 1;
+
+    // If the previous row was also 'na', this row is already covered by the previous rowspan.
+    // Return 0 so we don't render a cell here.
+    if (currentIndex > 0 && this.getZeroRow(rows[currentIndex - 1].score) === 0) {
+      return 0;
+    }
+
+    // Calculate how many consecutive 'na' rows exist starting from here
+    let count = 1;
+    for (let i = currentIndex + 1; i < rows.length; i++) {
+      if (this.getZeroRow(rows[i].score) === 0) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  }
   private getScoreColor(score: number, maxScore: number): string {
     if (!maxScore || maxScore <= 0) {
       return '#E6E6E6'; // fallback
@@ -323,6 +364,17 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
     this.currentSelectedButtonKey.set(key);
     // if (this.currentSelectedButtonKey() === this.buttons[1].key) this.getCreditRatingsData('onbuttonchange');
+  }
+  hasDerivedRows(section: any): boolean {
+    return section.section.includes('DEBT MANAGEMENT') && section.rows?.some((r: any) => r.derived === true)
+  }
+  getZeroScoreRows(section: any) {
+    return section.rows?.filter(
+      (r: any) => r.score === 0 || r.score === '0'
+    ) || [];
+  }
+  shouldHideRow(row: any): boolean {
+    return false; // never hide normal rows
   }
 
 
