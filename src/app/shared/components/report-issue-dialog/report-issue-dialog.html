@@ -103,6 +103,16 @@
   </form>
 </mat-dialog-content>
 
+@if(apiResMsg() ){
+<div
+  class="alert alert-info mx-3 my-1"
+  style="font-size: var(--fs-6)"
+  role="alert"
+>
+  {{ apiResMsg() }}
+</div>
+}
+
 <div class="d-flex justify-content-between gap-2 p-3 px-4">
   <i class="text-secondary flex-grow-1" style="font-size: var(--fs-8)">
     Auto-captured context: {{ this.data.pageContext }}

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -27,7 +27,7 @@ import { S3FileURLResponse } from '../../../core/models/s3Responses/fileURLRespo
 import { FileService } from '../../../core/services/file.service';
 import { GlobalLoaderService } from '../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../core/services/utility-service';
-import { ReportIssueService } from './report-isssue.service';
+import { ReportIssueService, ResponseData } from './report-isssue.service';
 @Component({
   selector: 'app-report-issue-dialog',
   standalone: true,
@@ -53,10 +53,14 @@ export class ReportIssueDialog implements OnInit {
       Validators.maxLength(this.MAX_LEN_DESC),
       Validators.minLength(this.MIN_LEN_DESC),
     ]),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\S+@\S+\.\S+$/),
+    ]),
     issueScreenshotUrl: new FormControl('', []),
   });
   file?: File;
+  apiResMsg = signal('');
 
   constructor(
     public dialogRef: MatDialogRef<ReportIssueDialog>,
@@ -97,6 +101,10 @@ export class ReportIssueDialog implements OnInit {
 
     if (control.errors['email']) {
       return 'Enter a valid email address';
+    }
+
+    if (control.errors['pattern']) {
+      return 'Invalid value';
     }
 
     return null;
@@ -164,7 +172,7 @@ export class ReportIssueDialog implements OnInit {
 
             return this.fileService
               .uploadFileToS3(file, res.data[0].file_url)
-              .pipe(map(() => res.data[0].file_url));
+              .pipe(map(() => res.data[0].path));
           }),
           catchError((err) => {
             console.error(err);
@@ -178,20 +186,28 @@ export class ReportIssueDialog implements OnInit {
     // Submit after file upload completes.
     upload$
       .pipe(
-        switchMap((fileUrl) => {
-          payload.issueScreenshotUrl = fileUrl || undefined;
+        switchMap((filePath) => {
+          payload.issueScreenshotUrl = filePath || undefined;
           return this.reportIssueService.submitIssue(payload);
         }),
         finalize(() => this.globalLoader.hideLoader())
       )
       .subscribe({
-        next: () => {
+        next: (res: ResponseData) => {
+          if (res.message.length > 0) {
+            this.apiResMsg.set(res.message.join(', '));
+          }
           this.resetForm();
           this.file = undefined;
-          this.utilityService.triggerSnackbar('Thank you!');
+          this.utilityService.triggerSnackbar(this.apiResMsg() || 'Thank you!');
+          setTimeout(() => {
+            this.dialogRef.close();
+          }, 800);
         },
         error: (err) => {
-          console.error(err);
+          if (err?.message?.length > 0) {
+            this.apiResMsg.set(err.message.join(', '));
+          }
           this.utilityService.triggerSnackbar(
             'Failed to send feedback, Please try again!',
             'snackbar-danger'
