@@ -1,0 +1,127 @@
+<h2 class="fw-bold m-0 p-4 bg-cfSecondary text-white">
+  Help City Finance improve
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="reportIssueForm">
+    <div class="row">
+      <div class="col-12 m-0 px-3">
+        <p class="m-0 p-0 text-dark fw-semibold">
+          What kind of issues are you facing?<sup>*</sup>
+        </p>
+      </div>
+      <mat-radio-group class="row ms-2" formControlName="issueKind">
+        <mat-radio-button value="data_seems_wrong">
+          Data seems wrong
+        </mat-radio-button>
+        <mat-radio-button value="missing_data">Missing data</mat-radio-button>
+        <mat-radio-button value="ui_visual_bug">
+          UI/ Visual bug
+        </mat-radio-button>
+        <mat-radio-button value="suggestion">Suggestion</mat-radio-button>
+      </mat-radio-group>
+      <small>
+        <mat-error>{{ getErrorMessage("issueKind") }}</mat-error>
+      </small>
+    </div>
+
+    <div class="text-dark fw-semibold mt-2 mb-1">Description<sup>*</sup></div>
+    <mat-form-field appearance="outline">
+      <!-- <mat-label class="text-dark fw-semibold">Email Address</mat-label> -->
+      <textarea
+        matInput
+        formControlName="desc"
+        placeholder="Describe in detail what happened and what's not working."
+        required
+        rows="3"
+        #desc
+        (blur)="trimText($event, 'desc')"
+      ></textarea>
+      <p
+        class="m-0 p-0 text-secondary flex-grow-1 text-end"
+        style="font-size: var(--fs-8)"
+      >
+        {{ desc.value.length }}/ {{ MAX_LEN_DESC }} characters.
+      </p>
+      <mat-error>{{ getErrorMessage("desc") }}</mat-error>
+    </mat-form-field>
+
+    <div class="text-dark fw-semibold mt-2 mb-1">Email Address<sup>*</sup></div>
+    <mat-form-field appearance="outline">
+      <!-- <mat-label class="text-dark fw-semibold">Email Address</mat-label> -->
+
+      <input
+        matInput
+        formControlName="email"
+        placeholder=""
+        required
+        (blur)="trimText($event, 'email')"
+      />
+      <mat-error>{{ getErrorMessage("email") }}</mat-error>
+    </mat-form-field>
+
+    <div class="mt-2 mb-1">
+      <label class="d-block my-2 text-dark fw-semibold" for="file">
+        Include screenshot&nbsp;
+      </label>
+      <div class="d-flex gap-2 align-items-center">
+        <label
+          tabindex="0"
+          for="file"
+          class="btn btn-sm btn-cfSecondary"
+          (keydown.enter)="fileInput.click()"
+          (keydown.space)="fileInput.click()"
+        >
+          Choose File <i class="bi bi-cloud-arrow-up-fill"></i>
+        </label>
+        <p class="m-0 p-0">
+          {{ file?.name || "No file choosen" }}
+          @if (file?.name) {
+          <i
+            class="bi bi-x-circle cursor-pointer"
+            title="Remove file"
+            (click)="removeFile()"
+          ></i>
+          }
+        </p>
+        <input
+          type="file"
+          id="file"
+          #fileInput
+          class="d-none"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          formControlName="issueScreenshotUrl"
+        />
+      </div>
+      @if (getErrorMessage("issueScreenshotUrl")) {
+      <small>
+        <mat-error>{{ getErrorMessage("issueScreenshotUrl") }}</mat-error>
+      </small>
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+
+@if(apiResMsg() ){
+<div
+  class="alert alert-info mx-3 my-1"
+  style="font-size: var(--fs-6)"
+  role="alert"
+>
+  {{ apiResMsg() }}
+</div>
+}
+
+<div class="d-flex justify-content-between gap-2 p-3 px-4">
+  <i class="text-secondary flex-grow-1" style="font-size: var(--fs-8)">
+    Auto-captured context: {{ this.data.pageContext }}
+  </i>
+  <button
+    class="btn btn-sm btn-cfSecondary"
+    [disabled]="reportIssueForm.invalid"
+    (click)="submit()"
+  >
+    Submit
+  </button>
+</div>
