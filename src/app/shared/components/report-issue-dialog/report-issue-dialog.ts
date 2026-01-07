@@ -14,9 +14,19 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
-import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { S3FileURLResponse } from '../../../core/models/s3Responses/fileURLResponse';
 import { FileService } from '../../../core/services/file.service';
+import { GlobalLoaderService } from '../../../core/services/loaders/global-loader.service';
+import { UtilityService } from '../../../core/services/utility-service';
 import { ReportIssueService } from './report-isssue.service';
 @Component({
   selector: 'app-report-issue-dialog',
@@ -43,20 +53,19 @@ export class ReportIssueDialog implements OnInit {
       Validators.maxLength(this.MAX_LEN_DESC),
       Validators.minLength(this.MIN_LEN_DESC),
     ]),
-    email: new FormControl('', [
-      Validators.required,
-      Validators.email,
-    ]),
+    email: new FormControl('', [Validators.required, Validators.email]),
     issueScreenshotUrl: new FormControl('', []),
   });
-  private file?: File;
+  file?: File;
 
   constructor(
     public dialogRef: MatDialogRef<ReportIssueDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { pageContext: string },
 
     private fileService: FileService,
-    private reportIssueService: ReportIssueService
+    private reportIssueService: ReportIssueService,
+    private utilityService: UtilityService,
+    private globalLoader: GlobalLoaderService
   ) {}
 
   ngOnInit() {}
@@ -93,9 +102,21 @@ export class ReportIssueDialog implements OnInit {
     return null;
   }
 
-  trimText(event: Event): void {
+  trimText(event: Event, controlName: string): void {
+    const control = this.reportIssueForm.get(controlName);
+    if (!control) return;
+
     const el = event.target as HTMLInputElement | HTMLTextAreaElement;
-    el.value = el.value.trim();
+    const trimmed = el.value.trim();
+
+    control.setValue(trimmed);
+  }
+
+  removeFile() {
+    this.file = undefined;
+
+    const el = document.getElementById('file') as HTMLInputElement;
+    if (el) el.value = '';
   }
 
   onFileSelected(event: Event): void {
@@ -117,13 +138,19 @@ export class ReportIssueDialog implements OnInit {
     }
   }
 
+  resetForm() {
+    this.reportIssueForm.reset();
+    this.removeFile();
+  }
+
   submit() {
     if (!this.reportIssueForm.valid) return;
+
     const file = this.file;
     const payload = { ...this.reportIssueForm.getRawValue() };
     let upload$: Observable<string>;
 
-    console.log(file);
+    this.globalLoader.showLoader();
 
     if (file) {
       // Get signed URL.
@@ -132,14 +159,12 @@ export class ReportIssueDialog implements OnInit {
         .pipe(
           switchMap((res: S3FileURLResponse) => {
             if (!res.success || !res.data?.length || !res.data[0].file_url) {
-              return throwError(() => new Error('Failed to get signed URL'));
+              return of('');
             }
 
-            // Upload to S3.
-            const signedUrl = res.data[0].file_url;
             return this.fileService
-              .uploadFileToS3(file, signedUrl)
-              .pipe(map(() => signedUrl));
+              .uploadFileToS3(file, res.data[0].file_url)
+              .pipe(map(() => res.data[0].file_url));
           }),
           catchError((err) => {
             console.error(err);
@@ -154,19 +179,23 @@ export class ReportIssueDialog implements OnInit {
     upload$
       .pipe(
         switchMap((fileUrl) => {
-          if (fileUrl) payload.issueScreenshotUrl = fileUrl;
-          else payload.issueScreenshotUrl = undefined;
+          payload.issueScreenshotUrl = fileUrl || undefined;
           return this.reportIssueService.submitIssue(payload);
-        })
-        // finalize(() => (this.isSubmitting = false))
+        }),
+        finalize(() => this.globalLoader.hideLoader())
       )
       .subscribe({
         next: () => {
-          this.reportIssueForm.reset();
+          this.resetForm();
           this.file = undefined;
+          this.utilityService.triggerSnackbar('Thank you!');
         },
         error: (err) => {
           console.error(err);
+          this.utilityService.triggerSnackbar(
+            'Failed to send feedback, Please try again!',
+            'snackbar-danger'
+          );
         },
       });
   }

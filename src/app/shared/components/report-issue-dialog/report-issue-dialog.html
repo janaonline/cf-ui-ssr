@@ -1,4 +1,7 @@
-<h2 class="fw-bold m-0 p-4 bg-cfSecondary text-white">Report an issue</h2>
+<h2 class="fw-bold m-0 p-4 bg-cfSecondary text-white">
+  Help City Finance improve
+</h2>
+
 <mat-dialog-content>
   <form [formGroup]="reportIssueForm">
     <div class="row">
@@ -32,7 +35,7 @@
         required
         rows="3"
         #desc
-        (blur)="trimText($event)"
+        (blur)="trimText($event, 'desc')"
       ></textarea>
       <p
         class="m-0 p-0 text-secondary flex-grow-1 text-end"
@@ -52,24 +55,49 @@
         formControlName="email"
         placeholder=""
         required
-        (blur)="trimText($event)"
+        (blur)="trimText($event, 'email')"
       />
       <mat-error>{{ getErrorMessage("email") }}</mat-error>
     </mat-form-field>
 
     <div class="mt-2 mb-1">
-      <label class="text-dark fw-semibold" for="file">Choose File&nbsp;</label>
-      <input
-        type="file"
-        id="file"
-        (change)="onFileSelected($event)"
-        accept="image/*"
-        formControlName="issueScreenshotUrl"
-      />
+      <label class="d-block my-2 text-dark fw-semibold" for="file">
+        Include screenshot&nbsp;
+      </label>
+      <div class="d-flex gap-2 align-items-center">
+        <label
+          tabindex="0"
+          for="file"
+          class="btn btn-sm btn-cfSecondary"
+          (keydown.enter)="fileInput.click()"
+          (keydown.space)="fileInput.click()"
+        >
+          Choose File <i class="bi bi-cloud-arrow-up-fill"></i>
+        </label>
+        <p class="m-0 p-0">
+          {{ file?.name || "No file choosen" }}
+          @if (file?.name) {
+          <i
+            class="bi bi-x-circle cursor-pointer"
+            title="Remove file"
+            (click)="removeFile()"
+          ></i>
+          }
+        </p>
+        <input
+          type="file"
+          id="file"
+          #fileInput
+          class="d-none"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          formControlName="issueScreenshotUrl"
+        />
+      </div>
       @if (getErrorMessage("issueScreenshotUrl")) {
-        <small>
-          <mat-error>{{ getErrorMessage("issueScreenshotUrl") }}</mat-error>
-        </small>
+      <small>
+        <mat-error>{{ getErrorMessage("issueScreenshotUrl") }}</mat-error>
+      </small>
       }
     </div>
   </form>
