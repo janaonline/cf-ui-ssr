@@ -14,6 +14,7 @@ export interface PayloadData {
   desc: string;
   email: string;
   issueScreenshotUrl?: string;
+  autoCaptureContext: string;
 }
 
 @Injectable({

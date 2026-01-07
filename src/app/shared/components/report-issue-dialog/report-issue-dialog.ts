@@ -28,6 +28,7 @@ import { FileService } from '../../../core/services/file.service';
 import { GlobalLoaderService } from '../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../core/services/utility-service';
 import { ReportIssueService, ResponseData } from './report-isssue.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-report-issue-dialog',
   standalone: true,
@@ -69,7 +70,8 @@ export class ReportIssueDialog implements OnInit {
     private fileService: FileService,
     private reportIssueService: ReportIssueService,
     private utilityService: UtilityService,
-    private globalLoader: GlobalLoaderService
+    private globalLoader: GlobalLoaderService,
+    private router: Router
   ) {}
 
   ngOnInit() {}
@@ -188,6 +190,7 @@ export class ReportIssueDialog implements OnInit {
       .pipe(
         switchMap((filePath) => {
           payload.issueScreenshotUrl = filePath || undefined;
+          payload.autoCaptureContext = this.router.url;
           return this.reportIssueService.submitIssue(payload);
         }),
         finalize(() => this.globalLoader.hideLoader())
