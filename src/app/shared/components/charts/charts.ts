@@ -169,6 +169,7 @@ export class Charts implements AfterViewInit, OnDestroy {
       //   });
       //   break;
       // For gauge chart use gaugeChartOptions
+      case 'doughnutChart':
       case 'gaugeChart':
         const plugins = [];
         if (config.options?.plugins?.customDataLabel?.enabled) {
