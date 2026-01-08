@@ -1,0 +1,29 @@
+@use '@angular/material' as mat;
+@include mat.core();
+
+mat-radio-button {
+    @include mat.radio-density(-3);
+}
+
+
+* {
+    font-weight: var(--fw-medium);
+    --mat-radio-label-text-weight: var(--fw-medium);
+    --mat-checkbox-label-text-weight: var(--fw-medium);
+
+    font-family: var(--ff-base);
+    --mat-radio-label-text-font: var(--ff-base);
+    --mat-checkbox-label-text-font: var(--ff-base);
+
+    --mat-radio-label-text-size: 0.85rem;
+}
+
+::placeholder,
+textarea,
+input {
+    font-size: var(--fs-6);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 3vw, 1.75rem);
+}
