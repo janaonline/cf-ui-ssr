@@ -1,26 +1,35 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { GoogleAnalyticsService } from './core/services/google-analytics.service';
 import { GlobalLoaderService } from './core/services/loaders/global-loader.service';
 import { LocalStorageService } from './core/services/local-storage.service';
-import { FeedbackWidget } from './shared/components/feedback-widget/feedback-widget';
+import { ReportIssueDialog } from './shared/components/report-issue-dialog/report-issue-dialog';
 import { Footer } from './shared/components/template/footer/footer';
 import { Header } from './shared/components/template/header/header';
+const INCLUDED_ROUTES: string[] = ['^/municipal-data'];
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer, FeedbackWidget, MatProgressSpinnerModule],
+  imports: [RouterOutlet, Header, Footer, MatProgressSpinnerModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
   protected title = 'cf-ui-ssr';
   showLoader: unknown;
 
   loaderService = inject(GlobalLoaderService);
+  readonly dialog = inject(MatDialog);
+  showReportIssueBtn = signal(false);
 
-  constructor(private gaService: GoogleAnalyticsService, private localStorage: LocalStorageService) {
+  constructor(
+    private gaService: GoogleAnalyticsService,
+    private localStorage: LocalStorageService,
+    private router: Router
+  ) {
     // const userData = {};
     // const token = '';
     // localStorage.setItem('userData', JSON.stringify(userData));
@@ -30,6 +39,7 @@ export class App {
 
   ngOnInit(): void {
     this.gaService.init();
+    this.trackReportIssueBtnVisibility();
 
     // this.router.events
     //   .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
@@ -38,4 +48,31 @@ export class App {
     //   });
   }
 
+  trackReportIssueBtnVisibility() {
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        map((event: NavigationEnd) => event.urlAfterRedirects)
+      )
+      .subscribe((url) => {
+        if (this.isIncludedRoute(url)) {
+          this.showReportIssueBtn.set(true);
+        } else {
+          this.showReportIssueBtn.set(false);
+        }
+      });
+  }
+
+  private isIncludedRoute(url: string): boolean {
+    return INCLUDED_ROUTES.some((pattern) => new RegExp(pattern).test(url));
+  }
+
+  openDialog() {
+    const dialogRef = this.dialog.open(ReportIssueDialog, {
+      data: { pageContext: this.router.url },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog closed with ${result}`);
+    });
+  }
 }

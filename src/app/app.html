@@ -4,7 +4,14 @@
   <app-header></app-header>
 
   <router-outlet />
-  <app-feedback-widget></app-feedback-widget>
+  <!-- <app-feedback-widget></app-feedback-widget> -->
+
+  @if(showReportIssueBtn()) {
+  <button class="report-issue" matButton (click)="openDialog()">
+    <i class="bi bi-flag"></i>
+    &nbsp;Help City Finance improve
+  </button>
+  }
 </div>
 <app-footer></app-footer>
 
