@@ -70,7 +70,7 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
     Slb,
     BalancesheetIncomestatement,
     FinancialPerformance,
-    FinancialIndicator
+    // FinancialIndicator
   ],
   templateUrl: './city.html',
   styleUrl: './city.scss',
