@@ -25,7 +25,12 @@
     }
 }
 
-
+.ellipsis {
+  display: block;          /* required */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .card-body {
     max-width: 250px;
     text-overflow: ellipsis;
