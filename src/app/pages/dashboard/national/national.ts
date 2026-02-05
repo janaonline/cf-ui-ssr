@@ -138,6 +138,7 @@ export class National implements OnInit {
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
     this.nationalService.selectedTabName.set(this.dashboardTabs()[idx].name);
+    this.nationalService.selectedButtonKey.set('');
   }
 
   // Unsubscribe.
