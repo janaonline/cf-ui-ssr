@@ -119,6 +119,18 @@ export class Spotlight {
         "name": "XV FC Operational Guidelines",
         "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/Annexure-I_FC-XV_operational_guidelines_for_Urban_Local_Body_for_2021-26.pdf",
         "badge": ""
+      },
+      {
+        "imageUrl": "/assets/images/homepage_v2/spotlight/xvi-fc.png",
+        "name": "Report of the XVI-FC Volume 1",
+        "downloadUrl": "https://www.indiabudget.gov.in/doc/16fcvol1.pdf#page=215",
+        "badge": ""
+      },
+      {
+        "imageUrl": "/assets/images/homepage_v2/spotlight/urban_fiscal.png",
+        "name": "A Blueprint for Urban Fiscal Devolution",
+        "downloadUrl": "https://www.janaagraha.org/wp-content/uploads/2026/02/A-Blueprint-to-Urban-Fiscal-Devolution-Embargoed.pdf%22",
+        "badge": ""
       }
     ];
   goToMarketDashboard() {
