@@ -1,7 +1,7 @@
-/* chart.css */
+// /* chart.css */
 .chart-container {
     width: 100%;
-    height: 100%;
+    //  height: 100%;
     // margin: auto;
     // display: flex;
     // flex-direction: column;
@@ -12,3 +12,14 @@
     // max-width: max(450px, 50vw);
     // border: 1px solid violet;
 }
+// .chart-container {
+//   position: relative;
+//   width: 100%;
+//   min-height: 320px;   /* safe default */
+// }
+
+// canvas {
+//   display: block;
+//   width: 100% !important;
+//   height: 100% !important;
+// }
