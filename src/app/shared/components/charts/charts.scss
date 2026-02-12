@@ -12,14 +12,17 @@
 //     // max-width: max(450px, 50vw);
 //     // border: 1px solid violet;
 // }
-.chart-container {
-  position: relative;
-  width: 100%;
-  min-height: 320px;   /* safe default */
-}
+// .chart-container {
+//   position: relative;
+//   width: 100%;
+//   height: clamp(240px, 40vh, 380px);
+// }
 
-canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-}
+// canvas {
+//   display: block;
+//   width: 100% !important;
+//   height: 100% !important;
+// }
+:host { display: block; height: 100%; }
+.some-parent { height: 100%; }
+.chart-container { height: 100%; }
