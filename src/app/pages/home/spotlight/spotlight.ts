@@ -114,6 +114,18 @@ export class Spotlight {
         "name": "XV FC Operational Guidelines",
         "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/Annexure-I_FC-XV_operational_guidelines_for_Urban_Local_Body_for_2021-26.pdf",
         "badge": ""
+      },
+      {
+        "imageUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/xvi-fc_2b83c6f0-b7f7-472e-9741-d856021adb81.png",
+        "name": "Report of the XVI-FC Volume 1",
+        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/xvi-fc_a7627d0e-5f18-4322-8c31-4a7ef9ecb3ad.pdf",
+        "badge": ""
+      },
+      {
+        "imageUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources//blue-print_671e77ae-5c30-4a75-89c1-f6a0a6535062.png",
+        "name": "A Blueprint for Urban Fiscal Devolution",
+        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/blue-print_63094994-fcba-430d-8265-d0dcafa501c9.pdf",
+        "badge": ""
       }
     ];
 
