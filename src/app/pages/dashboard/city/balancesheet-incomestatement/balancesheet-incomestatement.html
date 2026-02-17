@@ -145,6 +145,10 @@
         <button type="button" class="btn-icon" (click)="onFileClick('excel', item.value)" aria-label="Open Excel">
           <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-4"></i>
         </button>
+        } @else if (element[item.key] === 'doc') {
+        <button type="button" class="btn-icon" (click)="onFileClick('doc', item.value)" aria-label="Open Document">
+          <i class="bi bi-file-earmark-text-fill text-primary fs-4"></i>
+        </button>
         } @else {
         {{ element[item.key] }}
         }

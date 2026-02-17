@@ -8,7 +8,7 @@ import {
   signal,
   TransferState,
 } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, delay, map, Observable, of } from 'rxjs';
 import {
   AfsPopupData,
   BondIssuances,
@@ -270,5 +270,19 @@ export class CommonService {
     if (_id) params = params.set('_id', _id);
     if (keys.length > 0) params = params.set('keys', JSON.stringify(keys));
     return this.http.get<IULB>(`${environment.api.url}`, { params });
+  }
+
+  // Get auditor report - OCR version.
+  getAuditorReportOcr(ulbId: string, year: string) {
+    // Simulate API call.
+    return of({
+      success: true,
+      message: "Fetched doc",
+      file: {
+        // url: '',
+        url: '/FR_Module/Shared/What_is_api_9cf47070-3a60-4560-8356-bbf76ba3b3c2.docx',
+        name: 'What_is_api'
+      }
+    }).pipe(delay(1000))
   }
 }

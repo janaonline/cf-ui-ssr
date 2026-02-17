@@ -28,6 +28,7 @@ import { IULB } from '../../../../core/models/ulb';
 import { InrFormatPipe } from '../../../../core/pipes/inr-format.pipe';
 import { CommonService } from '../../../../core/services/common.service';
 import { EXCEL_CURRENCY_FORMAT, ExcelService } from '../../../../core/services/excel';
+import { GlobalLoaderService } from '../../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../../core/services/utility-service';
 import { AfsPdfsDialog } from '../../../../shared/components/afs-pdfs-dialog/afs-pdfs-dialog';
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
@@ -151,6 +152,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   downloadReportsDataSource: DownloadReportElement[] = [
     { type: 'Raw PDF', key: 'pdf' },
     { type: 'Raw Excel', key: 'excel' },
+    { type: 'Auditor Report OCR', key: 'doc' },
   ];
 
   constructor(
@@ -161,6 +163,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private titleCasePipe: TitleCasePipe,
     private excelService: ExcelService,
+    private globalLoaderService: GlobalLoaderService,
   ) { }
 
   ngOnInit(): void {
@@ -346,9 +349,28 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   // ----- On selecting file icon from download report table ----
-  // TODO: add loader.
-  onFileClick(fileType: 'pdf' | 'excel', selectedYear: string): void {
+  onFileClick(fileType: 'pdf' | 'excel' | 'doc', selectedYear: string): void {
     // console.log('File clicked: ', selectedYear, fileType);
+    if (fileType === 'doc') {
+      this.globalLoaderService.showLoader();
+      this.commonService.getAuditorReportOcr(this.ulbIdSignal(), selectedYear).subscribe({
+        next: (res) => {
+          if (!res.file.url) {
+            this.openDialog(null, 'notFound');
+            this.globalLoaderService.hideLoader();
+            return;
+          }
+          const fileUrl = environment.STORAGE_BASEURL + res.file.url;
+          this.utilityService.fetchFile(fileUrl, res.file.name);
+        },
+        error: () => {
+          this.openDialog(null, 'notFound');
+          console.error("Failed to get Auditor report");
+          this.globalLoaderService.hideLoader();
+        }
+      })
+      return;
+    }
 
     // Open file - 2015 to 2019.
     const yearSplit = Number(selectedYear.split('-')[0]);
@@ -358,19 +380,22 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     }
 
     // Open dialog box with AFS data - 2019 onwards.
+    this.globalLoaderService.showLoader();
     this.commonService
       .getReports(this.ulbIdSignal(), selectedYear)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          // console.log('getReports', res);
           if (res && res['success']) {
             const type = res['data'][fileType].length ? fileType : 'notFound';
             this.openDialog(res['data'], type);
+            this.globalLoaderService.hideLoader();
           }
         },
-        error: (error: Error) =>
-          console.error('Failed to get file: onFileClick()', error),
+        error: (error: Error) => {
+          console.error('Failed to get file: onFileClick()', error);
+          this.globalLoaderService.hideLoader();
+        }
       });
   }
 
