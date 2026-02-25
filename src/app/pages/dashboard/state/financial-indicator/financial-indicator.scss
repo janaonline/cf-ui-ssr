@@ -7,6 +7,10 @@
     flex-grow: 1;
     // border: 1px solid green;
 }
+.dashboard-section {
+  height: auto !important;
+  overflow:  hidden;   /* or just remove overflow property */
+}
 
 .gaugeChart,
 .pieChart {

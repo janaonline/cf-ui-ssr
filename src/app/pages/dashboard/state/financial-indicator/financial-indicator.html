@@ -1,4 +1,4 @@
-<section class="container my-4">
+<section class="container my-4 dashboard-section">
     <div class="position-relative">
         @if(dashboardTabData()) {
         <!-- Main Buttons -->
@@ -208,7 +208,7 @@
         <app-pre-loader></app-pre-loader>
         }
         @else {
-        <div class="row bg-light p-3 rounded" style="height: 500px;" id="barChart">
+        <div class="row bg-light p-3 rounded"  id="barChart">
             <div class="row justify-content-between align-items-center">
                 <div class="col-auto">
                     @if(stateServiceLabel) {
