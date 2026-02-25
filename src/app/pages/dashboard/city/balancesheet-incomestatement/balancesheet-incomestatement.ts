@@ -35,6 +35,7 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
+type FileType = 'pdf' | 'excel' | 'doc' | 'txt';
 
 type DownloadReportElement = {
   type: string;
@@ -61,6 +62,8 @@ const COLUMN_CONFIG: Record<
     numFmt: EXCEL_CURRENCY_FORMAT,
   }
 };
+
+const DirectDownload: FileType[] = ['doc', 'txt'];
 
 @Component({
   selector: 'app-balancesheet-incomestatement',
@@ -152,7 +155,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   downloadReportsDataSource: DownloadReportElement[] = [
     { type: 'Raw PDF', key: 'pdf' },
     { type: 'Raw Excel', key: 'excel' },
-    { type: 'Auditor Report OCR', key: 'doc' },
+    { type: 'Auditor Report OCR', key: 'txt' },
   ];
 
   constructor(
@@ -349,19 +352,19 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   }
 
   // ----- On selecting file icon from download report table ----
-  onFileClick(fileType: 'pdf' | 'excel' | 'doc', selectedYear: string): void {
+  onFileClick(fileType: FileType, selectedYear: string): void {
     // console.log('File clicked: ', selectedYear, fileType);
-    if (fileType === 'doc') {
+    if (DirectDownload.includes(fileType)) {
       this.globalLoaderService.showLoader();
       this.commonService.getAuditorReportOcr(this.ulbIdSignal(), selectedYear).subscribe({
         next: (res) => {
-          if (!res.file.url) {
+          if (!res.data?.file?.url) {
             this.openDialog(null, 'notFound');
             this.globalLoaderService.hideLoader();
             return;
           }
-          const fileUrl = environment.STORAGE_BASEURL + res.file.url;
-          this.utilityService.fetchFile(fileUrl, res.file.name);
+          const fileUrl = environment.STORAGE_BASEURL + '/' + res?.data?.file?.url;
+          this.utilityService.fetchFile(fileUrl, res?.data?.file?.name || `Auditor_Report_${this.ulbName()}_${selectedYear}.txt`);
         },
         error: () => {
           this.openDialog(null, 'notFound');
@@ -387,7 +390,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (res && res['success']) {
-            const type = res['data'][fileType].length ? fileType : 'notFound';
+            const type = (res['data'] as Record<string, any>)[fileType]?.length ? fileType : 'notFound';
             this.openDialog(res['data'], type);
             this.globalLoaderService.hideLoader();
           }

@@ -273,16 +273,21 @@ export class CommonService {
   }
 
   // Get auditor report - OCR version.
-  getAuditorReportOcr(ulbId: string, year: string) {
-    // Simulate API call.
-    return of({
-      success: true,
-      message: "Fetched doc",
-      file: {
-        // url: '',
-        url: '/FR_Module/Shared/What_is_api_9cf47070-3a60-4560-8356-bbf76ba3b3c2.docx',
-        name: 'What_is_api'
-      }
-    }).pipe(delay(1000))
+  getAuditorReportOcr(ulbId: string, year: string): Observable<{ success: boolean, data: AuditorReport }> {
+    let params = new HttpParams();
+    if (ulbId) params = params.set('ulbId', ulbId);
+    if (year) params = params.set('year', year);
+    return this.http.get<{ success: boolean, data: AuditorReport }>(
+      `${environment.api.urlV2}afs-digitization/get-auditors-report`,
+      { params }
+    );
   }
+}
+
+export interface AuditorReport {
+  _id: string;
+  file: {
+    name: string;
+    url: string;
+  };
 }
