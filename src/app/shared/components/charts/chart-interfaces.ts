@@ -12,7 +12,8 @@ export type ChartType =
   | 'mixedChart'
   | 'gaugeChart'
   | 'doughnut'
-  | 'scatterChart';
+  | 'scatterChart'
+  | 'doughnutChart';
 
 export interface ChartDataSet {
   type?: 'bar' | 'line'; // For mixed charts

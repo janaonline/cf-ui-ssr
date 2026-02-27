@@ -15,7 +15,7 @@
 <div class="d-flex flex-wrap justify-content-center gap-1">
     @for (chartData of chartsData(); track $index) {
     <div [class]="chartData.chartType === 'barChart' ? 'flex-grow-1 overflow-x-auto' : ''">
-        @if(chartData.chartType ==='gaugeChart') {
+        @if(chartData.chartType ==='doughnutChart') {
         <p class="custom-font-size-7 m-0 text-center">{{chartData.datasets[0].label }}</p>
         }
         <div class="" [class]="chartData.chartType">

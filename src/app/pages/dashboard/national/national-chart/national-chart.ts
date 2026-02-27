@@ -4,7 +4,7 @@ import { MaterialModule } from "../../../../material.module";
 import { ChartConfig } from '../../../../shared/components/charts/chart-interfaces';
 import { Charts } from "../../../../shared/components/charts/charts";
 import { NationalService } from '../national.service';
-import { barChartConfig, deficitBarChartData, guageChartConfig } from './chartConfig';
+import { barChartConfig, deficitBarChartData, doughnutChartConfig } from './chartConfig';
 const LINE_COLOR = '#f43f5e';
 @Component({
   selector: 'app-national-chart',
@@ -82,31 +82,31 @@ export class NationalChart {
   createGaugeChartData() {
     const chartData: any = [];
     this.gaugechartBGColor = this.responseData.colourArray.sort((a: any, b: any) => a.lineitem.localeCompare(b.lineitem)).map((ele: any) => ele.colour);
-    const gaugeChart = this.generateGuageData(this.responseData, 'national');
+    const gaugeChart = this.generateDoughnutData(this.responseData, 'national');
     gaugeChart.datasets[0].label = 'National';
     chartData.push(gaugeChart);
 
     if (this.stateName) {
-      const gaugeChartState = this.generateGuageData(this.responseData, 'state');
+      const gaugeChartState = this.generateDoughnutData(this.responseData, 'state');
       gaugeChartState.datasets[0].label = this.stateName;
       chartData.push(gaugeChartState);
     }
 
     Object.keys(this.responseData.individual).forEach((ele, i) => {
-      const gaugeChart = this.generateGuageData(this.responseData.individual, ele);
+      const gaugeChart = this.generateDoughnutData(this.responseData.individual, ele);
       chartData.push(gaugeChart);
     });
     // console.log('chartData---', chartData);
     this.chartsData.set(chartData)
   }
 
-  generateGuageData(typeData: any, ele: string) {
+  generateDoughnutData(typeData: any, ele: string) {
     const labels: any[] = Object.keys(typeData[ele]).sort(([a], [b]) => a.localeCompare(b));
     const data = labels.map((line) => typeData[ele][line]);
     // console.log('typeData', typeData[ele], ' ele', ele, 'this.getPercentageData(data)', this.getPercentageData(data));
 
 
-    const gaugeChart = JSON.parse(JSON.stringify(guageChartConfig));
+    const gaugeChart = JSON.parse(JSON.stringify(doughnutChartConfig));
     gaugeChart.chartId = 'chart-' + ele;
     gaugeChart.datasets[0].label = ele;
     gaugeChart.datasets[0].data = this.getPercentageData(data);

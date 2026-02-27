@@ -5,7 +5,7 @@
             <!-- <img [src]="item.imageUrl" alt="carouselImage" /> -->
             <img [src]="item?.imageUrl | toStorageUrl" class="card-img-top" [alt]="item.label" width="250" height="200">
         </div>
-        <a class="card-text card-label" [href]="item?.downloadUrl | toStorageUrl" target="_blank">
+        <a class="card-text card-label ellipsis" [href]="item?.downloadUrl | toStorageUrl" target="_blank">
             {{ item.name }}
         </a>
     </div>
