@@ -392,20 +392,33 @@ export class FinancialPerformance {
               this.warningMessage = `${this.ulbName()}'s debt-to-asset ratio is effectively zero, as its outstanding debt is negligible relative to its asset base.`;
             }
           } else if (keyType === 'expenditure') {
-            const capex = dataSource
-              .find((i: any) => i.name === "Total Expenditure (Cr)")
-              .children[1]
-              .yearData;
-            // console.log(capex[2], 'this is capexxx')
-            if (this.isNegativeValue(capex[2])) {
+            const capexData = data.response.CapexflagStatus.flag
+            if (capexData === 'INCOMPLETE_LINE_ITEMS') {
               this.isWarningMessage = true;
-              this.warningMessage = `As per the methodology applied, the calculation for capital expenditure resulted in a negative value. Since negative values are invalid, capex has been marked as not available. `;
+              this.warningMessage = ` Since ${this.ulbName()} has not reported Gross Block or CWIP in its financial statements, capex and related indicators have not been calculated.`;
             }
-            const len = capex.length;
-            if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
+            else if (capexData === 'ZERO_TOTAL_CAPEX') {
               this.isWarningMessage = true;
-              this.warningMessage = `Since ${this.ulbName()} has not reported capital expenditure in its annual financial statements, all capex-related indicators have not been calculated.`;
+              this.warningMessage = `${this.ulbName()} has reported Gross Block + CWIP as zero. Capital expenditure is inferred from changes in this value; therefore, capex and related indicators have not been calculated.`;
             }
+            else if (capexData === 'NEGATIVE_GROWTH' || capexData === 'DATA_NOT_FOUND') {
+              this.isWarningMessage = true;
+              this.warningMessage = `${this.ulbName()} did not record an increase in Gross Block + CWIP compared to the previous year. As a result, capital expenditure has not been calculated.`;
+            }
+            // const capex = dataSource
+            //   .find((i: any) => i.name === "Total Expenditure (Cr)")
+            //   .children[1]
+            //   .yearData;
+            // // console.log(capex[2], 'this is capexxx')
+            // if (this.isNegativeValue(capex[2])) {
+            //   this.isWarningMessage = true;
+            //   this.warningMessage = `As per the methodology applied, the calculation for capital expenditure resulted in a negative value. Since negative values are invalid, capex has been marked as not available. `;
+            // }
+            // const len = capex.length;
+            // if (capex[len - 1] === 'N/A' || capex[len - 2] === 'N/A') {
+            //   this.isWarningMessage = true;
+            //   this.warningMessage = `Since ${this.ulbName()} has not reported capital expenditure in its annual financial statements, all capex-related indicators have not been calculated.`;
+            // }
           }
           // console.log(this.dataSource(), 'this is daaaa')
           this.buttonClicked(dataSource[1]);

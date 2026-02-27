@@ -42,7 +42,7 @@ import { StateSearch } from '../../../shared/components/state-search/state-searc
 import { DashboardService } from '../dashboard-service';
 import { BalancesheetIncomestatement } from './balancesheet-incomestatement/balancesheet-incomestatement';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
-// import { FinancialPerformance } from './financial-performance/financial-performance';
+import { FinancialPerformance } from './financial-performance/financial-performance';
 import { Slb } from './slb/slb';
 import { FinancialIndicator } from "./financial-indicator/financial-indicator";
 
@@ -69,8 +69,8 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
     BorrowingCreditRating,
     Slb,
     BalancesheetIncomestatement,
-    // FinancialPerformance,
-    FinancialIndicator
+    FinancialPerformance,
+    // FinancialIndicator
   ],
   templateUrl: './city.html',
   styleUrl: './city.scss',
