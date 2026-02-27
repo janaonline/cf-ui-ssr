@@ -59,10 +59,10 @@
     </div>
 
     <!-- Scroll Down Indicator -->
-    <p class="scroll-indicator text-decoration-none" aria-label="Scroll down to explore">
+    <!-- <p class="scroll-indicator text-decoration-none" aria-label="Scroll down to explore">
         <span class="small d-block mb-1">Scroll down to explore</span>
         <span class="scroll-arrow"></span>
-    </p>
+    </p> -->
 </section>
 <!-- ================= FILTER SECTION ================= -->
 <section id="explore-section" class="container py-4 sticky-filter">
@@ -322,7 +322,7 @@
     <div class="accordion-item">
         <div class="accordion-header" (click)="toggleSection('readiness')">
             <h3>What does market readiness mean?</h3>
-            <span class="arrow" [class.open]="sections.readiness">^</span>
+            <span class="toggle-icon" [class.open]="sections.readiness">+</span>
         </div>
         <div class="accordion-content" *ngIf="sections.readiness">
             <p>
@@ -338,7 +338,7 @@
     <div class="accordion-item">
         <div class="accordion-header" (click)="toggleSection('basis')">
             <h3>What is the basis for this assessment and scoring logic?</h3>
-            <span class="arrow" [class.open]="sections.basis">^</span>
+            <span class="toggle-icon" [class.open]="sections.basis">+</span>
         </div>
         <div class="accordion-content" *ngIf="sections.basis">
             <p>
@@ -355,7 +355,7 @@
     <div class="accordion-item">
         <div class="accordion-header" (click)="toggleSection('bands')">
             <h3>What do the bands and scores mean?</h3>
-            <span class="arrow" [class.open]="sections.bands">^</span>
+            <span class="toggle-icon" [class.open]="sections.bands">+</span>
         </div>
         <div class="accordion-content" *ngIf="sections.bands">
             <p>
