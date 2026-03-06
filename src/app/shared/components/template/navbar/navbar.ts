@@ -62,7 +62,7 @@ export class Navbar {
         //   name: 'Market Readiness Assessment',
         //   href: this.vUrl + '/municipal-data/market-readiness',
         // },
-        // { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
+         { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
         // { name: 'Municipal Bonds', href: '/municipal-bonds' },
         // { name: 'Municipal Budgets', href: '/municipal-budgets' },
       ],
