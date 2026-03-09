@@ -1,4 +1,4 @@
-<section class="container my-4 dashboard-section">
+<section class="container my-4">
     <div class="position-relative">
         @if(dashboardTabData()) {
         <!-- Main Buttons -->
@@ -164,13 +164,16 @@
                 <app-pre-loader></app-pre-loader>
                 }
                 @else {
-                <div class="row">
-                    <div class="col-12">
+                <!-- <div class="row"> -->
+                    <!-- <div class="col-12"> -->
+                       
+                        <div class="scatterChart">
                         @if(scatterChart().datasets.length !== 0) {
-                        <app-charts [chartConfig]="scatterChart()"></app-charts>
-                        }
-                    </div>
-                </div>
+                                 <app-charts [chartConfig]="scatterChart()"></app-charts>
+                                }
+                            </div>
+                    <!-- </div> -->
+                <!-- </div> -->
                 }
             </div>
         </div>
@@ -208,7 +211,7 @@
         <app-pre-loader></app-pre-loader>
         }
         @else {
-        <div class="row bg-light p-3 rounded"  id="barChart">
+        <div class="row bg-light p-3 rounded" style="height: 500px;" id="barChart">
             <div class="row justify-content-between align-items-center">
                 <div class="col-auto">
                     @if(stateServiceLabel) {
