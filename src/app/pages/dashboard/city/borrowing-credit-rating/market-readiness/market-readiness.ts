@@ -35,8 +35,8 @@ interface CityScore {
   city: string;
   populationCategory: string;
   state: string;
-  bandPrevYear: string | null;
-  bandCurrYear: string | null;
+  prevScore: number | null;
+  currScore: number | null;
   score: number;
   delta: number;
   nextMilestone: string

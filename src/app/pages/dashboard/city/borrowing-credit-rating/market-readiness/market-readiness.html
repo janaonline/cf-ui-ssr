@@ -194,7 +194,7 @@
                         }
                     </th>
 
-                    <th tabindex="0" (click)="onSort('bandPrevYear')" (keydown.enter)="onSort('bandPrevYear')"
+                    <!-- <th tabindex="0" (click)="onSort('bandPrevYear')" (keydown.enter)="onSort('bandPrevYear')"
                         (keydown.space)="onSort('bandPrevYear')">
                         Band (2022)
                     </th>
@@ -202,19 +202,23 @@
                     <th tabindex="0" (click)="onSort('bandCurrYear')" (keydown.enter)="onSort('bandCurrYear')"
                         (keydown.space)="onSort('bandCurrYear')">
                         Band (2023)
+                    </th> -->
+                    
+                    <th tabindex="0" (click)="onSort('marketReadinessScore.prevScore')"
+                        (keydown.enter)="onSort('marketReadinessScore.overallScore')">
+                        Score 2021-22
                     </th>
-
                     <th tabindex="0" (click)="onSort('marketReadinessScore.overallScore')"
                         (keydown.enter)="onSort('marketReadinessScore.overallScore')">
-                        Score
+                        Score 2022-23
                     </th>
                     <th tabindex="0" (click)="onSort('marketReadinessScore.overallScore')"
                         (keydown.enter)="onSort('marketReadinessScore.overallScore')">
                         Status
                     </th>
-                    <th tabindex="0">
+                    <!-- <th tabindex="0">
                         Distance to next milestone
-                    </th>
+                    </th> -->
                 </tr>
             </thead>
 
@@ -240,8 +244,8 @@
                     <td class="fw-semibold text-primary cursor-pointer" (click)="goToRoute(row)">{{ row.city }}</td>
                     <td>{{ row.populationCategory }}</td>
                     <td>{{ row.state }}</td>
-                    <td>{{ row.bandPrevYear }}</td>
-                    <td>{{ row.bandCurrYear }}</td>
+                    <!-- <!-- <td>{{ row.bandPrevYear }}</td> -->
+                    <td>{{ row.prevScore }}</td>
                     <td>
                         <span class="score-pill" [class.up]="row.delta > 0" [class.down]="row.delta < 0"
                             [class.neutral]="row.delta === 0">
@@ -255,7 +259,7 @@
                             }
                         </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-left">
                         @if (getStatus(row.delta) === 'IMPROVED') {
                         <span class="status-pill improved">IMPROVED</span>
                         }
@@ -266,9 +270,9 @@
                         <span class="status-pill declined">DECLINED</span>
                         }
                     </td>
-                    <td class="text-center">
+                    <!-- <td class="text-center">
                         {{row?.nextMilestone}}
-                    </td>
+                    </td> -->
                 </tr>
                 }
                 }
