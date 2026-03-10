@@ -74,7 +74,8 @@ export class MarketReadiness implements OnInit {
   sortOrder: 'asc' | 'desc' = 'asc';
 
   states: any[] = [];
-  bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)', 'D (Low)'];
+  // bands = ['A1 (Highly Prepared)', 'A2 (Well Prepared)', 'A3 (Moderately Prepared)', 'B (Aspirational)', 'C (Needs Intervention)', 'D (Low)'];
+  bands = ['Cities with Debt', 'Cities without Debt',];
   populationBands = [
     { value: '4M+', label: ' 4Million +' },
     { value: '1M–4M', label: '1 – 4 Million' },
@@ -260,7 +261,7 @@ export class MarketReadiness implements OnInit {
 
       city: filters.city || '',
       state: filters.state || '',
-      band: filters.band || '',
+      debtKey: filters.band || '',
       populationCategory: filters.population || ''
     };
 
