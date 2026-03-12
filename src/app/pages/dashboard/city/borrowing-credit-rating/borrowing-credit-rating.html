@@ -129,7 +129,9 @@
           @if(chartRenderKey){
           @for (chart of doughnutCharts(); track chart.chartId ) {
           <div class="col d-flex flex-column align-items-center">
-            <app-charts [chartConfig]="chart"></app-charts>
+            <div class="doughnut-wrapper">
+              <app-charts [chartConfig]="chart"></app-charts>
+            </div>
 
             <div class="chart-title mt-2">
               {{ chart.title }}
@@ -193,7 +195,7 @@
           <td colspan="6" class="text-center fw-semibold"
             style="background-color: #9c9c9c; color: white; border-left: 4px solid #00a8cc;">
             Debt data for FY {{ selectedYear }} was not reported;
-            any debt score shown is an indicative estimate.
+            debt-related indicators have not been calculated
           </td>
         </tr>
         }

@@ -10,52 +10,25 @@
             infrastructure development.
         </p>
 
-        <ul class="list-unstyled" style="max-width: 720px;">
-            <li class="mb-2 d-flex align-items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745"
-                    class="bi bi-check-circle-fill me-2 mt-1" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span><strong>4,800+ </strong>urban local bodies evaluated on a composite score of <strong> 100
-                    </strong></span>
-            </li>
-            <li class="mb-2 d-flex align-items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745"
-                    class="bi bi-check-circle-fill me-2 mt-1" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span> Based on three years of financial data</span>
-            </li>
-            <li class="mb-2 d-flex align-items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745"
-                    class="bi bi-check-circle-fill me-2 mt-1" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span>Evaluated on four guiding pillars: <strong>Revenue Generation, Expenditure Composition, Liquidity
-                        and Debt
-                        Management</strong> </span>
-            </li>
-            <!-- <li class="mb-2 d-flex align-items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745"
-                    class="bi bi-check-circle-fill me-2 mt-1" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span> City finance borrowing indicators</span>
-            </li>
-            <li class="mb-2 d-flex align-items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745"
-                    class="bi bi-check-circle-fill me-2 mt-1" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                </svg>
-                <span>Municipal finance data India</span>
-            </li> -->
+      <ul class="list-unstyled" style="max-width: 720px;">
+    <li class="mb-2 d-flex align-items-start">
+        <i class="bi bi-check-circle-fill me-2 check-icon"></i>
+        <span><strong>4,800+</strong> urban local bodies evaluated on a composite score of <strong>100</strong></span>
+    </li>
 
-        </ul>
+    <li class="mb-2 d-flex align-items-start">
+        <i class="bi bi-check-circle-fill me-2 check-icon"></i>
+        <span>Based on three years of financial data</span>
+    </li>
+
+    <li class="mb-2 d-flex align-items-start">
+        <i class="bi bi-check-circle-fill me-2 check-icon"></i>
+        <span>
+            Evaluated on four guiding pillars:
+            <strong>Revenue Generation, Expenditure Composition, Liquidity and Debt Management</strong>
+        </span>
+    </li>
+</ul>
     </div>
 
     <!-- Scroll Down Indicator -->
@@ -111,9 +84,9 @@
             <!-- Band -->
             <div class="col-12 col-md-2">
                 <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Band</mat-label>
+                    <mat-label>Debt Status</mat-label>
                     <mat-select formControlName="band">
-                        <mat-option value="">All Bands</mat-option>
+                        <mat-option value="">All Cities</mat-option>
 
                         @for (band of bands; track band) {
                         <mat-option [value]="band">
@@ -194,7 +167,7 @@
                         }
                     </th>
 
-                    <th tabindex="0" (click)="onSort('bandPrevYear')" (keydown.enter)="onSort('bandPrevYear')"
+                    <!-- <th tabindex="0" (click)="onSort('bandPrevYear')" (keydown.enter)="onSort('bandPrevYear')"
                         (keydown.space)="onSort('bandPrevYear')">
                         Band (2022)
                     </th>
@@ -202,19 +175,23 @@
                     <th tabindex="0" (click)="onSort('bandCurrYear')" (keydown.enter)="onSort('bandCurrYear')"
                         (keydown.space)="onSort('bandCurrYear')">
                         Band (2023)
+                    </th> -->
+                    
+                    <th tabindex="0" (click)="onSort('marketReadinessScore.prevScore')"
+                        (keydown.enter)="onSort('marketReadinessScore.overallScore')">
+                        Score 2021-22
                     </th>
-
                     <th tabindex="0" (click)="onSort('marketReadinessScore.overallScore')"
                         (keydown.enter)="onSort('marketReadinessScore.overallScore')">
-                        Score
+                        Score 2022-23
                     </th>
                     <th tabindex="0" (click)="onSort('marketReadinessScore.overallScore')"
                         (keydown.enter)="onSort('marketReadinessScore.overallScore')">
                         Status
                     </th>
-                    <th tabindex="0">
+                    <!-- <th tabindex="0">
                         Distance to next milestone
-                    </th>
+                    </th> -->
                 </tr>
             </thead>
 
@@ -240,8 +217,8 @@
                     <td class="fw-semibold text-primary cursor-pointer" (click)="goToRoute(row)">{{ row.city }}</td>
                     <td>{{ row.populationCategory }}</td>
                     <td>{{ row.state }}</td>
-                    <td>{{ row.bandPrevYear }}</td>
-                    <td>{{ row.bandCurrYear }}</td>
+                    <!-- <!-- <td>{{ row.bandPrevYear }}</td> -->
+                    <td>{{ row.prevScore }}</td>
                     <td>
                         <span class="score-pill" [class.up]="row.delta > 0" [class.down]="row.delta < 0"
                             [class.neutral]="row.delta === 0">
@@ -255,7 +232,7 @@
                             }
                         </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-left">
                         @if (getStatus(row.delta) === 'IMPROVED') {
                         <span class="status-pill improved">IMPROVED</span>
                         }
@@ -266,9 +243,9 @@
                         <span class="status-pill declined">DECLINED</span>
                         }
                     </td>
-                    <td class="text-center">
+                    <!-- <td class="text-center">
                         {{row?.nextMilestone}}
-                    </td>
+                    </td> -->
                 </tr>
                 }
                 }
@@ -326,11 +303,7 @@
         </div>
         <div class="accordion-content" *ngIf="sections.readiness">
             <p>
-                Market readiness shows how prepared a city is to access market-based borrowing based on its financial
-                performance.
-                It is not a credit rating, but a precursor that can help cities and external stakeholders assess if a
-                city
-                is positioned to pursue a formal credit rating or participation in the Urban Challenge Fund.
+                The Market Readiness Assessment helps stakeholders assess if a city is positioned to avail debt financing based on its financial performance. It is not a creditworthiness assessment, but an indicative evaluation of financial health serving as a precursor.  
             </p>
         </div>
     </div>
@@ -342,17 +315,16 @@
         </div>
         <div class="accordion-content" *ngIf="sections.basis">
             <p>
-                The scoring framework has been developed in consultation with the Ministry of Housing and Urban Affairs
-                and evaluates key aspects of financial performance using standardized indicators.
+                The framework evaluates a city through several indicators on its revenue, expenditure, liquidity and debt performance (if applicable). The assessment is based on self-reported audited financial statements and property tax data submitted on the City Finance platform.
             </p>
-            <p>
+            <!-- <p>
                 The assessment for each city is based on audited financial statements and property tax data submitted
                 on the City Finance platform.
-            </p>
+            </p> -->
         </div>
     </div>
 
-    <div class="accordion-item">
+    <!-- <div class="accordion-item">
         <div class="accordion-header" (click)="toggleSection('bands')">
             <h3>What do the bands and scores mean?</h3>
             <span class="toggle-icon" [class.open]="sections.bands">+</span>
@@ -364,7 +336,7 @@
                 is to the next band and helps guide next steps.
             </p>
         </div>
-    </div>
+    </div> -->
 
     <div class="footer-contact">
         <p>Have more questions? Please write to <strong>updates&#64;cityfinance.in</strong> for clarifications related

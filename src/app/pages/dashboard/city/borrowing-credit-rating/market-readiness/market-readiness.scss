@@ -284,7 +284,13 @@ mat-paginator {
   color: #444;
   /* Add padding/margin as needed */
 }
-
+.check-icon {
+    font-size: 20px;
+    color: #28a745;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
 .toggle-icon {
   display: inline-block; /* Required for transform to work */
   font-size: 24px; /* Adjust size of the plus sign */
