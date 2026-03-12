@@ -20,6 +20,7 @@ export interface ChartDataSet {
   label: string;
   // data: (number | null)[];
   data: (number | null)[] | { x: number, y: number }[];
+  stack?: string;
   backgroundColor?: string | string[];
   borderColor?: string;
   borderWidth?: number;
@@ -29,6 +30,7 @@ export interface ChartDataSet {
   fill?: boolean;
   cutout?: string;
   barThickness?: number;
+  centerText?: string | number;
 }
 
 export interface SlbData {
@@ -46,6 +48,7 @@ export interface BaseChartConfig {
   datasets: ChartDataSet[];
   options?: ChartOptions;
   additionalInfo?: SlbData;
+  centerText?: string | number;
 }
 
 // Mixed chart
@@ -76,6 +79,7 @@ export interface ChartResStruct {
     backgroundColor?: string[];
     customHoverLabels?: string[];
   }[];
+  centerText?: string | number;
 }
 
 // export type ChartConfig = BaseChartConfig | MixedChartConfig;

@@ -11,7 +11,8 @@ import {
   IFinancialIndicatorRes,
   IFinancialIndicatorsChart,
   IMoneyInfoRes,
-  ISlb
+  ISlb,
+  MarketReadinessResponse
 } from '../../core/models/interfaces';
 
 @Injectable({
@@ -29,7 +30,18 @@ export class DashboardService {
 
     return this.http.get<IMoneyInfoRes>(`${environment.api.url}dashboard/financial-info/get-data`, { params });
   }
+  downloadMarketExcel(ulbId: string, year: string) {
+    let params = new HttpParams();
 
+    if (ulbId) params = params.set('ulbId', ulbId);
+    if (year) params = params.set('year', year);
+
+    return this.http.get(`${environment.api.url}ledger/downloadMarketDashboardExcel`, {
+      params,
+      responseType: 'blob',
+      observe: 'response'
+    });
+  }
   // City page: balance sheet and income statement table.
   getBsIsData(selectedUlb: string, ulbIds: string[], btnKey: string = 'incomeStatement', years: string[]) {
     let params = new HttpParams();
@@ -43,6 +55,40 @@ export class DashboardService {
       `${environment.api.url}dashboard/city/bs-is`,
       { params }
     );
+  }
+  getMarketReadinessData(ulbId: string, year: string): Observable<MarketReadinessResponse> {
+    let params = new HttpParams()
+      .set('ulbId', ulbId)
+      .set('year', year);
+
+    return this.http.get<MarketReadinessResponse>(
+      `${environment.api.url}ledger/market-readiness-data-by-ulb`,
+      { params }
+    );
+  }
+  getMarketReadinessTable(params: any) {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/get-all-ulbs-market-readiness`,
+      { params }
+    );
+  }
+  getUlbSlugByName(cityName: string) {
+    return this.http.get<{
+      ulbId: string;
+      ulbName: string;
+      slug: string;
+    }>(
+      `${environment.api.url}ledger/get-ulb-slug-by-name`,
+      {
+        params: {
+          name: cityName
+        }
+      }
+    );
+  }
+
+  getAllStates(): Observable<any> {
+    return this.http.get<any>(`${environment.api.url}ledger/get-all-states`);
   }
 
   // City page: borrowings section.
@@ -101,6 +147,72 @@ export class DashboardService {
     return this.http.post<IFinancialIndicatorRes>(`${environment.api.url}dashboard/city/financial-indicators`, body);
   }
 
+  getMarketDashboardIndicators(ulbId: string, keyType: string, years: string[]): Observable<any> {
+    // Construct HttpParams dynamically
+    let params = new HttpParams();
+    if (keyType) {
+      params = params.set('keyType', keyType);
+    }
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    if (years && years.length > 0) {
+      years.forEach(year => {
+        params = params.append('years[]', year); // Append 'years[]' multiple times
+      });
+    }
+    return this.http.get(`${environment.api.url}ledger/getCityDasboardIndicators`, { params })
+  }
+  getYearsDynamic(ulbId: string): Observable<any> {
+    let params = new HttpParams();
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    return this.http.get(`${environment.api.url}ledger/getYearsDynamic`, { params })
+
+  }
+  getFaqs(ulbId: string, year: string, state: string, populationType: string): Observable<any> {
+    let params = new HttpParams();
+    if (state) {
+      params = params.set('state', state);
+    }
+    if (ulbId) {
+      params = params.set('ulbId', ulbId);
+    }
+    if (year) {
+      params = params.set('year', year);
+    }
+    if (populationType) {
+      params = params.set('populationType', populationType);
+    }
+
+    return this.http.get(`${environment.api.url}ledger/getFaqs`, { params })
+  }
+
+  getIndicatorsListCompareBy(): Observable<any> {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getIndicatorsNameCompareByPage`
+    );
+  }
+  getCompareByIndicators(ulbIds: string[], years: string[], keyTypes: string[]): Observable<any> {
+    const params = new HttpParams({
+      fromObject: {
+        ulbIds,
+        years,
+        keyType: keyTypes
+      }
+    });
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getCompareByIndicators`,
+      { params }
+    );
+  }
+  getUlbDetailsById(slug: string): Observable<any> {
+    return this.http.get<any>(
+      `${environment.api.url}ledger/getUlbDetailsById`,
+      { params: { slug } }
+    );
+  }
   // // Get state details.
   // getHomeData(): Observable<any> {
   //   return this.http.get<ExploreSectionResponse>(`${environment.api.url}report/dashboard/home-page-data`)

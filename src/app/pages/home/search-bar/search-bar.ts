@@ -7,13 +7,14 @@ import { catchError, debounceTime, distinctUntilChanged, filter, of, Subject, sw
 import { environment } from '../../../../environments/environment';
 import { CountUpDirective } from '../../../core/directives/countup.directive';
 import { CommonService } from '../../../core/services/common.service';
+// import { MatButton } from '@angular/material/button';
 
 const ULB_COUNT_KEY = makeStateKey<number>('ulbCount');
 
 @Component({
   standalone: true,
   selector: 'app-search-bar',
-  imports: [TitleCasePipe, FormsModule, ReactiveFormsModule, MatAutocompleteModule, CountUpDirective,],
+  imports: [TitleCasePipe, FormsModule, ReactiveFormsModule, MatAutocompleteModule, CountUpDirective],
   templateUrl: './search-bar.html',
   styleUrl: './search-bar.scss',
 })
@@ -143,7 +144,9 @@ export class SearchBar {
   //     },
   //   );
   // }
-
+  goToMarketDashboard() {
+    this.router.navigate(['/municipal-data/city/comparewith']);
+  }
   globalSearchClick() {
     //  console.log('filterOptions', this.filteredOptions)
     //  console.log('form control', this.globalFormControl.value)

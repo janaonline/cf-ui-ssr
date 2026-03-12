@@ -119,7 +119,35 @@ export class CommonService {
       dataString
     );
   }
+  postGlobalSearchDataMarketDashboard(data: any, type: any, state: any) {
+    const dataString = {
+      matchingWord: data,
+    };
+    let stateData = '';
+    if (state) {
+      stateData = `&state=${state}`;
+    }
+    return this.http.post(
+      `${environment.api.url}recentSearchKeyword/searchMarketDashboard?type=${type}${stateData}`,
+      dataString
+    );
+  }
+  postAverageCompareByIndicators(years: string[], compareType: string, ulbId: string, lineItem: string) {
+    const body = {
+      years,
+      compareType,
+      ulbId,
+      lineItem
+    };
 
+    // Build query string like your other API function
+    const queryParams = `?compareType=${compareType}&ulbId=${ulbId}&lineItem=${lineItem}`;
+
+    return this.http.post(
+      `${environment.api.url}ledger/getaverageCompareByIndicators${queryParams}`,
+      body
+    );
+  }
   // Footer section.
   public getWebsiteVisitCount() {
     return this.http

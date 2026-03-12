@@ -10,7 +10,29 @@ export const DASHBOARD_ROUTES: Route[] = [
         loadComponent: () => import('./state/state').then(m => m.State)
     },
     {
-        path: 'city/:slug',
-        loadComponent: () => import('./city/city').then(m => m.City)
+        path: 'market-readiness',
+        loadComponent: () =>
+            import('./city/borrowing-credit-rating/market-readiness/market-readiness')
+                .then(m => m.MarketReadiness),
+    },
+    {
+        path: 'city',
+        children: [
+            {
+                path: 'comparewith',
+                loadComponent: () => import('./city/financial-performance/compare/compare').then(m => m.Compare),
+            },
+            // {
+            //     path: 'market-readiness',
+            //     loadComponent: () =>
+            //         import('./city/borrowing-credit-rating/market-readiness/market-readiness')
+            //             .then(m => m.MarketReadiness),
+            // },
+            {
+                path: ':slug',
+                loadComponent: () => import('./city/city').then(m => m.City),
+            },
+
+        ]
     },
 ];

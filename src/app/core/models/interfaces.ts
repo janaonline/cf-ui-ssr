@@ -35,6 +35,7 @@ export interface ExploresectionTable {
   value: string | number;
   info: string;
   src: string;
+  tooltip: string;
 }
 
 export interface BsIsDataBase {
@@ -149,6 +150,21 @@ export interface TableColumns {
   mergeCell?: boolean;
 }
 
+export interface CreateExcelParams {
+  addLogo: boolean,
+  addContactUsNote: boolean,
+  fileName: string,
+  sheetName: string,
+  rows: any[],
+  columns: any[],
+  header: { index: number, fontSize: number, fontFamily: string }
+  logoUrl?: string;   // assets/logo/cityfinance-logo.png
+  contactText?: string;
+  yearHeaders?: string[];          // e.g. ['Indicator','2020-21','2021-22',...]
+  cityGroups?: { name: string; startCol: number; endCol: number }[];
+}
+
+
 // export interface ChartResponse {
 //   success: boolean;
 //   data: ChartData;
@@ -169,7 +185,33 @@ export interface TableColumns {
 export interface BsCompareUlbs {
   [_id: string]: BsCompareUlbsValue
 }
+export interface MarketReadinessResponse {
+  ulbId: string;
+  ulbName: string;
+  year: string;
+  sections: Section[];
+  sectionScores: SectionScore[];
+  overallScore: number;
+  marketReadinessBand: string;
+  footNote?: string,
+  outOfRange?: [],
+  message?: string
+}
 
+export interface Section {
+  section: string;
+  description: string;
+  rows: {
+    name: string;
+    maxScore: number;
+    score: number;
+  }[];
+}
+
+export interface SectionScore {
+  section: string;
+  score: number;
+}
 export interface BsCompareUlbsValue {
   _id: string;
   name: string;

@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+// import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { CreateExcelParams } from '../models/interfaces';
 import { GlobalLoaderService } from './loaders/global-loader.service';
+const DEFAULT_CONTACT =
+  "This is a system-generated sheet. Can't find what you're looking for? Write to us at contact@cityfinance.in";
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +16,7 @@ export class UtilityService {
     private _globalLoaderService: GlobalLoaderService,
   ) { }
 
+  // Download file.
   public fetchFile(target_file_url: string, fileName: string): void {
     fetch(target_file_url)
       .then((response) => {
@@ -30,6 +35,8 @@ export class UtilityService {
         this.triggerSnackbar('Failed to download the file!', 'snackbar-danger');
       });
   }
+
+
 
   // Helper: Trigger snack-bar.
   triggerSnackbar(msg: string, className: string = 'snackbar-success'): void {
@@ -58,4 +65,5 @@ export class UtilityService {
     if (includeTime) return `${dateString}_${timeString}`;
     return dateString;
   }
+
 }

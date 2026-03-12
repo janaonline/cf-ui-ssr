@@ -1,0 +1,202 @@
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
+}
+
+.banner-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  min-height: 60vh;
+  background-color: #f7dbbf;
+}
+
+.custom-mb {
+  margin-bottom: 20px;
+}
+
+// .chart-container {
+//   height: 50vh;
+// }
+
+.table-container {
+  min-height: 35vh;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+table,
+tr,
+td,
+th {
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid lightgrey;
+}
+
+tr:hover {
+  background-color: #f8f9fa;
+}
+
+.mat-mdc-table {
+  background-color: white;
+}
+
+/* horizontal scroll + wide table */
+.table-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+}
+
+.mat-table-wide {
+  width: max-content; /* let table grow wider than container */
+  table-layout: fixed;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  white-space: nowrap;
+}
+
+.table-scroll-container {
+  height: 300px; /* Set a fixed height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling when content exceeds height */
+  /* Optional: Add padding, background-color, or border-radius for styling */
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+/* Ensure sticky headers stay above rows and keep a solid background */
+.mat-mdc-table .mat-mdc-header-row.cdk-sticky {
+  background: #fff; /* or your theme surface color */
+  z-index: 2; /* above body rows */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06); /* subtle divider */
+}
+
+/* Put the top (grouped) header slightly above the second header */
+.mat-mdc-table tr.mat-mdc-header-row.cdk-sticky:first-of-type {
+  z-index: 3;
+}
+/* -- Add Zebra Striping to Angular Material Tables -- */
+
+/* Targets every even row in the table body */
+.mat-mdc-table .mat-mdc-row:nth-child(even) {
+  background-color: #f9f9f9; /* A light grey color */
+}
+
+/* Optional: Add a hover effect for better user experience */
+.mat-mdc-table .mat-mdc-row:hover {
+  background-color: #f0f0f0; /* A slightly darker grey on hover */
+}
+/* styles.scss or your component's .scss */
+
+.custom-segmented-buttons-container {
+  /* Optional: Adjust padding around the button group if needed */
+  padding: 10px;
+}
+
+.custom-button-toggle-group {
+  border: 1px solid #044e97; /* Light grey border for the entire group */
+  border-radius: 5px; /* Slightly rounded corners for the group */
+  overflow: hidden; /* Ensures borders/shadows don't spill over */
+  display: flex; /* Make it a flex container to span evenly */
+}
+
+.custom-button-toggle {
+  flex-grow: 1; /* Make buttons take equal width */
+  height: 40px; /* Adjust height as needed */
+  line-height: 40px; /* Center text vertically */
+  text-align: center;
+  padding: 0 15px; /* Adjust padding for text */
+  font-size: 14px; /* Adjust font size */
+  font-weight: 600; /* Semi-bold */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Default (inactive) state */
+.custom-button-toggle .mat-button-toggle-label-content {
+  color: #3f51b5; /* Blue text for inactive (default Material primary) */
+  background-color: white;
+  padding: 0 !important; /* Override Material's default padding */
+  line-height: inherit;
+  height: inherit;
+}
+
+/* Active (selected) state */
+.custom-button-toggle.mat-button-toggle-checked
+  .mat-button-toggle-label-content {
+  background-color: #1a237e; /* Dark blue background */
+  color: white; /* White text */
+  border-color: #1a237e; /* Dark blue border to match */
+  padding: 0 !important; /* Override Material's default padding */
+}
+
+/* Optional: Style for the hover state */
+.custom-button-toggle:hover
+  .mat-button-toggle-label-content:not(
+    .mat-button-toggle-checked .mat-button-toggle-label-content
+  ) {
+  background-color: #f0f0f0; /* Light grey hover for inactive */
+}
+
+/* Remove default Material border from individual toggles */
+.custom-button-toggle.mat-button-toggle-checked {
+  border: none;
+}
+.custom-button-toggle {
+  border-right: 1px solid #093a6b; /* Add separator between buttons */
+}
+.custom-button-toggle:last-child {
+  border-right: none; /* No separator on the last one */
+}
+:host
+  ::ng-deep
+  .mat-pseudo-checkbox.mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal {
+  display: none;
+}
+.content-switcher {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.content-panel {
+  position: absolute;
+  width: 100%;
+  transition: transform 0.35s ease;
+}
+
+/* Default → first text visible, second goes right */
+.panel-1 {
+  transform: translateX(0%);
+}
+.panel-2 {
+  transform: translateX(100%);
+}
+
+/* When second toggle is selected → slide first out left, second in */
+.content-switcher.right .panel-1 {
+  transform: translateX(-100%);
+}
+.content-switcher.right .panel-2 {
+  transform: translateX(0%);
+}
+.selected-city-container {
+  display: flex;
+  flex-wrap: wrap; /* allows wrapping to next line */
+  gap: 6px; /* spacing between items (optional) */
+}
+
+.city-tag {
+  max-width: 150px; /* your width limit */
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}

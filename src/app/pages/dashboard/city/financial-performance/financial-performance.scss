@@ -1,0 +1,98 @@
+* {
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
+  font-size: 0.95rem;
+}
+
+.mat-tree.cdk-tree {
+  background-color: white !important;
+}
+
+.onHover:hover {
+  background-color: #f8f9fa;
+}
+
+.selected {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.content {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+
+  color: #000;
+  background-color: whitesmoke;
+  font-size: 14px;
+
+  border: 1px solid grey;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+
+  padding: 3rem;
+  width: 50vw;
+  height: 55vh;
+
+  overflow-y: auto;
+}
+
+.tooltip-close-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+.chart-container {
+  min-height: 300px;
+}
+
+.faq {
+  font-size: 30px;
+}
+
+.faq-question {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.faq-icon {
+  position: absolute;
+  right: 1.5rem;
+  top: 0.25rem;
+  font-size: 28px;
+  color: #7c6c6c;
+  transition: transform 0.3s ease;
+}
+.faq-answer {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 1rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid #ddd;
+}
+.no-pointer {
+  pointer-events: none;
+  cursor: default; /* Optional: change cursor to default */
+}
+.table-scroll-y .sticky-top {
+  z-index: 1020;
+} /* Bootstrap-like */
+.table-scroll-y .bg-table-header {
+  background: #fff;
+} /* ensure solid background */

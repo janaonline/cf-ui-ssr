@@ -1,8 +1,6 @@
 <section class="my-4 container">
-  <app-tab-buttons
-    [buttons]="buttons"
-    (selectedButtonKeyChange)="onSelectedButtonChange($event)"
-  ></app-tab-buttons>
+  <app-tab-buttons [buttons]="buttons" [buttonIdx]="buttonIdx()"
+    (selectedButtonKeyChange)="onSelectedButtonChange($event)"></app-tab-buttons>
 
   @if (isLoading()) {
   <app-pre-loader></app-pre-loader>
@@ -16,17 +14,11 @@
   <app-no-data-found></app-no-data-found>
   } @else {
   <p>Below are the details of Municipal Bond Issuances undertaken by the ULB</p>
-  <nav
-    class="d-flex justify-content-end align-items-center gap-2 mt-4 pagination"
-  >
+  <nav class="d-flex justify-content-end align-items-center gap-2 mt-4 pagination">
     <button (click)="prevPage()" [disabled]="currentPage === 0">Prev</button>
 
     @for (page of paginationRange; track $index) {
-    <button
-      [disabled]="page === '..'"
-      [class.active]="page === currentPage"
-      (click)="page !== '..' && goToPage(+page)"
-    >
+    <button [disabled]="page === '..'" [class.active]="page === currentPage" (click)="page !== '..' && goToPage(+page)">
       {{ page }}
     </button>
     }
@@ -47,12 +39,8 @@
       <!-- <p>{{ item | json }}</p> -->
       <ng-container [matColumnDef]="item" [sticky]="$index === 0">
         <th mat-header-cell *matHeaderCellDef>{{ item }}</th>
-        <td
-          mat-cell
-          *matCellDef="let element"
-          [class]="item === 'header' ? 'bg-table-header fw-bold' : null"
-          class="border"
-        >
+        <td mat-cell *matCellDef="let element" [class]="item === 'header' ? 'bg-table-header fw-bold' : null"
+          class="border">
           {{ element[item] || "-" }}
         </td>
       </ng-container>
@@ -72,14 +60,8 @@
   <div class="border rounded bg-light p-4 my-4 row justify-content-between">
     <!-- Filter: Years Dropdown -->
     <form [formGroup]="myForm" class="col-sm-12 col-md-3">
-      <label for="creditRatingYears" class="d-block fw-bold mb-2"
-        >Financial years</label
-      >
-      <select
-        id="creditRatingYears"
-        formControlName="year"
-        class="form-select w-100"
-      >
+      <label for="creditRatingYears" class="d-block fw-bold mb-2">Financial years</label>
+      <select id="creditRatingYears" formControlName="year" class="form-select w-100">
         @for (year of creditRatingYears; track year) {
         <option [value]="year">{{ year }}</option>
         }
@@ -105,4 +87,219 @@
     </table>
   </div>
   } } }
+
+  <!-- Market Readiness -->
+  @if (currentSelectedButtonKey() === 'marketReadiness') {
+  @if(dataThere){
+  <!-- <button class="btn btn-outline-cfPrimary" (click)="navigatePage()">Compare with different cities </button> -->
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div>
+
+        <p class="mb-2 p-0 fw-bold">{{ulbName()}}'s credit profile</p>
+        <p class="m-0 p-0">{{intro}} </p>
+        <!-- <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4> -->
+
+        <!-- <p class="m-0 p-0">
+          {{ulbName()}}’s falls in well prepared category and is ready for further assessments to avail municipal
+          borrowings.
+        </p> -->
+      </div>
+      <form [formGroup]=" yearForm" class="col-sm-12 col-md-3 mb-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Financial Year</mat-label>
+
+          <mat-select formControlName="year">
+            @for (year of marketReadinessYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+
+      </form>
+    </div>
+    <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
+    @if (doughnutCharts().length > 0) {
+    <div class="row">
+      <div class="col-12 col-lg-9">
+        <div class="row row-cols-2 row-cols-lg-5 g-4 text-center">
+          @if(chartRenderKey){
+          @for (chart of doughnutCharts(); track chart.chartId ) {
+          <div class="col d-flex flex-column align-items-center">
+            <div class="doughnut-wrapper">
+              <app-charts [chartConfig]="chart"></app-charts>
+            </div>
+
+            <div class="chart-title mt-2">
+              {{ chart.title }}
+              @if (chart.isDisabled) {
+              <!-- <span class="text-muted small">*</span> -->
+              }
+            </div>
+
+            @if (chart.isDisabled) {
+            <div class="small text-muted">Data insufficient*</div>
+            }
+          </div>
+
+          }
+          }
+
+        </div>
+      </div>
+    </div>
+    }
+
+
+
+  </div>
+  @if(this.footNote!=''){
+  <!-- <p class="fw-bold mt-3">Foot Notes :</p> -->
+  <div class="alert alert-warning mt-3" role="alert">
+    {{this.footNote??this.footNote}}
+  </div>
+  }
+  <div class="table-responsive mt-4 border-none">
+    <table class="table  align-middle text-center">
+      <thead class="">
+        <tr>
+          <th class="text-start table-light" style="border: 1px solid white;">Indicators</th>
+          <th style="border: 1px solid white; border-right: 1px solid black !important;">Max Score</th>
+          <th style="border: 1px solid white;">Highest </th>
+          <th style="border: 1px solid white;">High </th>
+          <th style="border: 1px solid white;">Low</th>
+          <th style="border: 1px solid white;">Lowest</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (isLoading()) {
+        <app-pre-loader></app-pre-loader>
+        }
+
+        @for (section of indicatorTableData(); track section.section) {
+        <tr class="table-info fw-bold">
+          <td colspan="6" class="text-center" style="border: 1px solid white;">
+            {{ section.section }}
+            <div class="fw-normal small">
+              {{ section.description }}
+            </div>
+          </td>
+        </tr>
+
+        @if (hasDerivedRows(section)) {
+        <tr>
+          <td colspan="6" class="text-center fw-semibold"
+            style="background-color: #9c9c9c; color: white; border-left: 4px solid #00a8cc;">
+            Debt data for FY {{ selectedYear }} was not reported;
+            debt-related indicators have not been calculated
+          </td>
+        </tr>
+        }
+
+        @if(!hasDerivedRows(section)){
+        @for (row of section.rows; track row.name; let i = $index) {
+        <tr>
+          <td class="text-start table-light border-white">
+            {{ row.name }}
+          </td>
+
+          <td class="text-center border-white" style="border-right: 1px solid black !important;">
+            {{ row.maxScore }}
+          </td>
+
+          @if (row.score === 0) {
+          @if (getZeroRowSpan(section.rows, i) > 0) {
+          <td [attr.rowspan]="getZeroRowSpan(section.rows, i)" colspan="4" class="text-center border-white align-middle"
+            style="background-color: rgb(194, 194, 194);">
+            Not scored <br>
+            <small>Data not available for some indicators in this section</small>
+          </td>
+          }
+          }
+
+          @else if (getScoreCategory(row.score) === 'na') {
+          @if (getZeroRowSpan(section.rows, i) > 0) {
+          <td [attr.rowspan]="getZeroRowSpan(section.rows, i)" colspan="4" class="text-center border-white align-middle"
+            style="background-color: rgb(194, 194, 194);">
+            Data could not be sourced
+          </td>
+          }
+          }
+
+          @else {
+          <td class="text-center fw-bold border-white" [class.text-success]="getScoreCategory(row.score) === 'highest'">
+            @if (getScoreCategory(row.score) === 'highest') { {{ row.score }} }
+          </td>
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'high') { {{ row.score }} }
+          </td>
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'low') { {{ row.score }} }
+          </td>
+          <td class="text-center fw-bold border-white">
+            @if (getScoreCategory(row.score) === 'lowest') { {{ row.score }} }
+          </td>
+          }
+
+        </tr>
+        }
+        }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- @if(this.outOfRange!=[]){
+  @for (item of outOfRange; track item.indicator) {
+  <div class="alert alert-dark mt-3">
+    
+    <p>{{ item.message }}</p>
+  </div>
+  }
+  }
+  @else{
+  } -->
+  }
+  @else{
+  <div class="border rounded bg-light p-4 my-4 row justify-content-between">
+    <div class="d-flex justify-content-between align-items-center w-100">
+      <div>
+
+        <p class="mb-2 p-0 fw-bold">{{ulbName()}}'s Data not available for the selected Year , Please choose another
+          year
+          in the dropdown </p>
+        <!-- <p class="m-0 p-0">{{intro}} </p> -->
+        <!-- <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4> -->
+
+        <!-- <p class="m-0 p-0">
+          {{ulbName()}}’s falls in well prepared category and is ready for further assessments to avail municipal
+          borrowings.
+        </p> -->
+      </div>
+      <form [formGroup]=" yearForm" class="col-sm-12 col-md-3 mb-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Financial Year</mat-label>
+
+          <mat-select formControlName="year">
+            @for (year of marketReadinessYears; track year) {
+            <mat-option [value]="year">
+              {{ year }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+
+      </form>
+    </div>
+    <!-- <app-charts [chartConfig]="chartData()"></app-charts> -->
+
+  </div>
+
+  }
+  }
 </section>

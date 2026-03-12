@@ -255,15 +255,15 @@ input::-webkit-inner-spin-button {
 
 // Custom font size.
 .custom-font-size-6 {
-    font-size: var(--fs-6);
+    font-size: var(--fs-6) !important;
 }
 
 .custom-font-size-7 {
-    font-size: var(--fs-7);
+    font-size: var(--fs-7) !important;
 }
 
 .custom-font-size-8 {
-    font-size: var(--fs-8);
+    font-size: var(--fs-8) !important;
 }
 
 // Custom text shadow.
@@ -303,4 +303,59 @@ input::-webkit-inner-spin-button {
     .explore-data-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+// Unselected button style.
+// cfPrimary
+.unselected-btn {
+    background-color: #F7DBBF;
+    color: black;
+    border-radius: 23px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    // font-size: 16px;
+}
+
+.unselected-btn:hover {
+    background-color: #eac8a4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.unselected-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(247, 219, 191, 0.6);
+}
+
+.unselected-btn:active {
+    background-color: #d9b58f;
+    transform: scale(0.97);
+}
+
+// cfSecondary.
+.unselected-secondary-btn {
+    background-color: hsla(220, 62%, 92%, 1);
+    color: hsla(220, 62%, 25%, 1);
+    border-radius: 23px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    // font-size: 16px;
+}
+
+.unselected-secondary-btn:hover {
+    background-color: hsla(220, 62%, 85%, 1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.unselected-secondary-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px hsla(220, 62%, 60%, 0.4);
+}
+
+.unselected-secondary-btn:active {
+    background-color: hsla(220, 62%, 80%, 1);
+    transform: scale(0.97);
 }
