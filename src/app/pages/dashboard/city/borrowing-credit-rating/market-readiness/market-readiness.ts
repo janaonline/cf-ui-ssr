@@ -80,7 +80,8 @@ export class MarketReadiness implements OnInit {
     { value: '4M+', label: ' 4Million +' },
     { value: '1M–4M', label: '1 – 4 Million' },
     { value: '500K–1M', label: '500K – 1 Million' },
-    { value: '100K–500K', label: '100K – 500K' }
+    { value: '100K–500K', label: '100K – 500K' },
+    { value: '<100K', label: 'Less than 100K' }
   ];
 
   displayedColumns = [
