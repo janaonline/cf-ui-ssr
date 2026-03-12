@@ -764,7 +764,7 @@ export class Compare implements OnInit {
   // Download chart as img.
   downloadImg(selectedIndicator: string = 'CityPageChart') {
     this.globalLoaderService.showLoader();
-
+    console.log('downloadImg called with indicator:', selectedIndicator);
     setTimeout(() => {
       const chartContainer = document.getElementById('chartContainer');
       if (!chartContainer) return;
@@ -916,19 +916,19 @@ export class Compare implements OnInit {
     const { columns, yearHeaders, groups, rows } = this.buildExcelFrom(block);
 
     // 3) call the shared utility with grouped headers
-    // await this.utilityService.createExcel({
-    //   addLogo: true,
-    //   addContactUsNote: true,
-    //   fileName: `CityFinance_${block.keyType}`,
-    //   sheetName: 'CityFinance',
-    //   columns,              // widths/styles
-    //   rows,                 // array-of-arrays aligned to yearHeaders
-    //   yearHeaders,          // ['Indicator', '2020-21', ...]
-    //   cityGroups: groups,   // [{ name:'Bengaluru', startCol:2, endCol:4 }, ...]
-    //   header: { index: 3, fontSize: 12, fontFamily: 'Aptos' },
-    //   logoUrl: 'assets/images/excel-cf-logo.png',
-    //   contactText: 'For any queries: support@cityfinance.in',
-    // });
+    await this.createExcel({
+      addLogo: true,
+      addContactUsNote: true,
+      fileName: `CityFinance_${block.keyType}`,
+      sheetName: 'CityFinance',
+      columns,              // widths/styles
+      rows,                 // array-of-arrays aligned to yearHeaders
+      yearHeaders,          // ['Indicator', '2020-21', ...]
+      cityGroups: groups,   // [{ name:'Bengaluru', startCol:2, endCol:4 }, ...]
+      header: { index: 3, fontSize: 12, fontFamily: 'Aptos' },
+      logoUrl: 'assets/images/excel-cf-logo.png',
+      contactText: 'For any queries: support@cityfinance.in',
+    });
   }
   async createExcel(data: CreateExcelParams) {
     this.globalLoaderService.showLoader();
