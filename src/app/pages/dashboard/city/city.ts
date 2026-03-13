@@ -10,8 +10,9 @@ import {
   PLATFORM_ID,
   signal,
   TransferState,
+  ViewChild,
 } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
@@ -41,8 +42,9 @@ import { StateSearch } from '../../../shared/components/state-search/state-searc
 import { DashboardService } from '../dashboard-service';
 import { BalancesheetIncomestatement } from './balancesheet-incomestatement/balancesheet-incomestatement';
 import { BorrowingCreditRating } from './borrowing-credit-rating/borrowing-credit-rating';
-import { FinancialIndicator } from './financial-indicator/financial-indicator';
+import { FinancialPerformance } from './financial-performance/financial-performance';
 import { Slb } from './slb/slb';
+import { FinancialIndicator } from "./financial-indicator/financial-indicator";
 
 // --- TransferState Keys ---
 const CITY_DETAILS_KEY = makeStateKey<any>('cityDetailsKey');
@@ -67,30 +69,33 @@ const MONEY_INFO_KEY = makeStateKey<IMoneyInfoRes>('moneyInfoKey');
     BorrowingCreditRating,
     Slb,
     BalancesheetIncomestatement,
-    FinancialIndicator,
+    FinancialPerformance,
+    // FinancialIndicator
   ],
   templateUrl: './city.html',
   styleUrl: './city.scss',
 })
 export class City {
-  v1Url = environment.v1Url;
+
   loadedTabs: boolean[] = [true, false, false, false];
+  selectedTabIndex: number = 0;
+  selectedSubTabIndex: number = 0;
   ulbIdSignal = signal('');
   ulbSlugName = signal('');
   isLoading = signal(true);
   showMap = signal(false);
   isMoneyInfoLoading = signal(false);
   private destroy$ = new Subject<void>();
-
+  chartRenderKey = signal(0);
   hasError = signal(false);
   errorMessage = signal('');
 
   cityDetails = signal<any>({});
+
   moneyInfoRes = signal<IMoneyInfoRes | null>(null);
   ledgerYears = signal<string[]>([]);
   slbYears = signal<string[]>([]);
   selectedLedgerYear = signal<string>('');
-
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -113,8 +118,42 @@ export class City {
           this.ulbSlugName.set(citySlugName);
           this.loadData(citySlugName);
         } else if (!citySlugName) this.isLoading.set(false);
-      });
 
+        // Read query parameters to determine which tab/sub-tab should be opened on load
+        const queryParams = this.activatedRoute.snapshot.queryParams;
+
+        // Main tab if provided via query params; otherwise default tab remains
+        if (queryParams.hasOwnProperty('tabIndex')) {
+          const tabIndex = Number(queryParams['tabIndex']);
+          this.selectedTabIndex = tabIndex;
+
+          // Mark the tab as loaded to avoid lazy-loading delays
+          this.loadedTabs[tabIndex] = true;
+
+          // Set chartRenderKey.
+          this.chartRenderKey.update((v) => v + 1);
+
+          // Scroll to Dashbard.
+          setTimeout(() => {
+            this.scrollToDashboard()
+          }, 0);
+        }
+
+        // sub-tab if provided via query params
+        if (queryParams.hasOwnProperty('subTabIndex')) {
+          this.selectedSubTabIndex = Number(queryParams['subTabIndex']);
+        }
+
+      });
+  }
+
+  private scrollToDashboard() {
+    const element = document.getElementById("dashboard");
+    if (element)
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
   }
 
   setSeo() {
@@ -200,7 +239,6 @@ export class City {
           this.cityDetails.set(res);
           this.ulbIdSignal.set(res.ulbId);
           this.setSeo();
-          // console.log(res, 'res');
         },
         error: (error: Error) => {
           console.error(`${this.getPlatForm()}: Failed to get cityData: `, error);
@@ -390,6 +428,9 @@ export class City {
   // On tab changes call the chid components.
   public onTabChange(idx: number): void {
     this.loadedTabs[idx] = true;
+    if (idx === 2) {
+      this.chartRenderKey.update((v) => v + 1);
+    }
   }
 
   ngDestroy(): void {

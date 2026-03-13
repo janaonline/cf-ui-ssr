@@ -3,22 +3,27 @@ import { Component } from '@angular/core';
 // import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 // import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-spotlight',
   imports: [
     // NgbCarouselModule,
     // JsonPipe,
     // CarouselModule,
-
+    MatTooltipModule,
     SlickCarouselModule,
   ],
   templateUrl: './spotlight.html',
   styleUrl: './spotlight.scss',
 })
-export class Spotlight {
-  // images = [944, 1011, 984,944, 1011, 984].map((n) => `https://picsum.photos/id/${n}/900/500`);
 
+export class Spotlight {
+  constructor(
+    private router: Router,
+  ) {
+  }
+  // images = [944, 1011, 984,944, 1011, 984].map((n) => `https://picsum.photos/id/${n}/900/500`);
   // customOptions: OwlOptions = {
   //   loop: true,
   //   mouseDrag: false,
@@ -128,7 +133,9 @@ export class Spotlight {
         "badge": ""
       }
     ];
-
+  goToMarketDashboard() {
+    this.router.navigate(['/municipal-data/city/comparewith']);
+  }
   slideConfig = {
     slidesToShow: 3,
     slidesToScroll: 3,

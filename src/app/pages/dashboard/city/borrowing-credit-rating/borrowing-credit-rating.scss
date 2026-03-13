@@ -1,60 +1,105 @@
 tr {
-    font-family: var(--ff-base);
-    font-weight: var(--fw-medium);
+  font-family: var(--ff-base);
+  font-weight: var(--fw-medium);
 }
 
 tr:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .table-container {
-    // max-height: 100px;
-    overflow-x: auto;
+  // max-height: 100px;
+  overflow-x: auto;
 }
 
 .mat-column-header {
-    min-width: 170px !important;
+  min-width: 170px !important;
 }
 
 .mat-mdc-table {
-    background-color: white;
+  background-color: white;
 }
 
 table,
 tr,
 td,
 th {
-    border-top: 1px solid #d3d3d3;
-    border-bottom: 1px solid lightgrey;
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid lightgrey;
 }
-
 
 // ----- Pagination -----
 .pagination button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    background-color: white;
-    color: #333;
-    font-size: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .pagination button:hover:not(:disabled) {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .pagination button.active {
-    background-color: #e9edf5;
-    border-color: grey;
-    color: black;
-    font-weight: bold;
+  background-color: #e9edf5;
+  border-color: grey;
+  color: black;
+  font-weight: bold;
 }
 
 .pagination button:disabled {
-    background-color: #eee;
-    color: #aaa;
-    cursor: not-allowed;
-    border-color: #ddd;
+  background-color: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+.doughnut-wrapper {
+  width: 120px;
+  height: 120px;
+  margin: auto;
+}
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.table-info {
+  background-color: #cfefff !important;
+}
+app-charts {
+  max-width: 120px;
+  margin: 0 auto;
+}
+app-charts[disabled],
+.chart-disabled {
+  opacity: 0.6;
+  filter: grayscale(100%);
+  pointer-events: none;
+}
+
+.chart-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+.chart-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6c757d; /* bootstrap text-muted tone */
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  /* 👇 KEY FIXES */
+  min-height: 2.4rem; /* keeps all titles same height */
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Prevent ugly wrapping */
+  word-break: break-word;
+  white-space: normal;
 }

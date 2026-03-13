@@ -1,10 +1,11 @@
 import { Component, input } from '@angular/core';
 import { ExploresectionTable } from '../../../core/models/interfaces';
 import { InrFormatPipe } from '../../../core/pipes/inr-format.pipe';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-info-cards',
-  imports: [InrFormatPipe],
+  imports: [InrFormatPipe, MatTooltipModule, MatButtonModule],
   templateUrl: './info-cards.html',
   styleUrl: './info-cards.scss',
 })

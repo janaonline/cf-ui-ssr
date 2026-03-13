@@ -9,9 +9,10 @@ import {
   PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
+import { Chart, registerables, ChartOptions } from 'chart.js';
 import { ChartConfig } from './chart-interfaces';
 import { isPlatformBrowser } from '@angular/common';
+import { Plugin } from 'chart.js';
 Chart.register(...registerables);
 
 @Component({
@@ -21,6 +22,7 @@ Chart.register(...registerables);
   styleUrl: './charts.scss',
 })
 export class Charts implements AfterViewInit, OnDestroy {
+
   @ViewChild('chartCanvas', { static: false })
   chartCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -52,14 +54,40 @@ export class Charts implements AfterViewInit, OnDestroy {
       this.createChart();
     }, 100);
   }
+  readonly chartChangeEffect = effect(() => {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.createChart()
+  })
+  private readonly centerTextPlugin: Plugin<'doughnut'> = {
+    id: 'centerText',
+    beforeDraw(chart) {
+      const { ctx, chartArea } = chart;
+      const centerText =
+        (chart.options as any)?.plugins?.centerText?.text;
 
+      if (centerText === undefined || centerText === null) return;
+
+      const { left, right, top, bottom } = chartArea;
+      const centerX = (left + right) / 2;
+      const centerY = (top + bottom) / 2;
+
+      ctx.save();
+      ctx.font = 'bold 20px Inter, sans-serif';
+      ctx.fillStyle = '#111';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(centerText), centerX, centerY);
+      ctx.restore();
+    }
+  };
   private createChart(): void {
     // console.log('Canvas element:', this.chartCanvas);
+    console.log('Chart called: ', this.chartConfig());
     if (!this.chartCanvas) {
-      console.error(
-        'Canvas element not found for chart:',
-        this.chartConfig().chartId
-      );
+      // console.error(
+      //   'Canvas element not found for chart:',
+      //   this.chartConfig().chartId
+      // );
       return;
     }
 
@@ -99,17 +127,39 @@ export class Charts implements AfterViewInit, OnDestroy {
           // config.options || baseChartOptions(DEFAULT_FONT_FAMILY, true, 'Months', 'Amt in ₹ Cr'),
         });
         break;
-      case 'pieChart':
-        this.chartInstance = new Chart(ctx, {
-          type: 'doughnut', // Or 'pie' based on actual usage
+      case 'pieChart': {
+        const plugins: Plugin<'doughnut'>[] = [];
+
+        if (config.centerText !== undefined) {
+          plugins.push(this.centerTextPlugin);
+        }
+
+        const options: ChartOptions<'doughnut'> = {
+          responsive: true,
+          cutout: '60%',
+          plugins: {
+            legend: { display: false },
+            centerText: {
+              text: config.centerText
+            }
+          }
+        };
+
+        this.chartInstance = new Chart<'doughnut'>(ctx, {
+          type: 'doughnut',
           data: {
             labels: config.labels,
-            datasets: config.datasets,
+            datasets: config.datasets as any,
           },
-          options: config.options,
-          // options: config.options || baseChartOptions(DEFAULT_FONT_FAMILY, false, '', ''),
+          options,
+          plugins,
         });
+
         break;
+      }
+
+
+
       // case 'mixedChart':
       //   this.chartInstance = new Chart(ctx, {
       //     type: 'bar',
@@ -185,6 +235,7 @@ export class Charts implements AfterViewInit, OnDestroy {
     if (this.chartInstance) {
       this.chartInstance.destroy();
     }
+    this.chartChangeEffect.destroy();
   }
 }
 
