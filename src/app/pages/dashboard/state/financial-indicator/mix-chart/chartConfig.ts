@@ -49,7 +49,7 @@ export const doughnutChartConfig = {
             "borderRadius": 3,
             "borderWidth": 1,
             // "offset": 0,
-            hoverOffset: 4
+            // hoverOffset: 4
         }
     ],
     options: {
@@ -72,5 +72,5 @@ export const doughnutChartConfig = {
             },
         }
     },
-    // options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', '', true, '%'),
+    //  options: baseChartOptions(DEFAULT_FONT_FAMILY, false, '', '', true, '%'),
 };
