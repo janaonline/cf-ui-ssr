@@ -14,10 +14,10 @@ export const routes: Routes = [
         // loadComponent: () => import('./pages/home/home').then(m => m.Home),
         component: Home,
     },
-    {
-        path: 'map',
-        loadComponent: () => import('./pages/india-map/india-map').then(m => m.IndiaMap),
-    },
+    // {
+    //     path: 'map',
+    //     loadComponent: () => import('./pages/india-map/india-map').then(m => m.IndiaMap),
+    // },
     {
         path: 'municipal-data',
         loadChildren: () => import('./pages/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES)
