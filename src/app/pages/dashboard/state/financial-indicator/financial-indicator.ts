@@ -262,8 +262,8 @@ export class FinancialIndicator {
     this.resetFilter(false);
     this.isMixBtn = key.includes('Mix');
     this.subButton.set(key);
-    this
-    console.log('Current Sub Button33:', this.subButton()); 
+    
+   
   }
 
   // Type Guard Function
