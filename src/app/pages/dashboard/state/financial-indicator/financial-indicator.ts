@@ -114,6 +114,7 @@ export class FinancialIndicator {
   ];
 
   isPerCapita: any;
+  subButtonIdx = signal(0);
   isDataInCrore: boolean = false;
   isMixBtn = false;
   code: any;
@@ -162,7 +163,7 @@ export class FinancialIndicator {
     // console.log("canFetchChart:", canFetch);
 
     if (canFetch && this.subButton() !== this.lastSubButtonValue) {
-      // console.log("Fetching for subButton:", this.subButton());
+      //  console.log("Fetching for subButton:", this.subButton());
       this.lastSubButtonValue = this.subButton();
       this.getChartData();
     }
@@ -198,9 +199,18 @@ export class FinancialIndicator {
 
   // Output emitted by child to parent
   onSelectedButtonChange(key: string): void {
+    // console.log('Selected Button Key11:', key);
     this.resetFilter(false);
     this.currentSelectedButtonKey.set(key as LineItemType);
+    // console.log('Selected Button Key:', this.currentSelectedButtonKey());
     this.getCurrentBtn();
+    const firstSubButtonKey = this.currentSelectedButton()?.subButtons?.buttons?.[0]?.key;
+    // console.log('First sub button of selected parent:', firstSubButtonKey);
+    if (firstSubButtonKey) {
+    this.onSelectedSubButtonChange(firstSubButtonKey);
+    this.subButtonIdx.set(0);
+    }
+    // console.log('Current Selected Button after button change:', this.currentSelectedButton().subButtons.buttons[0].key);
     if (this.stateServiceLabel) {
       this.getServiceDropDown();
     }
@@ -242,13 +252,18 @@ export class FinancialIndicator {
 
   getCurrentBtn() {
     this.currentSelectedButton.set(this.dashboardTabData().find((btn: any) => btn.key === this.currentSelectedButtonKey()));
+    console.log('Current Selected Button:', this.currentSelectedButton());
   }
 
   // Output emitted by child to parent
   onSelectedSubButtonChange(key: string): void {
+
+    // console.log('Selected Sub Button Key22:', key);
     this.resetFilter(false);
     this.isMixBtn = key.includes('Mix');
     this.subButton.set(key);
+    
+   
   }
 
   // Type Guard Function
