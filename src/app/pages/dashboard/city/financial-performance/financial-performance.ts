@@ -25,6 +25,10 @@ const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
   font: { name: 'Aptos', size: 10 },
 }
+import { Popup } from '../../../../shared/components/popup/popup';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
 
@@ -54,7 +58,8 @@ interface DataNode {
     MatIconModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    InrFormatPipe
+    InrFormatPipe,
+    MatDialogModule,
   ],
   templateUrl: './financial-performance.html',
   styleUrl: './financial-performance.scss',
@@ -109,6 +114,8 @@ export class FinancialPerformance {
     private _globalLoaderService: GlobalLoaderService,
     private _uitityService: UtilityService,
     private router: Router,
+    private readonly dialog: MatDialog,
+    private readonly sanitizer: DomSanitizer,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) { }
 
@@ -648,7 +655,17 @@ export class FinancialPerformance {
       }
     );
   }
-  showInfoAlert() { }
+  showInfoAlert(): void {
+  const html: SafeHtml = this.sanitizer.bypassSecurityTrustHtml(this.infoData() || 'N/A');
+  this.dialog.open(Popup, {
+    width: '600px',
+    data: {
+      title: 'Information',
+      htmlContent: html,
+    },
+  });
+}
+  // showInfoAlert() { }
 
   // Show info alert. removing sweet alert due to changes
   // showInfoAlert() {
