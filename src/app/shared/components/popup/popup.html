@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>{{ data.title || 'Information' }}</h2>
+
+<div mat-dialog-content class="popup-content">
+  @if (data.message) {
+    <p>{{ data.message }}</p>
+  }
+
+  @if (data.htmlContent) {
+    <div [innerHTML]="data.htmlContent"></div>
+  }
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="close()">
+    {{ data.closeButtonText || 'Close' }}
+  </button>
+</div>
