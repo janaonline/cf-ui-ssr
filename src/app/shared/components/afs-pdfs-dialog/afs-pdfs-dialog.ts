@@ -35,7 +35,10 @@ export class AfsPdfsDialog {
   }
 
   public openFile(fileInfo: { url: string; name: string }): void {
-    const target_file_url = environment.STORAGE_BASEURL + fileInfo['url'];
+    let target_file_url = environment.STORAGE_BASEURL + fileInfo['url'];
+    if (fileInfo["url"] && fileInfo["url"].toLowerCase().startsWith('https://')) {
+      target_file_url = fileInfo["url"];
+    }
 
     // User info popup.
     if (
