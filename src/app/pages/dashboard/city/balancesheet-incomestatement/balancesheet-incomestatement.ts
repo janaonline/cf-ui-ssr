@@ -402,8 +402,11 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
           // console.log(res);
           if (res['data'].length == 0) this.openDialog(null, 'notFound');
           else {
-            const target_file_url =
+            let target_file_url =
               environment.STORAGE_BASEURL + res['data'][0]['fileUrl'];
+            if (res['data'][0]['fileUrl'] && res['data'][0]['fileUrl'].toLowerCase().startsWith('https://')) {
+              target_file_url = res['data'][0]['fileUrl'];
+            }
             const target_file_name = res['data'][0]['fileName'];
 
             if (fileType === 'pdf') window.open(target_file_url, '_blank');
