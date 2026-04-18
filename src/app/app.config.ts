@@ -1,10 +1,18 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideBrowserGlobalErrorListeners,
+  provideAppInitializer,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
+import { AuthService } from './core/services/auth.service';
 import { customHttpInterceptor } from './core/security/custom-http.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -12,10 +20,15 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })), provideClientHydration(withEventReplay()),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
+    provideClientHydration(withEventReplay()),
     provideHttpClient(
       withInterceptors([customHttpInterceptor]),
-      withFetch()
+      withFetch(),
     ),
-  ]
+    provideAppInitializer(() => {
+      const authService = inject(AuthService);
+      return firstValueFrom(authService.initializeSession());
+    }),
+  ],
 };
