@@ -55,7 +55,7 @@
           }
         </li>
         } }
-        @if (!isLoggedIn) {
+        @if (isBrowser && isAuthReady && !isLoggedIn) {
         <li>
           <button class="btn btn-outline-cfPrimary fw-semibold border-2" (click)="showRequestDemoPopup()">
             Request a Demo
@@ -86,7 +86,7 @@
 
       <!-- Login/ Logout -->
       <div class="ms-2">
-        @if (isLoggedIn) {
+        @if (isBrowser && isAuthReady && isLoggedIn) {
         <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
           <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;
           <i class="bi bi-caret-down-fill"></i>

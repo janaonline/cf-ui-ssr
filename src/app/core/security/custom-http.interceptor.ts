@@ -1,91 +1,107 @@
 import {
+  HttpContextToken,
   HttpErrorResponse,
   HttpEvent,
+  HttpHandlerFn,
   HttpInterceptorFn,
   HttpRequest,
-  HttpHandlerFn,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { catchError, filter, Observable, Subject, throwError } from 'rxjs';
-import { Login_Logout } from '../util/logout.util';
-import { LocalStorageService } from '../services/local-storage.service';
+import { Router } from '@angular/router';
+import { Observable, catchError, switchMap, throwError } from 'rxjs';
+
+import { AuthService } from '../services/auth.service';
+
+const AUTH_RETRY_CONTEXT = new HttpContextToken<boolean>(() => false);
 
 export const customHttpInterceptor: HttpInterceptorFn = (
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<any>> => {
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthService);
   const router = inject(Router);
-  const localStorageService = inject(LocalStorageService);
-  const routerNavigationSuccess = new Subject<any>();
 
-  initializeRequestCancelProcess(router, routerNavigationSuccess);
+  const authRequest = enrichRequest(request, authService);
 
-  if (req.body instanceof File && req.method === 'PUT') {
-    return next(req);
-  }
-
-  // const id_token = localStorage.getItem('id_token');
-  const id_token = localStorageService.getItem('id_token');
-  const token = id_token ? JSON.parse(id_token) : '';
-  // const sessionID = sessionStorage.getItem('sessionID');
-
-  let headers = req.headers;
-  if (!req.headers.has('Accept')) {
-    headers = headers.set('Content-Type', 'application/json');
-  }
-  // if (sessionID) {
-  //   headers = headers.set('sessionId', sessionID);
-  // }
-  if (token) {
-    headers = headers.set('x-access-token', token);
-  }
-
-  const authReq = req.clone({ headers });
-
-  return next(authReq).pipe(
-    catchError((err: HttpErrorResponse) => {
-      switch (err.status) {
-        case 401:
-          clearLocalStorage();
-          router.navigate(['login']);
-          break;
-        case 440: {
-          clearLocalStorage();
-          const url = !['/', ''].includes(router.url) ? router.url : location.pathname + location.search + location.hash;
-          if (!url.includes('login')) {
-            sessionStorage.setItem('postLoginNavigation', url);
-          }
-          router.navigate(['login'], {
-            queryParams: { message: 'Session Expired. Kindly login again.' },
-          });
-          break;
-        }
-        case 441:
-          clearLocalStorage();
-          router.navigate(['login'], {
-            queryParams: {
-              message: 'Password Expired. Kindly reset your password.',
-            },
-          });
-          break;
-        case 0:
-          return throwError(() => ({
-            error: {
-              message: 'Failed to connect with Server',
-            },
-          }));
+  return next(authRequest).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 0) {
+        return throwError(() => ({
+          error: {
+            message: 'Failed to connect with Server',
+          },
+        }));
       }
-      return throwError(() => err.error);
-    })
+
+      if (error.status === 440 || error.status === 441) {
+        authService.clearLocalStorage();
+        void navigateToLogin(router);
+        return throwError(() => error);
+      }
+
+      if (error.status !== 401) {
+        return throwError(() => error);
+      }
+
+      if (!authService.shouldSendCredentials(request.url) || authService.isAuthRequest(request.url)) {
+        return throwError(() => error);
+      }
+
+      if (request.context.get(AUTH_RETRY_CONTEXT)) {
+        authService.clearLocalStorage();
+        void navigateToLogin(router);
+        return throwError(() => error);
+      }
+
+      return authService.refreshToken().pipe(
+        switchMap(() => {
+          const retryRequest = enrichRequest(
+            request.clone({
+              context: request.context.set(AUTH_RETRY_CONTEXT, true),
+            }),
+            authService,
+          );
+
+          return next(retryRequest);
+        }),
+        catchError((refreshError) => {
+          authService.clearLocalStorage();
+          void navigateToLogin(router);
+          return throwError(() => refreshError);
+        }),
+      );
+    }),
   );
 };
 
-function initializeRequestCancelProcess(router: Router, subject: Subject<any>) {
-  router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(subject);
+function enrichRequest(request: HttpRequest<unknown>, authService: AuthService) {
+  let headers = request.headers;
+
+  if (!headers.has('Content-Type') && !isMultipartRequest(request)) {
+    headers = headers.set('Content-Type', 'application/json');
+  }
+
+  const accessToken = authService.getAccessToken();
+  if (accessToken && authService.shouldAttachAccessToken(request.url)) {
+    headers = headers
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('x-access-token', accessToken);
+  }
+
+  return request.clone({
+    headers,
+    withCredentials: authService.shouldSendCredentials(request.url) || request.withCredentials,
+  });
 }
 
-function clearLocalStorage() {
-  localStorage.clear();
-  Login_Logout.logout();
+function isMultipartRequest(request: HttpRequest<unknown>) {
+  return request.body instanceof FormData || request.body instanceof Blob;
+}
+
+function navigateToLogin(router: Router) {
+  const returnUrl = router.url && router.url !== '/login' ? router.url : '/';
+
+  return router.navigate(['/login'], {
+    queryParams: returnUrl && returnUrl !== '/login' ? { returnUrl } : undefined,
+  });
 }

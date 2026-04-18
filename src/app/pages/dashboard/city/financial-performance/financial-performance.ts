@@ -1,7 +1,7 @@
 import { CdkTree } from '@angular/cdk/tree';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Inject, input, PLATFORM_ID, signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -62,7 +62,10 @@ interface DataNode {
 })
 export class FinancialPerformance {
 
-  myForm!: FormGroup;
+  readonly myForm: FormGroup = new FormGroup({
+    year: new FormControl(''),
+    radioButton: new FormControl('crores'),
+  });
   intro: string = '';
   years = signal<string[]>([]);
   source: string = '';
@@ -103,7 +106,6 @@ export class FinancialPerformance {
   isExporting: boolean = false;
 
   constructor(
-    private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private _dashboardService: DashboardService,
     private _globalLoaderService: GlobalLoaderService,
@@ -120,7 +122,6 @@ export class FinancialPerformance {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.myForm = this.fb.group({ year: [''], radioButton: ['crores'] });
     this.getYearsDynamic(this.ulbIdSignal());
 
     // Track value changes - Year changed from drop-down.
