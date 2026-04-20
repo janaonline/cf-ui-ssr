@@ -90,7 +90,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   public compareUlbsList: Set<string> = new Set();
   private compareYears: string[] = [];
 
-  readonly fileLink = `${environment.STORAGE_BASEURL}/GlobalFiles/STANDARDIZATION_PROCESS_OF_ANNUAL_FINANCIAL_STATEMENT_OF_ULBS_f6e6b60b-2245-4104-803f-0fe01e33ae90.pdf`;
+  readonly fileLink = `/assets/docs/STANDARDIZATION_PROCESS_OF_ANNUAL_FINANCIAL_STATEMENT_OF_ULBS_f6e6b60b-2245-4104-803f-0fe01e33ae90.pdf`;
   readonly buttons: ButtonObj[] = [
     { key: 'balanceSheet', label: 'Balance Sheet' },
     { key: 'incomeStatement', label: 'Income Statement' },

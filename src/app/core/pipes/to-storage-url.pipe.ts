@@ -17,10 +17,5 @@ export class ToStorageUrlPipe implements PipeTransform {
     } else {
       return '';
     }
-    // if(value){
-    //   return environment.STORAGE_BASEURL + value;
-    // }else{
-    //   return "";
-    // }
   }
 }
