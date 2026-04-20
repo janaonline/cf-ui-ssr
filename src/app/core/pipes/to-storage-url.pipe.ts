@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ToStorageUrlPipe implements PipeTransform {
   transform(value: string): string {
-    if (value && value.toLowerCase().startsWith('https://')) {
+    if (value && (value.toLowerCase().startsWith('https://') || value.toLowerCase().startsWith('http://'))) {
       return value;
     } else if (value) {
       return environment.STORAGE_BASEURL + value;
