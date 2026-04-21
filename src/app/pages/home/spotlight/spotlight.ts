@@ -57,7 +57,7 @@ export class Spotlight {
       {
         "imageUrl": "/assets/images/homepage/spotlight/credit-rating-report.png",
         "name": "Credit Rating Toolkit",
-        "downloadUrl": "https://www.cityfinance.in/v1/resources-dashboard/learning-center/toolkits",
+        "downloadUrl": "/assets/images/homepage/spotlight/Credit_Rating_Toolkit.pdf",
         "badge": "New!"
       },
       {
