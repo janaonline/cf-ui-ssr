@@ -55,81 +55,81 @@ export class Spotlight {
   whatNewData =
     [
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/credit-rating-report.png",
+        "imageUrl": "/assets/images/homepage/spotlight/credit-rating-report.png",
         "name": "Credit Rating Toolkit",
-        "downloadUrl": "https://www.cityfinance.in/v1/resources-dashboard/learning-center/toolkits",
+        "downloadUrl": "/assets/images/homepage/spotlight/Credit_Rating_Toolkit.pdf",
         "badge": "New!"
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/property-tax.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/property-tax.webp",
         "name": "Property Tax Toolkit",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/Property_Tax_Reforms_Toolkit.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/Property_Tax_Reforms_Toolkit.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/municipal-finance-blueprint.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/municipal-finance-blueprint.webp",
         "name": "A Municipal Finance Blueprint For India",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/objects/bdd4ab84-20bf-4299-818b-e34273084615.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/municipal-finance-blueprint.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/rbi-report-on-municipal-finances.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/rbi-report-on-municipal-finances.webp",
         "name": "RBI Report on Municipal Finances",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/objects/5b1a4e36-ebfb-4311-84c6-8213bee1a284.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/rbi-report-on-municipal-finances.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/xvi-fc-constitution.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/xvi-fc-constitution.webp",
         "name": "XVI FC Constitution & Terms of Reference",
         "downloadUrl": "/assets/images/homepage/spotlight/16th-FC-Members-Appointment-1.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/cfr-framework.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/cfr-framework.webp",
         "name": "City Finance Rankings Framework",
         "downloadUrl": "/assets/images/homepage/spotlight/CFR-Framework.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/asics-2023-report.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/asics-2023-report.webp",
         "name": "ASICS Report 2023",
         "downloadUrl": "/assets/images/homepage/spotlight/ASICS-2023-report.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/indian-urban-infrastructure.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/indian-urban-infrastructure.webp",
         "name": "Indian Urban Infrastructure & Services",
-        "downloadUrl": "https://documents1.worldbank.org/curated/en/099615110042225105/pdf/P17130200d91fc0da0ac610a1e3e1a664d4.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/indian-urban-infrastructure-services.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/national-municipal-accounts-manual.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/national-municipal-accounts-manual.webp",
         "name": "National Municipal Accounts Manual",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/NMAM_Manual.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/NMAM_Manual.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/xv-fc-main-report-volume-1.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/xv-fc-main-report-volume-1.webp",
         "name": "XV FC Main Report Volume I",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/XVFC_VOL_I_Main_Report_2021-26.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/XVFC_VOL_I_Main_Report_2021-26.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "/assets/images/homepage_v2/spotlight/xv-fc-operational-guidelines.webp",
+        "imageUrl": "/assets/images/homepage/spotlight/xv-fc-operational-guidelines.webp",
         "name": "XV FC Operational Guidelines",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resource/Annexure-I_FC-XV_operational_guidelines_for_Urban_Local_Body_for_2021-26.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/Annexure-I_FC-XV_operational_guidelines.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/xvi-fc_2b83c6f0-b7f7-472e-9741-d856021adb81.png",
+        "imageUrl": "/assets/images/homepage/spotlight/xvi-fc-report-volume-1.png",
         "name": "Report of the XVI-FC Volume 1",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/xvi-fc_a7627d0e-5f18-4322-8c31-4a7ef9ecb3ad.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/xvi-fc-report-volume-1.pdf",
         "badge": ""
       },
       {
-        "imageUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources//blue-print_671e77ae-5c30-4a75-89c1-f6a0a6535062.png",
+        "imageUrl": "/assets/images/homepage/spotlight/blueprint-urban-fiscal-devolution.png",
         "name": "A Blueprint for Urban Fiscal Devolution",
-        "downloadUrl": "https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com/resources/blue-print_63094994-fcba-430d-8265-d0dcafa501c9.pdf",
+        "downloadUrl": "/assets/images/homepage/spotlight/blueprint-urban-fiscal-devolution.pdf",
         "badge": ""
       }
     ];
