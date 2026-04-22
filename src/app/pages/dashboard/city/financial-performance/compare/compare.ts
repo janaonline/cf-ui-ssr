@@ -101,21 +101,24 @@ export class Compare implements OnInit {
       line2: 'for Mumbai–Bengaluru–Pune',
       cities: ['mumbai', 'bengaluru', 'pune'],
       indicatorKey: 'receipts',
-      yearsCount: 3
+      yearsCount: 3,
+      id:"mumbai-bengaluru-pune-receipts"
     },
     {
       line1: '3Y Property Tax',
       line2: 'of Ahmedabad–Surat–Indore',
       cities: ['amdavad', 'surat', 'indore'],
       indicatorKey: 'taxRevenue',
-      yearsCount: 3
+      yearsCount: 3,
+      id:"ahmedabad-surat-indore-taxRevenue"
     },
     {
       line1: '3Y Debt Data',
       line2: 'of Mumbai–Indore–Hyderabad',
       cities: ['mumbai', 'indore', 'hyderabad'],
       indicatorKey: 'debt',
-      yearsCount: 3
+      yearsCount: 3,
+      id:"mumbai-indore-hyderabad-debt"
     }
   ];
 
