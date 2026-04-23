@@ -12,5 +12,10 @@ export const environment = {
   environment: 'prod',
   isProduction: true,
   googleTagID: 'G-MDPDTZFW0N',
+  gtm: {
+    containerId: 'GTM-5NPJ9V8V',
+    auth: '',
+    preview: '',
+  },
   STORAGE_BASEURL: 'https://jana-cityfinance-live.s3.ap-south-1.amazonaws.com',
 };

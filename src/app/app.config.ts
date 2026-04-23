@@ -14,6 +14,7 @@ import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { AuthService } from './core/services/auth.service';
 import { customHttpInterceptor } from './core/security/custom-http.interceptor';
+import { GtmService } from './core/services/gtm.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,9 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([customHttpInterceptor]),
       withFetch(),
     ),
+    provideAppInitializer(() => {
+      inject(GtmService).init();
+    }),
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       return firstValueFrom(authService.initializeSession());
