@@ -13,7 +13,7 @@ export const environment = {
   isProduction: false,
   googleTagID: 'G-803HPPLFMM',
   gtm: {
-    containerId: 'GTM-PN2SV5L7',
+    containerId: 'GTM-5NPJ9V8V',
     auth: '',
     preview: '',
   },
