@@ -136,10 +136,10 @@
 
                 <div class="d-flex justify-content-center flex-wrap gap-3 p-4">
                     @for (comparison of sampleComparisons; track comparison.line2;let i = $index) {
-                    <button class="btn btn-outline-cfPrimary rounded-3 shadow-sm p-3 text-center" [id]="comparison.id"
-                        (click)="onComparisonClick(comparison.cities,i)">
-                        <strong>{{ comparison.line1 }}</strong><br>
-                        <strong>{{ comparison.line2 }}</strong>
+                    <button class="btn btn-outline-cfPrimary fw-bold rounded-3 shadow-sm p-3 text-center"
+                        [id]="comparison.id" (click)="onComparisonClick(comparison.cities,i)">
+                        {{ comparison.line1 }}<br>
+                        {{ comparison.line2 }}
                     </button>
                     }
                 </div>
