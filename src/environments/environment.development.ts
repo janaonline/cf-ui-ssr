@@ -7,7 +7,7 @@ export const environment = {
     url: baseUrl + '/api/v1/',
     urlV2: baseUrl + '/api/v2/',
   },
-  ui: { urlV1: baseUrl + '/v1', urlV2: baseUrl + '/fc' },
+  ui: { urlV1: baseUrl + '/v1/', urlV2: baseUrl + '/fc/' },
   // v1Url: 'http://localhost:4200',
   // v2Url: 'http://localhost:4300',
   v1Url: '/v1',
