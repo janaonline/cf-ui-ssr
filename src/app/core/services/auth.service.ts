@@ -34,9 +34,9 @@ export class AuthService {
   private readonly legacyAccessTokenStorageKey = 'id_token';
   private readonly currentUserStorageKey = 'userData';
   private readonly sessionHintStorageKey = 'auth_session_hint';
-  private readonly loginUrl = `${environment.api.url}login`;
-  private readonly logoutUrl = `${environment.api.url}logout`;
-  private readonly refreshTokenUrl = `${environment.api.url}refresh`;
+  private readonly loginUrl = `${environment.api.urlV2}auth/login`;
+  private readonly logoutUrl = `${environment.api.urlV2}auth/logout`;
+  private readonly refreshTokenUrl = `${environment.api.urlV2}auth/refresh`;
   private readonly jwtHelper = new JwtHelperService();
   private readonly apiBaseUrls = [environment.api.url, environment.api.urlV2].filter(Boolean);
 

@@ -134,10 +134,10 @@ export class Navbar implements OnInit {
         href: environment.v2Url + '/admin/xvi-fc-review',
       },
       this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) &&
-        this.isReadonlyUser() && {
-          name: 'Users',
-          href: environment.v1Url + '/user/list/ULB',
-        },
+      this.isReadonlyUser() && {
+        name: 'Users',
+        href: environment.v1Url + '/user/list/ULB',
+      },
     ];
 
     this.menus = [...this.baseMenus, ...loggedinMenus.filter(Boolean)];
@@ -187,26 +187,6 @@ export class Navbar implements OnInit {
   loginLogout(type: string) {
     localStorage.setItem('loginType', type);
 
-    if (type === '15thFC') {
-      window.location.href = this.v1Url + '/fc_grant';
-      return;
-    }
-
-    if (type === 'XVIFC') {
-      window.location.href = this.v1Url + '/login/xvi-fc';
-      return;
-    }
-
-    if (type === 'state-dashboard') {
-      window.location.href = this.v1Url + '/login/state-dashboard';
-      return;
-    }
-
-    if (type === 'ranking') {
-      window.location.href = this.v1Url + '/rankings/login';
-      return;
-    }
-
     if (type === 'logout') {
       this.authService.logout()
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -214,6 +194,9 @@ export class Navbar implements OnInit {
           this.removeSessionItem();
           this._router.navigateByUrl('/home');
         });
+    } else {
+      window.location.href = environment.ui.urlV2 + '/auth/login/' + type;
+      return;
     }
   }
 
