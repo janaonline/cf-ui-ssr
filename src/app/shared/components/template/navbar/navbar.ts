@@ -195,7 +195,7 @@ export class Navbar implements OnInit {
           this._router.navigateByUrl('/home');
         });
     } else {
-      window.location.href = environment.ui.urlV2 + '/auth/login/' + type;
+      window.location.href = environment.ui.urlV2 + 'auth/login/' + type;
       return;
     }
   }
