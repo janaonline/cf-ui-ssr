@@ -359,3 +359,16 @@ input::-webkit-inner-spin-button {
     background-color: hsla(220, 62%, 80%, 1);
     transform: scale(0.97);
 }
+
+// Version-update snackbar
+.version-update-snack {
+    .mat-mdc-snack-bar-label {
+        font-weight: 600;
+    }
+
+    .mat-mdc-snack-bar-action button {
+        color: #ffa726;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+}

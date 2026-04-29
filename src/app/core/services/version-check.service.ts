@@ -1,14 +1,17 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { first } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class VersionCheckService {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly snackBar = inject(MatSnackBar);
   private currentHash: string | null = null;
+  private updatePrompted = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * @param url      URL of version.json (e.g. '/version.json')
@@ -29,11 +32,24 @@ export class VersionCheckService {
       .subscribe({
         next: ({ hash }) => {
           if (this.currentHash !== null && this.currentHash !== hash) {
-            location.reload();
+            this.promptUpdate();
           }
           this.currentHash = hash;
         },
         error: (err) => console.error('version-check: could not fetch version.json', err),
       });
+  }
+
+  private promptUpdate(): void {
+    if (this.updatePrompted) return;
+    this.updatePrompted = true;
+
+    const snackRef = this.snackBar.open(
+      'A new version is available.',
+      'Update Now',
+      { duration: 0, panelClass: 'version-update-snack' },
+    );
+
+    snackRef.onAction().subscribe(() => location.reload());
   }
 }
