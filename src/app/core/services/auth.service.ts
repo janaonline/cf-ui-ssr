@@ -303,7 +303,7 @@ export class AuthService {
   }
 
   shouldAttachAccessToken(url: string) {
-    return this.isApiRequest(url) && !this.isAuthRequest(url);
+    return this.isApiRequest(url) && (!this.isAuthRequest(url) || this.isLogoutRequest(url));
   }
 
   shouldSendCredentials(url: string) {
