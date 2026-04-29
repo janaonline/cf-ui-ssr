@@ -25,6 +25,7 @@ import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
+import { ROUTE_PAGES } from './login-menu.constant';
 
 @Component({
   selector: 'app-navbar',
@@ -52,6 +53,10 @@ export class Navbar implements OnInit {
   v1Url = environment.v1Url;
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in'];
+  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
+    ...page,
+    href: `${environment.ui.urlV2}auth/login/${page.type}`,
+  }));
 
   readonly baseMenus: any[] = [
     {
