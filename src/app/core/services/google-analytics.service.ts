@@ -1,95 +1,47 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { UserUtility } from '../util/user/user';
-import { GtmService } from './gtm.service';
 import { isPlatformBrowser } from '@angular/common';
-
-declare let gtag: (command: string, eventName: string | Date, params?: Record<string, any>) => void;
+import { GtmService } from './gtm.service';
+import { UserUtility } from '../util/user/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleAnalyticsService {
+  private loggedInUserDetails = new UserUtility().getLoggedInUserDetails();
 
-  loggedInUserDetails = new UserUtility().getLoggedInUserDetails();
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private gtmService: GtmService
+  ) { }
 
-  // googleTagID = environment.environment === 'prod' ? 'G-5Z5B41B3G4' : 'G-803HPPLFMM';
-  googleTagID = environment.googleTagID;
+  init(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-  constructor(private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object, private gtmService: GtmService) {
-
-  }
-
-  init() {
-    if (environment.environment !== 'prod') {
-      return;
+    const user = this.loggedInUserDetails;
+    if (user?._id) {
+      this.gtmService.pushEvent({
+        event: 'cf_user_context',
+        user_id: user._id
+      });
     }
-    // Ensure this runs only in the browser
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-    this.appendScript();
-    this.onPageView();
   }
 
-  appendScript() {
-    const script = document.createElement('script');
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${this.googleTagID}`;
-    script.async = true;
-    document.getElementsByTagName('head')[0].appendChild(script);
-    const gtagEl = document.createElement('script');
-    const gtagBody = document.createTextNode(`
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-    `);
-    gtagEl.appendChild(gtagBody);
-    document.body.appendChild(gtagEl);
-  }
+  setUserId(): void {
+    const user = this.loggedInUserDetails;
+    if (!isPlatformBrowser(this.platformId) || !user?._id) return;
 
-  onPageView() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      // const url = event.urlAfterRedirects;
-      gtag('js', new Date());
-      this.setUserId();
-      // gtag('config', environment.googleAnalyticsId, { page_path: url });
+    this.gtmService.pushEvent({
+      event: 'cf_user_context',
+      user_id: user._id
     });
   }
 
-  /**
-   * Set user ID for tracking logged-in users.
-   */
-  public setUserId(): void {
-    const user = this.loggedInUserDetails;
-    let args = {};
-    if (user && user._id) {
-      args = {
-        user_id: user._id,
-      };
-    }
-    gtag('config', this.googleTagID, args);
-  }
+  trackEvent(eventName: string, params: Record<string, any> = {}): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-  trackEvent(action: string, params?: any) {
-    gtag('event', action, params);
-    const gtmTag = {
-      event: 'button_click',
-      // category: 'User Actions',
-      category: params,
-      action: 'Click',
-      // label: 'Buy Now Button',
-      label: action,
-    };
-    this.gtmService.pushEvent(gtmTag);
+    this.gtmService.pushEvent({
+      event: eventName,
+      ...params
+    });
   }
-
-  // trackEvent1(eventName: string, params: any) {
-  //   if ((window as any).gtag) {
-  //     (window as any).gtag('event', eventName, params);
-  //   }
-  // }
 }
