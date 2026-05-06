@@ -70,7 +70,7 @@ export class Navbar implements OnInit {
           name: 'Service Level Benchmarks Performance',
           href: this.v1Url + '/dashboard/slb',
         },
-        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
+        // { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
       ],
     },
     {
@@ -134,10 +134,10 @@ export class Navbar implements OnInit {
         href: environment.v2Url + '/admin/xvi-fc-review',
       },
       this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) &&
-        this.isReadonlyUser() && {
-          name: 'Users',
-          href: environment.v1Url + '/user/list/ULB',
-        },
+      this.isReadonlyUser() && {
+        name: 'Users',
+        href: environment.v1Url + '/user/list/ULB',
+      },
     ];
 
     this.menus = [...this.baseMenus, ...loggedinMenus.filter(Boolean)];
