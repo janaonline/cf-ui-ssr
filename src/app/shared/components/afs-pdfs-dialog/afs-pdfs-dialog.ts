@@ -8,6 +8,7 @@ import {
 } from '../../../core/models/interfaces';
 import { UtilityService } from '../../../core/services/utility-service';
 import { NoDataFound } from '../no-data-found/no-data-found';
+import { ToStorageUrlPipe } from '../../../core/pipes/to-storage-url.pipe';
 
 @Component({
   selector: 'app-afs-pdfs-dialog',
@@ -26,7 +27,8 @@ export class AfsPdfsDialog {
     public dialogRef: MatDialogRef<AfsPdfsDialog>,
     // private userInfoService: DownloadUserInfoService,
     private utilityService: UtilityService,
-    @Optional() @Inject(MAT_DIALOG_DATA) public data: UserInfoData
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: UserInfoData,
+    private toStorageUrlPipe: ToStorageUrlPipe,
   ) {
     console.log('userInfo: ', this.reports, this.fileType, this.ulbDetails);
     this.reports = data?.reportList;
@@ -35,7 +37,7 @@ export class AfsPdfsDialog {
   }
 
   public openFile(fileInfo: { url: string; name: string }): void {
-    const target_file_url = environment.STORAGE_BASEURL + fileInfo['url'];
+    let target_file_url = this.toStorageUrlPipe.transform(fileInfo['url']);
 
     // User info popup.
     if (

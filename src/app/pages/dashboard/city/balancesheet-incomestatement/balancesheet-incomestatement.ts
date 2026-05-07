@@ -34,6 +34,7 @@ import { NoDataFound } from '../../../../shared/components/no-data-found/no-data
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
 import { DashboardService } from '../../dashboard-service';
 import { CompareBy } from './compare-by/compare-by';
+import { ToStorageUrlPipe } from '../../../../core/pipes/to-storage-url.pipe';
 
 type DownloadReportElement = {
   type: string;
@@ -89,7 +90,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
   public compareUlbsList: Set<string> = new Set();
   private compareYears: string[] = [];
 
-  readonly fileLink = `${environment.STORAGE_BASEURL}/GlobalFiles/STANDARDIZATION_PROCESS_OF_ANNUAL_FINANCIAL_STATEMENT_OF_ULBS_f6e6b60b-2245-4104-803f-0fe01e33ae90.pdf`;
+  readonly fileLink = `/assets/docs/STANDARDIZATION_PROCESS_OF_ANNUAL_FINANCIAL_STATEMENT_OF_ULBS_f6e6b60b-2245-4104-803f-0fe01e33ae90.pdf`;
   readonly buttons: ButtonObj[] = [
     { key: 'balanceSheet', label: 'Balance Sheet' },
     { key: 'incomeStatement', label: 'Income Statement' },
@@ -161,6 +162,7 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private titleCasePipe: TitleCasePipe,
     private excelService: ExcelService,
+    private toStorageUrlPipe: ToStorageUrlPipe,
   ) { }
 
   ngOnInit(): void {
@@ -402,8 +404,8 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
           // console.log(res);
           if (res['data'].length == 0) this.openDialog(null, 'notFound');
           else {
-            const target_file_url =
-              environment.STORAGE_BASEURL + res['data'][0]['fileUrl'];
+            let target_file_url = this.toStorageUrlPipe.transform(res['data'][0]['fileUrl']);
+
             const target_file_name = res['data'][0]['fileName'];
 
             if (fileType === 'pdf') window.open(target_file_url, '_blank');
