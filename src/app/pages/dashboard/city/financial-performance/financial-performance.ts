@@ -20,6 +20,7 @@ import { TabButtons } from '../../../../shared/components/tab-buttons/tab-button
 import { DashboardService } from '../../dashboard-service';
 import { InrFormatPipe } from "../../../../core/pipes/inr-format.pipe";
 import { Router } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
 const GRAPH_COLORS = ["#62b6cb", "#1b4965", "#bee9e8", "#43B5A0", "#F4A261", "#5885AF", "#F6D743",]
 const DEFAULT_STYLES = {
   alignment: { vertical: 'middle' },
@@ -29,6 +30,11 @@ import { Popup } from '../../../../shared/components/popup/popup';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+
+type FaqAnswerPart = {
+  isNote: boolean;
+  segments: { text: string; isResources?: boolean }[];
+};
 
 interface CustomChartDataset extends ChartDataset<'bar', number[]> {
 
@@ -109,6 +115,7 @@ export class FinancialPerformance {
   yearsArrDyna: any;
   titleTabs = signal<string>('overview');
   isExporting: boolean = false;
+  readonly resourcesUrl = `${environment.v1Url}/resources-dashboard/data-sets/income_statement`;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -284,6 +291,42 @@ export class FinancialPerformance {
       }
     })
   }
+
+  getFaqAnswerParts(answer: string): FaqAnswerPart[] {
+    const answerText = answer ?? '';
+    const noteMatch = answerText.match(/\bNote\s*:/i);
+    const noteIndex = noteMatch?.index ?? -1;
+
+    if (noteIndex === -1) {
+      return [{ isNote: false, segments: this.createFaqSegments(answerText) }];
+    }
+
+    return [
+      { isNote: false, segments: this.createFaqSegments(answerText.slice(0, noteIndex).trim()) },
+      { isNote: true, segments: this.createFaqSegments(answerText.slice(noteIndex).trim()) },
+    ].filter((part) => part.segments.length);
+  }
+
+  private createFaqSegments(text: string): FaqAnswerPart['segments'] {
+    const resourcesMatch = text.match(/\bResources\b/);
+    const resourcesIndex = resourcesMatch?.index ?? -1;
+
+    if (resourcesIndex === -1) {
+      return text ? [{ text }] : [];
+    }
+
+    return [
+      { text: text.slice(0, resourcesIndex) },
+      { text: resourcesMatch![0], isResources: true },
+      { text: text.slice(resourcesIndex + resourcesMatch![0].length) },
+    ].filter((segment) => segment.text);
+  }
+
+  navigateToResources() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    window.location.href = this.resourcesUrl;
+  }
+
   // Main Button Change Handler
   onSelectedButtonChange(btnKey: string) {
     this.selectedButton = this.buttons.find(button => button.key === btnKey) || null;
