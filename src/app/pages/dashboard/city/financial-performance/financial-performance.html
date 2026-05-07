@@ -159,7 +159,19 @@
                 <i class="faq-icon bi" [ngClass]="expandedIndex === i ? 'bi-x' : 'bi-plus'"></i>
             </button>
             <div class="faq-answer" [style.maxHeight]="expandedIndex === i ? '400px' : '0px'">
-                <p>{{ faq.answer }}</p>
+                @for (answerPart of getFaqAnswerParts(faq.answer); track $index) {
+                <p [class.faq-note]="answerPart.isNote">
+                    @for (segment of answerPart.segments; track segment.text) {
+                    @if (segment.isResources) {
+                    <button type="button" class="faq-resource-btn" (click)="navigateToResources()">
+                        {{ segment.text }}
+                    </button>
+                    } @else {
+                    {{ segment.text }}
+                    }
+                    }
+                </p>
+                }
             </div>
         </div>
     </div>

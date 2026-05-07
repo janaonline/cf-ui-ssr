@@ -97,7 +97,7 @@
       <div>
 
         <p class="mb-2 p-0 fw-bold">{{ulbName()}}'s credit profile</p>
-        <p class="m-0 p-0">{{intro}} </p>
+        <!-- <p class="m-0 p-0">{{intro}} </p> -->
         <!-- <h4 class="fw-bold my-3 text-start">{{ulbName()}}'s credit profile</h4> -->
 
         <!-- <p class="m-0 p-0">
@@ -162,6 +162,7 @@
     {{this.footNote??this.footNote}}
   </div>
   }
+  @if (doughnutCharts().length > 0 && doughnutCharts()[0].centerText !== 0) {
   <div class="table-responsive mt-4 border-none">
     <table class="table  align-middle text-center">
       <thead class="">
@@ -251,6 +252,23 @@
         }
       </tbody>
     </table>
+  </div>
+  }
+
+  <div class="market-readiness-methodology alert mt-3" role="note">
+    <p class="fw-bold mb-2">What is the basis for the market-readiness assessment and scoring logic?</p>
+    <p class="mb-2">
+      The framework evaluates a city across several indicators related to revenue, expenditure, liquidity, and debt
+      performance (where applicable). The assessment is based on self-reported audited financial statements and
+      property tax data submitted on the City Finance platform.
+    </p>
+    <p class="mb-0">
+      The methodology, including parameters and scoring logic, has been developed with reference to the
+      <a href="https://cwas.org.in/cwas-resources/creditworthiness-assessment-an-approach-for-indian-cities"
+        target="_blank" rel="noopener">
+        CWAS-CRDF-CEPT Creditworthiness Assessment Framework (April 2024)
+      </a>.
+    </p>
   </div>
 
   <!-- @if(this.outOfRange!=[]){
