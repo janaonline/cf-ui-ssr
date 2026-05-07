@@ -17,6 +17,7 @@ import {
 import { NoDataFound } from '../../../../shared/components/no-data-found/no-data-found';
 import { PreLoader } from '../../../../shared/components/pre-loader/pre-loader';
 import { TabButtons } from '../../../../shared/components/tab-buttons/tab-buttons';
+import { environment } from '../../../../../environments/environment';
 import { DashboardService } from '../../dashboard-service';
 import { CompareByDialog } from './compare-by-dialog/compare-by-dialog';
 import { accordions, buttons, compraeByOptions, IndicatorDetails, subButtons } from './constants';
@@ -37,6 +38,11 @@ export interface ChartSeries {
   label: string;
   data: number[];
 }
+
+type AccordionTextPart = {
+  isNote: boolean;
+  segments: { text: string; isResources?: boolean }[];
+};
 
 @Component({
   selector: 'app-financial-indicator',
@@ -63,6 +69,7 @@ export class FinancialIndicator {
   readonly subButtons = subButtons;
   readonly compraeByOptions = compraeByOptions;
   readonly accordions = accordions;
+  readonly resourcesUrl = `${environment.v1Url}/resources-dashboard/data-sets/income_statement`;
 
   readonly ulbIdSignal = input.required<string>();
   readonly ulbName = input.required<string>();
@@ -148,6 +155,42 @@ export class FinancialIndicator {
       (value as IndicatorDetails).aboutIndicator !== undefined &&
       Array.isArray((value as IndicatorDetails).aboutIndicator)
     );
+  }
+
+  getAccordionTextParts(content: string): AccordionTextPart[] {
+    const contentText = content ?? '';
+    const noteMatch = contentText.match(/\bNote\s*:/i);
+    const noteIndex = noteMatch?.index ?? -1;
+
+    if (noteIndex === -1) {
+      return [{ segments: this.createAccordionTextSegments(contentText), isNote: false }];
+    }
+
+    return [
+      { segments: this.createAccordionTextSegments(contentText.slice(0, noteIndex).trim()), isNote: false },
+      { segments: this.createAccordionTextSegments(contentText.slice(noteIndex).trim()), isNote: true },
+    ].filter((part) => part.segments.length);
+  }
+
+  private createAccordionTextSegments(text: string): AccordionTextPart['segments'] {
+    const linkText = 'Resources';
+    const resourcesMatch = text.match(/\bResources\b/);
+    const resourcesIndex = resourcesMatch?.index ?? -1;
+
+    if (resourcesIndex === -1) {
+      return text ? [{ text }] : [];
+    }
+
+    return [
+      { text: text.slice(0, resourcesIndex) },
+      { text: resourcesMatch![0], isResources: true },
+      { text: text.slice(resourcesIndex + resourcesMatch![0].length) },
+    ].filter((segment) => segment.text);
+  }
+
+  navigateToResources() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    window.location.href = this.resourcesUrl;
   }
 
   // Retrieves the label from a list of Arrray based on the provided key.

@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
@@ -45,7 +46,7 @@ interface CityScore {
 @Component({
   selector: 'app-market-readiness',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CitySearch, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, MatTableModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CitySearch, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule, MatTableModule, MatExpansionModule],
   templateUrl: './market-readiness.html',
   styleUrl: './market-readiness.scss'
 })

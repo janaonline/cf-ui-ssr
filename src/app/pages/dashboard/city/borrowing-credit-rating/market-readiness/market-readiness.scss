@@ -1,3 +1,20 @@
+:host {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  --mat-expansion-header-text-font: "Montserrat", sans-serif;
+  --mat-form-field-container-text-font: "Montserrat", sans-serif;
+  --mat-select-trigger-text-font: "Montserrat", sans-serif;
+  --mat-option-label-text-font: "Montserrat", sans-serif;
+  --mat-table-header-headline-font: "Montserrat", sans-serif;
+  --mat-table-row-item-label-text-font: "Montserrat", sans-serif;
+}
+
+.insufficient-data-note {
+  color: rgba(193, 18, 31, 0.65);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
 /* HERO */
 .market-hero {
   min-height: 400px;
@@ -244,53 +261,90 @@ mat-paginator {
 }
 .assessment-container {
   // font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1000px;
-  margin: 20px auto;
   color: #333;
+  padding: 20px 0;
 }
 
-.main-title {
-  font-size: 30px;
-  margin-bottom: 30px;
+.assessment-faq-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 12px;
 }
 
-.accordion-item {
-  border-bottom: 1px solid #eee;
-  padding: 15px 0;
+.faq {
+  // font-size: 30px;
 }
 
-.accordion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.assessment-accordion {
+  display: block;
+  width: 100%;
+}
+
+.assessment-panel {
+  border-bottom: 1px solid #ddd;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent;
+  position: relative;
+}
+
+.assessment-panel ::ng-deep .mat-expansion-panel-body {
+  padding: 0 1rem 1rem;
+}
+
+.assessment-panel ::ng-deep .mat-expansion-panel-header {
+  padding: 0;
+  height: auto;
+  min-height: 56px;
+}
+
+.assessment-panel ::ng-deep .mat-expansion-panel-header:hover {
+  background: transparent !important;
+}
+
+.faq-question {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  padding: 1rem;
   cursor: pointer;
+  font-weight: 700;
+  color: #111;
 }
 
-.accordion-header h3 {
-  font-size: 16px;
-  font-weight: 500;
+.faq-answer {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 1rem;
   margin: 0;
-  color: #444;
+  color: #111;
+  line-height: 1.6;
+  font-size: 14px;
 }
 
-.accordion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-  color: #444;
-  /* Add padding/margin as needed */
+.faq-item {
+  border-bottom: 1px solid #ddd;
 }
+
+.faq-icon {
+  position: absolute;
+  right: 1.5rem;
+  top: 0.9rem;
+  font-size: 28px;
+  color: #7c6c6c;
+  transition: transform 0.3s ease;
+}
+
 .check-icon {
-    font-size: 20px;
-    color: #28a745;
-    line-height: 1;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
+  font-size: 20px;
+  color: #28a745;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
 .toggle-icon {
   display: inline-block; /* Required for transform to work */
   font-size: 24px; /* Adjust size of the plus sign */
