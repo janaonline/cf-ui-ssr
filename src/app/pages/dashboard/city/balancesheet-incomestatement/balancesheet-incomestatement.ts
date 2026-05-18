@@ -371,8 +371,15 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
             this.openDialog(res['data'], type);
           }
         },
-        error: (error: Error) =>
-          console.error('Failed to get file: onFileClick()', error),
+        error: (error: Error) => {
+          const type = 'notFound';
+          this.openDialog({
+            excel: [],
+            pdf: [],
+            type: ''
+          }, type);
+          // console.error('Failed to get file', error)
+        }
       });
   }
 
@@ -413,8 +420,15 @@ export class BalancesheetIncomestatement implements OnInit, OnDestroy {
               this.utilityService.fetchFile(target_file_url, target_file_name);
           }
         },
-        error: (error: Error) =>
-          console.error('Failed to get data getDataSets(): ', error),
+        error: (error: Error) => {
+          const type = 'notFound';
+          this.openDialog({
+            excel: [],
+            pdf: [],
+            type: ''
+          }, type);
+          // console.error('Failed to get file', error)
+        }
       });
   }
 
