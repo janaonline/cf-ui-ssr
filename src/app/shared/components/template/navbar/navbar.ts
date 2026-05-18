@@ -51,7 +51,7 @@ export class Navbar implements OnInit {
   isCollapsed = true;
   v1Url = environment.v1Url;
   showMobileNav = false;
-  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in'];
+  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
   readonly baseMenus: any[] = [
     {
@@ -134,10 +134,10 @@ export class Navbar implements OnInit {
         href: environment.v2Url + '/admin/xvi-fc-review',
       },
       this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) &&
-        this.isReadonlyUser() && {
-          name: 'Users',
-          href: environment.v1Url + '/user/list/ULB',
-        },
+      this.isReadonlyUser() && {
+        name: 'Users',
+        href: environment.v1Url + '/user/list/ULB',
+      },
     ];
 
     this.menus = [...this.baseMenus, ...loggedinMenus.filter(Boolean)];

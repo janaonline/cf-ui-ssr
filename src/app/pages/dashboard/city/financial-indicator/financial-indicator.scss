@@ -33,6 +33,19 @@
         font-weight: var(--fw-medium);
         font-size: 0.813rem;
     }
+
+    .accordion-note {
+        display: block;
+        color: var(--bs-warning-text-emphasis, #997404);
+        opacity: 0.75;
+    }
+
+    .accordion-resource-btn {
+        all: unset;
+        color: var(--bs-link-color, #0d6efd);
+        cursor: pointer;
+        text-decoration: underline;
+    }
 }
 
 .accordion {
