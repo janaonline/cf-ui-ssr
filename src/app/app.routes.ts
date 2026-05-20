@@ -33,7 +33,7 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'dalgo',
+        path: 'dalgo/:pageType',
         loadComponent: () => import('./pages/dalgo/dalgo').then(m => m.Dalgo),
         // canActivate: [authGuard]
     },

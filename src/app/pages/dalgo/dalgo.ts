@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, Component, inject, Input, OnInit, PLATFORM_ID } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { embedDashboard } from '@superset-ui/embedded-sdk';
 import { AuthService } from '../../core/services/auth.service';
 import { USER_TYPE } from '../../core/models/user/userType';
@@ -14,11 +15,12 @@ import { SupersetService } from './superset.service';
 export class Dalgo implements OnInit, AfterViewInit {
 
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly route = inject(ActivatedRoute);
   private readonly htmlElementId = 'mohua-superset-container';
   private readonly supersetDomainUrl = 'https://janaagraha.dalgo.org/';
 
   @Input() dashboardType = USER_TYPE.MoHUA;
-  @Input() dashboardId = 'a154d39e-1048-4bfe-98cb-8177b32a5086';
+  @Input() dashboardId = '';
   @Input() isToExpandFilters = true;
 
   @Input() filters: { id: string; column: string; value: string; }[] = [];
@@ -34,19 +36,19 @@ export class Dalgo implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    if (this.dashboardType === USER_TYPE.STATE) {
-      this.yearFilterId = 'NATIVE_FILTER-Qf-mSNkTRDvomJI4EyBI-';
-      this.stateFilterId = 'NATIVE_FILTER-pujpprBkzEJmUBPcbpGpa';
-      this.dashboardId = '996010ee-7ea4-48d8-9b19-df8ec1774e7b';
-      this.getStateName();
-    } else if (this.dashboardType === USER_TYPE.MoHUA) {
-      this.yearFilterId = 'NATIVE_FILTER-D9A7GYA-VYN-Rb_tj66U9';
-      this.dashboardId = '926b740c-6d68-4f1d-8380-c4aa83e7def1';
-    } else if (this.dashboardType === USER_TYPE.STATE_DASHBOARD) {
-      this.dashboardId = 'a154d39e-1048-4bfe-98cb-8177b32a5086';
-    }
+    // Get pageType from route parameters
+    const pageType = this.route.snapshot.paramMap.get('pageType');
 
-    this.getSelectedYear();
+    // Map pageType to dashboard configuration
+    if (pageType === 'market_readiness') {
+      this.dashboardId = 'd8eb1ef2-d91c-40f3-b81e-8f8ed92455b5';
+      // Filters can be configured here in the future
+      //this.yearFilterId = 'NATIVE_FILTER-Qf-mSNkTRDvomJI4EyBI-';
+      //this.stateFilterId = 'NATIVE_FILTER-pujpprBkzEJmUBPcbpGpa';
+      //this.getStateName();
+    }
+    //this.getSelectedYear();
+
     this.initializeEmbeddedDashboard();
   }
 
@@ -84,7 +86,9 @@ export class Dalgo implements OnInit, AfterViewInit {
       return this.supersetService.getGuestToken(requestBody).toPromise();
     };
 
-    const nativeFilters = `(${this.generateNativeFilters(this.filters)})`;
+    const nativeFilters = this.filters.length > 0
+      ? `(${this.generateNativeFilters(this.filters)})`
+      : '';
 
     embedDashboard({
       id: this.dashboardId,
@@ -96,7 +100,7 @@ export class Dalgo implements OnInit, AfterViewInit {
         filters: {
           expanded: this.isToExpandFilters
         },
-        urlParams: { native_filters: nativeFilters }
+        ...(nativeFilters && { urlParams: { native_filters: nativeFilters } })
       },
       iframeSandboxExtras: ['allow-top-navigation', 'allow-popups-to-escape-sandbox']
     });
