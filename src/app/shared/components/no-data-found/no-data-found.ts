@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-no-data-found',
@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './no-data-found.scss'
 })
 export class NoDataFound {
-
+  message = input("No Data Found for chosen options")
 }

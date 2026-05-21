@@ -6,36 +6,29 @@ import { environment } from '../../../../environments/environment';
 import { IULB } from '../../../core/models/ulb';
 import { ulbType } from '../../../core/models/ulbTypes';
 import { CommonService } from '../../../core/services/common.service';
-import { FinancialIndicator } from '../city/financial-indicator/financial-indicator';
 import { NoDataFound } from "../../../shared/components/no-data-found/no-data-found";
+import { PreLoader } from "../../../shared/components/pre-loader/pre-loader";
+import { FinancialIndicator } from '../city/financial-indicator/financial-indicator';
+const MESSAGE = "Revenue Dashboard cannot be viewed as the Annual Financial Statements are not standardized from FY 2019-20 onwards.";
 
 @Component({
   selector: 'app-ulb-dashboard',
-  imports: [FinancialIndicator, NoDataFound],
+  imports: [FinancialIndicator, NoDataFound, PreLoader],
   templateUrl: './ulb-dashboard.html',
   styleUrl: './ulb-dashboard.scss'
 })
 export class UlbDashboard {
+  message = signal("");
   redirectionUrl = signal<string>(`${environment.v1Url}/ulb-form/606aafda4dff55e6c075d48f/overview `);
-  ulb = signal<IULB>({
-    location: {
-      lat: null,
-      lng: null
-    },
-    amrut: undefined,
-    isActive: false,
+  ulb = signal<Partial<IULB>>({
     _id: '',
-    area: 0,
     code: '',
     name: '',
-    natureOfUlb: '',
-    population: 0,
     type: ulbType['municipality'],
-    wards: 0,
-    state: '',
-    financialYear: ''
   });
   ulbId = signal<string>('');
+  showDashboard = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
   indicatorName = signal<string>('revenue');
   private destroy$ = new Subject<void>();
   ledgerYears = signal<string[]>([]);
@@ -60,6 +53,9 @@ export class UlbDashboard {
     this.commonService.getLedgerYears('', ulbId).subscribe({
       next: (res) => {
         this.ledgerYears.set(res.ledgerYears);
+        this.showDashboard.set(this.showDashboardFn(res.ledgerYears));
+
+        if (!this.showDashboard()) this.message.set(MESSAGE);
       },
       error: () => console.error("Failed to get years."),
     })
@@ -71,29 +67,27 @@ export class UlbDashboard {
     this.commonService.getCityData('', ulbId).subscribe({
       next: (res) => {
         if (res) {
-          const ulbObj: IULB = {
+          const ulbObj: Partial<IULB> = {
             _id: res.ulbId,
             name: res.ulbName,
             type: res.ulbType,
-            location: {
-              lat: null,
-              lng: null
-            },
-            amrut: undefined,
-            isActive: false,
-            area: 0,
-            code: '',
-            natureOfUlb: '',
-            population: 0,
-            wards: 0,
-            state: '',
-            financialYear: ''
           }
-          this.ulb.set(ulbObj)
+          this.ulb.set(ulbObj);
+          this.isLoading.set(false);
         }
       },
-      error: () => console.error("Failed to fetch data.")
+      error: () => {
+        console.error("Failed to fetch data.");
+        this.message.set(MESSAGE);
+        this.isLoading.set(false);
+      }
     })
+  }
+
+  // Show Dashobard if 2019-20 onwards data is available.
+  showDashboardFn(ledgerYears: string[]): boolean {
+    if (ledgerYears.length === 0) return false;
+    return !(ledgerYears.every((year) => +year.split("-")[0] < 2019));
   }
 
   sendRequest() {

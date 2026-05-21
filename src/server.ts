@@ -25,6 +25,24 @@ const angularApp = new AngularNodeAppEngine();
  */
 
 /**
+ * Redirect legacy FC Grant URL to home page.
+ */
+app.get('/v1/fc_grant', (_req, res) => {
+  res.redirect(301, '/home');
+});
+
+/**
+ * Serve version.json without caching so the browser always gets the latest hash.
+ * This route must be registered before the static middleware which sets maxAge: '1y'.
+ */
+app.get('/version.json', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(join(browserDistFolder, 'version.json'));
+});
+
+/**
  * Serve static files from /browser
  */
 app.use(
