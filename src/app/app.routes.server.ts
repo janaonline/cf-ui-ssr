@@ -25,6 +25,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'ulb/:ulbId/:indicatoName',
     renderMode: RenderMode.Client,
   },
+  {
+    path: 'dalgo/:pageType',
+    renderMode: RenderMode.Client,
+  },
   // {
   //   path: 'municipal-data/national',
   //   renderMode: RenderMode.Client,
