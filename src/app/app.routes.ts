@@ -32,6 +32,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/ulb-dashboard/ulb-dashboard').then(m => m.UlbDashboard),
         canActivate: [authGuard]
     },
+    {
+        path: 'dalgo/:pageType',
+        loadComponent: () => import('./pages/dalgo/dalgo').then(m => m.Dalgo),
+        // canActivate: [authGuard]
+    },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
 
 ];
