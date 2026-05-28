@@ -131,11 +131,13 @@
     </div>
     }
 
-
 </section>
 <!-- ================= TABLE SECTION ================= -->
 <section class="container py-4">
     <p class="fw-bold">Click on a city’s name to view its detailed scores and underlying indicators.</p>
+    <p class="insufficient-data-note mb-3">
+        * Cities with insufficient data have not been ranked.
+    </p>
     <div class="table-wrapper">
         <table class="table market-table align-middle">
             <!-- TABLE HEADER -->
@@ -294,37 +296,51 @@
 </section>
 <!-- ================= Q&A SECTION ================= -->
 <section class="assessment-container">
-    <h2 class="main-title">About the Assessment</h2>
+    <div class="assessment-faq-wrap">
+        <h2 class="fw-bold p-2 my-4 text-center faq">About the Assessment</h2>
 
-    <div class="accordion-item">
-        <div class="accordion-header" (click)="toggleSection('readiness')">
-            <h3>What does market readiness mean?</h3>
-            <span class="toggle-icon" [class.open]="sections.readiness">+</span>
-        </div>
-        <div class="accordion-content" *ngIf="sections.readiness">
-            <p>
-                The Market Readiness Assessment helps stakeholders assess if a city is positioned to avail debt financing based on its financial performance. It is not a creditworthiness assessment, but an indicative evaluation of financial health serving as a precursor.  
-            </p>
-        </div>
-    </div>
+        <mat-accordion class="assessment-accordion">
+            <mat-expansion-panel #readinessPanel class="faq-item assessment-panel" [expanded]="true" hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="faq-question">
+                        What does market readiness mean?
+                    </mat-panel-title>
+                    <i class="faq-icon bi" [ngClass]="readinessPanel.expanded ? 'bi-x' : 'bi-plus'"></i>
+                </mat-expansion-panel-header>
+                <p class="faq-answer">
+                    The Market Readiness Assessment helps stakeholders assess if a city is positioned to avail debt
+                    financing based on its financial performance. It is not a creditworthiness assessment, but an
+                    indicative evaluation of financial health serving as a precursor.
+                </p>
+            </mat-expansion-panel>
 
-    <div class="accordion-item">
-        <div class="accordion-header" (click)="toggleSection('basis')">
-            <h3>What is the basis for this assessment and scoring logic?</h3>
-            <span class="toggle-icon" [class.open]="sections.basis">+</span>
-        </div>
-        <div class="accordion-content" *ngIf="sections.basis">
-            <p>
-                The framework evaluates a city through several indicators on its revenue, expenditure, liquidity and debt performance (if applicable). The assessment is based on self-reported audited financial statements and property tax data submitted on the City Finance platform.
-            </p>
-            <!-- <p>
+            <mat-expansion-panel #basisPanel class="faq-item assessment-panel" hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title class="faq-question">
+                        What is the basis for this assessment and scoring logic?
+                    </mat-panel-title>
+                    <i class="faq-icon bi" [ngClass]="basisPanel.expanded ? 'bi-x' : 'bi-plus'"></i>
+                </mat-expansion-panel-header>
+                <p class="faq-answer">
+                    The framework evaluates a city across several indicators related to revenue, expenditure, liquidity,
+                    and debt performance (where applicable). The assessment is based on self-reported audited financial
+                    statements and property tax data submitted on the City Finance platform.
+                </p>
+                <p class="faq-answer mt-3">
+                    The methodology, including parameters and scoring logic, has been developed with reference to the
+                    <a href="https://cwas.org.in/cwas-resources/creditworthiness-assessment-an-approach-for-indian-cities"
+                        target="_blank" rel="noopener">
+                        CWAS-CRDF-CEPT Creditworthiness Assessment Framework (April 2024)
+                    </a>.
+                </p>
+                <!-- <p>
                 The assessment for each city is based on audited financial statements and property tax data submitted
                 on the City Finance platform.
             </p> -->
-        </div>
-    </div>
+            </mat-expansion-panel>
+        </mat-accordion>
 
-    <!-- <div class="accordion-item">
+        <!-- <div class="accordion-item">
         <div class="accordion-header" (click)="toggleSection('bands')">
             <h3>What do the bands and scores mean?</h3>
             <span class="toggle-icon" [class.open]="sections.bands">+</span>
@@ -338,8 +354,10 @@
         </div>
     </div> -->
 
-    <div class="footer-contact">
-        <p>Have more questions? Please write to <strong>updates&#64;cityfinance.in</strong> for clarifications related
-            to this assessment.</p>
+        <div class="footer-contact">
+            <p>Have more questions? Please write to <strong>updates&#64;cityfinance.in</strong> for clarifications
+                related
+                to this assessment.</p>
+        </div>
     </div>
 </section>

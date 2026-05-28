@@ -239,7 +239,10 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
       0
     );
 
-    const overallColor = this.getScoreColor(overallScore, totalMax);
+    const isOverallDisabled = overallScore === 0;
+    const overallColor = isOverallDisabled
+      ? '#CFCFCF'
+      : this.getScoreColor(overallScore, totalMax);
 
     charts.push({
       ...this.createDoughnut(
@@ -247,11 +250,11 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
         overallScore,
         totalMax,
         overallColor,
-        false
+        isOverallDisabled
       ),
       title: 'Overall Score',
-      subtitle: '', // Overall usually doesn't show this
-      isDisabled: false
+      subtitle: isOverallDisabled ? 'Data Insufficient' : '',
+      isDisabled: isOverallDisabled
     });
 
     return charts.sort((a, b) =>

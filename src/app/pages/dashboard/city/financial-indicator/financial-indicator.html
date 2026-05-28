@@ -158,39 +158,50 @@
       }}
 
       <!-- Accordion -->
-      <!-- TODO: Clean the code -->
       <div class="accordion">
-        <ng-container *ngIf="subButtons[currentSelectedButtonKey()] as currentSubButton">
-          <ng-container *ngIf="currentSubButton[subButton()] as indicator">
-            <ng-container *ngIf="isIndicatorDetails(indicator)">
-              <mat-accordion class="mat-custom-style">
-                @for (acc of accordions; track acc.key+$index) {
-                @if(indicator[acc.key].length) {
-                <mat-expansion-panel class="mb-3">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title class="custom-font-size-6 fw-bold">
-                      {{ acc.label }}
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
+        @if (subButtons[currentSelectedButtonKey()][subButton()]; as indicator) {
+        @if (isIndicatorDetails(indicator)) {
+        <mat-accordion class="mat-custom-style">
+          @for (acc of accordions; track acc.key) {
+          @if (indicator[acc.key].length) {
+          <mat-expansion-panel class="mb-3">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="custom-font-size-6 fw-bold">
+                {{ acc.label }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
 
-                  @for (item of indicator[acc.key]; track item.type+$index) {
-                  @if (item.type === 'text') {
-                  <p>{{ item.content }}</p>
-                  } @else if (item.type === 'hyperlink') {
-                  <p>
-                    <a [href]="item.link" target="_blank" rel="noopener">{{
-                      item.content
-                      }}</a>
-                  </p>
-                  } @else if (item.type === 'img') {
-                  <img [src]="item.link" [alt]="item.content" style="max-width: 100%" />
-                  } }
-                </mat-expansion-panel>
-                } }
-              </mat-accordion>
-            </ng-container>
-          </ng-container>
-        </ng-container>
+            @for (item of indicator[acc.key]; track item.content) {
+            @if (item.type === 'text') {
+            @for (contentPart of getAccordionTextParts(item.content); track $index) {
+            <p [class.accordion-note]="contentPart.isNote">
+              @for (segment of contentPart.segments; track segment.text) {
+              @if (segment.isResources) {
+              <button type="button" class="accordion-resource-btn" (click)="navigateToResources()">
+                {{ segment.text }}
+              </button>
+              } @else {
+              {{ segment.text }}
+              }
+              }
+            </p>
+            }
+            } @else if (item.type === 'hyperlink') {
+            <p>
+              <a [href]="item.link" target="_blank" rel="noopener">
+                {{ item.content }}
+              </a>
+            </p>
+            } @else if (item.type === 'img') {
+            <img [src]="item.link" [alt]="item.content" style="max-width: 100%" />
+            }
+            }
+          </mat-expansion-panel>
+          }
+          }
+        </mat-accordion>
+        }
+        }
       </div>
     </div>
     }

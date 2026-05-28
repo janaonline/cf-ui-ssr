@@ -83,6 +83,22 @@
   padding: 0 1rem;
 }
 
+.faq-answer p {
+  margin-bottom: 0.75rem;
+}
+
+.faq-note {
+  color: var(--bs-warning-text-emphasis, #997404);
+  opacity: 0.75;
+}
+
+.faq-resource-btn {
+  all: unset;
+  color: var(--bs-link-color, #0d6efd);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .faq-item {
   border-bottom: 1px solid #ddd;
 }

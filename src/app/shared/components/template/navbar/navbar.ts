@@ -52,11 +52,7 @@ export class Navbar implements OnInit {
   isCollapsed = true;
   v1Url = environment.v1Url;
   showMobileNav = false;
-  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in'];
-  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
-    ...page,
-    href: `${environment.ui.urlV2}auth/login/${page.type}`,
-  }));
+  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
   readonly baseMenus: any[] = [
     {
@@ -75,7 +71,7 @@ export class Navbar implements OnInit {
           name: 'Service Level Benchmarks Performance',
           href: this.v1Url + '/dashboard/slb',
         },
-        // { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
+        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
       ],
     },
     {
