@@ -53,10 +53,6 @@ export class Navbar implements OnInit {
   v1Url = environment.v1Url;
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
-  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
-    ...page,
-    href: `${environment.ui.urlV2}auth/login/${page.type}`,
-  }));
 
   readonly baseMenus: any[] = [
     {

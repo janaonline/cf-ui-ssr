@@ -15,13 +15,13 @@ export const ROUTE_PAGES: IRoutePages[] = [{
     isMenu: true,
     roles: [USER_TYPE.ULB, USER_TYPE.STATE, USER_TYPE.MoHUA, USER_TYPE.ADMIN]
 },
-//  {
-//     type: '16thFC',
-//     label: 'XVI FC Grant',
-//     route: '/xvifc/year',
-//     isMenu: true,
-//     roles: [USER_TYPE.ULB, USER_TYPE.STATE, USER_TYPE.MoHUA, USER_TYPE.ADMIN]
-// },
+{
+    type: '16thFC',
+    label: 'XVI FC Grant',
+    route: '/xvifc/year',
+    isMenu: true,
+    roles: [USER_TYPE.ULB, USER_TYPE.STATE, USER_TYPE.MoHUA, USER_TYPE.ADMIN]
+},
 {
     type: 'XVIFC',
     label: 'XVI FC Data Collection',
