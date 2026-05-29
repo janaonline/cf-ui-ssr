@@ -54,8 +54,6 @@ export class Navbar implements OnInit {
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
-  readonly routePages = ROUTE_PAGES.filter(p => p.isMenu);
-
   readonly baseMenus: any[] = [
     {
       name: 'Dashboard',
