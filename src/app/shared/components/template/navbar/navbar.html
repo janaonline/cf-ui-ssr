@@ -68,9 +68,16 @@
           </button>
           <mat-menu #loginMenu="matMenu">
             @for (routePage of routePages; track routePage) {
-            <a mat-menu-item [href]="routePage.href" class="border-bottom">
+            <a mat-menu-item (click)="loginLogout(routePage.type)" class="border-bottom d-flex align-items-center gap-2">
               <i class="bi bi-box-arrow-in-right"></i>&nbsp;
+              @if (routePage.isNew) {
+              <strong>{{ routePage.label }}</strong>
+              } @else {
               {{ routePage.label }}
+              }
+              @if (routePage.isNew) {
+              <span class="badge-new ms-1">NEW</span>
+              }
             </a>
             }
             <!-- <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
