@@ -7,12 +7,14 @@ export interface IRoutePages {
     isMenu: boolean;
     route?: string;
     roles?: USER_TYPE[];
+    isNew?: boolean;
 }
 export const ROUTE_PAGES: IRoutePages[] = [{
     type: '16thFC',
     label: 'XVI FC Grant',
     route: '/xvifc/year',
     isMenu: true,
+    isNew: true,
     roles: [USER_TYPE.ULB, USER_TYPE.STATE, USER_TYPE.MoHUA, USER_TYPE.ADMIN]
 }, {
     type: '15thFC',
