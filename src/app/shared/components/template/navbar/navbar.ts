@@ -58,7 +58,10 @@ export class Navbar implements OnInit {
     href: `${environment.ui.urlV2}auth/login/${page.type}`,
   }));
 
-  readonly routePages = ROUTE_PAGES.filter(p => p.isMenu);
+  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
+    ...page,
+    href: `${environment.ui.urlV2}auth/login/${page.type}`,
+  }));
 
   readonly baseMenus: any[] = [
     {
