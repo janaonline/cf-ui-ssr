@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, Component, inject, Input, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-// import { embedDashboard } from '@superset-ui/embedded-sdk';
+import { embedDashboard } from '@superset-ui/embedded-sdk';
 import { AuthService } from '../../core/services/auth.service';
 import { USER_TYPE } from '../../core/models/user/userType';
 import { SupersetService } from './superset.service';
@@ -92,20 +92,20 @@ export class Dalgo implements OnInit, AfterViewInit {
       ? `(${this.generateNativeFilters(this.filters)})`
       : '';
 
-    // embedDashboard({
-    //   id: this.dashboardId,
-    //   supersetDomain: this.supersetDomainUrl,
-    //   mountPoint: document.getElementById(this.htmlElementId) as HTMLElement,
-    //   fetchGuestToken: fetchGuestToken,
-    //   dashboardUiConfig: {
-    //     hideTitle: true,
-    //     filters: {
-    //       expanded: this.isToExpandFilters
-    //     },
-    //     ...(nativeFilters && { urlParams: { native_filters: nativeFilters } })
-    //   },
-    //   iframeSandboxExtras: ['allow-top-navigation', 'allow-popups-to-escape-sandbox']
-    // });
+    embedDashboard({
+      id: this.dashboardId,
+      supersetDomain: this.supersetDomainUrl,
+      mountPoint: document.getElementById(this.htmlElementId) as HTMLElement,
+      fetchGuestToken: fetchGuestToken,
+      dashboardUiConfig: {
+        hideTitle: true,
+        filters: {
+          expanded: this.isToExpandFilters
+        },
+        ...(nativeFilters && { urlParams: { native_filters: nativeFilters } })
+      },
+      iframeSandboxExtras: ['allow-top-navigation', 'allow-popups-to-escape-sandbox']
+    });
   }
 
   private adjustIframeDimensions(): void {
