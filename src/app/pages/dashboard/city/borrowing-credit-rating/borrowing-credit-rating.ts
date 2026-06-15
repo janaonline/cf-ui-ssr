@@ -48,7 +48,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
   readonly buttons = [
     { key: 'borrowing', label: 'Borrowing' },
     { key: 'creditRating', label: 'Credit Rating' },
-    //  { key: 'marketReadiness', label: 'Market Readiness' },
+    { key: 'marketReadiness', label: 'Market Readiness' },// market readiness button added in buttons array
   ];
 
   indicatorTableData = signal<any[]>([]);

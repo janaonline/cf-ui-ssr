@@ -70,7 +70,7 @@ export class Navbar implements OnInit {
           name: 'Service Level Benchmarks Performance',
           href: this.v1Url + '/dashboard/slb',
         },
-        // { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' },
+        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' }, // market readiness assessment link added in navbar
       ],
     },
     {
