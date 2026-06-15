@@ -51,7 +51,7 @@ export class Navbar implements OnInit {
   isCollapsed = true;
   v1Url = environment.v1Url;
   showMobileNav = false;
-  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in'];
+  readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
   readonly baseMenus: any[] = [
     {
