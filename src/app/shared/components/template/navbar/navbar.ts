@@ -25,6 +25,7 @@ import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
+import { ROUTE_PAGES } from './login-menu.constant';
 
 @Component({
   selector: 'app-navbar',
@@ -52,6 +53,11 @@ export class Navbar implements OnInit {
   v1Url = environment.v1Url;
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
+
+  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
+    ...page,
+    href: `${environment.ui.urlV2}auth/login/${page.type}`,
+  }));
 
   readonly baseMenus: any[] = [
     {
@@ -187,26 +193,6 @@ export class Navbar implements OnInit {
   loginLogout(type: string) {
     localStorage.setItem('loginType', type);
 
-    if (type === '15thFC') {
-      window.location.href = this.v1Url + '/fc_grant';
-      return;
-    }
-
-    if (type === 'XVIFC') {
-      window.location.href = this.v1Url + '/login/xvi-fc';
-      return;
-    }
-
-    if (type === 'state-dashboard') {
-      window.location.href = this.v1Url + '/login/state-dashboard';
-      return;
-    }
-
-    if (type === 'ranking') {
-      window.location.href = this.v1Url + '/rankings/login';
-      return;
-    }
-
     if (type === 'logout') {
       this.authService.logout()
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -214,6 +200,9 @@ export class Navbar implements OnInit {
           this.removeSessionItem();
           this._router.navigateByUrl('/home');
         });
+    } else {
+      window.location.href = environment.ui.urlV2 + 'auth/login/' + type;
+      return;
     }
   }
 

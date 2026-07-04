@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs';
 import { GoogleAnalyticsService } from './core/services/google-analytics.service';
 import { GlobalLoaderService } from './core/services/loaders/global-loader.service';
 import { LocalStorageService } from './core/services/local-storage.service';
+import { VersionCheckService } from './core/services/version-check.service';
 import { ReportIssueDialog } from './shared/components/report-issue-dialog/report-issue-dialog';
 import { Footer } from './shared/components/template/footer/footer';
 import { Header } from './shared/components/template/header/header';
@@ -28,7 +29,8 @@ export class App {
   constructor(
     private gaService: GoogleAnalyticsService,
     private localStorage: LocalStorageService,
-    private router: Router
+    private router: Router,
+    private versionCheck: VersionCheckService,
   ) {
     // const userData = {};
     // const token = '';
@@ -40,6 +42,8 @@ export class App {
   ngOnInit(): void {
     this.gaService.init();
     this.trackReportIssueBtnVisibility();
+    // Check for app updates every hour
+    this.versionCheck.initVersionCheck('/version.json', 1000 * 60 * 60);
 
     // this.router.events
     //   .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
