@@ -152,36 +152,39 @@ export class NationalDashboard {
 
           let result: ExploresectionTable[] = [
             ...res.gridDetails,
-            {
-              sequence: 3,
-              label: 'ULBs Credit Rating Reports',
-              value: `${this.totalCreditRating}`,
-              info: '',
-              src: '',
-              "tooltip": ""
-            },
-            {
-              sequence: 4,
-              label: 'ULBs With Investment Grade Rating',
-              value: `${this.cr_above_BBB_minus}`,
-              info: '',
-              src: '',
-              "tooltip": ""
-            },
+            // DJ2-478: 'ULBs Credit Rating Reports' and 'ULBs With Investment Grade Rating'
+            // cards hidden from Home Page and National Dashboard per D&I team request.
+            // {
+            //   sequence: 3,
+            //   label: 'ULBs Credit Rating Reports',
+            //   value: `${this.totalCreditRating}`,
+            //   info: '',
+            //   src: '',
+            //   "tooltip": ""
+            // },
+            // {
+            //   sequence: 4,
+            //   label: 'ULBs With Investment Grade Rating',
+            //   value: `${this.cr_above_BBB_minus}`,
+            //   info: '',
+            //   src: '',
+            //   "tooltip": ""
+            // },
           ];
           result.sort((a: any, b: any) => a.sequence - b.sequence);
 
-          if (this.page() === 'national') {
-            const obj = {
-              sequence: 5,
-              label: 'ULBs With Rating A & Above',
-              value: `${this.cr_above_a}`,
-              info: '',
-              src: '',
-              "tooltip": ""
-            }
-            result[5] = obj;
-          }
+          // DJ2-478: 'ULBs With Rating A & Above' card hidden from National Dashboard per D&I team request.
+          // if (this.page() === 'national') {
+          //   const obj = {
+          //     sequence: 5,
+          //     label: 'ULBs With Rating A & Above',
+          //     value: `${this.cr_above_a}`,
+          //     info: '',
+          //     src: '',
+          //     "tooltip": ""
+          //   }
+          //   result[5] = obj;
+          // }
 
           const data = { gridDetails: result, lastModifiedAt: res.lastModifiedAt };
           this.exploreData.set(data);
