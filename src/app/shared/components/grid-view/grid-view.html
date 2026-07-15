@@ -1,4 +1,4 @@
-<div class="flex-grow-1 explore-data-grid my-3">
+<div class="flex-grow-1 explore-data-grid my-3" [class.explore-data-grid--cols-2]="columns() === 2">
   @for (item of gridData(); track $index) {
   <div class="p-2">
     <p class="mb-0 fw-bold fs-5">
