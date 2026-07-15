@@ -14,7 +14,7 @@
                 <app-pre-loader></app-pre-loader>
                 } @else {
                 <!-- @if(this.selectedLedgerYear()) { -->
-                <app-grid-view [gridData]="nationalDashboardService.exploreData().gridDetails"></app-grid-view>
+                <app-grid-view [gridData]="nationalDashboardService.exploreData().gridDetails" [columns]="2"></app-grid-view>
                 <!-- } -->
                 }
             </div>
