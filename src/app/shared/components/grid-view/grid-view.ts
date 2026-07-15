@@ -10,4 +10,5 @@ import { ExploresectionTable } from '../../../core/models/interfaces';
 })
 export class GridView {
   gridData = input<ExploresectionTable[]>();
+  columns = input<number>(3);
 }

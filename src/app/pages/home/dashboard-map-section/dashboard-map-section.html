@@ -63,7 +63,7 @@
     <app-pre-loader></app-pre-loader>
     } @else {
     <!-- Grid with data -->
-    <app-grid-view [gridData]="nationalDashboardService.exploreData().gridDetails"></app-grid-view>
+    <app-grid-view [gridData]="nationalDashboardService.exploreData().gridDetails" [columns]="2"></app-grid-view>
     }
     <!-- View Dashboard button -->
     @if (selectedStateIdSignal()) {
