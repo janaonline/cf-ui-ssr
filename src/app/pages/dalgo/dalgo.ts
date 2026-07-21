@@ -48,6 +48,8 @@ export class Dalgo implements OnInit, AfterViewInit {
       //this.getStateName();
     } else if (pageType === 'ap_dashboard') {
       this.dashboardId = '137e753c-21b4-4d4f-a0a0-a80b3cbd2a52';
+    } else if (pageType === 'nmam_city_response_dashboard') {
+      this.dashboardId = '0018e5ef-f45c-4cdf-a937-80f12c035c44';
     }
     //this.getSelectedYear();
 
