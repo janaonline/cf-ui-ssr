@@ -1,73 +1,55 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { first } from 'rxjs';
-// import 'rxjs/add/operator/first';
-@Injectable()
+
+@Injectable({ providedIn: 'root' })
 export class VersionCheckService {
-  // this will be replaced by actual hash post-build.js
-  private currentHash = '{{POST_BUILD_ENTERS_HASH_HERE}}';
-  constructor(private http: HttpClient) {}
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly snackBar = inject(MatSnackBar);
+  private currentHash: string | null = null;
+  private updatePrompted = false;
+
+  constructor(private http: HttpClient) { }
+
   /**
-   * Checks in every set frequency the version of frontend application
-   * @param url
-   * @param {number} frequency - in milliseconds, defaults to 30 minutes
+   * @param url      URL of version.json (e.g. '/version.json')
+   * @param frequency polling interval in ms, default 5 minutes
    */
-  public initVersionCheck(url: any, frequency = 1000 * 60 * 30) {
-    // setInterval(() => {
-    if (window.location.hostname.includes('demo') || window.location.hostname.includes('localhost'))
-      return;
+  public initVersionCheck(url: string, frequency = 1000 * 60 * 5): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (window.location.hostname === 'localhost') return;
+
     this.checkVersion(url);
-    // }, frequency);
+    setInterval(() => this.checkVersion(url), frequency);
   }
-  /**
-   * Will do the call and check if the hash has changed or not
-   * @param url
-   */
-  private checkVersion(url: string) {
-    // timestamp these requests to invalidate caches
+
+  private checkVersion(url: string): void {
     this.http
-      .get(url + '?t=' + new Date().getTime())
+      .get<{ hash: string }>(url + '?t=' + Date.now())
       .pipe(first())
-      .subscribe(
-        (response: any) => {
-          const hash = response.hash;
-          const hashChanged = this.hasHashChanged(this.currentHash, hash);
-          // If new version, do something
-          if (hashChanged) {
-            let isAgree = true;
-            if (response.force) {
-              alert('There are some important updates in website you need to reload');
-            } else {
-              isAgree = confirm('Changes are made... Do you wish to reload ?');
-            }
-            if (isAgree) {
-              // @ts-ignore
-              location.reload(true);
-            }
-            // ENTER YOUR CODE TO DO SOMETHING UPON VERSION CHANGE
-            // for an example: location.reload();
+      .subscribe({
+        next: ({ hash }) => {
+          if (this.currentHash !== null && this.currentHash !== hash) {
+            this.promptUpdate();
           }
-          // store the new hash so we wouldn't trigger versionChange again
-          // only necessary in case you did not force refresh
           this.currentHash = hash;
         },
-        (err: any) => {
-          console.error(err, 'Could not get version');
-        },
-      );
+        error: (err) => console.error('version-check: could not fetch version.json', err),
+      });
   }
-  /**
-   * Checks if hash has changed.
-   * This file has the JS hash, if it is a different one than in the version.json
-   * we are dealing with version change
-   * @param currentHash
-   * @param newHash
-   * @returns {boolean}
-   */
-  private hasHashChanged(currentHash: string, newHash: any) {
-    if (!currentHash || currentHash === '{{POST_BUILD_ENTERS_HASH_HERE}}') {
-      return false;
-    }
-    return currentHash !== newHash;
+
+  private promptUpdate(): void {
+    if (this.updatePrompted) return;
+    this.updatePrompted = true;
+
+    const snackRef = this.snackBar.open(
+      'A new version is available.',
+      'Update Now',
+      { duration: 0, panelClass: 'version-update-snack' },
+    );
+
+    snackRef.onAction().subscribe(() => location.reload());
   }
 }
