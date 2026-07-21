@@ -156,13 +156,12 @@
 
 
   </div>
-  @if(this.footNote!=''){
-  <!-- <p class="fw-bold mt-3">Foot Notes :</p> -->
+  @if(footNote){
   <div class="alert alert-warning mt-3" role="alert">
-    {{this.footNote??this.footNote}}
+    {{footNote}}
   </div>
   }
-  @if (doughnutCharts().length > 0 && doughnutCharts()[0].centerText !== 0) {
+  @if (doughnutCharts().length > 0 && !isDataInsufficient) {
   <div class="table-responsive mt-4 border-none">
     <table class="table  align-middle text-center">
       <thead class="">

@@ -48,7 +48,7 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
   readonly buttons = [
     { key: 'borrowing', label: 'Borrowing' },
     { key: 'creditRating', label: 'Credit Rating' },
-     { key: 'marketReadiness', label: 'Market Readiness' },
+    { key: 'marketReadiness', label: 'Market Readiness' },// market readiness button added in buttons array
   ];
 
   indicatorTableData = signal<any[]>([]);
@@ -81,7 +81,8 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
   // Input signal to receive default button index.
   readonly buttonIdx = input(-1);
   outOfRange: any[] = []
-  footNote: any
+  footNote = '';
+  isDataInsufficient = false;
   private destroy$ = new Subject<void>();
   marketReadinessYears = [
     "2022-23",
@@ -178,12 +179,21 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
             this.dataThere = true
             this.indicatorTableData.set(res.sections);
 
+            /* ---------- FOOT NOTE ---------- */
+            const fn: any = res.footNote;
+            if (fn && typeof fn === 'object') {
+              this.footNote = fn.footNote ?? '';
+              this.isDataInsufficient = fn.isTotRevenueMissing === true && fn.sectionsMissing === true;
+            } else {
+              this.footNote = fn ?? '';
+              this.isDataInsufficient = false;
+            }
+
             /* ---------- DOUGHNUTS ---------- */
             this.doughnutCharts.set(
-              this.buildDoughnutCharts(res.sectionScores, res.overallScore)
+              this.buildDoughnutCharts(res.sectionScores, res.overallScore, this.isDataInsufficient)
             );
             this.outOfRange = res.outOfRange ?? [];
-            this.footNote = res.footNote ?? '';
             this.intro = this.getMarketReadinessIntro(res.ulbName, res.marketReadinessBand);
             this.isLoading.set(false);
           }
@@ -195,13 +205,11 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
 
   private buildDoughnutCharts(
     sectionScores: any[],
-    overallScore: number
+    overallScore: number,
+    forceInsufficient = false
   ) {
-    // 1. Check if both Expenditure and Cash scores are 0
     const isExpZero = sectionScores.find(s => s.section.toUpperCase().includes('EXPENDITURE'))?.score === 0;
     const isCashZero = sectionScores.find(s => s.section.toUpperCase().includes('CASH'))?.score === 0;
-
-    // The condition to trigger "Data Insufficient"
     const showInsufficient = isExpZero && isCashZero;
 
     const charts = sectionScores.map((sec) => {
@@ -210,48 +218,28 @@ export class BorrowingCreditRating implements OnDestroy, AfterViewInit {
       const isExpenditure = secName.includes('EXPENDITURE');
       const isCash = secName.includes('CASH');
 
-      // 2. Determine if this specific donut should show the "Insufficient" label
-      const isDataInsufficient = showInsufficient && (isDebt || isExpenditure || isCash);
+      const isDataInsufficient = forceInsufficient || (showInsufficient && (isDebt || isExpenditure || isCash));
+      const isDisabled = forceInsufficient || (isDebt && sec.derived === true) || isDataInsufficient;
+      const displayScore = forceInsufficient ? 0 : sec.score;
 
-      const isDisabled = (isDebt && sec.derived === true) || isDataInsufficient;
-
-      const color = isDisabled
-        ? '#CFCFCF' // grey
-        : this.getScoreColor(sec.score, sec.maxScore);
+      const color = isDisabled ? '#CFCFCF' : this.getScoreColor(sec.score, sec.maxScore);
 
       return {
-        ...this.createDoughnut(
-          sec.section,
-          sec.score,
-          sec.maxScore,
-          color,
-          isDisabled
-        ),
+        ...this.createDoughnut(sec.section, displayScore, sec.maxScore, color, isDisabled),
         title: sec.section.split('(')[0].trim(),
-        // 3. Add the subtitle property
         subtitle: isDataInsufficient ? 'Data Insufficient' : '',
         isDisabled
       };
     });
 
-    const totalMax = sectionScores.reduce(
-      (sum, s) => sum + s.maxScore,
-      0
-    );
+    const totalMax = sectionScores.reduce((sum, s) => sum + s.maxScore, 0);
 
-    const isOverallDisabled = overallScore === 0;
-    const overallColor = isOverallDisabled
-      ? '#CFCFCF'
-      : this.getScoreColor(overallScore, totalMax);
+    const isOverallDisabled = forceInsufficient || overallScore === 0;
+    const displayOverallScore = forceInsufficient ? 0 : overallScore;
+    const overallColor = isOverallDisabled ? '#CFCFCF' : this.getScoreColor(overallScore, totalMax);
 
     charts.push({
-      ...this.createDoughnut(
-        'overall',
-        overallScore,
-        totalMax,
-        overallColor,
-        isOverallDisabled
-      ),
+      ...this.createDoughnut('overall', displayOverallScore, totalMax, overallColor, isOverallDisabled),
       title: 'Overall Score',
       subtitle: isOverallDisabled ? 'Data Insufficient' : '',
       isDisabled: isOverallDisabled

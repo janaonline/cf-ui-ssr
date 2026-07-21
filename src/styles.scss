@@ -299,6 +299,12 @@ input::-webkit-inner-spin-button {
     grid-template-columns: repeat(3, 1fr);
 }
 
+// DJ2-478: Home Page / National Dashboard opt into a 2-column layout so their
+// remaining 4 data cards form a clean 2x2 grid (no blank cells) at every breakpoint.
+.explore-data-grid.explore-data-grid--cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 @media (max-width: 767px) {
     .explore-data-grid {
         grid-template-columns: repeat(2, 1fr);
