@@ -6,11 +6,11 @@ import { App } from './app/app';
 import { environment } from './environments/environment';
 
 if (environment.isProduction) {
-  console.log = () => { };
-  console.debug = () => { };
-  console.error = () => { };
-  console.warn = () => { };
-  console.info = () => { };
+  // console.log = () => { };
+  // console.debug = () => { };
+  // console.error = () => { };
+  // console.warn = () => { };
+  // console.info = () => { };
 }
 
 bootstrapApplication(App, appConfig)
