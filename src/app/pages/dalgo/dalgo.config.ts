@@ -4,6 +4,7 @@ export enum DashboardType {
     MARKET_READINESS = 'market_readiness',
     AP_DASHBOARD = 'ap_dashboard',
     NMAM_CITY_RESPONSE = 'nmam_city_response_dashboard',
+    RT_MUNICIPAL_FINANCE = 'rt_municipal_finance_dashboard',
 }
 
 export interface DashboardDetails {
@@ -30,6 +31,10 @@ const DASHBOARD_REGISTRY: Record<DashboardType, DashboardDetails> = {
         type: DashboardType.NMAM_CITY_RESPONSE,
         id: '0018e5ef-f45c-4cdf-a937-80f12c035c44',
     },
+    [DashboardType.RT_MUNICIPAL_FINANCE]: {
+        type: DashboardType.RT_MUNICIPAL_FINANCE,
+        id: '001526de-2c53-4f5d-aef4-b6ab2f93c3cd',
+    }
 };
 
 export function getDashboardDetails(pageType: string | null): DashboardDetails | null {
