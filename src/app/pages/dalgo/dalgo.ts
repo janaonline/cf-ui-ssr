@@ -5,6 +5,7 @@ import { embedDashboard } from '@superset-ui/embedded-sdk';
 import { AuthService } from '../../core/services/auth.service';
 import { USER_TYPE } from '../../core/models/user/userType';
 import { SupersetService } from './superset.service';
+import { DashboardType, getDashboardDetails } from './dalgo.config';
 
 @Component({
   selector: 'app-dalgo',
@@ -19,7 +20,7 @@ export class Dalgo implements OnInit, AfterViewInit {
   private readonly htmlElementId = 'mohua-superset-container';
   private readonly supersetDomainUrl = 'https://janaagraha.dalgo.org/';
 
-  @Input() dashboardType = USER_TYPE.MoHUA;
+  ///@Input() dashboardType = USER_TYPE.MoHUA;
   @Input() dashboardId = '';
   @Input() isToExpandFilters = true;
 
@@ -27,6 +28,7 @@ export class Dalgo implements OnInit, AfterViewInit {
 
   stateFilterId: string = '';
   yearFilterId: string = '';
+  ulbFilterId: string = '';
 
   constructor(
     private supersetService: SupersetService,
@@ -38,22 +40,27 @@ export class Dalgo implements OnInit, AfterViewInit {
 
     // Get pageType from route parameters
     const pageType = this.route.snapshot.paramMap.get('pageType');
+    const dashboard = getDashboardDetails(pageType);
 
-    // Map pageType to dashboard configuration
-    if (pageType === 'market_readiness') {
-      this.dashboardId = 'd8eb1ef2-d91c-40f3-b81e-8f8ed92455b5';
-      // Filters can be configured here in the future
-      //this.yearFilterId = 'NATIVE_FILTER-Qf-mSNkTRDvomJI4EyBI-';
-      //this.stateFilterId = 'NATIVE_FILTER-pujpprBkzEJmUBPcbpGpa';
-      //this.getStateName();
-    } else if (pageType === 'ap_dashboard') {
-      this.dashboardId = '137e753c-21b4-4d4f-a0a0-a80b3cbd2a52';
-    } else if (pageType === 'nmam_city_response_dashboard') {
-      this.dashboardId = '0018e5ef-f45c-4cdf-a937-80f12c035c44';
+    if (!dashboard) return;
+
+    // 1. Assign common properties
+    this.dashboardId = dashboard.id;
+    this.yearFilterId = dashboard.yearFilterId ?? '';
+    this.stateFilterId = dashboard.stateFilterId ?? '';
+    this.ulbFilterId = dashboard.ulbFilterId ?? '';
+
+    /*
+    // 2. Perform type-specific logic (if dashboard == .marketReadiness)
+    if (dashboard.type === DashboardType.MARKET_READINESS) {
+      this.getStateName();
+      this.getSelectedYear();
+      // Add any other market-readiness specific methods here
     }
-    //this.getSelectedYear();
+    */
 
     this.initializeEmbeddedDashboard();
+
   }
 
   ngAfterViewInit(): void {
