@@ -37,6 +37,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dalgo/dalgo').then(m => m.Dalgo),
         // canActivate: [authGuard]
     },
+    {
+        path: 'xvifc-coming-soon',
+        loadComponent: () => import('./pages/xvifc-coming-soon/xvifc-coming-soon').then(m => m.XvifcComingSoon),
+    },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
 
 ];
