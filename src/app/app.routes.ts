@@ -38,7 +38,7 @@ export const routes: Routes = [
         // canActivate: [authGuard]
     },
     {
-        path: 'xvifc-coming-soon',
+        path: 'auth/login/16thFC',
         loadComponent: () => import('./pages/xvifc-coming-soon/xvifc-coming-soon').then(m => m.XvifcComingSoon),
     },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },

@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-xvifc-coming-soon',
   imports: [RouterLink],
@@ -32,8 +34,8 @@ export class XvifcComingSoon {
     ],
     documents: [{
       key: 'document1',
-      label: 'XVI FC Operational Guidelines',
-      link: 'https://www.cityfinance.in/api/v1/resourceDashboard/download/698472008670dfe40327596d',
+      label: 'View Operational Guidelines',
+      link: `${environment.baseUrl}/assets/docs/Operational_Guidelines_2026-31.pdf`,
     }]
   }
 

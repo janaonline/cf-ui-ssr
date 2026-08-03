@@ -2,16 +2,22 @@
   <div class="container px-0">
     <div class="row g-0">
       <!-- Coming soon panel: top on mobile, right on large screens -->
-      <div class="col-12 col-lg-5 order-1 order-lg-2 d-flex align-items-center justify-content-center p-3 p-lg-4">
+      <div class="col-12 col-lg-5 order-1 order-lg-2 d-flex align-items-center justify-content-center p-2 p-lg-3">
         <div class="coming-soon-panel text-center rounded-4 p-3 p-lg-4 w-100">
-          <i class="bi bi-rocket-takeoff-fill coming-soon-icon"></i>
-          <p class="eyebrow fw-bold text-uppercase small mt-2 mb-1">XVI FC Grant</p>
+          <!-- <i class="bi bi-rocket-takeoff-fill coming-soon-icon"></i>
+          <p class="eyebrow fw-bold text-uppercase small mt-2 mb-1">XVI FC Grant</p> -->
           <h2 class="fw-bold fs-3 mb-2">Coming soon</h2>
           <p class="text-secondary small mb-3">
-            We're building the XVI FC Grant experience. Please check back shortly for updates. The first release is
-            expected on <b>September 1, 2026</b>.
+            The grant management system for the 16th Finance Commission opens <b>September 1, 2026</b>.
           </p>
-          <a routerLink="/home" class="btn back-link rounded-3 text-white fw-bold small px-3 py-2">Back to home</a>
+          <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+            @for (doc of panelContent.documents; track doc.key) {
+            <a [href]="doc.link" target="_blank" rel="noopener"
+              class="btn btn-sm btn-outline-cfPrimary rounded-3 fw-bold small px-3 py-2">{{ doc.label }}</a>
+            }
+            <a routerLink="/home" class="btn btn-sm back-link rounded-3 text-white fw-bold small px-3 py-2">Back to
+              home</a>
+          </div>
         </div>
       </div>
 
@@ -40,15 +46,6 @@
                 </div>
               </div>
             </div>
-            }
-          </div>
-
-          <div class="d-flex flex-wrap gap-2">
-            @for (doc of panelContent.documents; track doc.key) {
-            <a [href]="doc.link" target="_blank" rel="noopener"
-              class="btn doc-pill rounded-pill d-inline-flex align-items-center gap-2 text-white fw-semibold small px-3 py-2">
-              <i class="bi bi-file-earmark-text"></i> {{ doc.label }}
-            </a>
             }
           </div>
         </div>
