@@ -42,7 +42,7 @@ export class XvifcComingSoon {
   readonly stats = [
     { label: 'Eligible Urban Local Bodies', value: '4,485', icon: 'bi-buildings-fill' },
     { label: 'Special Grant Categories', value: '2', icon: 'bi-tags-fill' },
-    { label: 'Total Grants Allocated', value: '₹1,29,987 Cr', icon: 'bi-cash-stack' },
+    { label: 'Total Grants Allocated', value: '₹3,56,357 Cr', icon: 'bi-cash-stack' },
     { label: 'Year 1 Disbursement', value: '₹37,272 Cr', icon: 'bi-send-fill' },
   ] as const;
 }
