@@ -15,7 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import { IUserLoggedInDetails } from '../../../../core/models/login/userLoggedInDetails';
@@ -25,7 +26,7 @@ import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
 import { ROUTE_PAGES } from './login-menu.constant';
-import { NAV_MENU_ITEMS, NavMenuItem, resolveMenus } from './nav-menu.config';
+import { NAV_MENU_ITEMS, NavMenuItem, matchesAnyRoutePrefix, resolveMenus } from './nav-menu.config';
 
 @Component({
   selector: 'app-navbar',
@@ -77,6 +78,20 @@ export class Navbar implements OnInit {
     this.authService.sessionState$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((sessionState) => this.updateAuthState(sessionState));
+
+    // Menus previously only recomputed on init/auth change — a plain
+    // in-session navigation (e.g. Dashboard -> XVI FC Data Collection)
+    // never refreshed `menus`, so nothing depending on the current route
+    // (like the "My Forms" active-child label below) could ever update.
+    this._router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.refreshMenus();
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnInit(): void {
@@ -93,8 +108,27 @@ export class Navbar implements OnInit {
    * from the full filtered tree, so nothing gets lost based on auth state.
    */
   private refreshMenus(): void {
-    const resolved = resolveMenus(NAV_MENU_ITEMS, (item) => this.isMenuItemVisible(item));
+    const resolved = resolveMenus(
+      NAV_MENU_ITEMS,
+      (item) => this.isMenuItemVisible(item),
+      (item) => this.isActiveGroupChild(item),
+    );
     this.menus = resolved.map((item) => this.resolveLinks(item));
+  }
+
+  /**
+   * True when `item` is this app's own route AND the current URL is either
+   * exactly its match path or a descendant of it (boundary-safe: a prefix
+   * of '/xvifc' matches '/xvifc/year' and '/xvifc/2024-25/...', but never
+   * '/xvifc-form', which merely shares the same string prefix without a '/').
+   * `activePathPrefix` overrides `path` for items whose real flow lives under
+   * a broader/different url root than their own link target — see nav-menu.config.ts.
+   */
+  private isActiveGroupChild(item: NavMenuItem): boolean {
+    if (item.hostApp !== 'ssr') return false;
+    const prefix = item.activePathPrefix ?? item.path;
+    if (!prefix) return false;
+    return matchesAnyRoutePrefix(this._router.url, [prefix]);
   }
 
   private isMenuItemVisible(item: NavMenuItem): boolean {
@@ -106,11 +140,21 @@ export class Navbar implements OnInit {
     // ocrRouteOnly (V2 only) and showOnMobileOnly (UI only) are not
     // applicable to SSR; any item relying on either is not meant for SSR,
     // and `apps` already excludes SSR for those items today.
-    if (v.nonProdOnly && this.isProd) return false;
+    if (v.isHiddenInProd && this.isProd) return false;
     if (v.requiresAuth && !this.isLoggedIn) return false;
     if (v.loggedOutOnly && this.isLoggedIn) return false;
     if (v.roles && !this.inRole(v.roles)) return false;
     if (v.excludeRoles && this.inRole(v.excludeRoles)) return false;
+    // Second, independent gating dimension: which page the user is on right
+    // now (AND'd with the role checks above). Recomputed on every
+    // NavigationEnd (see constructor), so this updates live as the user
+    // navigates, same as the role checks do on login/logout.
+    if (v.showOnlyOnRoutePrefixes && !matchesAnyRoutePrefix(this._router.url, v.showOnlyOnRoutePrefixes)) {
+      return false;
+    }
+    if (v.hideOnRoutePrefixes && matchesAnyRoutePrefix(this._router.url, v.hideOnRoutePrefixes)) {
+      return false;
+    }
     // readonlyGated: SSR's existing isReadonlyUser() (inverted 3-email
     // allowlist). Deliberately NOT consulting moduleAccess/AccessChecker here
     // — SSR's "Users" item today only ever checked the email allowlist, and

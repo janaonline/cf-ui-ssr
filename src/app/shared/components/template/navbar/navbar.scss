@@ -25,6 +25,15 @@
   z-index: 1000;
 }
 
+// mat-menu content is portaled to the CDK overlay, outside this component's
+// encapsulated view — ::ng-deep is what lets routerLinkActive's "active"
+// class actually show up once a dropdown item matches the current route.
+::ng-deep .mat-mdc-menu-item.active {
+  background: var(--clr-primary-soft, rgba(29, 82, 144, 0.08));
+  color: var(--clr-primary);
+  font-weight: 700;
+}
+
 .shadow-bottom {
   box-shadow: 0 5px 7px -1px rgba(0, 0, 0, 0.3);
 }

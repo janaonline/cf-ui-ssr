@@ -25,7 +25,7 @@
         } @for (menu of menus; track menu.id) {
         @if (menu.children?.length) {
         <li class="active" [matMenuTriggerFor]="DashboardMenu">
-          <a class="nav-link d-flex align-items-center" routerLinkActive="active">
+          <a class="nav-link d-flex align-items-center" [class.active]="menu.isActiveRoute">
             @if (menu.icon) {
             <i [class]="menu.icon"></i>&nbsp;
             }
@@ -37,7 +37,7 @@
           @for (childMenu of menu.children; track childMenu.id) {
           @if (childMenu.resolvedLink) {
           <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.resolvedLink"
-            routerLinkActive="active">
+            [class.active]="childMenu.isActiveRoute">
             @if (childMenu.icon) {
             <i [class]="childMenu.icon"></i>&nbsp;
             }
@@ -45,7 +45,7 @@
           </a>
           } @else {
           <a mat-menu-item [href]="childMenu.resolvedHref" [target]="childMenu.target || '_self'"
-            [class.border-bottom]="!$last" routerLinkActive="active">
+            [class.border-bottom]="!$last" [class.active]="childMenu.isActiveRoute">
             @if (childMenu.icon) {
             <i [class]="childMenu.icon"></i>&nbsp;
             }
@@ -69,7 +69,7 @@
         <li class="active">
           @if (menu.imageUrl) {
           @if (menu.resolvedLink) {
-          <a class="nav-link" [routerLink]="menu.resolvedLink" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="menu.resolvedLink" [class.active]="menu.isActiveRoute">
             <img [src]="menu.imageUrl" [alt]="menu.imageAlt" />
           </a>
           } @else {
@@ -78,7 +78,7 @@
           </a>
           }
           } @else if (menu.resolvedLink) {
-          <a class="nav-link" [routerLink]="menu.resolvedLink" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="menu.resolvedLink" [class.active]="menu.isActiveRoute">
             @if (menu.icon) {
             <i [class]="menu.icon"></i>&nbsp;
             }
