@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ChangeDetectorRef,
@@ -19,17 +19,17 @@ import { Router, RouterModule } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
 import { IUserLoggedInDetails } from '../../../../core/models/login/userLoggedInDetails';
-import { USER_TYPE } from '../../../../core/models/user/userType';
 import { AuthSessionState, AuthService } from '../../../../core/services/auth.service';
 import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
 import { ROUTE_PAGES } from './login-menu.constant';
+import { NAV_MENU_ITEMS, NavMenuItem, resolveMenus } from './nav-menu.config';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule],
+  imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule, NgClass],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -59,38 +59,7 @@ export class Navbar implements OnInit {
     href: `${environment.ui.urlV2}auth/login/${page.type}`,
   }));
 
-  readonly baseMenus: any[] = [
-    {
-      name: 'Dashboard',
-      href: '',
-      child: [
-        {
-          name: 'National Performance',
-          link: '/municipal-data/national',
-        },
-        {
-          name: 'Own Revenue Performance',
-          href: this.v1Url + '/own-revenue-dashboard',
-        },
-        {
-          name: 'Service Level Benchmarks Performance',
-          href: this.v1Url + '/dashboard/slb',
-        },
-        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' }, // market readiness assessment link added in navbar
-      ],
-    },
-    {
-      name: 'Resources',
-      href: this.v1Url + '/resources-dashboard/data-sets/income_statement',
-    },
-    {
-      name: 'Blog',
-      href: environment.blogUrl,
-      target: '_blank',
-    },
-  ];
-
-  menus: any[] = [...this.baseMenus];
+  menus: NavMenuItem[] = [];
 
   public screenHeight: any;
   isSticky = false;
@@ -113,40 +82,74 @@ export class Navbar implements OnInit {
   ngOnInit(): void {
     this.isProd = environment?.isProduction;
     this.initializeAccessChecking();
+    this.refreshMenus();
   }
 
-  setLoggedInUserMenu() {
-    if (!this.user) {
-      this.menus = [...this.baseMenus];
-      return;
+  /**
+   * Rebuilds `menus` from the shared NAV_MENU_ITEMS config. Replaces the old
+   * setLoggedInUserMenu(), which rebuilt the logged-in branch from scratch
+   * instead of extending the base set — that's what could silently drop
+   * Dashboard/Resources for a logged-in user. This version always starts
+   * from the full filtered tree, so nothing gets lost based on auth state.
+   */
+  private refreshMenus(): void {
+    const resolved = resolveMenus(NAV_MENU_ITEMS, (item) => this.isMenuItemVisible(item));
+    this.menus = resolved.map((item) => this.resolveLinks(item));
+  }
+
+  private isMenuItemVisible(item: NavMenuItem): boolean {
+    if (!item.apps.includes('ssr')) return false;
+
+    const v = item.visibility;
+    if (!v) return true;
+
+    // ocrRouteOnly (V2 only) and showOnMobileOnly (UI only) are not
+    // applicable to SSR; any item relying on either is not meant for SSR,
+    // and `apps` already excludes SSR for those items today.
+    if (v.nonProdOnly && this.isProd) return false;
+    if (v.requiresAuth && !this.isLoggedIn) return false;
+    if (v.loggedOutOnly && this.isLoggedIn) return false;
+    if (v.roles && !this.inRole(v.roles)) return false;
+    if (v.excludeRoles && this.inRole(v.excludeRoles)) return false;
+    // readonlyGated: SSR's existing isReadonlyUser() (inverted 3-email
+    // allowlist). Deliberately NOT consulting moduleAccess/AccessChecker here
+    // — SSR's "Users" item today only ever checked the email allowlist, and
+    // this preserves that exact existing behaviour rather than narrowing it.
+    if (v.readonlyGated && !this.isReadonlyUser()) return false;
+
+    return true;
+  }
+
+  /** Turns hostApp/path into a concrete routerLink or href for THIS app (SSR). */
+  private resolveLinks(item: NavMenuItem): NavMenuItem {
+    const resolved: NavMenuItem = { ...item };
+
+    if (item.children?.length) {
+      resolved.children = item.children.map((child) => this.resolveLinks(child));
     }
 
-    const role = this.user.role;
-    const loggedinMenus = [
-      this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) && {
-        name: '15<sup>th</sup> FC Grants',
-        href: environment.v1Url + '/fc-home-page',
-      },
-      role === USER_TYPE.ULB && {
-        name: 'XVI FC Data Collection',
-        href: environment.v2Url + '/xvifc-form',
-      },
-      [USER_TYPE.STATE_DASHBOARD, USER_TYPE.STATE].includes(role) && {
-        name: 'State Dashboard',
-        href: environment.v1Url + '/state-dashboard',
-      },
-      this.inRole([USER_TYPE.XVIFC, USER_TYPE.XVIFC_STATE]) && {
-        name: 'Review XVI FC',
-        href: environment.v2Url + '/admin/xvi-fc-review',
-      },
-      this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) &&
-      this.isReadonlyUser() && {
-        name: 'Users',
-        href: environment.v1Url + '/user/list/ULB',
-      },
-    ];
+    switch (item.hostApp) {
+      case 'ssr':
+        resolved.resolvedLink = item.path;
+        break;
+      case 'ui':
+        resolved.resolvedHref = item.path
+          ? environment.v1Url.replace(/\/$/, '') + item.path
+          : undefined;
+        break;
+      case 'v2':
+        resolved.resolvedHref = item.path
+          ? environment.v2Url.replace(/\/$/, '') + item.path
+          : undefined;
+        break;
+      case 'external':
+        resolved.resolvedHref = item.id === 'blog' ? environment.blogUrl : item.absoluteHref;
+        break;
+      default:
+        break;
+    }
 
-    this.menus = [...this.baseMenus, ...loggedinMenus.filter(Boolean)];
+    return resolved;
   }
 
   isReadonlyUser(): boolean {
@@ -261,12 +264,6 @@ export class Navbar implements OnInit {
     this.user = sessionState.user;
     this.btnName = this.isLoggedIn ? 'Logout' : 'Login for 15th FC Grants';
     this.initializeAccessChecking();
-
-    if (this.isLoggedIn) {
-      this.setLoggedInUserMenu();
-      return;
-    }
-
-    this.menus = [...this.baseMenus];
+    this.refreshMenus();
   }
 }
