@@ -79,10 +79,7 @@ export class Navbar implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((sessionState) => this.updateAuthState(sessionState));
 
-    // Menus previously only recomputed on init/auth change — a plain
-    // in-session navigation (e.g. Dashboard -> XVI FC Data Collection)
-    // never refreshed `menus`, so nothing depending on the current route
-    // (like the "My Forms" active-child label below) could ever update.
+    // Recompute menus on every route change too, not just auth change.
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -100,13 +97,7 @@ export class Navbar implements OnInit {
     this.refreshMenus();
   }
 
-  /**
-   * Rebuilds `menus` from the shared NAV_MENU_ITEMS config. Replaces the old
-   * setLoggedInUserMenu(), which rebuilt the logged-in branch from scratch
-   * instead of extending the base set — that's what could silently drop
-   * Dashboard/Resources for a logged-in user. This version always starts
-   * from the full filtered tree, so nothing gets lost based on auth state.
-   */
+  /** Rebuilds `menus` from the shared NAV_MENU_ITEMS config — see ./CLAUDE.md, "Resolution pipeline". */
   private refreshMenus(): void {
     const resolved = resolveMenus(
       NAV_MENU_ITEMS,
@@ -116,14 +107,7 @@ export class Navbar implements OnInit {
     this.menus = resolved.map((item) => this.resolveLinks(item));
   }
 
-  /**
-   * True when `item` is this app's own route AND the current URL is either
-   * exactly its match path or a descendant of it (boundary-safe: a prefix
-   * of '/xvifc' matches '/xvifc/year' and '/xvifc/2024-25/...', but never
-   * '/xvifc-form', which merely shares the same string prefix without a '/').
-   * `activePathPrefix` overrides `path` for items whose real flow lives under
-   * a broader/different url root than their own link target — see nav-menu.config.ts.
-   */
+  /** True when `item` is this app's own route and the current URL is on/under it — see ./CLAUDE.md, "Active-route highlighting". */
   private isActiveGroupChild(item: NavMenuItem): boolean {
     if (item.hostApp !== 'ssr') return false;
     const prefix = item.activePathPrefix ?? item.path;
@@ -137,28 +121,19 @@ export class Navbar implements OnInit {
     const v = item.visibility;
     if (!v) return true;
 
-    // ocrRouteOnly (V2 only) and showOnMobileOnly (UI only) are not
-    // applicable to SSR; any item relying on either is not meant for SSR,
-    // and `apps` already excludes SSR for those items today.
+    // ocrRouteOnly/showOnMobileOnly aren't applicable to SSR — `apps` already excludes those items.
     if (v.isHiddenInProd && this.isProd) return false;
     if (v.requiresAuth && !this.isLoggedIn) return false;
     if (v.loggedOutOnly && this.isLoggedIn) return false;
     if (v.roles && !this.inRole(v.roles)) return false;
     if (v.excludeRoles && this.inRole(v.excludeRoles)) return false;
-    // Second, independent gating dimension: which page the user is on right
-    // now (AND'd with the role checks above). Recomputed on every
-    // NavigationEnd (see constructor), so this updates live as the user
-    // navigates, same as the role checks do on login/logout.
+    // Route-based gating — see ./CLAUDE.md, "How the three role/route dimensions actually combine".
     if (v.showOnlyOnRoutePrefixes && !matchesAnyRoutePrefix(this._router.url, v.showOnlyOnRoutePrefixes)) {
       return false;
     }
     if (v.hideOnRoutePrefixes && matchesAnyRoutePrefix(this._router.url, v.hideOnRoutePrefixes)) {
       return false;
     }
-    // Third gating dimension: unlike the two above (each independently OR'd
-    // into "hide if any one fires"), this is a single AND of role + route —
-    // hidden only when BOTH match together (e.g. Resources/Blog hidden for
-    // ULB while inside the XVI FC flow, but still visible to ULB elsewhere).
     if (
       v.hideWhenRoleOnRoute &&
       this.inRole(v.hideWhenRoleOnRoute.roles) &&
@@ -166,10 +141,8 @@ export class Navbar implements OnInit {
     ) {
       return false;
     }
-    // readonlyGated: SSR's existing isReadonlyUser() (inverted 3-email
-    // allowlist). Deliberately NOT consulting moduleAccess/AccessChecker here
-    // — SSR's "Users" item today only ever checked the email allowlist, and
-    // this preserves that exact existing behaviour rather than narrowing it.
+    // readonlyGated deliberately doesn't also consult moduleAccess/AccessChecker here —
+    // SSR's "Users" item has only ever checked the email allowlist.
     if (v.readonlyGated && !this.isReadonlyUser()) return false;
 
     return true;

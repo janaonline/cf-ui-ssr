@@ -98,8 +98,7 @@
         }
       </ul>
 
-      <!-- Request a Demo / Login / Logout — deliberately OUTSIDE #primary-navigation so these
-           stay visible in the persistent top bar instead of hiding inside the mobile drawer. -->
+      <!-- Request a Demo / Login / Logout — kept outside #primary-navigation, always visible. -->
       <div class="ms-2 d-flex align-items-center gap-2">
         @if (isBrowser && isAuthReady && !isLoggedIn) {
         <button class="btn btn-outline-cfPrimary fw-semibold border-2" (click)="showRequestDemoPopup()">
