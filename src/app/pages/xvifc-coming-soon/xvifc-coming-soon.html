@@ -1,0 +1,55 @@
+<section class="xvifc-shell">
+  <div class="container px-0">
+    <div class="row g-0">
+      <!-- Coming soon panel: top on mobile, right on large screens -->
+      <div class="col-12 col-lg-5 order-1 order-lg-2 d-flex align-items-center justify-content-center p-2 p-lg-3">
+        <div class="coming-soon-panel text-center rounded-4 p-3 p-lg-4 w-100">
+          <!-- <i class="bi bi-rocket-takeoff-fill coming-soon-icon"></i>
+          <p class="eyebrow fw-bold text-uppercase small mt-2 mb-1">XVI FC Grant</p> -->
+          <h2 class="fw-bold fs-3 mb-2">Coming soon</h2>
+          <p class="text-secondary small mb-3">
+            The grant management system for the 16th Finance Commission opens <b>September 1, 2026</b>.
+          </p>
+          <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+            @for (doc of panelContent.documents; track doc.key) {
+            <a [href]="doc.link" target="_blank" rel="noopener"
+              class="btn btn-sm btn-outline-cfPrimary rounded-3 fw-bold small px-3 py-2">{{ doc.label }}</a>
+            }
+            <a routerLink="/home" class="btn btn-sm back-link rounded-3 text-white fw-bold small px-3 py-2">Back to
+              home</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content panel: bottom on mobile, left on large screens -->
+      <div class="col-12 col-lg-7 order-2 order-lg-1 d-flex align-items-center p-3 p-lg-4">
+        <div class="content-panel text-white w-100 rounded-4 p-3 p-lg-4">
+          <h1 class="fw-bold fs-3 mb-3">
+            {{ panelContent.titleLine1 }}<br />{{ panelContent.titleLine2 }}
+          </h1>
+
+          @for (desc of panelContent.descriptions; track $index) {
+          <p class="small mb-2" [class.text-white-50]="desc.secondary" [innerHTML]="desc.html"></p>
+          }
+
+          <div class="row row-cols-1 row-cols-sm-2 g-2 my-3">
+            @for (stat of stats; track stat.label; let i = $index) {
+            <div class="col">
+              <div class="stat-card d-flex align-items-center gap-2 p-2 rounded-3 h-100">
+                <span
+                  class="stat-icon stat-icon-{{ i }} d-inline-flex align-items-center justify-content-center rounded-3 flex-shrink-0">
+                  <i class="bi {{ stat.icon }}"></i>
+                </span>
+                <div>
+                  <div class="fw-bold fs-5 lh-1">{{ stat.value }}</div>
+                  <div class="text-uppercase text-white-50 stat-label">{{ stat.label }}</div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

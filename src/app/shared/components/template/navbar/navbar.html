@@ -109,6 +109,11 @@
           <i class="bi bi-caret-down-fill"></i>
         </button>
         <mat-menu #loginMenu="matMenu">
+            <a mat-menu-item class="border-bottom" routerLink="/auth/login/16thfc">
+              <i class="bi bi-rocket-takeoff-fill text-cfPrimary"></i>
+              <span class="fw-bold"> XVI FC Grant</span>
+              <span class="new-badge-pill">New</span>
+            </a>
           @for (routePage of routePages; track routePage) {
           <a mat-menu-item [href]="routePage.href" class="border-bottom d-flex align-items-center gap-2">
             <i class="bi bi-box-arrow-in-right"></i>&nbsp;
