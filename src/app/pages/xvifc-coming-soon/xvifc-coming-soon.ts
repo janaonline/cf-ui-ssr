@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 
 // XVIFC_PROD_CUTOVER: this whole page (this file + its .html/.scss) becomes obsolete once the real
 // 16th FC login is ready for production — delete this folder along with the route that loads it
-// in app.routes.ts and the hardcoded row that links to it in navbar.html.
+// in app.routes.ts and the 'xvifc-coming-soon' entry that links to it in login-menu.constant.ts.
 @Component({
   selector: 'app-xvifc-coming-soon',
   imports: [RouterLink],

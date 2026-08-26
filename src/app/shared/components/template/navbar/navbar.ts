@@ -59,7 +59,7 @@ export class Navbar implements OnInit {
   get routePages() {
     return ROUTE_PAGES.filter((page) => page.isMenu && !(page.isHiddenInProd && this.isProd)).map((page) => ({
       ...page,
-      href: `${environment.ui.urlV2}auth/login/${page.type}`,
+      href: page.href ?? `${environment.ui.urlV2}auth/login/${page.type}`,
     }));
   }
 
