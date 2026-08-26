@@ -55,10 +55,13 @@ export class Navbar implements OnInit {
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
-  routePages = ROUTE_PAGES.filter((page) => page.isMenu).map((page) => ({
-    ...page,
-    href: `${environment.ui.urlV2}auth/login/${page.type}`,
-  }));
+  // Getter, not a field: isProd is only set in ngOnInit(), after field initializers run.
+  get routePages() {
+    return ROUTE_PAGES.filter((page) => page.isMenu && !(page.isHiddenInProd && this.isProd)).map((page) => ({
+      ...page,
+      href: `${environment.ui.urlV2}auth/login/${page.type}`,
+    }));
+  }
 
   menus: NavMenuItem[] = [];
 

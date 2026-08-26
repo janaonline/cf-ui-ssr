@@ -109,6 +109,9 @@
           <i class="bi bi-caret-down-fill"></i>
         </button>
         <mat-menu #loginMenu="matMenu">
+            <!-- XVIFC_PROD_CUTOVER: delete this hardcoded row once the real 16th FC login is ready
+                 for production — the @for loop below already renders the real "XVI FC Grant" row
+                 once isHiddenInProd is removed in login-menu.constant.ts. -->
             <a mat-menu-item class="border-bottom" routerLink="/auth/login/16thfc">
               <i class="bi bi-rocket-takeoff-fill text-cfPrimary"></i>
               <span class="fw-bold"> XVI FC Grant</span>

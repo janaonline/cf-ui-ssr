@@ -8,6 +8,7 @@ export interface IRoutePages {
     route?: string;
     roles?: USER_TYPE[];
     isNew?: boolean;
+    isHiddenInProd?: boolean; // hidden once environment.isProduction is true; still shown in dev/staging/local
 }
 export const ROUTE_PAGES: IRoutePages[] = [{
     type: '16thFC',
@@ -15,6 +16,10 @@ export const ROUTE_PAGES: IRoutePages[] = [{
     route: '/xvifc/year',
     isMenu: true,
     isNew: true,
+    // XVIFC_PROD_CUTOVER: delete this line once the real 16th FC login is ready for production.
+    // This one flag re-enables this "XVI FC Grant" row (here and in V2's login-menu.constant.ts)
+    // and V2's real login route (guarded by login-type-availability.guard.ts) at the same time.
+    isHiddenInProd: true,
     roles: [USER_TYPE.ULB, USER_TYPE.STATE, USER_TYPE.MoHUA, USER_TYPE.ADMIN]
 }, {
     type: '15thFC',
