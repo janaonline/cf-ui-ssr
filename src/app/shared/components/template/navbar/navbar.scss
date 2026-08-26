@@ -25,6 +25,14 @@
   z-index: 1000;
 }
 
+// mat-menu content is portaled to the CDK overlay, outside this component's
+// view encapsulation — ::ng-deep is required to style it from here.
+::ng-deep .mat-mdc-menu-item.active {
+  background: var(--clr-primary-soft, rgba(29, 82, 144, 0.08));
+  color: var(--clr-primary);
+  font-weight: 700;
+}
+
 .shadow-bottom {
   box-shadow: 0 5px 7px -1px rgba(0, 0, 0, 0.3);
 }
@@ -47,12 +55,12 @@ a {
   background: hsla(0, 0%, 100%, 1);
 }
 
-@supports (backdrop-filter: blur(4rem)) {
-  .primary-navigation {
-    background: hsla(0, 0%, 100%, 0.1);
-    backdrop-filter: blur(4rem);
-  }
-}
+// @supports (backdrop-filter: blur(4rem)) {
+//   .primary-navigation {
+//     background: hsla(0, 0%, 100%, 0.1);
+//     backdrop-filter: blur(4rem);
+//   }
+// }
 
 .nav-link {
   padding-block: 1.25rem;
@@ -64,6 +72,20 @@ a {
     color: var(--clr-primary);
     border-bottom: 2px solid var(--clr-primary);
   }
+}
+
+.new-badge-pill {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: hsla(30, 83%, 49%, 1);
+  border-radius: 999px;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
 
 .cfr-img-logo {
