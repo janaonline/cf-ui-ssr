@@ -9,6 +9,13 @@ export interface ResponseData {
   statusCode: number;
 }
 
+export interface ReportAnIssueApiResponse {
+  success: boolean;
+  data: ResponseData;
+  timestamp: string;
+  requestId?: string;
+}
+
 export interface PayloadData {
   issueKind: string;
   desc: string;
@@ -23,8 +30,8 @@ export interface PayloadData {
 export class ReportIssueService {
   constructor(private http: HttpClient) {}
 
-  submitIssue(payload: PayloadData): Observable<ResponseData> {
+  submitIssue(payload: PayloadData): Observable<ReportAnIssueApiResponse> {
     const url = environment.api.urlV2 + 'report-an-issue';
-    return this.http.post<ResponseData>(url, payload);
+    return this.http.post<ReportAnIssueApiResponse>(url, payload);
   }
 }
