@@ -60,17 +60,28 @@ export class NationalDashboard {
     this.page.set(page);
     this.getUlbData.set(getUlbData);
 
+    // Static asset URLs cannot be resolved by the SSR Node.js process — skip on server.
+    if (isPlatformServer(this.platformId)) {
+      this.isLoading.set(false);
+      this.updateRatingSummary();
+      return;
+    }
+
+    if (isPlatformBrowser(this.platformId) && this.transferState.hasKey(CREDIT_RATINGS_KEY)) {
+      const cached = this.transferState.get(CREDIT_RATINGS_KEY, {} as CreditRatingMap);
+      this.transferState.remove(CREDIT_RATINGS_KEY);
+      this.creditRating.set(cached);
+      this.isLoading.set(false);
+      this.updateRatingSummary();
+      return;
+    }
+
     this.assetService
       .fetchCreditRatingReport()
       .subscribe({
         next: (res: ICreditRatingData[]) => {
           const computedData = this.computeRatings(res);
           this.creditRating.set(computedData);
-
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(CREDIT_RATINGS_KEY, computedData);
-          }
-
           this.isLoading.set(false);
         },
         error: (error: any) => {
@@ -79,7 +90,6 @@ export class NationalDashboard {
         },
         complete: () => this.updateRatingSummary(),
       });
-    // }
   }
 
   // Helper: Compute total, creditRatingAboveBBB_Minus count.

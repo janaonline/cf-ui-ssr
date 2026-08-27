@@ -7,6 +7,7 @@ export const environment = {
     url: baseUrl + '/api/v1/',
     urlV2: baseUrl + '/api/v2/',
   },
+  ui: { urlV1: baseUrl + '/v1/', urlV2: baseUrl + '/fc/' },
   v1Url: '/v1',
   v2Url: '/fc',
   environment: 'prod',

@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ChangeDetectorRef,
@@ -15,20 +15,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 
 import { environment } from '../../../../../environments/environment';
 import { IUserLoggedInDetails } from '../../../../core/models/login/userLoggedInDetails';
-import { USER_TYPE } from '../../../../core/models/user/userType';
 import { AuthSessionState, AuthService } from '../../../../core/services/auth.service';
 import { AccessChecker } from '../../../../core/util/access/accessChecker';
 import { ACTIONS } from '../../../../core/util/access/actions';
 import { MODULES_NAME } from '../../../../core/util/access/modules';
 import { UserInfoDialog } from '../../user-info-dialog/user-info-dialog';
+import { ROUTE_PAGES } from './login-menu.constant';
+import { NAV_MENU_ITEMS, NavMenuItem, matchesAnyRoutePrefix, resolveMenus } from './nav-menu.config';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule],
+  imports: [RouterModule, MatButtonModule, MatMenuModule, MatIconModule, NgClass],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -53,38 +55,15 @@ export class Navbar implements OnInit {
   showMobileNav = false;
   readonly readonlyEmails = ['doe@cityfinance.in', 'cca-mohua@gov.in', 'cag@cityfinance.in'];
 
-  readonly baseMenus: any[] = [
-    {
-      name: 'Dashboard',
-      href: '',
-      child: [
-        {
-          name: 'National Performance',
-          link: '/municipal-data/national',
-        },
-        {
-          name: 'Own Revenue Performance',
-          href: this.v1Url + '/own-revenue-dashboard',
-        },
-        {
-          name: 'Service Level Benchmarks Performance',
-          href: this.v1Url + '/dashboard/slb',
-        },
-        { name: 'Market Readiness Assessment', href: '/municipal-data/market-readiness' }, // market readiness assessment link added in navbar
-      ],
-    },
-    {
-      name: 'Resources',
-      href: this.v1Url + '/resources-dashboard/data-sets/income_statement',
-    },
-    {
-      name: 'Blog',
-      href: environment.blogUrl,
-      target: '_blank',
-    },
-  ];
+  // Getter, not a field: isProd is only set in ngOnInit(), after field initializers run.
+  get routePages() {
+    return ROUTE_PAGES.filter((page) => page.isMenu && !(page.isHiddenInProd && this.isProd)).map((page) => ({
+      ...page,
+      href: page.href ?? `${environment.ui.urlV2}auth/login/${page.type}`,
+    }));
+  }
 
-  menus: any[] = [...this.baseMenus];
+  menus: NavMenuItem[] = [];
 
   public screenHeight: any;
   isSticky = false;
@@ -102,45 +81,107 @@ export class Navbar implements OnInit {
     this.authService.sessionState$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((sessionState) => this.updateAuthState(sessionState));
+
+    // Recompute menus on every route change too, not just auth change.
+    this._router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.refreshMenus();
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnInit(): void {
     this.isProd = environment?.isProduction;
     this.initializeAccessChecking();
+    this.refreshMenus();
   }
 
-  setLoggedInUserMenu() {
-    if (!this.user) {
-      this.menus = [...this.baseMenus];
-      return;
+  /** Rebuilds `menus` from the shared NAV_MENU_ITEMS config — see ./CLAUDE.md, "Resolution pipeline". */
+  private refreshMenus(): void {
+    const resolved = resolveMenus(
+      NAV_MENU_ITEMS,
+      (item) => this.isMenuItemVisible(item),
+      (item) => this.isActiveGroupChild(item),
+    );
+    this.menus = resolved.map((item) => this.resolveLinks(item));
+  }
+
+  /** True when `item` is this app's own route and the current URL is on/under it — see ./CLAUDE.md, "Active-route highlighting". */
+  private isActiveGroupChild(item: NavMenuItem): boolean {
+    if (item.hostApp !== 'ssr') return false;
+    const prefix = item.activePathPrefix ?? item.path;
+    if (!prefix) return false;
+    return matchesAnyRoutePrefix(this._router.url, [prefix]);
+  }
+
+  private isMenuItemVisible(item: NavMenuItem): boolean {
+    if (item.isDisabled) return false;
+    if (!item.apps.includes('ssr')) return false;
+
+    const v = item.visibility;
+    if (!v) return true;
+
+    // ocrRouteOnly/showOnMobileOnly aren't applicable to SSR — `apps` already excludes those items.
+    if (v.isHiddenInProd && this.isProd) return false;
+    if (v.requiresAuth && !this.isLoggedIn) return false;
+    if (v.loggedOutOnly && this.isLoggedIn) return false;
+    if (v.roles && !this.inRole(v.roles)) return false;
+    if (v.excludeRoles && this.inRole(v.excludeRoles)) return false;
+    // Route-based gating — see ./CLAUDE.md, "How the three role/route dimensions actually combine".
+    if (v.showOnlyOnRoutePrefixes && !matchesAnyRoutePrefix(this._router.url, v.showOnlyOnRoutePrefixes)) {
+      return false;
+    }
+    if (v.hideOnRoutePrefixes && matchesAnyRoutePrefix(this._router.url, v.hideOnRoutePrefixes)) {
+      return false;
+    }
+    if (
+      v.hideWhenRoleOnRoute &&
+      this.inRole(v.hideWhenRoleOnRoute.roles) &&
+      matchesAnyRoutePrefix(this._router.url, v.hideWhenRoleOnRoute.routePrefixes)
+    ) {
+      return false;
+    }
+    // readonlyGated deliberately doesn't also consult moduleAccess/AccessChecker here —
+    // SSR's "Users" item has only ever checked the email allowlist.
+    if (v.readonlyGated && !this.isReadonlyUser()) return false;
+
+    return true;
+  }
+
+  /** Turns hostApp/path into a concrete routerLink or href for THIS app (SSR). */
+  private resolveLinks(item: NavMenuItem): NavMenuItem {
+    const resolved: NavMenuItem = { ...item };
+
+    if (item.children?.length) {
+      resolved.children = item.children.map((child) => this.resolveLinks(child));
     }
 
-    const role = this.user.role;
-    const loggedinMenus = [
-      this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) && {
-        name: '15<sup>th</sup> FC Grants',
-        href: environment.v1Url + '/fc-home-page',
-      },
-      role === USER_TYPE.ULB && {
-        name: 'XVI FC Data Collection',
-        href: environment.v2Url + '/xvifc-form',
-      },
-      [USER_TYPE.STATE_DASHBOARD, USER_TYPE.STATE].includes(role) && {
-        name: 'State Dashboard',
-        href: environment.v1Url + '/state-dashboard',
-      },
-      this.inRole([USER_TYPE.XVIFC, USER_TYPE.XVIFC_STATE]) && {
-        name: 'Review XVI FC',
-        href: environment.v2Url + '/admin/xvi-fc-review',
-      },
-      this.notInRole([USER_TYPE.PMU, USER_TYPE.XVIFC_STATE, USER_TYPE.STATE_DASHBOARD]) &&
-      this.isReadonlyUser() && {
-        name: 'Users',
-        href: environment.v1Url + '/user/list/ULB',
-      },
-    ];
+    switch (item.hostApp) {
+      case 'ssr':
+        resolved.resolvedLink = item.path;
+        break;
+      case 'ui':
+        resolved.resolvedHref = item.path
+          ? environment.v1Url.replace(/\/$/, '') + item.path
+          : undefined;
+        break;
+      case 'v2':
+        resolved.resolvedHref = item.path
+          ? environment.v2Url.replace(/\/$/, '') + item.path
+          : undefined;
+        break;
+      case 'external':
+        resolved.resolvedHref = item.id === 'blog' ? environment.blogUrl : item.absoluteHref;
+        break;
+      default:
+        break;
+    }
 
-    this.menus = [...this.baseMenus, ...loggedinMenus.filter(Boolean)];
+    return resolved;
   }
 
   isReadonlyUser(): boolean {
@@ -187,26 +228,6 @@ export class Navbar implements OnInit {
   loginLogout(type: string) {
     localStorage.setItem('loginType', type);
 
-    if (type === '15thFC') {
-      window.location.href = this.v1Url + '/fc_grant';
-      return;
-    }
-
-    if (type === 'XVIFC') {
-      window.location.href = this.v1Url + '/login/xvi-fc';
-      return;
-    }
-
-    if (type === 'state-dashboard') {
-      window.location.href = this.v1Url + '/login/state-dashboard';
-      return;
-    }
-
-    if (type === 'ranking') {
-      window.location.href = this.v1Url + '/rankings/login';
-      return;
-    }
-
     if (type === 'logout') {
       this.authService.logout()
         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -214,6 +235,9 @@ export class Navbar implements OnInit {
           this.removeSessionItem();
           this._router.navigateByUrl('/home');
         });
+    } else {
+      window.location.href = environment.ui.urlV2 + 'auth/login/' + type;
+      return;
     }
   }
 
@@ -272,12 +296,6 @@ export class Navbar implements OnInit {
     this.user = sessionState.user;
     this.btnName = this.isLoggedIn ? 'Logout' : 'Login for 15th FC Grants';
     this.initializeAccessChecking();
-
-    if (this.isLoggedIn) {
-      this.setLoggedInUserMenu();
-      return;
-    }
-
-    this.menus = [...this.baseMenus];
+    this.refreshMenus();
   }
 }
