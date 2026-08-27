@@ -22,75 +22,108 @@
           <i class="fs-4 bi bi-x-lg"></i>
 
         </button>
-        } @for (menu of menus; track $index) {
-        @if (menu.child?.length) {
+        } @for (menu of menus; track menu.id) {
+        @if (menu.children?.length) {
         <li class="active" [matMenuTriggerFor]="DashboardMenu">
-          <a class="nav-link d-flex align-items-center" routerLinkActive="active">
-            {{ menu.name }}&nbsp;
+          <a class="nav-link d-flex align-items-center" [class.active]="menu.isActiveRoute">
+            @if (menu.icon) {
+            <i [class]="menu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="menu.label"></span>&nbsp;
             <i class="bi bi-caret-down-fill"></i>
           </a>
         </li>
         <mat-menu #DashboardMenu="matMenu">
-          @for (childMenu of menu.child; track childMenu) {
-          @if (childMenu.link) {
-          <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.link"
-            routerLinkActive="active">{{childMenu.name}}</a>
+          @for (childMenu of menu.children; track childMenu.id) {
+          @if (childMenu.resolvedLink) {
+          <a mat-menu-item [class.border-bottom]="!$last" [routerLink]="childMenu.resolvedLink"
+            [class.active]="childMenu.isActiveRoute">
+            @if (childMenu.icon) {
+            <i [class]="childMenu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="childMenu.label"></span>
+          </a>
           } @else {
-          <a mat-menu-item [href]="childMenu.href" [class.border-bottom]="!$last" routerLinkActive="active">
-            {{ childMenu.name }}
+          <a mat-menu-item [href]="childMenu.resolvedHref" [target]="childMenu.target || '_self'"
+            [class.border-bottom]="!$last" [class.active]="childMenu.isActiveRoute">
+            @if (childMenu.icon) {
+            <i [class]="childMenu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="childMenu.label"></span>
           </a>
           }
-
           }
         </mat-menu>
+        } @else if (menu.renderAs === 'button') {
+        <li class="active">
+          <button type="button" class="btn"
+            [ngClass]="menu.buttonClass || 'btn-outline-cfPrimary fw-semibold border-2'"
+            [routerLink]="menu.resolvedLink">
+            @if (menu.icon) {
+            <i [class]="menu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="menu.label"></span>
+          </button>
+        </li>
         } @else {
         <li class="active">
-          @if (menu.link) {
-          <a class="nav-link" [class]="menu.class" [routerLink]="menu.link" routerLinkActive="active"
-            [innerHTML]="menu.name"></a>
+          @if (menu.imageUrl) {
+          @if (menu.resolvedLink) {
+          <a class="nav-link" [routerLink]="menu.resolvedLink" [class.active]="menu.isActiveRoute">
+            <img [src]="menu.imageUrl" [alt]="menu.imageAlt" />
+          </a>
+          } @else {
+          <a class="nav-link" [href]="menu.resolvedHref" [target]="menu.target || '_self'">
+            <img [src]="menu.imageUrl" [alt]="menu.imageAlt" />
+          </a>
           }
-          @if (menu.href) {
-          <a class="nav-link" [class]="menu.class" [attr.href]="menu.href" [innerHTML]="menu.name"
-            [target]="menu.target || '_self'"></a>
+          } @else if (menu.resolvedLink) {
+          <a class="nav-link" [routerLink]="menu.resolvedLink" [class.active]="menu.isActiveRoute">
+            @if (menu.icon) {
+            <i [class]="menu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="menu.label"></span>
+          </a>
+          } @else {
+          <a class="nav-link" [attr.href]="menu.resolvedHref"
+            [target]="menu.target || '_self'">
+            @if (menu.icon) {
+            <i [class]="menu.icon"></i>&nbsp;
+            }
+            <span [innerHTML]="menu.label"></span>
+          </a>
           }
         </li>
-        } }
-        @if (isBrowser && isAuthReady && !isLoggedIn) {
-        <li>
-          <button class="btn btn-outline-cfPrimary fw-semibold border-2" (click)="showRequestDemoPopup()">
-            Request a Demo
-          </button>
-        </li>
-        <li>
-          <button class="btn btn-cfPrimary d-flex align-items-center fw-semibold" [matMenuTriggerFor]="loginMenu">
-            Login&nbsp;
-            <i class="bi bi-caret-down-fill"></i>
-          </button>
-          <mat-menu #loginMenu="matMenu">
-            <a mat-menu-item class="border-bottom" routerLink="/auth/login/16thFC">
-              <i class="bi bi-rocket-takeoff-fill text-cfPrimary"></i>
-              <span class="fw-bold"> XVI FC Grant</span>
-              <span class="new-badge-pill">New</span>
-            </a>
-            <button mat-menu-item class="border-bottom" (click)="loginLogout('15thFC')">
-              <i class="bi bi-box-arrow-in-right"></i> XV FC Grant
-            </button>
-            <button mat-menu-item class="border-bottom" (click)="loginLogout('state-dashboard')">
-              <i class="bi bi-box-arrow-in-right"></i> State Dashboard
-            </button>
-            <button mat-menu-item class="border-bottom" (click)="loginLogout('XVIFC')">
-              <i class="bi bi-box-arrow-in-right"></i> XVI FC Data Collection
-            </button>
-            <button mat-menu-item (click)="loginLogout('ranking')">
-              <i class="bi bi-box-arrow-in-right"></i> Rankings 2022
-            </button>
-          </mat-menu>
-        </li>
+        }
         }
       </ul>
 
-      <!-- Login/ Logout -->
-      <div class="ms-2">
+      <!-- Request a Demo / Login / Logout — kept outside #primary-navigation, always visible. -->
+      <div class="ms-2 d-flex align-items-center gap-2">
+        @if (isBrowser && isAuthReady && !isLoggedIn) {
+        <button class="btn btn-outline-cfPrimary fw-semibold border-2" (click)="showRequestDemoPopup()">
+          Request a Demo
+        </button>
+        <button class="btn btn-cfPrimary d-flex align-items-center fw-semibold" [matMenuTriggerFor]="loginMenu">
+          Login&nbsp;
+          <i class="bi bi-caret-down-fill"></i>
+        </button>
+        <mat-menu #loginMenu="matMenu">
+          @for (routePage of routePages; track routePage.type) {
+          <a mat-menu-item [href]="routePage.href" class="border-bottom d-flex align-items-center gap-2">
+            <i [class]="routePage.icon ?? 'bi-box-arrow-in-right'"></i>&nbsp;
+            @if (routePage.isNew) {
+            <strong>{{ routePage.label }}</strong>
+            } @else {
+            {{ routePage.label }}
+            }
+            @if (routePage.isNew) {
+            <span class="badge-new ms-1">NEW</span>
+            }
+          </a>
+          }
+        </mat-menu>
+        }
         @if (isBrowser && isAuthReady && isLoggedIn) {
         <button class="btn btn-cfPrimary fw-bold" [matMenuTriggerFor]="logoutMenu">
           <i class="bi bi-person-circle fs-5 text-white"></i>&nbsp;

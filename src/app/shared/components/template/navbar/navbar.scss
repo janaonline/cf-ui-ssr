@@ -3,6 +3,19 @@
 //   font-weight: var(--fw-medium);
 // }
 
+.badge-new {
+  display: inline-block;
+  background-color: #f97316;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .sticky {
   position: fixed;
   top: 0;
@@ -10,6 +23,14 @@
   right: 0;
   width: 100%;
   z-index: 1000;
+}
+
+// mat-menu content is portaled to the CDK overlay, outside this component's
+// view encapsulation — ::ng-deep is required to style it from here.
+::ng-deep .mat-mdc-menu-item.active {
+  background: var(--clr-primary-soft, rgba(29, 82, 144, 0.08));
+  color: var(--clr-primary);
+  font-weight: 700;
 }
 
 .shadow-bottom {
@@ -34,12 +55,12 @@ a {
   background: hsla(0, 0%, 100%, 1);
 }
 
-@supports (backdrop-filter: blur(4rem)) {
-  .primary-navigation {
-    background: hsla(0, 0%, 100%, 0.1);
-    backdrop-filter: blur(4rem);
-  }
-}
+// @supports (backdrop-filter: blur(4rem)) {
+//   .primary-navigation {
+//     background: hsla(0, 0%, 100%, 0.1);
+//     backdrop-filter: blur(4rem);
+//   }
+// }
 
 .nav-link {
   padding-block: 1.25rem;

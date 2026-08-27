@@ -22,7 +22,7 @@ export class Login implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required]],
+    identifier: ['', [Validators.required]],
     password: ['', [Validators.required]],
   });
 
@@ -75,7 +75,7 @@ export class Login implements OnInit {
     this.hidePassword = !this.hidePassword;
   }
 
-  protected hasError(controlName: 'email' | 'password', errorCode: string): boolean {
+  protected hasError(controlName: 'identifier' | 'password', errorCode: string): boolean {
     const control = this.loginForm.controls[controlName];
     return control.touched && control.hasError(errorCode);
   }
@@ -105,7 +105,7 @@ export class Login implements OnInit {
     }
 
     if (error.status === 401 || error.status === 403) {
-      return 'Incorrect email or password.';
+      return 'Incorrect identifier or password.';
     }
 
     return 'We could not sign you in right now. Please try again.';

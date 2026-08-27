@@ -38,7 +38,9 @@ export const routes: Routes = [
         // canActivate: [authGuard]
     },
     {
-        path: 'auth/login/16thFC',
+        // XVIFC_PROD_CUTOVER: delete this route and the xvifc-coming-soon page it loads once the
+        // real 16th FC login is ready for production — see login-menu.constant.ts, isHiddenInProd.
+        path: 'auth/login/16thfc',
         loadComponent: () => import('./pages/xvifc-coming-soon/xvifc-coming-soon').then(m => m.XvifcComingSoon),
     },
     { path: '**', redirectTo: 'home', pathMatch: 'full' },
