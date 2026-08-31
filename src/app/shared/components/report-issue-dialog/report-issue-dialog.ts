@@ -27,7 +27,10 @@ import { S3FileURLResponse } from '../../../core/models/s3Responses/fileURLRespo
 import { FileService } from '../../../core/services/file.service';
 import { GlobalLoaderService } from '../../../core/services/loaders/global-loader.service';
 import { UtilityService } from '../../../core/services/utility-service';
-import { ReportIssueService, ResponseData } from './report-isssue.service';
+import {
+  ReportAnIssueApiResponse,
+  ReportIssueService,
+} from './report-isssue.service';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-report-issue-dialog',
@@ -196,9 +199,9 @@ export class ReportIssueDialog implements OnInit {
         finalize(() => this.globalLoader.hideLoader())
       )
       .subscribe({
-        next: (res: ResponseData) => {
-          if (res.message.length > 0) {
-            this.apiResMsg.set(res.message.join(', '));
+        next: (res: ReportAnIssueApiResponse) => {
+          if (res.data?.message?.length > 0) {
+            this.apiResMsg.set(res.data.message.join(', '));
           }
           this.resetForm();
           this.file = undefined;
@@ -208,8 +211,8 @@ export class ReportIssueDialog implements OnInit {
           }, 800);
         },
         error: (err) => {
-          if (err?.message?.length > 0) {
-            this.apiResMsg.set(err.message.join(', '));
+          if (err?.error?.message?.length > 0) {
+            this.apiResMsg.set(err.error.message.join(', '));
           }
           this.utilityService.triggerSnackbar(
             'Failed to send feedback, Please try again!',
