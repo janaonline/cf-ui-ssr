@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CommonService } from '../../../../core/services/common.service';
+import { ULB_TYPE_SERIES } from './ulb-type-series.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -95,48 +96,26 @@ export class ChartService {
 
   }
   initializeScatterData() {
-    this.scatterData = [
-      {
-        labels: [],
-        rev: [],
-        label: "Municipality",
-        data: [],
-        showLine: false,
-        fill: true,
-        borderColor: "#1EBFC6",
-        backgroundColor: "#1EBFC6",
-      },
-      {
-        labels: [],
-        rev: [],
-        label: "Municipal Corporation",
-        data: [],
-        showLine: false,
-        fill: true,
-        borderColor: "#3E5DB1",
-        backgroundColor: "#3E5DB1",
-      },
-      {
-        label: "Town Panchayat",
-        labels: [],
-        rev: [],
-        data: [],
-        showLine: false,
-        fill: true,
-        borderColor: "#F5B742",
-        backgroundColor: "#F5B742",
-      },
-      // {
-      //   label: "State Average",
-      //   data: [],
-      //   rev: [],
-      //   labels: ["State Average"],
-      //   showLine: true,
-      //   fill: false,
-      //   backgroundColor: "red",
-      //   borderColor: "red",
-      // },
-    ];
+    this.scatterData = ULB_TYPE_SERIES.map(series => ({
+      labels: [],
+      rev: [],
+      label: series.label,
+      data: [],
+      showLine: false,
+      fill: true,
+      borderColor: series.color,
+      backgroundColor: series.color,
+    }));
+    // {
+    //   label: "State Average",
+    //   data: [],
+    //   rev: [],
+    //   labels: ["State Average"],
+    //   showLine: true,
+    //   fill: false,
+    //   backgroundColor: "red",
+    //   borderColor: "red",
+    // },
   }
 
   setScatterConfig(data: any, activeButton: string, stateServiceLabel = false, compareCategory = '') {
@@ -221,12 +200,13 @@ export class ChartService {
     this.stateServiceLabel = stateServiceLabel;
     // console.log('this.activeButton', this.activeButton);
     // this.initializeScatterData();
-    let m_data, mCorporation, tp_data, stateData;
+    let m_data, mCorporation, tp_data, cb_data, stateData;
     if (this.stateServiceLabel) {
       // if (apiData && apiData["scatterData"]) {      }
       m_data = apiData["scatterData"]["m_data"];
       mCorporation = apiData["scatterData"]["mc_data"];
       tp_data = apiData["scatterData"]["tp_data"];
+      cb_data = apiData["scatterData"]["cb_data"];
       // stateData = res['data'] && res['data']['scatterData'] && res['data']['scatterData']["stateAvg"][0]["average"];
       stateData = apiData["scatterData"]["stateAvg"] &&
         apiData["scatterData"]["stateAvg"][0] &&
@@ -235,6 +215,7 @@ export class ChartService {
       mCorporation = apiData["mCorporation"];
       tp_data = apiData["townPanchayat"];
       m_data = apiData["municipality"];
+      cb_data = apiData["cantonmentBoard"];
       this.stateAvgVal = apiData["stateAvg"] ? apiData["stateAvg"] : this.stateAvgVal;
       // let stateData = this.activeButton == 'Total Revenue' || this.activeButton == 'Total Own Revenue' || this.activeButton == 'Total Surplus/Deficit' || this.activeButton == 'Capital Expenditure' ? this.convertToCr(this.stateAvgVal) : this.stateAvgVal;
       // stateData = this.convertToCr(this.stateAvgVal);
@@ -242,7 +223,7 @@ export class ChartService {
     }
 
 
-    let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data);
+    let stateLevelMaxPopuCount = this.getMaximumPopulationCount(mCorporation, tp_data, m_data, cb_data);
     this.defaultAvgObj = [
       { x: 0, y: 0 },
       { x: stateLevelMaxPopuCount ? stateLevelMaxPopuCount : this.defaultMaxPopulation, y: 0 },
@@ -262,6 +243,8 @@ export class ChartService {
         this.setXYData(mCorporation, el);
       } else if (el.label == "Municipality") {
         this.setXYData(m_data, el);
+      } else if (el.label == "Cantonment Board") {
+        this.setXYData(cb_data, el);
       } else if (el.label == "National Average") {
         // el["data"]["y"] = natData;
       } else if (el.label == "State Average") {
@@ -294,6 +277,8 @@ export class ChartService {
       this.scatterData.push(scatterDataM);
       const scatterDataTP = this.setGraphData(apiData['Town Panchayat'], 'Town Panchayat Average', '#E57504');
       this.scatterData.push(scatterDataTP);
+      const scatterDataCB = this.setGraphData(apiData['Cantonment Board'], 'Cantonment Board Average', '#8E44AD');
+      this.scatterData.push(scatterDataCB);
     } else if (this.compareCategory == 'nationalAvg') {
       const scatterData = this.setGraphData(apiData['national'], 'National Average', 'green');
       this.scatterData.push(scatterData);
@@ -327,12 +312,13 @@ export class ChartService {
 
 
   /**
-   * It takes in three arrays of objects, each with a property called population, and returns the maximum
-   * value of the population property across all three arrays.
+   * It takes in four arrays of objects, each with a property called population, and returns the maximum
+   * value of the population property across all four arrays.
    * @param {any} mCorporation - [{population: 100}, {population: 200}]
    * @param {any} townPanchayat - [{
    * @param {any} municipality - [{
-   * @returns getMaximumPopulationCount(mCorporation: any, townPanchayat: any, municipality: any ) {
+   * @param {any} cantonmentBoard - [{
+   * @returns getMaximumPopulationCount(mCorporation: any, townPanchayat: any, municipality: any, cantonmentBoard: any ) {
    *     let populationCountList = [];
    *     populationCountList = mCorporation.map(popCount => popCount.population)
    *     populationCountList = [...populationCountList, ...townPanchayat
@@ -340,18 +326,23 @@ export class ChartService {
   getMaximumPopulationCount(
     mCorporation: any,
     townPanchayat: any,
-    municipality: any
+    municipality: any,
+    cantonmentBoard: any
   ) {
     let populationCountList = [];
 
-    populationCountList = mCorporation.map((popCount: any) => popCount.population);
+    populationCountList = (mCorporation ?? []).map((popCount: any) => popCount.population);
     populationCountList = [
       ...populationCountList,
-      ...townPanchayat.map((popCount: any) => popCount.population),
+      ...(townPanchayat ?? []).map((popCount: any) => popCount.population),
     ];
     populationCountList = [
       ...populationCountList,
-      ...municipality.map((popCount: any) => popCount.population),
+      ...(municipality ?? []).map((popCount: any) => popCount.population),
+    ];
+    populationCountList = [
+      ...populationCountList,
+      ...(cantonmentBoard ?? []).map((popCount: any) => popCount.population),
     ];
 
     let maxPopulationCount = Math.max(...populationCountList);

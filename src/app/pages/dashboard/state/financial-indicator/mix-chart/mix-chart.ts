@@ -2,6 +2,7 @@ import { Component, Input, input, signal } from '@angular/core';
 import { ChartConfig } from '../../../../../shared/components/charts/chart-interfaces';
 import { doughnutChartConfig } from './chartConfig';
 import { Charts } from "../../../../../shared/components/charts/charts";
+import { ULB_TYPE_SERIES } from '../ulb-type-series.constants';
 
 @Component({
   selector: 'app-mix-chart',
@@ -20,9 +21,7 @@ export class MixChart {
   types: any = {
     ulbType: [
       // { key: 'state', label: 'State' },
-      { key: 'mData', label: 'Municipality' },
-      { key: 'mcData', label: 'Municipal Corporation' },
-      { key: 'tpData', label: 'Town Panchayat' },
+      ...ULB_TYPE_SERIES.map(series => ({ key: series.compareKey, label: series.label })),
     ],
     popType: [
       // { key: 'state', label: 'State' },
