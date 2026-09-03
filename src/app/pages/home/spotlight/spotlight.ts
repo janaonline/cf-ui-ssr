@@ -55,10 +55,16 @@ export class Spotlight {
   whatNewData =
     [
       {
+        "imageUrl": "/assets/images/homepage/spotlight/xvi-fc_finance_commission_report.webp",
+        "name": "XVI Finance Commission Report",
+        "downloadUrl": "/assets/docs/Operational_Guidelines_2026-31.pdf",
+        "badge": "New!"
+      },
+      {
         "imageUrl": "/assets/images/homepage/spotlight/credit-rating-report.png",
         "name": "Credit Rating Toolkit",
         "downloadUrl": "/assets/images/homepage/spotlight/Credit_Rating_Toolkit.pdf",
-        "badge": "New!"
+        "badge": ""
       },
       {
         "imageUrl": "/assets/images/homepage/spotlight/property-tax.webp",
