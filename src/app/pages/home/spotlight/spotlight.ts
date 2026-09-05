@@ -55,8 +55,8 @@ export class Spotlight {
   whatNewData =
     [
       {
-        "imageUrl": "/assets/images/homepage/spotlight/xvi-fc_finance_commission_report.webp",
-        "name": "XVI Finance Commission Report",
+        "imageUrl": "/assets/images/homepage/spotlight/xvi-fc-operational-guidelines.webp",
+        "name": "XVI FC Operational Guidelines",
         "downloadUrl": "/assets/docs/Operational_Guidelines_2026-31.pdf",
         "badge": "New!"
       },
